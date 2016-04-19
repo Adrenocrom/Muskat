@@ -33,6 +33,8 @@ function loadFileFromSrc(filename) {
 			text = data;
 	});
 
+	alert(text);
+
 	return text;
 }
 
