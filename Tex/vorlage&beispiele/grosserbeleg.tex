@@ -1,0 +1,61 @@
+\documentclass[hyperref,german,beleg]{cgvpub}
+%weitere Optionen zum Ergänzen (in eckigen Klammern):
+% 
+% female	weibliche Titelbezeichnung bei Diplom
+% bibnum	numerische Literaturschlüssel
+% final 	für Abgabe	
+% lof			Abbildungsverzeichis
+% lot			Tabellenverzeichnis
+% noproblem	keine Aufgabenstellung
+% notoc			kein Inhaltsverzeichnis
+% twoside		zweiseitig
+\author{Roland Raytracer}
+\title{Titeltext}
+\birthday{1. Januar 1234}
+\placeofbirth{Dresden}
+\matno{123456}
+\betreuer{Dr. B. Spline}
+\bibfiles{literatur}
+\problem{Text der Aufgabenstellung...}
+\copyrighterklaerung{Hier soll jeder Autor die von ihm eingeholten
+Zustimmungen der Copyright-Besitzer angeben bzw. die in Web Press
+Rooms angegebenen generellen Konditionen seiner Text- und
+Bild"ubernahmen zitieren.}
+\acknowledgments{Die Danksagung...}
+\begin{document}
+\chapter{ein kapitel}
+\section{eine Grafik}
+\begin{figure}[htbp]
+	\centering
+		\includegraphics{test.png}
+	\caption{beschriftung}
+	\label{fig:diplominf}
+\end{figure}
+
+
+\subsection{Etwas Mathe}
+
+\[
+\sum_{i=1}^{100}x_i
+\]
+noch mehr text
+\subsubsection{Verweise auf Literatur}
+So kann ich Literatur aus literatur.bib zitieren: \cite{kochbuch}. 
+
+\paragraph{etwas quelltext}
+
+
+\begin{figure}[htbp]
+\begin{lstlisting}[frame=trbl]
+//comment
+for(int i = 0; i < 100;i++)
+{
+test(i);
+}
+\end{lstlisting}
+\end{figure}
+
+text
+
+\cite*{}
+\end{document}

@@ -1,0 +1,15 @@
+\contentsline {chapter}{\numberline {1}Einleitung}{3}{chapter.1}
+\contentsline {chapter}{\numberline {2}Verwandte Arbeiten}{5}{chapter.2}
+\contentsline {chapter}{\numberline {3}Grundlagen}{7}{chapter.3}
+\contentsline {section}{\numberline {3.1}IP}{7}{section.3.1}
+\contentsline {subsection}{\numberline {3.1.1}IPv4}{7}{subsection.3.1.1}
+\contentsline {subsection}{\numberline {3.1.2}IPv6}{7}{subsection.3.1.2}
+\contentsline {section}{\numberline {3.2}TCP/UDP}{7}{section.3.2}
+\contentsline {section}{\numberline {3.3}Socket}{7}{section.3.3}
+\contentsline {section}{\numberline {3.4}Client}{7}{section.3.4}
+\contentsline {subsection}{\numberline {3.4.1}WebSocket}{7}{subsection.3.4.1}
+\contentsline {subsection}{\numberline {3.4.2}WebRTC}{7}{subsection.3.4.2}
+\contentsline {paragraph}{\nonumberline getUserMedia}{7}{section*.4}
+\contentsline {paragraph}{\nonumberline RTCPeerConnection}{7}{section*.5}
+\contentsline {paragraph}{\nonumberline RTCDataChannel}{7}{section*.6}
+\contentsline {chapter}{\nonumberline Literaturverzeichnis}{9}{chapter*.7}
