@@ -4,12 +4,12 @@
 \contentsline {section}{\numberline {3.1}IP}{7}{section.3.1}
 \contentsline {subsection}{\numberline {3.1.1}IPv4}{7}{subsection.3.1.1}
 \contentsline {subsection}{\numberline {3.1.2}IPv6}{7}{subsection.3.1.2}
-\contentsline {section}{\numberline {3.2}TCP/UDP}{7}{section.3.2}
-\contentsline {section}{\numberline {3.3}Socket}{7}{section.3.3}
-\contentsline {section}{\numberline {3.4}Client}{7}{section.3.4}
-\contentsline {subsection}{\numberline {3.4.1}WebSocket}{7}{subsection.3.4.1}
-\contentsline {subsection}{\numberline {3.4.2}WebRTC}{7}{subsection.3.4.2}
-\contentsline {paragraph}{\nonumberline getUserMedia}{7}{section*.4}
-\contentsline {paragraph}{\nonumberline RTCPeerConnection}{7}{section*.5}
-\contentsline {paragraph}{\nonumberline RTCDataChannel}{7}{section*.6}
-\contentsline {chapter}{\nonumberline Literaturverzeichnis}{9}{chapter*.7}
+\contentsline {section}{\numberline {3.2}Socket}{7}{section.3.2}
+\contentsline {section}{\numberline {3.3}Client}{7}{section.3.3}
+\contentsline {subsection}{\numberline {3.3.1}WebSocket}{7}{subsection.3.3.1}
+\contentsline {chapter}{\numberline {4}Methodik und Umsetzung}{9}{chapter.4}
+\contentsline {chapter}{\numberline {5}Ergebnisse}{11}{chapter.5}
+\contentsline {chapter}{\numberline {6}Diskussion}{13}{chapter.6}
+\contentsline {chapter}{\numberline {7}Zusammenfassung}{15}{chapter.7}
+\contentsline {chapter}{\numberline {8}Ausblick}{17}{chapter.8}
+\contentsline {chapter}{\nonumberline Literaturverzeichnis}{19}{chapter*.4}

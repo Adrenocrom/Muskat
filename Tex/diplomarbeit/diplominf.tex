@@ -67,25 +67,8 @@ Bild"ubernahmen zitieren.}
 \begin{document}
 \chapter{Einleitung}
 
-\begin{figure}[htbp]
-	\begin{tikzpicture}[x={(1cm,0cm)},y={(0cm,1cm)}, z={(0.4cm,0.3cm)}, scale=0.5]
-		\def\d{2}
-		\foreach \x in {-\d, ...,\d} {
-			\draw (\x, -\d, -\d) -- (\x, \d, -\d);
-			\draw (\x, \d, -\d) -- (\x, \d, \d);
-		}
-		
-		\foreach \y in {-\d, ...,\d} {
-			\draw (-\d, \y, -\d) -- (\d, \y, -\d);
-			\draw (\d, \y, -\d) -- (\d, \y, \d);
-		}
-		
-		\foreach \z in {-\d, ...,\d} {
-			\draw (-\d, \d, \z) -- (\d, \d, \z);
-			\draw (\d, -\d, \z) -- (\d, \d, \z);
-		}
-	\end{tikzpicture}
-\end{figure}
+Verfügbarer Speicher und Rechenleistung 
+
 
 
 
@@ -97,8 +80,6 @@ Bild"ubernahmen zitieren.}
 \subsection{IPv4}
 \subsection{IPv6}
 
-\section{TCP/UDP}
-
 \section{Socket}
 
 Ein Socket ist mit einem Verbindungsknoten vergleichbar. Server und Client müssen vor dem Aufbau
@@ -108,16 +89,16 @@ verbunden.
 \section{Client}
 
 \subsection{WebSocket}
-\subsection{WebRTC}
 
-WebRTC besteht aus drei Hauptkomponente:
+\chapter{Methodik und Umsetzung}
 
-\paragraph{getUserMedia} gestattet dem Browser zugriff auf die Kamera und das Mikrophon.
-\paragraph{RTCPeerConnection} bereitet Audio- und Videokommunikation vor.
-\paragraph{RTCDataChannel} erlaubt den Datenaustausch peer-to-peer.
+\chapter{Ergebnisse}
 
-Zusätzlich bietet die WebRTC API die Möglichkeit an statistische Informationen über die
-Session anzulegen.
+\chapter{Diskussion}
+
+\chapter{Zusammenfassung}
+
+\chapter{Ausblick}
 
 \nocite{*}
 \end{document}

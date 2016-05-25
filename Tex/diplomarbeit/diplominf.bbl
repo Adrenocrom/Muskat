@@ -1,26 +1,10 @@
-\begin{thebibliography}{GMS02}
+\begin{thebibliography}{WPJR11}
 
-\bibitem[GMS02]{begleiter}
-\textsc{Goossens}, Michel ; \textsc{Mittelbach}, Frank  ; \textsc{Samarin},
-  Alexander:
-\newblock \emph{Der {\LaTeX-B}egleiter}.
-\newblock Addison-{W}esley, 2002
-
-\bibitem[Kop92]{kopka}
-\textsc{Kopka}, Helmut:
-\newblock \emph{{\LaTeX: eine Einführung}}.
-\newblock {Addison-Wesley}, 1992
-
-\bibitem[Por95]{kochbuch}
-\textsc{Porto}, Markus.
-\newblock \emph{\textit{Kochbuch für {\LaTeX}}}.
-\newblock \\\url{http://www.uni-giessen.de/hrz/tex/cookbook/cookbook.html}.
-\newblock 1995
-
-\bibitem[Rud03]{rudl}
-\textsc{Rudl}, Jan.
-\newblock \emph{\textit{Einführung in {\LaTeX} - {K}ursunterlagen}}.
-\newblock \\\url{http://www.math.tu-dresden.de/~rudl/latex/LaTeX-Kurs.pdf}.
-\newblock 2003
+\bibitem[WPJR11]{5945383}
+\textsc{Wessels}, A. ; \textsc{Purvis}, M. ; \textsc{Jackson}, J.  ;
+  \textsc{Rahman}, S.:
+\newblock Remote Data Visualization through WebSockets.
+\newblock {In: }\emph{Information Technology: New Generations (ITNG), 2011
+  Eighth International Conference on}, 2011, S. 1050--1051
 
 \end{thebibliography}

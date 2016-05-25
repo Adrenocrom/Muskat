@@ -25,7 +25,7 @@
 #define PORT 1234
 
 /* Puffer für eingehende Nachrichten */
-#define RCVBUFSIZE 2048
+#define RCVBUFSIZE 1024
 
 #ifdef _WIN32
    static void echo(SOCKET);
@@ -54,6 +54,9 @@ static void echo(int client_socket)
     time(&zeit);
     printf("Nachrichten vom Client : %s \t%s",
             echo_buffer, ctime(&zeit));
+
+	char msg = {"HTTP/1.1 200 OK"};
+	send(client_socket, )
 }
 
 /* Die Funktion gibt den aufgetretenen Fehler aus und

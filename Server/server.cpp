@@ -25,7 +25,7 @@
 #define PORT 1234
 
 /* Puffer für eingehende Nachrichten */
-#define RCVBUFSIZE 2048
+#define RCVBUFSIZE 1024
 
 #ifdef _WIN32
    static void echo(SOCKET);
@@ -54,6 +54,9 @@ static void echo(int client_socket)
     time(&zeit);
     printf("Nachrichten vom Client : %s \t%s",
             echo_buffer, ctime(&zeit));
+
+	char msg = {"HTTP/1.1 200 OK"};
+	send(client_socket, msg, 15, 0);
 }
 
 /* Die Funktion gibt den aufgetretenen Fehler aus und
@@ -120,28 +123,22 @@ int main( int argc, char *argv[]) {
      * in einer Endlosschleife.
      * Der Aufruf von accept() blockiert so lange,
      * bis ein Client Verbindung aufnimmt. */
-
-	len = sizeof(client);
-    fd = accept(sock, (struct sockaddr*)&client, &len);
-    if (fd < 0)
-        error_exit("Fehler bei accept");
-    printf("Bearbeite den Client mit der Adresse: %s\n",
-       inet_ntoa(client.sin_addr));
-
     for (;;) {
-        
+        len = sizeof(client);
+        fd = accept(sock, (struct sockaddr*)&client, &len);
+        if (fd < 0)
+            error_exit("Fehler bei accept");
+        printf("Bearbeite den Client mit der Adresse: %s\n",
+           inet_ntoa(client.sin_addr));
         /* Daten vom Client auf dem Bildschirm ausgeben */
         echo( fd );
 
         /* Schließe die Verbindung. */
-
-    }
-
-	#ifdef _WIN32
+#ifdef _WIN32
         closesocket(fd);
-	#else
-		close(fd);
-	#endif
-
+#else
+        close(fd);
+#endif
+    }
     return EXIT_SUCCESS;
 }
