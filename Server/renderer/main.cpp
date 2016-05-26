@@ -1,5 +1,9 @@
+#include <iostream>
+#include <string>
 #include "utils.h"
 #define WINDOW_TITLE_PREFIX "Muskat Server"
+
+using namespace std;
 
 int
   CurrentWidth = 800,
@@ -7,6 +11,7 @@ int
   WindowHandle = 0;
 
 unsigned FrameCount = 0;
+unsigned FrameCounter = 0;
 
 GLuint
   ProjectionMatrixUniformLocation,
@@ -14,6 +19,10 @@ GLuint
   ModelMatrixUniformLocation,
   BufferIds[3] = { 0 },
   ShaderIds[3] = { 0 };
+
+GLuint FramebufferName = 0;
+GLuint renderedTexture;
+GLuint depthrenderbuffer;
 
 Matrix
   ProjectionMatrix,
@@ -71,6 +80,8 @@ void Initialize(int argc, char* argv[])
 
   glEnable(GL_DEPTH_TEST);
   glDepthFunc(GL_LESS);
+  glDepthMask(GL_TRUE);
+  glDepthRange(0.0f, 1.0f);
   ExitOnGLError("ERROR: Could not set OpenGL depth testing options");
 
   glEnable(GL_CULL_FACE);
@@ -141,12 +152,67 @@ void ResizeFunction(int Width, int Height)
 void RenderFunction(void)
 {
   ++FrameCount;
+  ++FrameCounter;
+
+  //glBindFramebuffer(GL_FRAMEBUFFER, FramebufferName);
+ // glViewport(0,0,800,600);
 
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
   DrawCube();
   
+
   glutSwapBuffers();
+	
+	cout<<"start"<<endl;
+	size_t i, j, cur;
+	GLubyte* pixels = new GLubyte[CurrentWidth * CurrentHeight * 3];
+
+	//string fname("rgb/frame_"+ to_string(FrameCounter) + ".ppm");
+	//FILE *f = fopen(fname.c_str(), "w+");
+	
+	//fprintf(f, "P3\n%d %d\n%d\n", width, height, 255);
+	//*pixels = realloc(*pixels, format_nchannels * sizeof(GLubyte) * width * height);
+	glReadPixels(0, 0, CurrentWidth, CurrentHeight, GL_RGB, GL_UNSIGNED_BYTE, pixels);
+	
+
+	for (i = 0; i < CurrentHeight; i++) {
+		for (j = 0; j < CurrentWidth; j++) {
+			cur = 3 * ((CurrentHeight - i - 1) * CurrentWidth + j);
+//			fprintf(f, "%3d %3d %3d ", pixels[cur], pixels[cur + 1], pixels[cur + 2]);
+		}
+		
+//		fprintf(f, "\n");
+  	}
+
+
+//	fclose(f);
+	delete[] pixels;
+
+	GLfloat* data = new GLfloat[CurrentWidth * CurrentHeight];
+	//fname = "depth/frame_"+ to_string(FrameCounter) + ".ppm";
+	//f = fopen(fname.c_str(), "w+");
+	
+//	fprintf(f, "P2\n%d %d\n%d\n", width, height, 255);
+	//*pixels = realloc(*pixels, format_nchannels * sizeof(GLubyte) * width * height);
+	glReadPixels(0, 0, CurrentWidth, CurrentHeight, GL_DEPTH_COMPONENT, GL_FLOAT, data);
+	
+	for (i = 0; i < CurrentHeight; i++) {
+		for (j = 0; j < CurrentWidth; j++) {
+			cur = ((CurrentHeight - i - 1) * CurrentWidth + j);
+		//	fprintf(f, "%.0f ", data[cur]*255);
+		}
+		
+//		fprintf(f, "\n");
+  	}
+
+
+//	fclose(f);
+	delete[] data;
+
+
+
+	cout<<"end"<<endl;
 }
 
 void IdleFunction(void)
@@ -204,8 +270,8 @@ void CreateCube()
   ShaderIds[0] = glCreateProgram();
   ExitOnGLError("ERROR: Could not create the shader program");
   {
-    ShaderIds[1] = LoadShader("SimpleShader.fragment.glsl", GL_FRAGMENT_SHADER);
-    ShaderIds[2] = LoadShader("SimpleShader.vertex.glsl", GL_VERTEX_SHADER);
+    ShaderIds[1] = LoadShader("fragment.glsl", GL_FRAGMENT_SHADER);
+    ShaderIds[2] = LoadShader("vertex.glsl", GL_VERTEX_SHADER);
     glAttachShader(ShaderIds[0], ShaderIds[1]);
     glAttachShader(ShaderIds[0], ShaderIds[2]);
   }
