@@ -1,7 +1,9 @@
 #include "muskat.h"
 
-void muskatInit(properties& prop, void (*init)()) {
-	glutInit(&prop.argc, prop.argv);
+mt_properties properties;
+
+void muskatInit(void (*init)()) {
+    glutInit(&properties.argc, properties.argv);
 	   
 	glutInitContextVersion(4, 0);
 	glutInitContextFlags(GLUT_FORWARD_COMPATIBLE);
@@ -9,18 +11,18 @@ void muskatInit(properties& prop, void (*init)()) {
 
 	glutSetOption(GLUT_ACTION_ON_WINDOW_CLOSE, GLUT_ACTION_GLUTMAINLOOP_RETURNS);
 								  
-	glutInitWindowSize(prop.width, prop.height);
+    glutInitWindowSize(properties.width, properties.height);
 	glutInitDisplayMode(GLUT_DEPTH | GLUT_DOUBLE | GLUT_RGBA);
-	prop.handle = glutCreateWindow(prop.prefix.c_str());
+    properties.handle = glutCreateWindow(properties.prefix.c_str());
 	
-	if(prop.handle < 1) {
+    if(properties.handle < 1) {
 	     cerr<<"ERROR: Could not create a new rendering window."<<endl;
 		  exit(EXIT_FAILURE);
 	}
 
-	GLenum GlewInitResult;
-   glewExperimental = GL_TRUE;
-   GlewInitResult = glewInit();
+    GLenum GlewInitResult;
+    glewExperimental = GL_TRUE;
+    GlewInitResult = glewInit();
 
 	if (GLEW_OK != GlewInitResult) {
   		cerr<<"ERROR: "<<glewGetErrorString(GlewInitResult)<<endl;
@@ -28,7 +30,8 @@ void muskatInit(properties& prop, void (*init)()) {
   	}
   
   	cout<<"INFO: OpenGL Version: "<<glGetString(GL_VERSION)<<endl;
-  	glGetError();
+    glGetError();
+    glutIdleFunc(glutPostRedisplay);
 
 	init();
 }
@@ -38,8 +41,12 @@ void muskatRun(void (*render)()) {
 	glutMainLoop();	
 }
 
+void muskatResize(void (*resize)(int w, int h)) {
+    glutReshapeFunc(resize);
+}
+
 
 void muskatExit(void (*exit)()) {
-	
+    glutCloseFunc(exit);
 }
 

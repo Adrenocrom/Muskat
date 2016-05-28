@@ -135,6 +135,24 @@ real4x4	real4x4Projection(const real fFOV, const real fAspect, const real fNearP
 						0.0f, 0.0f, Q, 1.0f,
 						0.0f, 0.0f, -Q * fNearPlane, 0.0f);
 }
+
+real4x4	real4x4Projection2(const real fFOV, const real fAspect, const real fNearPlane, const real fFarPlane) {
+    real4x4 out;
+
+    const real
+        y_scale = SI_COT(SI_DEG_TO_RAD(fFOV / 2)),
+        x_scale = y_scale / fAspect,
+        frustum_length = fFarPlane - fNearPlane;
+
+    out.n[0] = x_scale;
+    out.n[5] = y_scale;
+    out.n[10] = -((fFarPlane + fNearPlane) / frustum_length);
+    out.n[11] = -1;
+    out.n[14] = -((2 * fNearPlane * fFarPlane) / frustum_length);
+
+    return out;
+}
+
 real4x4	real4x4Camera(const real3& vPos, const real3& vLookAt, const real3& vUp) {
 	real3 vZAxis(normalize(vLookAt - vPos));
 

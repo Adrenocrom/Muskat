@@ -242,10 +242,11 @@ real4x4	real4x4Rotation(const real3& v);
 real4x4	real4x4RotationAxis(const real3& v, const real f);
 real4x4	real4x4Scaling(const real3& v);
 real4x4	real4x4Axes(const real3& vXAxis, const real3& vYAxis, const real3& vZAxis);
-real		real4x4Det(const real4x4& m);
+real	real4x4Det(const real4x4& m);
 real4x4	real4x4Invert(const real4x4& m);
 real4x4	real4x4Transpose(const real4x4& m);
 real4x4	real4x4Projection(const real fFOV, const real fAspect, const real fNearPlane, const real fFarPlane);
+real4x4	real4x4Projection2(const real fFOV, const real fAspect, const real fNearPlane, const real fFarPlane);
 real4x4	real4x4Camera(const real3& vPos, const real3& vLookAt, const real3& vUp = real3(0.0f, 1.0f, 0.0f));
 real4x4	real4x4ToTex2DMatrix(const real4x4& m);
 

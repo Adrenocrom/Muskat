@@ -19,7 +19,7 @@
 
 using namespace std;
 
-struct properties {
+struct mt_properties {
 	int argc;
 	char** argv;
 	int width;
@@ -28,15 +28,20 @@ struct properties {
 	string prefix;
 	unsigned frameCnt;
 
-	properties(int _argc, char** _argv) : argc(_argc), argv(_argv) {
+    mt_properties() {
+        argc = 0;
+        argv = NULL;
 		width 	= 800;
 		height 	= 600;
 		handle 	= 0;
 		prefix 	= "Muskat";
-	}
+    }
 };
 
-void muskatInit(properties& prop, void (*init)());
+extern mt_properties properties;
+
+void muskatInit(void (*init)());
+void muskatResize(void (*resize)(int w, int h));
 void muskatRun(void (*render)());
 void muskatExit(void (*exit)());
 
