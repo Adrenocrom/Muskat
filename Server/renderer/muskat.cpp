@@ -33,11 +33,13 @@ void muskatInit(void (*init)()) {
     glGetError();
     glutIdleFunc(glutPostRedisplay);
 
+    glViewport(0, 0, properties.width, properties.height);
 	init();
 }
 
-void muskatRun(void (*render)()) {
+void muskatRun(void (*render)(), void (*move)(int v)) {
 	glutDisplayFunc(render);
+    glutTimerFunc(0, move, 0);
 	glutMainLoop();	
 }
 

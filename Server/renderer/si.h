@@ -6,12 +6,12 @@
 typedef float real;
 typedef unsigned int uint;
 
-#define SI_MIN(a, b)			((a) < (b) ? (a) : (b))													// Minimum
-#define SI_MAX(a, b)       ((a) > (b) ? (a) : (b))													// Maximum
-#define SI_PI					(3.1415926535897932384626433832795f)	
-#define SI_DEG_TO_RAD(x)	((x) * 0.0174532925199432957692369076848f)
-#define SI_RAD_TO_DEG(x)	((x) * 57.295779513082320876798154814105f)					
-#define SI_COT(x)				((real)(1.0/tan(x)))
+#define SI_MIN(a, b)	   ((a) < (b) ? (a) : (b))
+#define SI_MAX(a, b)       ((a) > (b) ? (a) : (b))
+#define SI_PI			   (3.1415926535897932384626433832795f)
+#define SI_DEG_TO_RAD(x)   ((x) * 0.0174532925199432957692369076848f)
+#define SI_RAD_TO_DEG(x)   ((x) * 57.295779513082320876798154814105f)
+#define SI_COT(x)          ((real)(1.0/tan(x)))
 
 
 struct real3 {
@@ -81,7 +81,7 @@ struct real4x4 {
 		real		n[16];				// Eindimensionales Array der Elemente
 	};
 
-	real4x4() {}
+    real4x4() {memset(n, 0, sizeof(n));}
 
 	real4x4(const real4x4& m) : m11(m.m11), m12(m.m12), m13(m.m13), m14(m.m14),
 		                         m21(m.m21), m22(m.m22), m23(m.m23), m24(m.m24),

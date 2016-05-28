@@ -21,13 +21,11 @@ clock_t LastTime  = 0;
 void createScene() {
     matrix_model      = real4x4Identity();
     matrix_projection = real4x4Identity();
-    matrix_view       = real4x4Translation(real3(0.0, 0.0, -2.0));
-                      /*real4x4Camera(real3(0.0, 0.0, -2.0),
-                                      real3(0.0, 0.0, 0.0));*/
+    matrix_view       = real4x4Identity();
+    matrix_view      *= real4x4Translation(real3(0.0, 0.0, -2.0));
     matrix_projection = real4x4Projection2(60, (real)properties.width / (real)properties.height, 1.0f, 1000.0f);
 
-    const Vertex VERTICES[8] =
-    {
+    const Vertex VERTICES[8] = {
       { { -.5f, -.5f,  .5f, 1 }, { 0, 0, 1, 1 } },
       { { -.5f,  .5f,  .5f, 1 }, { 1, 0, 0, 1 } },
       { {  .5f,  .5f,  .5f, 1 }, { 0, 1, 0, 1 } },
@@ -38,8 +36,7 @@ void createScene() {
       { {  .5f, -.5f, -.5f, 1 }, { 0, 0, 1, 1 } }
     };
 
-    const GLuint INDICES[36] =
-    {
+    const GLuint INDICES[36] = {
       0,2,1,  0,3,2,
       4,3,0,  4,7,3,
       4,1,5,  4,0,1,
@@ -48,14 +45,16 @@ void createScene() {
       7,5,6,  7,4,5
     };
 
+
+
     ShaderIds[0] = glCreateProgram();
-    ExitOnGLError("ERROR: Could not create the shader program");
-    {
-      ShaderIds[1] = LoadShader("fragment.glsl", GL_FRAGMENT_SHADER);
-      ShaderIds[2] = LoadShader("vertex.glsl", GL_VERTEX_SHADER);
-      glAttachShader(ShaderIds[0], ShaderIds[1]);
-      glAttachShader(ShaderIds[0], ShaderIds[2]);
+    ExitOnGLError("ERROR: Could not create the shader program"); {
+        ShaderIds[1] = LoadShader("fragment.glsl", GL_FRAGMENT_SHADER);
+        ShaderIds[2] = LoadShader("vertex.glsl", GL_VERTEX_SHADER);
+        glAttachShader(ShaderIds[0], ShaderIds[1]);
+        glAttachShader(ShaderIds[0], ShaderIds[2]);
     }
+
     glLinkProgram(ShaderIds[0]);
     ExitOnGLError("ERROR: Could not link the shader program");
 
@@ -92,7 +91,7 @@ void createScene() {
 }
 
 void renderScene() {
-    real CubeAngle;
+    /*real CubeAngle = 0;
     clock_t Now = clock();
 
     if (LastTime == 0)
@@ -102,16 +101,18 @@ void renderScene() {
     CubeAngle = SI_DEG_TO_RAD(CubeRotation);
     LastTime = Now;
 
+*/
     matrix_model  = real4x4Identity();
     //matrix_model *= real4x4Scaling(real3(2.0, 2.0, 2.0));
-    matrix_model *= real4x4RotationY(CubeAngle);
+ /*   matrix_model *= real4x4RotationY(CubeAngle);
     matrix_model *= real4x4RotationX(CubeAngle);
-
+*/
     glUseProgram(ShaderIds[0]);
     ExitOnGLError("ERROR: Could not use the shader program");
 
-    glUniformMatrix4fv(ModelMatrixUniformLocation, 1, GL_FALSE, matrix_model);
-    glUniformMatrix4fv(ViewMatrixUniformLocation, 1, GL_FALSE, matrix_view);
+    glUniformMatrix4fv(ProjectionMatrixUniformLocation, 1, GL_FALSE, matrix_projection.n);
+    glUniformMatrix4fv(ModelMatrixUniformLocation, 1, GL_FALSE, matrix_model.n);
+    glUniformMatrix4fv(ViewMatrixUniformLocation, 1, GL_FALSE, matrix_view.n);
     ExitOnGLError("ERROR: Could not set the shader uniforms");
 
     glBindVertexArray(BufferIds[0]);

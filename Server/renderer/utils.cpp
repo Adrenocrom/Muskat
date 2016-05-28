@@ -33,7 +33,7 @@ GLuint LoadShader(const char* filename, GLenum shader_type) {
       	else
       		cerr<<"ERROR: Could not read file "<<filename<<endl;
 
-      	free(glsl_source);
+            free(glsl_source);
     	}
     	else
       	cerr<<"ERROR: Could not allocate "<<file_size<<" bytes."<<endl;
