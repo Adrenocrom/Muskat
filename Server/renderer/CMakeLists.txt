@@ -30,8 +30,11 @@ if (OPENGL_FOUND)
 	link_libraries(${OPENGL_LIBRARIES})
 endif()
 
+#include_directories()
+#link_libraries()
+
 include_directories( include . )
-add_library( muskat utils.cpp	main.cpp )
+add_library( muskat muskat.cpp utils.cpp si.cpp main.cpp )
 
 add_executable( Muskat main.cpp )
 target_link_libraries( Muskat muskat )
