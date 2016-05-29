@@ -51,6 +51,10 @@ if (OPENGL_FOUND)
 	link_libraries(${OPENGL_LIBRARIES})
 endif()
 
+find_package(Jsoncpp_FOUND)
+if(Jsoncpp_FOUND)
+endif()
+
 link_libraries(/usr/lib/x86_64-linux-gnu/libturbojpeg.a)
 
 include_directories( include . )

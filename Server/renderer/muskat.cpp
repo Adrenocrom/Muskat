@@ -40,7 +40,8 @@ void muskatInit(void (*init)()) {
 void muskatRun(void (*render)(), void (*move)(int v)) {
 	glutDisplayFunc(render);
     glutTimerFunc(0, move, 0);
-	glutMainLoop();	
+    //glutMainLoop();
+    glutMainLoopEvent();
 }
 
 void muskatResize(void (*resize)(int w, int h)) {
@@ -52,3 +53,6 @@ void muskatExit(void (*exit)()) {
     glutCloseFunc(exit);
 }
 
+void muskatResizeWindow(int w, int h) {
+    glutReshapeWindow(w, h);
+}

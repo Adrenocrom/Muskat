@@ -19,6 +19,8 @@ int main(int argc, char* argv[]) {
 
     Deamon deamon;
 
+    glutReshapeWindow(512, 512);
+
     muskatRun(render, move);
 
     deamon.exit();

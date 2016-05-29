@@ -48,6 +48,8 @@ void muskatResize(void (*resize)(int w, int h));
 void muskatRun(void (*render)(), void (*move)(int v));
 void muskatExit(void (*exit)());
 
+void muskatResizeWindow(int w, int h);
+
 #include "utils.h"
 #include "si.h"
 
