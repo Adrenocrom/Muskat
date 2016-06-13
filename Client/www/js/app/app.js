@@ -1,6 +1,6 @@
 if ("WebSocket" in window) {
 	// ws
-	var ws = new WebSocket("ws://localhost:12345/echo");
+	var ws = new WebSocket("ws://localhost:1234");
 
 	ws.onerror = function() {
 	    alert("error: " + ws);
@@ -8,17 +8,17 @@ if ("WebSocket" in window) {
 
 	ws.onopen = function() {
 	    // Web Socket is connected, send data using send()
-	    ws.send("Hello Server");
+		alert("connection open: " + ws);
+		ws.send("{\"width\":1033,\"height\":1002}")
 	};
 
 	ws.onmessage = function (evt) {
-	    var received_msg = evt.data;
-	    alert("Message is received: " + received_msg);
+	    var received_msg = evt.data;		
 	};
 
 	ws.onclose = function() {
 	    // websocket is closed.
-	    alert("Connection is closed...");
+		 alert("connection lost" + ws);
 	};
 
 	// opengl
