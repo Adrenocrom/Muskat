@@ -20,6 +20,7 @@ public:
     ~GLWidget();
 
     SBuffers renderFrame(QMatrix4x4 pvM);
+    void resize(int w, int h);
 
 protected:
     void resizeGL(int w, int h) Q_DECL_OVERRIDE;

@@ -83,6 +83,10 @@ void GLWidget::resizeGL(int w, int h) {
     projection.perspective(fov, aspect, zNear, zFar);
 }
 
+void GLWidget::resize(int w, int h) {
+    resizeGL(w, h);
+}
+
 void GLWidget::timerEvent(QTimerEvent *) {
     update();
 }

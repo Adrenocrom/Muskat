@@ -9,9 +9,20 @@
         <link rel="stylesheet" type="text/css" href="css/style.css">
     </head>
     <body>
-        <div id="container"></div>
-        <script src="js/lib/three.min.js"></script>
+		<div id="window_config">
+			<fieldset id="form_init">
+				<p>Server adress: <input type="text" id="text_server_uri" value="ws://localhost:1234"></input></p>
+				<p><button id="button_connect_to_server">connect</button></p>
+			</fieldset>
+		</div>
+		<div id="window_render">
+		    <div id="display"></div>
+			<button id="button_toggle_debug">Debug</button>
+			<textarea id="textarea_debug"></textarea>
+        </div>
 
+		<script src="js/lib/jquery-2.2.3.min.js"></script>
+		<script src="js/lib/three.min.js"></script>
         <script src="js/lib/Detector.js"></script>
         <script src="js/lib/stats.min.js"></script>
         <script src="js/lib/FirstPersonControls.js"></script>
@@ -26,6 +37,7 @@
 			uniform vec2 resolution;
 			uniform float time;
 			uniform sampler2D texture;
+
 			void main()	{
 				vec2 p = gl_FragCoord.xy / resolution.xy;
 

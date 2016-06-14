@@ -51,7 +51,16 @@ void ServerDeamon::processTextMessage(QString message)
     }
 
     m_mainWindow->showClientIp(message);
-	 std::cout<<message.toStdString()<<std::endl;
+    std::cout<<message.toStdString()<<std::endl;
+
+    QJsonDocument jsonResponse = QJsonDocument::fromJson(message.toUtf8());
+    QJsonObject jsonObject = jsonResponse.object();
+    if(jsonObject.contains("resize")) {
+        QJsonObject r = jsonObject["resize"].toObject();
+        m_mainWindow->m_glWidget->resize(r["width"].toInt(), r["height"].toInt());
+       // m_mainWindow->m_glWidget->update();
+        std::cout<<"test"<<std::endl;
+    }
 }
 //! [processTextMessage]
 

@@ -43,6 +43,8 @@
 #include <QCoreApplication>
 #include <QtWebSockets/qwebsocketserver.h>
 #include <QtWebSockets/qwebsocket.h>
+#include <QJsonDocument>
+#include <QJsonObject>
 #include <QtCore/QObject>
 #include <QtCore/QList>
 #include <QtCore/QByteArray>

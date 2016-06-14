@@ -20,6 +20,7 @@ public:
 
     int             m_server_port;
     ServerDeamon*   m_serverDeamon;
+    QOpenGLWidget*  m_glWidget;
 
     void showClientIp(QString Ip);
 
@@ -39,7 +40,6 @@ private:
     QTabWidget*     m_tab;
     QDockWidget*    m_dock;
 
-    QOpenGLWidget*  m_glWidget;
     QWidget*        m_widget_server;
     QWidget*        m_widget_config;
     QWidget*        m_network;
