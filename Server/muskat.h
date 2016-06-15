@@ -55,5 +55,6 @@
 #include "mainwindow.h"
 #include "glwidget.h"
 #include "deamon.h"
+#include "jsonrpc.h"
 
 #endif

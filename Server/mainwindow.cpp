@@ -96,7 +96,11 @@ void MainWindow::createTabWidgets() {
     m_widget_config = new QWidget(this);
     QFormLayout* fl1 = new QFormLayout;
     m_qle_server_port_config = new QLineEdit(QString::number(m_server_port));
-    fl1->addRow(new QLabel("port"), m_qle_server_port_config);
+    m_qle_widget_width_config = new QLineEdit(QString::number(m_glWidget->width()));
+    m_qle_widget_height_config = new QLineEdit(QString::number(m_glWidget->height()));
+    fl1->addRow(new QLabel("Port:"), m_qle_server_port_config);
+    fl1->addRow(new QLabel("Width:"), m_qle_widget_width_config);
+    fl1->addRow(new QLabel("Height:"), m_qle_widget_height_config);
     m_widget_config->setLayout(fl1);
 
     m_tab = new QTabWidget(this);
@@ -167,11 +171,6 @@ void MainWindow::set_tools_invisible() {
     else m_qac_show_tools->setChecked(false);
 }
 
-void MainWindow::showClientIp(QString Ip) {
-    m_qle_server_port_config->setText(Ip);
-}
-
 void MainWindow::resizeEvent(QResizeEvent *) {
-    m_glWidget->setMinimumSize(510, 510);
-    m_glWidget->update();
+
 }

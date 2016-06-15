@@ -19,7 +19,7 @@ public:
     GLWidget(MainWindow *mw);
     ~GLWidget();
 
-    SBuffers renderFrame(QMatrix4x4 pvM);
+    SBuffers renderFrame();
     void resize(int w, int h);
 
 protected:

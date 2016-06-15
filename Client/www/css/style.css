@@ -44,7 +44,11 @@ a {
 	padding: 5px;
 	height: 200px;
 	opacity: 0.8;
-	color: #F00;
+	color: #FFF;
+	background-color: #000;
+	border-style: solid none none none;
+	border-width: 1px;
+	border-color: #FFF;
 }
 
 #button_toggle_debug {

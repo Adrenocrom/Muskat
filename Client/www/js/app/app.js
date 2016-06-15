@@ -1,5 +1,5 @@
 /*
-*	muskat client v.0.1
+*	muskat client v0.0.1
 *	Josef Schulz, 13.6.2016
 */
 
@@ -10,6 +10,8 @@ $(document).ready(function() {
 		debug_console.value += message + "\n";
 		debug_console.scrollTop = debug_console.scrollHeight;
 	}
+
+	debug("muskat client v0.0.1")
 
 	/*
 	*	toggle visibility of the debug console
@@ -74,11 +76,15 @@ $(document).ready(function() {
 
 			websocket.onmessage = function (evt) {
                 //console.log( "Message received :", evt.data );
-                debug( evt.data );
+                debug("Message received: "+ evt.data );
             };
 
 			websocket.onclose = function (evt) {
 				debug("disconnected");
+				
+				document.getElementById("window_config").style.display = "block";
+				document.getElementById("window_render").style.display = "none";
+				$('#text_server_uri').val(wsUri);
 			};
 
 			websocket.onerror = function (evt) {
@@ -132,28 +138,36 @@ $(document).ready(function() {
 		renderer.setSize( window.innerWidth, window.innerHeight );
 		uniforms.resolution.value.x = renderer.domElement.width;
 		uniforms.resolution.value.y = renderer.domElement.height;
-		debug("resize");
+		debug("resize to "+ renderer.domElement.width + "X" + renderer.domElement.height);
 
 		var msg = {
-			"resize" : {
-				"width" : renderer.domElement.width,
-				"height" :  renderer.domElement.height
-			}
+			"jsonrpc" : "2.0",
+			"method" : "resize",
+			"params" : { 
+				"width" : renderer.domElement.width, 
+				"height": renderer.domElement.height
+			},
+			"id" : 0
 		};
-
+		debug(JSON.stringify(msg));
 		websocket.send(JSON.stringify(msg));
 	}
 
 	function animate() {
 		var msg = {
-			"frame" : {
-				camera : []
- 			} 
-		}
+			"jsonrpc" : "2.0",
+			"method" : "getFrame",
+			"params" : {},
+			"id" : 0
+		};
+		debug(JSON.stringify(msg));
+		websocket.send(JSON.stringify(msg));
+
 		requestAnimationFrame( animate );
 		render();
 		stats.update();
 	}
+
 	function render() {
 		uniforms.time.value += 0.05;
 		renderer.render( scene, camera );

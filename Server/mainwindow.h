@@ -9,6 +9,7 @@ class QOpenGLWidget;
 class QStatusBar;
 class QLineEdit;
 class ServerDeamon;
+class GLWidget;
 
 class MainWindow : public QMainWindow {
 	Q_OBJECT
@@ -20,9 +21,11 @@ public:
 
     int             m_server_port;
     ServerDeamon*   m_serverDeamon;
-    QOpenGLWidget*  m_glWidget;
+    GLWidget*       m_glWidget;
 
-    void showClientIp(QString Ip);
+    QLineEdit*      m_qle_server_port_config;
+    QLineEdit*      m_qle_widget_width_config;
+    QLineEdit*      m_qle_widget_height_config;
 
 private slots:
     void set_tools_invisible();
@@ -52,7 +55,7 @@ private:
 
     QPushButton*    m_qpb_start_server;
     QLineEdit*      m_qle_server_port;
-    QLineEdit*      m_qle_server_port_config;
+
     bool m_isNewWidget;
 };
 

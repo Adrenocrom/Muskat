@@ -18,6 +18,9 @@ ServerDeamon::ServerDeamon(MainWindow* mainWindow, quint16 port, bool debug, QOb
                 this, &ServerDeamon::onNewConnection);
         connect(m_pWebSocketServer, &QWebSocketServer::closed, this, &ServerDeamon::closed);
     }
+
+    m_jsonRPC = NULL;
+    m_jsonRPC = new JsonRPC(m_mainWindow);
 }
 //! [constructor]
 
@@ -25,6 +28,11 @@ ServerDeamon::~ServerDeamon()
 {
     m_pWebSocketServer->close();
     qDeleteAll(m_clients.begin(), m_clients.end());
+
+    if(m_jsonRPC) {
+        delete m_jsonRPC;
+        m_jsonRPC = NULL;
+    }
 }
 
 //! [onNewConnection]
@@ -46,21 +54,12 @@ void ServerDeamon::processTextMessage(QString message)
     QWebSocket *pClient = qobject_cast<QWebSocket *>(sender());
     if (m_debug)
         qDebug() << "Message received:" << message;
-    if (pClient) {
+  /*  if (pClient) {
         pClient->sendTextMessage(message);
-    }
+    }*/
 
-    m_mainWindow->showClientIp(message);
-    std::cout<<message.toStdString()<<std::endl;
+    m_jsonRPC->parseMessage(pClient, message);
 
-    QJsonDocument jsonResponse = QJsonDocument::fromJson(message.toUtf8());
-    QJsonObject jsonObject = jsonResponse.object();
-    if(jsonObject.contains("resize")) {
-        QJsonObject r = jsonObject["resize"].toObject();
-        m_mainWindow->m_glWidget->resize(r["width"].toInt(), r["height"].toInt());
-       // m_mainWindow->m_glWidget->update();
-        std::cout<<"test"<<std::endl;
-    }
 }
 //! [processTextMessage]
 

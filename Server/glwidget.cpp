@@ -43,6 +43,7 @@ void GLWidget::initializeGL() {
 }
 
 void GLWidget::paintGL() {
+    std::cout<<"u"<<std::endl;
     // Clear color and depth buffer
     glClearColor(0, 0, 0.1, 1);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -88,7 +89,7 @@ void GLWidget::resize(int w, int h) {
 }
 
 void GLWidget::timerEvent(QTimerEvent *) {
-    update();
+   // update();
 }
 
 void GLWidget::initShaders() {
@@ -224,4 +225,15 @@ void GLWidget::drawScene() {
 
     // Draw cube geometry using indices from VBO 1
     glDrawElements(GL_TRIANGLE_STRIP, 34, GL_UNSIGNED_SHORT, 0);
+}
+
+SBuffers GLWidget::renderFrame() {
+    SBuffers result;
+    result.rgb = new GLubyte[width() * height() * 3];
+
+    this->paintGL();
+
+    glReadPixels(0, 0, width(), height(), GL_RGB,  GL_UNSIGNED_BYTE, result.rgb);
+
+    return result;
 }

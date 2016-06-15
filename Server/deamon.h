@@ -7,6 +7,7 @@
 
 class QWebSocketServer;
 class QWebSocket;
+class JsonRPC;
 
 class ServerDeamon : public QObject
 {
@@ -28,6 +29,7 @@ private:
     QWebSocketServer *m_pWebSocketServer;
     QList<QWebSocket *> m_clients;
     MainWindow*       m_mainWindow;
+    JsonRPC*          m_jsonRPC;
     bool m_debug;
 };
 
