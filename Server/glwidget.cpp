@@ -1,5 +1,4 @@
 #include "muskat.h"
-//#include "geometryengine.h"
 
 struct VertexData
 {
@@ -43,7 +42,6 @@ void GLWidget::initializeGL() {
 }
 
 void GLWidget::paintGL() {
-    std::cout<<"u"<<std::endl;
     // Clear color and depth buffer
     glClearColor(0, 0, 0.1, 1);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -227,13 +225,14 @@ void GLWidget::drawScene() {
     glDrawElements(GL_TRIANGLE_STRIP, 34, GL_UNSIGNED_SHORT, 0);
 }
 
-SBuffers GLWidget::renderFrame() {
-    SBuffers result;
-    result.rgb = new GLubyte[width() * height() * 3];
+void GLWidget::renderFrame(SBuffer* buffer) {
+    std::cout<<"glb"<<std::endl;
+    makeCurrent();
+   // context();
+    paintGL();
 
-    this->paintGL();
+    glReadPixels(0, 0, width(), height(), GL_RGB,  GL_UNSIGNED_BYTE, buffer->rgb);
 
-    glReadPixels(0, 0, width(), height(), GL_RGB,  GL_UNSIGNED_BYTE, result.rgb);
-
-    return result;
+    doneCurrent();
+    std::cout<<"gle"<<std::endl;
 }

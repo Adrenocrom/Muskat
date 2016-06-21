@@ -45,10 +45,8 @@
 #include <QtWebSockets/qwebsocket.h>
 #include <QJsonDocument>
 #include <QJsonObject>
-#include <QtCore/QObject>
-#include <QtCore/QList>
-#include <QtCore/QByteArray>
-#include <QtCore/QDebug>
+#include <QtCore>
+#include <turbojpeg.h>
 
 
 // project includes

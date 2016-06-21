@@ -27,6 +27,7 @@ $(document).ready(function() {
 
 	var wsUri 		= "ws://localhost:1234";
 	var websocket 	= null;
+	var idCnt		= 0;
 
 	/*
 	*	change visibility of windows
@@ -75,8 +76,27 @@ $(document).ready(function() {
 			};
 
 			websocket.onmessage = function (evt) {
-                //console.log( "Message received :", evt.data );
-                debug("Message received: "+ evt.data );
+				//debug("Message received: "+ evt.data );
+				var obj = JSON.parse(evt.data);
+
+				if(obj.result.rgb != "") {
+  					document.getElementById('img').setAttribute( 'src', "data:image/jpeg;base64," + obj.result.rgb);
+
+					  var texture_image = new Image();
+
+					  texture_image.src = obj.result.rgb;
+					  texture = new THREE.Texture();
+
+					  texture_image.onload = function () {
+						texture.image = texture_image;
+						texture.needsUpdate = true;
+					  };
+
+					  uniforms.texture.value = texture_image;
+				}
+				
+				//debug("img data: " + obj.result.rgb);
+                
             };
 
 			websocket.onclose = function (evt) {
@@ -147,10 +167,11 @@ $(document).ready(function() {
 				"width" : renderer.domElement.width, 
 				"height": renderer.domElement.height
 			},
-			"id" : 0
+			"id" : idCnt
 		};
 		debug(JSON.stringify(msg));
 		websocket.send(JSON.stringify(msg));
+		idCnt++;
 	}
 
 	function animate() {
@@ -158,10 +179,11 @@ $(document).ready(function() {
 			"jsonrpc" : "2.0",
 			"method" : "getFrame",
 			"params" : {},
-			"id" : 0
+			"id" : idCnt
 		};
 		debug(JSON.stringify(msg));
 		websocket.send(JSON.stringify(msg));
+		idCnt++;
 
 		requestAnimationFrame( animate );
 		render();

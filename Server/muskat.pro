@@ -16,5 +16,8 @@ HEADERS += muskat.h \
            deamon.h \
            jsonrpc.h
 
+LIBS    += -L/home/josef/Programme/Qt5.6.0/5.6/gcc_64/lib \
+           -L/usr/lib/x86_64-linux-gnu/ -lturbojpeg
+
 RESOURCES += shaders.qrc \
              muskat.qrc

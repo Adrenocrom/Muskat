@@ -6,11 +6,25 @@
 #include "muskat.h"
 
 class MainWindow;
-//class GeometryEngine;
 
-struct SBuffers {
+struct SBuffer {
     GLubyte* rgb;
     GLfloat* d;
+
+    SBuffer() {
+        rgb = NULL;
+        d   = NULL;
+    }
+    ~SBuffer() {
+
+    }
+
+    void delete_buffer() {
+        if(rgb) {
+            delete[] rgb;
+            rgb = NULL;
+        }
+    }
 };
 
 class GLWidget : public QOpenGLWidget, protected QOpenGLFunctions {
@@ -19,7 +33,7 @@ public:
     GLWidget(MainWindow *mw);
     ~GLWidget();
 
-    SBuffers renderFrame();
+    void renderFrame(SBuffer* buffer);
     void resize(int w, int h);
 
 protected:

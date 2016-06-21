@@ -98,9 +98,14 @@ void MainWindow::createTabWidgets() {
     m_qle_server_port_config = new QLineEdit(QString::number(m_server_port));
     m_qle_widget_width_config = new QLineEdit(QString::number(m_glWidget->width()));
     m_qle_widget_height_config = new QLineEdit(QString::number(m_glWidget->height()));
+    m_qpb_readpixel = new QPushButton("get pixel");
+    m_qpb_readpixel->setMinimumHeight(25);
+    connect(m_qpb_readpixel, &QPushButton::pressed, this, &MainWindow::get_pixel);
+
     fl1->addRow(new QLabel("Port:"), m_qle_server_port_config);
     fl1->addRow(new QLabel("Width:"), m_qle_widget_width_config);
     fl1->addRow(new QLabel("Height:"), m_qle_widget_height_config);
+    fl1->addRow(m_qpb_readpixel);
     m_widget_config->setLayout(fl1);
 
     m_tab = new QTabWidget(this);
@@ -173,4 +178,18 @@ void MainWindow::set_tools_invisible() {
 
 void MainWindow::resizeEvent(QResizeEvent *) {
 
+}
+
+void MainWindow::get_pixel() {
+ /*   SBuffer buffer;
+    buffer.rgb = NULL;
+    m_glWidget->renderFrame(&buffer);
+
+    QImage* img = new QImage(buffer.rgb, m_glWidget->width(), m_glWidget->height(), QImage::Format_RGB888);
+    img->save("img2.png");
+
+    if(buffer.rgb) {
+        delete[] buffer.rgb;
+        buffer.rgb = NULL;
+    }*/
 }

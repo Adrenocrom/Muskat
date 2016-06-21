@@ -3,6 +3,8 @@
 
 #pragma once
 
+struct SBuffer;
+
 struct RPCMessage {
     QString     jsonrpc;
     QString     method;
@@ -18,6 +20,9 @@ public:
     void parseMessage(QWebSocket* client, QString msg);
 private:
     MainWindow* m_mainWindow;
+  //  QMutex      m_mutex;
+
+    SBuffer*    m_buffer;
 };
 
 #endif

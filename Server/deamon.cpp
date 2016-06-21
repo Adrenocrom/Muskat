@@ -54,9 +54,6 @@ void ServerDeamon::processTextMessage(QString message)
     QWebSocket *pClient = qobject_cast<QWebSocket *>(sender());
     if (m_debug)
         qDebug() << "Message received:" << message;
-  /*  if (pClient) {
-        pClient->sendTextMessage(message);
-    }*/
 
     m_jsonRPC->parseMessage(pClient, message);
 
