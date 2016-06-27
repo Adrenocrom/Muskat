@@ -103,11 +103,16 @@ void MainWindow::createTabWidgets() {
     connect(m_qpb_readpixel, &QPushButton::pressed, this, &MainWindow::get_pixel);
 
     m_qte_jpegBase64 = new QTextEdit();
+    m_qle_jpegImageQuality = new QLineEdit();
+    m_qle_jpegImageQuality->setText("100");
+    m_qle_jpegImgageSize = new QLineEdit();
 
     fl1->addRow(new QLabel("Port:"), m_qle_server_port_config);
     fl1->addRow(new QLabel("Width:"), m_qle_widget_width_config);
     fl1->addRow(new QLabel("Height:"), m_qle_widget_height_config);
     fl1->addRow(m_qpb_readpixel);
+    fl1->addRow(new QLabel("Quality"), m_qle_jpegImageQuality);
+    fl1->addRow(new QLabel("Size"), m_qle_jpegImgageSize);
     fl1->addRow(m_qte_jpegBase64);
     m_widget_config->setLayout(fl1);
 
@@ -202,7 +207,7 @@ void MainWindow::get_pixel() {
                 &_compressedImage,
                 &_jpegSize,
                 TJSAMP_444,
-                1,
+                m_qle_jpegImageQuality->text().toInt(),
                 TJFLAG_FASTDCT);
 
     tjDestroy(_jpegCompressor);
@@ -210,8 +215,8 @@ void MainWindow::get_pixel() {
     QByteArray test;
     test.append((const char*)_compressedImage, _jpegSize);
 
-    QJsonObject bufferObj;
-    m_qte_jpegBase64->setText("Size: " + QString::number(_jpegSize) + "Byte\n\n" + QString(test.toBase64()));
+    m_qle_jpegImgageSize->setText(QString::number(_jpegSize) + "Bytes");
+    m_qte_jpegBase64->setText(QString(test.toBase64()));
 
     tjFree(_compressedImage);
 

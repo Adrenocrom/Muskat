@@ -56,7 +56,8 @@ private:
     QAction*        m_qac_stop_server;
 
     QPushButton*    m_qpb_readpixel;
-    QLineEdit*      m_qle_jpegImageQuallity;
+    QLineEdit*      m_qle_jpegImageQuality;
+    QLineEdit*      m_qle_jpegImgageSize;
     QTextEdit*      m_qte_jpegBase64;
 
     QPushButton*    m_qpb_start_server;
