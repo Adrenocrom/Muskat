@@ -102,10 +102,13 @@ void MainWindow::createTabWidgets() {
     m_qpb_readpixel->setMinimumHeight(25);
     connect(m_qpb_readpixel, &QPushButton::pressed, this, &MainWindow::get_pixel);
 
+    m_qte_jpegBase64 = new QTextEdit();
+
     fl1->addRow(new QLabel("Port:"), m_qle_server_port_config);
     fl1->addRow(new QLabel("Width:"), m_qle_widget_width_config);
     fl1->addRow(new QLabel("Height:"), m_qle_widget_height_config);
     fl1->addRow(m_qpb_readpixel);
+    fl1->addRow(m_qte_jpegBase64);
     m_widget_config->setLayout(fl1);
 
     m_tab = new QTabWidget(this);
@@ -181,15 +184,36 @@ void MainWindow::resizeEvent(QResizeEvent *) {
 }
 
 void MainWindow::get_pixel() {
- /*   SBuffer buffer;
-    buffer.rgb = NULL;
+    SBuffer buffer;
+    buffer.rgb = new GLubyte[m_glWidget->width() * m_glWidget->height() * 3];
     m_glWidget->renderFrame(&buffer);
 
-    QImage* img = new QImage(buffer.rgb, m_glWidget->width(), m_glWidget->height(), QImage::Format_RGB888);
-    img->save("img2.png");
+    long unsigned int _jpegSize = 0;
+    unsigned char* _compressedImage = NULL;
 
-    if(buffer.rgb) {
-        delete[] buffer.rgb;
-        buffer.rgb = NULL;
-    }*/
+    tjhandle _jpegCompressor = tjInitCompress();
+
+    tjCompress2(_jpegCompressor,
+                buffer.rgb,
+                m_glWidget->width(),
+                0,
+                m_glWidget->height(),
+                TJPF_RGB,
+                &_compressedImage,
+                &_jpegSize,
+                TJSAMP_444,
+                1,
+                TJFLAG_FASTDCT);
+
+    tjDestroy(_jpegCompressor);
+
+    QByteArray test;
+    test.append((const char*)_compressedImage, _jpegSize);
+
+    QJsonObject bufferObj;
+    m_qte_jpegBase64->setText("Size: " + QString::number(_jpegSize) + "Byte\n\n" + QString(test.toBase64()));
+
+    tjFree(_compressedImage);
+
+    buffer.delete_buffer();
 }

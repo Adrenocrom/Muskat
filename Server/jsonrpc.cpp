@@ -42,7 +42,7 @@ void JsonRPC::parseMessage(QWebSocket* client, QString msg) {
         std::cout<<"Message Id: "<<rpcMessage.id<<std::endl;
         m_mainWindow->m_glWidget->renderFrame(m_buffer);
 
-        const int JPEG_QUALITY = 75;
+        const int JPEG_QUALITY = 1; // 1 = worst, 100 = best
             //const int COLOR_COMPONENTS = 3;
         long unsigned int _jpegSize = 0;
         unsigned char* _compressedImage = NULL;

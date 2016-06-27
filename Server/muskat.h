@@ -22,6 +22,7 @@
 #include <QSlider>
 #include <QPushButton>
 #include <QLineEdit>
+#include <QTextEdit>
 #include <QLabel>
 #include <QCheckBox>
 #include <QSpinBox>
