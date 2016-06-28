@@ -87,14 +87,16 @@ $(document).ready(function() {
   					
 
 					  texture_rgb = new Image();
-					  texture_rgb.src = 'data:image/jpeg;base64, ' + obj.result.rgb;
+					  
 					  
 					  texture = new THREE.Texture();
-					  texture.image = texture_rgb;
+					  
 					  texture_rgb.onload = function () {
+						texture.image = texture_rgb;
 						texture.needsUpdate = true;
 					  };
 
+					  texture_rgb.src = 'data:image/jpeg;base64, ' + obj.result.rgb;
 					  uniforms.texture.value = texture;
 				}
 				

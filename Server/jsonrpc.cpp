@@ -42,13 +42,15 @@ void JsonRPC::parseMessage(QWebSocket* client, QString msg) {
         std::cout<<"Message Id: "<<rpcMessage.id<<std::endl;
         m_mainWindow->m_glWidget->renderFrame(m_buffer);
 
+
         const int JPEG_QUALITY = 1; // 1 = worst, 100 = best
-            //const int COLOR_COMPONENTS = 3;
         long unsigned int _jpegSize = 0;
         unsigned char* _compressedImage = NULL;
 
+        std::cout<<"a"<<std::endl;
         tjhandle _jpegCompressor = tjInitCompress();
 
+        std::cout<<"b"<<std::endl;
         tjCompress2(_jpegCompressor,
                     m_buffer->rgb,
                     m_mainWindow->m_glWidget->width(),
@@ -61,22 +63,43 @@ void JsonRPC::parseMessage(QWebSocket* client, QString msg) {
                     JPEG_QUALITY,
                     TJFLAG_FASTDCT);
 
+        std::cout<<"c"<<std::endl;
         tjDestroy(_jpegCompressor);
 
+        std::cout<<"d"<<std::endl;
         QByteArray test;
+        std::cout<<"e"<<std::endl;
         test.append((const char*)_compressedImage, _jpegSize);
 
+        std::cout<<"f "<<_jpegSize<<std::endl;
         QJsonObject bufferObj;
-        bufferObj["rgb"] = QString(test.toBase64());
+
+        std::cout<<"g "<<test.size()<<std::endl;
+        QString str = QString(test.toBase64());
+
+        std::cout<<"h"<<std::endl;
+        bufferObj["rgb"] = str;
+
+        std::cout<<"i"<<std::endl;
         tjFree(_compressedImage);
 
-        bufferObj["size"] = (int)sizeof(m_buffer->rgb);
 
+
+        //bufferObj["size"] = (int)_jpegSize;
+
+        std::cout<<"j"<<std::endl;
         QJsonObject resObj;
+
+        std::cout<<"k"<<std::endl;
         resObj["jsonrpc"] = "2.0";
+
+        std::cout<<"l"<<std::endl;
         resObj["result"] = bufferObj;
 
+        std::cout<<"m"<<std::endl;
         QJsonDocument jsonResponse(resObj);
+
+        std::cout<<"n"<<std::endl;
         client->sendTextMessage(jsonResponse.toJson(QJsonDocument::Compact));
 
     }

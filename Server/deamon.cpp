@@ -45,6 +45,9 @@ void ServerDeamon::onNewConnection()
     connect(pSocket, &QWebSocket::disconnected, this, &ServerDeamon::socketDisconnected);
 
     m_clients << pSocket;
+
+    m_mainWindow->m_qle_num_clients->setText(QString::number(m_clients.size()));
+    std::cout<<m_clients.size()<<std::endl;
 }
 //! [onNewConnection]
 

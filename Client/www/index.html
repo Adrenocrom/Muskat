@@ -28,6 +28,8 @@
         <script src="js/lib/FirstPersonControls.js"></script>
 
         <script id="vertexShader" type="x-shader/x-vertex">
+			mat4 mvp_matrix;
+
 			void main()	{
 				gl_Position = vec4( position, 1.0 );
 			}
@@ -41,7 +43,7 @@
 			void main()	{
 				vec2 p = gl_FragCoord.xy / resolution.xy;
 
-				gl_FragColor  = vec4(texture2D(texture, p).rgb, 1.0);
+				gl_FragColor  = vec4(texture2D(texture, gl_FragCoord.xy).rgb, 1.0);
 			}
 		</script>
 

@@ -226,7 +226,6 @@ void GLWidget::drawScene() {
 }
 
 void GLWidget::renderFrame(SBuffer* buffer) {
-    std::cout<<"glb"<<std::endl;
     makeCurrent();
    // context();
     paintGL();
@@ -234,5 +233,4 @@ void GLWidget::renderFrame(SBuffer* buffer) {
     glReadPixels(0, 0, width(), height(), GL_RGB,  GL_UNSIGNED_BYTE, buffer->rgb);
 
     doneCurrent();
-    std::cout<<"gle"<<std::endl;
 }

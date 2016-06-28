@@ -106,8 +106,11 @@ void MainWindow::createTabWidgets() {
     m_qle_jpegImageQuality = new QLineEdit();
     m_qle_jpegImageQuality->setText("100");
     m_qle_jpegImgageSize = new QLineEdit();
+    m_qle_num_clients = new QLineEdit();
+    m_qle_num_clients->setText("0");
 
     fl1->addRow(new QLabel("Port:"), m_qle_server_port_config);
+    fl1->addRow(new QLabel("Clients:"), m_qle_num_clients);
     fl1->addRow(new QLabel("Width:"), m_qle_widget_width_config);
     fl1->addRow(new QLabel("Height:"), m_qle_widget_height_config);
     fl1->addRow(m_qpb_readpixel);

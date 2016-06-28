@@ -27,6 +27,8 @@ public:
     QLineEdit*      m_qle_widget_width_config;
     QLineEdit*      m_qle_widget_height_config;
 
+    QLineEdit*      m_qle_num_clients;
+
 private slots:
     void set_tools_invisible();
     void toggle_tools();
