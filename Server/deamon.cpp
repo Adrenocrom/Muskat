@@ -57,9 +57,9 @@ void ServerDeamon::processTextMessage(QString message)
     QWebSocket *pClient = qobject_cast<QWebSocket *>(sender());
     if (m_debug)
         qDebug() << "Message received:" << message;
-
-    m_jsonRPC->parseMessage(pClient, message);
-
+    if(pClient) {
+        m_jsonRPC->parseMessage(pClient, message);
+    }
 }
 //! [processTextMessage]
 
@@ -85,5 +85,7 @@ void ServerDeamon::socketDisconnected()
         m_clients.removeAll(pClient);
         pClient->deleteLater();
     }
+
+    std::cout<<"disc"<<std::endl;
 }
 //! [socketDisconnected]

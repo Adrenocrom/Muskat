@@ -226,11 +226,15 @@ void GLWidget::drawScene() {
 }
 
 void GLWidget::renderFrame(SBuffer* buffer) {
-    makeCurrent();
-   // context();
-    paintGL();
+    std::cout<<"b"<<std::endl;
+    if(buffer->rgb) {
+        makeCurrent();
+        // context();
+        paintGL();
 
-    glReadPixels(0, 0, width(), height(), GL_RGB,  GL_UNSIGNED_BYTE, buffer->rgb);
+        glReadPixels(0, 0, width(), height(), GL_RGB,  GL_UNSIGNED_BYTE, buffer->rgb);
 
-    doneCurrent();
+        doneCurrent();
+    }
+    std::cout<<"e"<<std::endl;
 }

@@ -20,9 +20,11 @@ public:
     void parseMessage(QWebSocket* client, QString msg);
 private:
     MainWindow* m_mainWindow;
-  //  QMutex      m_mutex;
 
-    SBuffer*    m_buffer;
+    std::vector<GLubyte> rgb;
+    GLfloat*    depth;
+
+    uint        length;
 };
 
 #endif

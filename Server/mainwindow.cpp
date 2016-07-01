@@ -223,5 +223,8 @@ void MainWindow::get_pixel() {
 
     tjFree(_compressedImage);
 
-    buffer.delete_buffer();
+    if(buffer.rgb) {
+        delete[] buffer.rgb;
+        buffer.rgb = NULL;
+    }
 }

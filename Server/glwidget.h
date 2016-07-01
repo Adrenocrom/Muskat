@@ -10,21 +10,6 @@ class MainWindow;
 struct SBuffer {
     GLubyte* rgb;
     GLfloat* d;
-
-    SBuffer() {
-        rgb = NULL;
-        d   = NULL;
-    }
-    ~SBuffer() {
-
-    }
-
-    void delete_buffer() {
-        if(rgb) {
-            delete[] rgb;
-            rgb = NULL;
-        }
-    }
 };
 
 class GLWidget : public QOpenGLWidget, protected QOpenGLFunctions {
