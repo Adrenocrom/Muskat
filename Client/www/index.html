@@ -11,6 +11,7 @@
     <body>
 		<button id="button_toggle_debug">Debug</button>
 		<textarea id="textarea_debug"></textarea>
+		<img id="img"></img>
 		<div id="window_config">
 			<fieldset id="form_init">
 				<p>Server adress: <input type="text" id="text_server_uri" value="ws://localhost:1234"></input></p>
@@ -26,26 +27,6 @@
         <script src="js/lib/Detector.js"></script>
         <script src="js/lib/stats.min.js"></script>
         <script src="js/lib/FirstPersonControls.js"></script>
-
-        <script id="vertexShader" type="x-shader/x-vertex">
-			mat4 mvp_matrix;
-
-			void main()	{
-				gl_Position = vec4( position, 1.0 );
-			}
-		</script>
-
-        <script id="fragmentShader" type="x-shader/x-fragment">
-			uniform vec2 resolution;
-			uniform float time;
-			uniform sampler2D texture;
-
-			void main()	{
-				vec2 p = gl_FragCoord.xy / resolution.xy;
-
-				gl_FragColor  = vec4(texture2D(texture, gl_FragCoord.xy).rgb, 1.0);
-			}
-		</script>
 
         <script src="js/app/app.js"></script>
     </body>

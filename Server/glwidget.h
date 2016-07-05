@@ -45,7 +45,6 @@ private:
     QOpenGLTexture* texture;
     QOpenGLBuffer arrayBuf;
     QOpenGLBuffer indexBuf;
-
 };
 
 #endif
