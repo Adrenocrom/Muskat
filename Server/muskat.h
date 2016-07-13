@@ -62,5 +62,6 @@
 #include "glwidget.h"
 #include "deamon.h"
 #include "jsonrpc.h"
+#include "scene.h"
 
 #endif

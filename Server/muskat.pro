@@ -9,12 +9,14 @@ SOURCES += main.cpp \
            mainwindow.cpp \
            deamon.cpp \
            jsonrpc.cpp \
+           scene.cpp
 
 HEADERS += muskat.h \
            glwidget.h \
            mainwindow.h \
            deamon.h \
-           jsonrpc.h
+           jsonrpc.h \
+           scene.h
 
 LIBS    += -L/home/josef/Programme/Qt5.6.0/5.6/gcc_64/lib \
            -L/usr/lib/x86_64-linux-gnu/ -lturbojpeg

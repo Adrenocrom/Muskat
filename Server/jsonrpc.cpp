@@ -31,7 +31,7 @@ void JsonRPC::parseMessage(QWebSocket* client, QString msg) {
         rgb.resize(w * h * 3);
     }
     else if(rpcMessage.method == "getFrame") {
-        std::cout<<"Message Id: "<<rpcMessage.id<<std::endl;
+        //std::cout<<"Message Id: "<<rpcMessage.id<<std::endl;
         SBuffer buffer;
         buffer.rgb = rgb.data();
         m_mainWindow->m_glWidget->renderFrame(&buffer);

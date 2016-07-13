@@ -26,6 +26,7 @@ void GLWidget::initializeGL() {
 
     glClearColor(0, 0, 0, 1);
 
+    glPixelStoref(GL_PACK_ALIGNMENT, 1);
     initShaders();
     initTextures();
 
@@ -43,7 +44,7 @@ void GLWidget::initializeGL() {
 
 void GLWidget::paintGL() {
     // Clear color and depth buffer
-    glClearColor(1, 1, 1, 1);
+    glClearColor(0, 0, 0.1, 1);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     camera.setToIdentity();
@@ -226,7 +227,7 @@ void GLWidget::drawScene() {
 }
 
 void GLWidget::renderFrame(SBuffer* buffer) {
-    std::cout<<"b"<<std::endl;
+    //std::cout<<"b"<<std::endl;
     if(buffer->rgb) {
         makeCurrent();
         // context();
@@ -236,5 +237,5 @@ void GLWidget::renderFrame(SBuffer* buffer) {
 
         doneCurrent();
     }
-    std::cout<<"e"<<std::endl;
+    //std::cout<<"e"<<std::endl;
 }

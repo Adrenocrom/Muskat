@@ -49,6 +49,7 @@ a {
 	border-style: solid none none none;
 	border-width: 1px;
 	border-color: #FFF;
+	visibility: hidden;
 }
 
 #button_toggle_debug {
