@@ -32,7 +32,8 @@ MainWindow::MainWindow() : m_stacked(new QStackedWidget) {
 
     statusBar()->showMessage(tr("ready"));
 
-    m_serverDeamon = NULL;
+    m_serverDeamon = nullptr;
+    m_scene        = nullptr;
 }
 
 void MainWindow::createActions() {
@@ -94,6 +95,9 @@ void MainWindow::createStackedWidgets() {
 
 void MainWindow::createTabWidgets() {
     m_widget_config = new QWidget(this);
+    m_widget_stats  = new QWidget(this);
+    m_widget_scene  = new QWidget(this);
+
     QFormLayout* fl1 = new QFormLayout;
     m_qle_server_port_config = new QLineEdit(QString::number(m_server_port));
     m_qle_widget_width_config = new QLineEdit(QString::number(m_glWidget->width()));
@@ -122,6 +126,8 @@ void MainWindow::createTabWidgets() {
     m_tab = new QTabWidget(this);
     m_tab->setMinimumWidth(300);
     m_tab->addTab(m_widget_config, tr("configuration"));
+    m_tab->addTab(m_widget_scene, tr("scene"));
+    m_tab->addTab(m_widget_stats, tr("stats"));
 }
 
 void MainWindow::createDockWidgets() {

@@ -10,6 +10,7 @@ class QStatusBar;
 class QLineEdit;
 class ServerDeamon;
 class GLWidget;
+class Scene;
 
 class MainWindow : public QMainWindow {
 	Q_OBJECT
@@ -28,6 +29,8 @@ public:
     QLineEdit*      m_qle_widget_height_config;
 
     QLineEdit*      m_qle_num_clients;
+
+    Scene*          m_scene;
 
 private slots:
     void set_tools_invisible();
@@ -49,6 +52,8 @@ private:
 
     QWidget*        m_widget_server;
     QWidget*        m_widget_config;
+    QWidget*        m_widget_stats;
+    QWidget*        m_widget_scene;
     QWidget*        m_network;
 
 	

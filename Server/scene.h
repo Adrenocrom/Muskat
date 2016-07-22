@@ -3,9 +3,11 @@
 
 #pragma once
 
-class Scene {
-private:
-public:
+struct SFrame {
+
+};
+
+struct Scene {
     Scene();
     ~Scene();
 };

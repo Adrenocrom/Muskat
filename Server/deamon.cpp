@@ -47,7 +47,6 @@ void ServerDeamon::onNewConnection()
     m_clients << pSocket;
 
     m_mainWindow->m_qle_num_clients->setText(QString::number(m_clients.size()));
-    std::cout<<m_clients.size()<<std::endl;
 }
 //! [onNewConnection]
 
@@ -86,6 +85,6 @@ void ServerDeamon::socketDisconnected()
         pClient->deleteLater();
     }
 
-    std::cout<<"disc"<<std::endl;
+    m_mainWindow->m_qle_num_clients->setText(QString::number(m_clients.size()));
 }
 //! [socketDisconnected]

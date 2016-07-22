@@ -147,7 +147,7 @@ $(document).ready(function() {
 	
 
 		mesh = new THREE.Mesh( planeGeometry, planeMaterial );
-		mesh.position.set(0.0, 0.0, -5.0); 
+		mesh.position.set(0.0, 0.0, -1.0); 
 		scene.add( mesh );
 
 	
@@ -210,3 +210,4 @@ $(document).ready(function() {
 		idCnt++;
 	}
 });
+

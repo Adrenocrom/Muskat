@@ -50,11 +50,11 @@
 #include <turbojpeg.h>
 
 #ifndef SAFE_DELETE
-#define SAFE_DELETE(p) { if(p) { delete (p); (p) = NULL; } }
+#define SAFE_DELETE(p) { if(p != nullptr) { delete (p); (p) = nullptr; } }
 #endif
 
 #ifndef SAFE_DELETE_ARRAY
-#define SAFE_DELETE_ARRAY(p) { if(p) { delete[] (p); (p) = NULL; } }
+#define SAFE_DELETE_ARRAY(p) { if(p != nullptr) { delete[] (p); (p) = nullptr; } }
 #endif
 
 // project includes
