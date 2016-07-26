@@ -15,7 +15,7 @@ CXX           = g++
 DEFINES       = -DQT_NO_DEBUG -DQT_OPENGL_LIB -DQT_WIDGETS_LIB -DQT_GUI_LIB -DQT_WEBSOCKETS_LIB -DQT_NETWORK_LIB -DQT_CORE_LIB
 CFLAGS        = -pipe -O2 -Wall -W -D_REENTRANT -fPIC $(DEFINES)
 CXXFLAGS      = -pipe -O2 -std=gnu++0x -Wall -W -D_REENTRANT -fPIC $(DEFINES)
-INCPATH       = -I. -I/usr/include/opencv2 -I/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include -I/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtOpenGL -I/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets -I/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtGui -I/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWebSockets -I/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtNetwork -I/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtCore -I. -I/home/josef/Programme/Qt5.6.0/5.6/gcc_64/mkspecs/linux-g++
+INCPATH       = -I. -I/usr/include/opencv2 -I/usr/include/boost -I/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include -I/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtOpenGL -I/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets -I/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtGui -I/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWebSockets -I/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtNetwork -I/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtCore -I. -I/home/josef/Programme/Qt5.6.0/5.6/gcc_64/mkspecs/linux-g++
 QMAKE         = /home/josef/Programme/Qt5.6.0/5.6/gcc_64/bin/qmake
 DEL_FILE      = rm -f
 CHK_DIR_EXISTS= test -d
@@ -36,7 +36,7 @@ DISTNAME      = server1.0.0
 DISTDIR = /home/josef/Dokumente/Studium/muskat/simple/Server/.tmp/server1.0.0
 LINK          = g++
 LFLAGS        = -Wl,-O1 -Wl,-z,origin -Wl,-rpath,\$$ORIGIN -Wl,-rpath,/home/josef/Programme/Qt5.6.0/5.6/gcc_64/lib
-LIBS          = $(SUBLIBS) -L/home/josef/Programme/Qt5.6.0/5.6/gcc_64/lib -L/usr/lib/x86_64-linux-gnu/ -lturbojpeg -lQt5OpenGL -lQt5Widgets -lQt5Gui -lQt5WebSockets -lQt5Network -lQt5Core -lGL -lpthread 
+LIBS          = $(SUBLIBS) -lboost_system -lboost_filesystem -L/home/josef/Programme/Qt5.6.0/5.6/gcc_64/lib -lQt5OpenGL -lQt5Widgets -lQt5Gui -lQt5WebSockets -lQt5Network -lQt5Core -lGL -lpthread 
 AR            = ar cqs
 RANLIB        = 
 SED           = sed
@@ -54,7 +54,8 @@ SOURCES       = main.cpp \
 		jsonrpc.cpp \
 		abstractRenderer.cpp \
 		fileRenderer.cpp \
-		mainwindow.cpp moc_deamon.cpp \
+		mainwindow.cpp qrc_server.cpp \
+		moc_deamon.cpp \
 		moc_mainwindow.cpp
 OBJECTS       = main.o \
 		muskat.o \
@@ -63,6 +64,7 @@ OBJECTS       = main.o \
 		abstractRenderer.o \
 		fileRenderer.o \
 		mainwindow.o \
+		qrc_server.o \
 		moc_deamon.o \
 		moc_mainwindow.o
 DIST          = /home/josef/Programme/Qt5.6.0/5.6/gcc_64/mkspecs/features/spec_pre.prf \
@@ -355,6 +357,7 @@ Makefile: server.pro /home/josef/Programme/Qt5.6.0/5.6/gcc_64/mkspecs/linux-g++/
 		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/mkspecs/features/yacc.prf \
 		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/mkspecs/features/lex.prf \
 		server.pro \
+		server.qrc \
 		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/lib/libQt5OpenGL.prl \
 		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/lib/libQt5Widgets.prl \
 		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/lib/libQt5Gui.prl \
@@ -496,6 +499,7 @@ Makefile: server.pro /home/josef/Programme/Qt5.6.0/5.6/gcc_64/mkspecs/linux-g++/
 /home/josef/Programme/Qt5.6.0/5.6/gcc_64/mkspecs/features/yacc.prf:
 /home/josef/Programme/Qt5.6.0/5.6/gcc_64/mkspecs/features/lex.prf:
 server.pro:
+server.qrc:
 /home/josef/Programme/Qt5.6.0/5.6/gcc_64/lib/libQt5OpenGL.prl:
 /home/josef/Programme/Qt5.6.0/5.6/gcc_64/lib/libQt5Widgets.prl:
 /home/josef/Programme/Qt5.6.0/5.6/gcc_64/lib/libQt5Gui.prl:
@@ -516,6 +520,7 @@ dist: distdir FORCE
 distdir: FORCE
 	@test -d $(DISTDIR) || mkdir -p $(DISTDIR)
 	$(COPY_FILE) --parents $(DIST) $(DISTDIR)/
+	$(COPY_FILE) --parents server.qrc $(DISTDIR)/
 	$(COPY_FILE) --parents muskat.h deamon.h jsonrpc.h abstractRenderer.h fileRenderer.h mainwindow.h $(DISTDIR)/
 	$(COPY_FILE) --parents main.cpp muskat.cpp deamon.cpp jsonrpc.cpp abstractRenderer.cpp fileRenderer.cpp mainwindow.cpp $(DISTDIR)/
 
@@ -538,8 +543,15 @@ mocables: compiler_moc_header_make_all compiler_moc_source_make_all
 
 check: first
 
-compiler_rcc_make_all:
+compiler_rcc_make_all: qrc_server.cpp
 compiler_rcc_clean:
+	-$(DEL_FILE) qrc_server.cpp
+qrc_server.cpp: server.qrc \
+		img/start_icon.png \
+		img/start_icon2.png \
+		img/stop_icon2.png
+	/home/josef/Programme/Qt5.6.0/5.6/gcc_64/bin/rcc -name server server.qrc -o qrc_server.cpp
+
 compiler_moc_header_make_all: moc_deamon.cpp moc_mainwindow.cpp
 compiler_moc_header_clean:
 	-$(DEL_FILE) moc_deamon.cpp moc_mainwindow.cpp
@@ -599,7 +611,7 @@ moc_deamon.cpp: /home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtCore/QObject 
 		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtCore/qcontainerfwd.h \
 		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtCore/qobject_impl.h \
 		deamon.h
-	/home/josef/Programme/Qt5.6.0/5.6/gcc_64/bin/moc $(DEFINES) -I/home/josef/Programme/Qt5.6.0/5.6/gcc_64/mkspecs/linux-g++ -I/home/josef/Dokumente/Studium/muskat/simple/Server -I/usr/include/opencv2 -I/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include -I/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtOpenGL -I/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets -I/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtGui -I/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWebSockets -I/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtNetwork -I/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtCore deamon.h -o moc_deamon.cpp
+	/home/josef/Programme/Qt5.6.0/5.6/gcc_64/bin/moc $(DEFINES) -I/home/josef/Programme/Qt5.6.0/5.6/gcc_64/mkspecs/linux-g++ -I/home/josef/Dokumente/Studium/muskat/simple/Server -I/usr/include/opencv2 -I/usr/include/boost -I/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include -I/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtOpenGL -I/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets -I/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtGui -I/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWebSockets -I/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtNetwork -I/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtCore deamon.h -o moc_deamon.cpp
 
 moc_mainwindow.cpp: /home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/QMainWindow \
 		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/qmainwindow.h \
@@ -709,7 +721,7 @@ moc_mainwindow.cpp: /home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/Q
 		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/qtabwidget.h \
 		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtGui/qicon.h \
 		mainwindow.h
-	/home/josef/Programme/Qt5.6.0/5.6/gcc_64/bin/moc $(DEFINES) -I/home/josef/Programme/Qt5.6.0/5.6/gcc_64/mkspecs/linux-g++ -I/home/josef/Dokumente/Studium/muskat/simple/Server -I/usr/include/opencv2 -I/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include -I/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtOpenGL -I/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets -I/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtGui -I/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWebSockets -I/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtNetwork -I/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtCore mainwindow.h -o moc_mainwindow.cpp
+	/home/josef/Programme/Qt5.6.0/5.6/gcc_64/bin/moc $(DEFINES) -I/home/josef/Programme/Qt5.6.0/5.6/gcc_64/mkspecs/linux-g++ -I/home/josef/Dokumente/Studium/muskat/simple/Server -I/usr/include/opencv2 -I/usr/include/boost -I/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include -I/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtOpenGL -I/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets -I/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtGui -I/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWebSockets -I/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtNetwork -I/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtCore mainwindow.h -o moc_mainwindow.cpp
 
 compiler_moc_source_make_all:
 compiler_moc_source_clean:
@@ -721,12 +733,14 @@ compiler_yacc_impl_make_all:
 compiler_yacc_impl_clean:
 compiler_lex_make_all:
 compiler_lex_clean:
-compiler_clean: compiler_moc_header_clean 
+compiler_clean: compiler_rcc_clean compiler_moc_header_clean 
 
 ####### Compile
 
 main.o: main.cpp muskat.h \
 		/usr/include/opencv2/opencv.hpp \
+		/usr/include/boost/filesystem.hpp \
+		/usr/include/boost/range/iterator_range.hpp \
 		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/QApplication \
 		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/qapplication.h \
 		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtCore/qcoreapplication.h \
@@ -859,6 +873,17 @@ main.o: main.cpp muskat.h \
 		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/QLayout \
 		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/QGroupBox \
 		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/qgroupbox.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/QPushButton \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/qpushbutton.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/qabstractbutton.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/QLineEdit \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/qlineedit.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtGui/qtextcursor.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtGui/qtextformat.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtGui/qpen.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtGui/qtextoption.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/QLabel \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/qlabel.h \
 		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWebSockets/QWebSocketServer \
 		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWebSockets/qwebsocketserver.h \
 		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWebSockets/qwebsockets_global.h \
@@ -910,6 +935,8 @@ main.o: main.cpp muskat.h \
 
 muskat.o: muskat.cpp muskat.h \
 		/usr/include/opencv2/opencv.hpp \
+		/usr/include/boost/filesystem.hpp \
+		/usr/include/boost/range/iterator_range.hpp \
 		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/QApplication \
 		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/qapplication.h \
 		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtCore/qcoreapplication.h \
@@ -1042,6 +1069,17 @@ muskat.o: muskat.cpp muskat.h \
 		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/QLayout \
 		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/QGroupBox \
 		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/qgroupbox.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/QPushButton \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/qpushbutton.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/qabstractbutton.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/QLineEdit \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/qlineedit.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtGui/qtextcursor.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtGui/qtextformat.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtGui/qpen.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtGui/qtextoption.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/QLabel \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/qlabel.h \
 		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWebSockets/QWebSocketServer \
 		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWebSockets/qwebsocketserver.h \
 		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWebSockets/qwebsockets_global.h \
@@ -1093,6 +1131,8 @@ muskat.o: muskat.cpp muskat.h \
 
 deamon.o: deamon.cpp muskat.h \
 		/usr/include/opencv2/opencv.hpp \
+		/usr/include/boost/filesystem.hpp \
+		/usr/include/boost/range/iterator_range.hpp \
 		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/QApplication \
 		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/qapplication.h \
 		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtCore/qcoreapplication.h \
@@ -1225,6 +1265,17 @@ deamon.o: deamon.cpp muskat.h \
 		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/QLayout \
 		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/QGroupBox \
 		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/qgroupbox.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/QPushButton \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/qpushbutton.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/qabstractbutton.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/QLineEdit \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/qlineedit.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtGui/qtextcursor.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtGui/qtextformat.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtGui/qpen.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtGui/qtextoption.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/QLabel \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/qlabel.h \
 		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWebSockets/QWebSocketServer \
 		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWebSockets/qwebsocketserver.h \
 		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWebSockets/qwebsockets_global.h \
@@ -1276,6 +1327,8 @@ deamon.o: deamon.cpp muskat.h \
 
 jsonrpc.o: jsonrpc.cpp muskat.h \
 		/usr/include/opencv2/opencv.hpp \
+		/usr/include/boost/filesystem.hpp \
+		/usr/include/boost/range/iterator_range.hpp \
 		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/QApplication \
 		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/qapplication.h \
 		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtCore/qcoreapplication.h \
@@ -1408,6 +1461,17 @@ jsonrpc.o: jsonrpc.cpp muskat.h \
 		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/QLayout \
 		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/QGroupBox \
 		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/qgroupbox.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/QPushButton \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/qpushbutton.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/qabstractbutton.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/QLineEdit \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/qlineedit.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtGui/qtextcursor.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtGui/qtextformat.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtGui/qpen.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtGui/qtextoption.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/QLabel \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/qlabel.h \
 		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWebSockets/QWebSocketServer \
 		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWebSockets/qwebsocketserver.h \
 		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWebSockets/qwebsockets_global.h \
@@ -1459,6 +1523,8 @@ jsonrpc.o: jsonrpc.cpp muskat.h \
 
 abstractRenderer.o: abstractRenderer.cpp muskat.h \
 		/usr/include/opencv2/opencv.hpp \
+		/usr/include/boost/filesystem.hpp \
+		/usr/include/boost/range/iterator_range.hpp \
 		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/QApplication \
 		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/qapplication.h \
 		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtCore/qcoreapplication.h \
@@ -1591,6 +1657,17 @@ abstractRenderer.o: abstractRenderer.cpp muskat.h \
 		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/QLayout \
 		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/QGroupBox \
 		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/qgroupbox.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/QPushButton \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/qpushbutton.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/qabstractbutton.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/QLineEdit \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/qlineedit.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtGui/qtextcursor.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtGui/qtextformat.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtGui/qpen.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtGui/qtextoption.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/QLabel \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/qlabel.h \
 		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWebSockets/QWebSocketServer \
 		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWebSockets/qwebsocketserver.h \
 		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWebSockets/qwebsockets_global.h \
@@ -1642,6 +1719,8 @@ abstractRenderer.o: abstractRenderer.cpp muskat.h \
 
 fileRenderer.o: fileRenderer.cpp muskat.h \
 		/usr/include/opencv2/opencv.hpp \
+		/usr/include/boost/filesystem.hpp \
+		/usr/include/boost/range/iterator_range.hpp \
 		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/QApplication \
 		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/qapplication.h \
 		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtCore/qcoreapplication.h \
@@ -1774,6 +1853,17 @@ fileRenderer.o: fileRenderer.cpp muskat.h \
 		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/QLayout \
 		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/QGroupBox \
 		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/qgroupbox.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/QPushButton \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/qpushbutton.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/qabstractbutton.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/QLineEdit \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/qlineedit.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtGui/qtextcursor.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtGui/qtextformat.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtGui/qpen.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtGui/qtextoption.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/QLabel \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/qlabel.h \
 		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWebSockets/QWebSocketServer \
 		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWebSockets/qwebsocketserver.h \
 		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWebSockets/qwebsockets_global.h \
@@ -1825,6 +1915,8 @@ fileRenderer.o: fileRenderer.cpp muskat.h \
 
 mainwindow.o: mainwindow.cpp muskat.h \
 		/usr/include/opencv2/opencv.hpp \
+		/usr/include/boost/filesystem.hpp \
+		/usr/include/boost/range/iterator_range.hpp \
 		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/QApplication \
 		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/qapplication.h \
 		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtCore/qcoreapplication.h \
@@ -1957,6 +2049,17 @@ mainwindow.o: mainwindow.cpp muskat.h \
 		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/QLayout \
 		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/QGroupBox \
 		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/qgroupbox.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/QPushButton \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/qpushbutton.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/qabstractbutton.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/QLineEdit \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/qlineedit.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtGui/qtextcursor.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtGui/qtextformat.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtGui/qpen.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtGui/qtextoption.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/QLabel \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/qlabel.h \
 		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWebSockets/QWebSocketServer \
 		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWebSockets/qwebsocketserver.h \
 		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWebSockets/qwebsockets_global.h \
@@ -2005,6 +2108,9 @@ mainwindow.o: mainwindow.cpp muskat.h \
 		jsonrpc.h \
 		deamon.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o mainwindow.o mainwindow.cpp
+
+qrc_server.o: qrc_server.cpp 
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o qrc_server.o qrc_server.cpp
 
 moc_deamon.o: moc_deamon.cpp 
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o moc_deamon.o moc_deamon.cpp

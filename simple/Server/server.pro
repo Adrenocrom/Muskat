@@ -18,7 +18,10 @@ HEADERS += muskat.h \
 			  fileRenderer.h \
 			  mainwindow.h 
 
-LIBS += -L/home/josef/Programme/Qt5.6.0/5.6/gcc_64/lib \
-        -L/usr/lib/x86_64-linux-gnu/ -lturbojpeg
+LIBS += -lboost_system \
+		  -lboost_filesystem
 
-INCLUDEPATH += /usr/include/opencv2/
+INCLUDEPATH += /usr/include/opencv2/ \
+					/usr/include/boost/
+
+RESOURCES += server.qrc

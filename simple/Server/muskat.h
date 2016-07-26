@@ -14,6 +14,10 @@
 // CV
 #include <opencv.hpp>
 
+// Boost
+#include <filesystem.hpp>
+#include <range/iterator_range.hpp>
+
 // QT
 #include <QApplication>
 #include <QMainWindow>
@@ -22,6 +26,9 @@
 #include <QGridLayout>
 #include <QFormLayout>
 #include <QGroupBox>
+#include <QPushButton>
+#include <QLineEdit>
+#include <QLabel>
 #include <QWebSocketServer>
 #include <QWebSocket>
 #include <QJsonDocument>

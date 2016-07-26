@@ -1,5 +1,7 @@
 #include "muskat.h"
 
+using namespace boost::filesystem;
+
 MainWindow::MainWindow() {
 	setMinimumSize(1024, 768);
 	setWindowTitle(QString("Server"));
@@ -50,6 +52,18 @@ void MainWindow::createWidgetStart() {
 	QGroupBox*	 groupBox	= new QGroupBox;
 	QFormLayout* formLayout = new QFormLayout;
 
+	m_lineEdit_server_port  = new QLineEdit("1234");
+	m_lineEdit_scenes_dir	= new QLineEdit("../../Scenes");
+	m_lineEdit_scene_suffix = new QLineEdit("_info.txt");
+	m_button_start_server	= new QPushButton("start");
+	m_button_start_server->setMinimumHeight(25);
+	connect(m_button_start_server, &QPushButton::pressed, this, &MainWindow::start_server);
+
+	formLayout->addRow(new QLabel("Port:"), m_lineEdit_server_port);
+	formLayout->addRow(new QLabel("Scenes:"), m_lineEdit_scenes_dir);
+	formLayout->addRow(new QLabel("Suffix:"), m_lineEdit_scene_suffix);
+	formLayout->addRow(new QLabel(""), m_button_start_server);
+
 	groupBox->setMinimumWidth(300);
 	groupBox->setLayout(formLayout);
 	gridLayout->addWidget(groupBox, 0, 0, 0, 0, Qt::AlignHCenter | Qt::AlignVCenter);
@@ -60,6 +74,7 @@ void MainWindow::createWidgetStart() {
 
 void MainWindow::createWidgetMain() {
 	m_widget_main	  = new QWidget;
+	m_widget_stacked->addWidget(m_widget_main);
 }
 
 void MainWindow::createMenu() {
@@ -85,7 +100,57 @@ void MainWindow::createMenu() {
 }
 
 void MainWindow::start_server() {
+	if(m_widget_stacked->currentIndex() == 0) {
+		m_server_port  = m_lineEdit_server_port->text().toInt();
+		m_scenes_dir	= m_lineEdit_scenes_dir->text().toStdString();
+		m_scene_suffix = m_lineEdit_scene_suffix->text().toStdString();
+
+		loadScenesFromDir(m_scenes_dir, m_scene_suffix);
+	}
+
+	m_widget_stacked->setCurrentIndex(1);
+
+
 }
 
 void MainWindow::stop_server() {
+}
+
+void MainWindow::loadScenesFromDir(string d, string s) {
+	path p(d);
+	addScenes(p, s);
+
+	for(uint i = 0; i < m_scenes.size(); ++i) {
+		cout<<m_scenes[i]<<endl;
+	}
+}
+
+void MainWindow::addScenes(path& p, string s) {
+	vector<path> ps = getFiles(p);
+	size_t t;
+	uint size = ps.size();
+
+	for(uint i = 0; i < size; ++i) {
+		if(is_directory(ps[i])) {
+			addScenes(ps[i], s);
+		}
+		else if(is_regular_file(ps[i])) {
+			t = ps[i].filename().string().rfind(s);
+			if(t != string::npos) {
+				m_scenes.push_back(ps[i].string());
+			}
+		}
+	}
+}
+	
+vector<path> MainWindow::getFiles(path& p) {
+	vector<path> result;
+
+	if(exists(p) && is_directory(p)) {
+		for(auto& entry : boost::make_iterator_range(directory_iterator(p), {}))
+			result.push_back(entry.path());
+	}
+
+
+	return result;
 }

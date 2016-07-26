@@ -8,13 +8,22 @@
 class QStackedWidget;
 class AbstractRenderer;
 class FileRenderer;
+class QPushButton;
+class QLineEdit;
+
+namespace boost {
+	namespace filesystem {
+		class path;
+	};
+};
 
 class MainWindow : public QMainWindow {
 	Q_OBJECT
 
 public:
-	AbstractRenderer* m_renderer;
-	FileRenderer*		m_fileRenderer;
+	AbstractRenderer* 		 m_renderer;
+	FileRenderer*				 m_fileRenderer;
+	std::vector<std::string> m_scenes;
 
 	MainWindow();
 	~MainWindow();
@@ -27,7 +36,10 @@ private slots:
 	void stop_server();
 
 private:
-	
+	int					m_server_port;
+	std::string			m_scenes_dir;
+	std::string			m_scene_suffix;
+
 	QStackedWidget*	m_widget_stacked;
 	QWidget*				m_widget_start;
 	QWidget*				m_widget_main;
@@ -35,9 +47,19 @@ private:
 	QAction*				m_action_start_server;
 	QAction*				m_action_stop_server;
 
+	QPushButton*		m_button_start_server;
+	QLineEdit*			m_lineEdit_server_port;
+	QLineEdit*			m_lineEdit_scene_suffix;
+	QLineEdit*			m_lineEdit_scenes_dir;
+
 	void createWidgetStart();
 	void createWidgetMain();
 	void createMenu();
+
+	std::vector<boost::filesystem::path> getFiles(boost::filesystem::path& p);
+
+	void loadScenesFromDir(std::string d = "../../Scenes", std::string s = "_info.txt");
+	void addScenes(boost::filesystem::path& p, std::string s = "_info.txt");
 };
 
 #endif
