@@ -8,8 +8,12 @@ struct SFrame {
 };
 
 struct Scene {
+    std::vector<SFrame> frames;
+
     Scene();
     ~Scene();
+
+    void loadScene(const std::string p);
 };
 
 #endif
