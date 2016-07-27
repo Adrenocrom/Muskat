@@ -29,9 +29,11 @@ void FileRenderer::loadScene(string filename, string suffix) {
 	string s = p.string();
 	s.resize(s.size() - suffix.size());
 
+	cv::Mat img;
 	for(uint i = 0; i < size; ++i) {
-		cv::Mat img;
-		img = cv::imread()
+		string fn = s + "_" + insertZeros(5, i);
+		//img = cv::imread(fn);
+		cout<<fn<<endl;
 	}
 	
 }

@@ -36,7 +36,7 @@ DISTNAME      = server1.0.0
 DISTDIR = /home/josef/Dokumente/Studium/muskat/simple/Server/.tmp/server1.0.0
 LINK          = g++
 LFLAGS        = -Wl,-O1 -Wl,-z,origin -Wl,-rpath,\$$ORIGIN -Wl,-rpath,/home/josef/Programme/Qt5.6.0/5.6/gcc_64/lib
-LIBS          = $(SUBLIBS) -lboost_system -lboost_filesystem -L/home/josef/Programme/Qt5.6.0/5.6/gcc_64/lib -lQt5OpenGL -lQt5Widgets -lQt5Gui -lQt5WebSockets -lQt5Network -lQt5Core -lGL -lpthread 
+LIBS          = $(SUBLIBS) -lboost_system -lboost_filesystem -lopencv_core -lopencv_highgui -L/home/josef/Programme/Qt5.6.0/5.6/gcc_64/lib -lQt5OpenGL -lQt5Widgets -lQt5Gui -lQt5WebSockets -lQt5Network -lQt5Core -lGL -lpthread 
 AR            = ar cqs
 RANLIB        = 
 SED           = sed
@@ -873,9 +873,24 @@ main.o: main.cpp muskat.h \
 		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/QLayout \
 		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/QGroupBox \
 		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/qgroupbox.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/QComboBox \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/qcombobox.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/qabstractitemdelegate.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/qstyleoption.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/qabstractspinbox.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtGui/qvalidator.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtCore/qregularexpression.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/qslider.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/qabstractslider.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/qstyle.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/qtabbar.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/qrubberband.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtCore/qabstractitemmodel.h \
 		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/QPushButton \
 		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/qpushbutton.h \
 		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/qabstractbutton.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/QRadioButton \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/qradiobutton.h \
 		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/QLineEdit \
 		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/qlineedit.h \
 		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtGui/qtextcursor.h \
@@ -1069,9 +1084,24 @@ muskat.o: muskat.cpp muskat.h \
 		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/QLayout \
 		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/QGroupBox \
 		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/qgroupbox.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/QComboBox \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/qcombobox.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/qabstractitemdelegate.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/qstyleoption.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/qabstractspinbox.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtGui/qvalidator.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtCore/qregularexpression.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/qslider.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/qabstractslider.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/qstyle.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/qtabbar.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/qrubberband.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtCore/qabstractitemmodel.h \
 		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/QPushButton \
 		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/qpushbutton.h \
 		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/qabstractbutton.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/QRadioButton \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/qradiobutton.h \
 		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/QLineEdit \
 		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/qlineedit.h \
 		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtGui/qtextcursor.h \
@@ -1265,9 +1295,24 @@ deamon.o: deamon.cpp muskat.h \
 		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/QLayout \
 		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/QGroupBox \
 		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/qgroupbox.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/QComboBox \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/qcombobox.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/qabstractitemdelegate.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/qstyleoption.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/qabstractspinbox.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtGui/qvalidator.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtCore/qregularexpression.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/qslider.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/qabstractslider.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/qstyle.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/qtabbar.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/qrubberband.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtCore/qabstractitemmodel.h \
 		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/QPushButton \
 		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/qpushbutton.h \
 		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/qabstractbutton.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/QRadioButton \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/qradiobutton.h \
 		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/QLineEdit \
 		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/qlineedit.h \
 		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtGui/qtextcursor.h \
@@ -1461,9 +1506,24 @@ jsonrpc.o: jsonrpc.cpp muskat.h \
 		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/QLayout \
 		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/QGroupBox \
 		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/qgroupbox.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/QComboBox \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/qcombobox.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/qabstractitemdelegate.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/qstyleoption.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/qabstractspinbox.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtGui/qvalidator.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtCore/qregularexpression.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/qslider.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/qabstractslider.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/qstyle.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/qtabbar.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/qrubberband.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtCore/qabstractitemmodel.h \
 		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/QPushButton \
 		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/qpushbutton.h \
 		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/qabstractbutton.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/QRadioButton \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/qradiobutton.h \
 		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/QLineEdit \
 		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/qlineedit.h \
 		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtGui/qtextcursor.h \
@@ -1657,9 +1717,24 @@ abstractRenderer.o: abstractRenderer.cpp muskat.h \
 		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/QLayout \
 		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/QGroupBox \
 		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/qgroupbox.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/QComboBox \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/qcombobox.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/qabstractitemdelegate.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/qstyleoption.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/qabstractspinbox.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtGui/qvalidator.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtCore/qregularexpression.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/qslider.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/qabstractslider.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/qstyle.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/qtabbar.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/qrubberband.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtCore/qabstractitemmodel.h \
 		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/QPushButton \
 		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/qpushbutton.h \
 		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/qabstractbutton.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/QRadioButton \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/qradiobutton.h \
 		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/QLineEdit \
 		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/qlineedit.h \
 		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtGui/qtextcursor.h \
@@ -1853,9 +1928,24 @@ fileRenderer.o: fileRenderer.cpp muskat.h \
 		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/QLayout \
 		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/QGroupBox \
 		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/qgroupbox.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/QComboBox \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/qcombobox.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/qabstractitemdelegate.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/qstyleoption.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/qabstractspinbox.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtGui/qvalidator.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtCore/qregularexpression.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/qslider.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/qabstractslider.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/qstyle.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/qtabbar.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/qrubberband.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtCore/qabstractitemmodel.h \
 		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/QPushButton \
 		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/qpushbutton.h \
 		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/qabstractbutton.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/QRadioButton \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/qradiobutton.h \
 		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/QLineEdit \
 		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/qlineedit.h \
 		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtGui/qtextcursor.h \
@@ -2049,9 +2139,24 @@ mainwindow.o: mainwindow.cpp muskat.h \
 		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/QLayout \
 		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/QGroupBox \
 		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/qgroupbox.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/QComboBox \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/qcombobox.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/qabstractitemdelegate.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/qstyleoption.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/qabstractspinbox.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtGui/qvalidator.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtCore/qregularexpression.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/qslider.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/qabstractslider.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/qstyle.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/qtabbar.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/qrubberband.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtCore/qabstractitemmodel.h \
 		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/QPushButton \
 		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/qpushbutton.h \
 		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/qabstractbutton.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/QRadioButton \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/qradiobutton.h \
 		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/QLineEdit \
 		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/qlineedit.h \
 		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtGui/qtextcursor.h \

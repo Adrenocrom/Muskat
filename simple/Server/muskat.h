@@ -10,6 +10,7 @@
 #include <vector>
 #include <fstream>
 #include <sstream>
+#include <iomanip>
 
 // CV
 #include <opencv.hpp>
@@ -51,6 +52,8 @@ typedef unsigned int uint;
 typedef unsigned short ushort;
 
 using namespace std;
+
+string insertZeros(uint num_zeros, uint n);
 
 // PRO
 #include "abstractRenderer.h"

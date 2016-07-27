@@ -19,7 +19,9 @@ HEADERS += muskat.h \
 			  mainwindow.h 
 
 LIBS += -lboost_system \
-		  -lboost_filesystem
+		  -lboost_filesystem \
+		  -lopencv_core \
+		  -lopencv_highgui
 
 INCLUDEPATH += /usr/include/opencv2/ \
 					/usr/include/boost/
