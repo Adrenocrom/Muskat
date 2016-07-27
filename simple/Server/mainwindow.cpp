@@ -35,9 +35,6 @@ MainWindow::MainWindow() {
 	setCentralWidget(m_widget_stacked);
 
 	m_renderer = new FileRenderer;
-	m_renderer->loadScene("../../Scenes/CoolRandom/run_1/coolrandom_info.txt");
-	
-	cv::Mat img;
 }
 
 MainWindow::~MainWindow() {
@@ -67,14 +64,42 @@ void MainWindow::createWidgetStart() {
 	groupBox->setMinimumWidth(300);
 	groupBox->setLayout(formLayout);
 	gridLayout->addWidget(groupBox, 0, 0, 0, 0, Qt::AlignHCenter | Qt::AlignVCenter);
+	
 	m_widget_start->setLayout(gridLayout);
-
 	m_widget_stacked->addWidget(m_widget_start);
 }
 
 void MainWindow::createWidgetMain() {
-	m_widget_main	  = new QWidget;
+	m_widget_main	  			= new QWidget;
+	QGridLayout* gridLayout = new QGridLayout;
+
+	gridLayout->addWidget(createWidgetScene(), 		0, 0);
+	gridLayout->addWidget(createWidgetTransport(), 0, 1);
+
+	m_widget_main->setLayout(gridLayout);
 	m_widget_stacked->addWidget(m_widget_main);
+}
+
+QGroupBox* MainWindow::createWidgetScene() {
+	QGroupBox* 		groupBox = new QGroupBox(tr("scene"));
+	QFormLayout* formLayout = new QFormLayout;
+
+	m_comboBox_scenes 	= new QComboBox;
+	m_button_load_scene 	= new QPushButton("load");
+	m_label_num_frames 	= new QLabel("0");
+	connect(m_button_load_scene, &QPushButton::pressed, this, &MainWindow::load_scene);
+	
+	formLayout->addRow(new QLabel("scenes:"), m_comboBox_scenes);
+	formLayout->addRow(new QLabel(""), m_button_load_scene);
+	formLayout->addRow(new QLabel("num frames:"), m_label_num_frames);
+	groupBox->setLayout(formLayout);
+	return groupBox;
+}
+
+QGroupBox* MainWindow::createWidgetTransport() {
+	QGroupBox* 		groupBox = new QGroupBox("transport");
+
+	return groupBox;
 }
 
 void MainWindow::createMenu() {
@@ -106,6 +131,8 @@ void MainWindow::start_server() {
 		m_scene_suffix = m_lineEdit_scene_suffix->text().toStdString();
 
 		loadScenesFromDir(m_scenes_dir, m_scene_suffix);
+		for(uint i = 0; i < m_scenes.size(); ++i)
+			m_comboBox_scenes->addItem(QString::fromStdString(m_scenes[i]));
 	}
 
 	m_widget_stacked->setCurrentIndex(1);
@@ -116,13 +143,14 @@ void MainWindow::start_server() {
 void MainWindow::stop_server() {
 }
 
+void MainWindow::load_scene() {
+	m_renderer->loadScene(m_scenes[m_comboBox_scenes->currentIndex()], m_scene_suffix);
+	m_label_num_frames->setText(QString::number(m_renderer->getMaxFrames()));
+}
+
 void MainWindow::loadScenesFromDir(string d, string s) {
 	path p(d);
 	addScenes(p, s);
-
-	for(uint i = 0; i < m_scenes.size(); ++i) {
-		cout<<m_scenes[i]<<endl;
-	}
 }
 
 void MainWindow::addScenes(path& p, string s) {
@@ -131,14 +159,12 @@ void MainWindow::addScenes(path& p, string s) {
 	uint size = ps.size();
 
 	for(uint i = 0; i < size; ++i) {
-		if(is_directory(ps[i])) {
+		if(is_directory(ps[i]))
 			addScenes(ps[i], s);
-		}
 		else if(is_regular_file(ps[i])) {
 			t = ps[i].filename().string().rfind(s);
-			if(t != string::npos) {
+			if(t != string::npos)
 				m_scenes.push_back(ps[i].string());
-			}
 		}
 	}
 }

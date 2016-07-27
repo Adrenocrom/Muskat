@@ -7,9 +7,11 @@
 
 class QStackedWidget;
 class AbstractRenderer;
-class FileRenderer;
+class QGroupBox;
 class QPushButton;
 class QLineEdit;
+class QComboBox;
+class QLabel;
 
 namespace boost {
 	namespace filesystem {
@@ -22,7 +24,6 @@ class MainWindow : public QMainWindow {
 
 public:
 	AbstractRenderer* 		 m_renderer;
-	FileRenderer*				 m_fileRenderer;
 	std::vector<std::string> m_scenes;
 
 	MainWindow();
@@ -34,6 +35,7 @@ private slots:
 
 	void start_server();
 	void stop_server();
+	void load_scene();
 
 private:
 	int					m_server_port;
@@ -52,8 +54,14 @@ private:
 	QLineEdit*			m_lineEdit_scene_suffix;
 	QLineEdit*			m_lineEdit_scenes_dir;
 
+	QComboBox*			m_comboBox_scenes;
+	QPushButton*		m_button_load_scene;
+	QLabel*				m_label_num_frames;
+
 	void createWidgetStart();
 	void createWidgetMain();
+	QGroupBox* createWidgetTransport();
+	QGroupBox* createWidgetScene();
 	void createMenu();
 
 	std::vector<boost::filesystem::path> getFiles(boost::filesystem::path& p);

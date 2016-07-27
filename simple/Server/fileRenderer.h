@@ -25,7 +25,8 @@ class FileRenderer : public AbstractRenderer {
 		vector<SFrameBuffer> m_fbs;
 
 		void getFrame(SFrameInfo& info, SFrameBuffer& fb);
-		void loadScene(string filename);
+		void loadScene(string filename, string suffix);
+		int getMaxFrames() {return m_infos.size();}
 	
 	private:
 		void procressLine(stringstream& line);

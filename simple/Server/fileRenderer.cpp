@@ -1,36 +1,39 @@
 #include "muskat.h"
 
+using namespace boost::filesystem;
+
 void FileRenderer::getFrame(SFrameInfo& info, SFrameBuffer& fb) {
 
 }
 
-void FileRenderer::loadScene(string filename) {
+void FileRenderer::loadScene(string filename, string suffix) {
+	m_infos.clear();
+	m_fbs.clear();
+	
 	ifstream file(filename.c_str());
-
 	if (!file.is_open()) {
 		std::cerr << "Error: Could not find file "<<filename<<"."<<std::endl;
 		return;
 	}
 
-	cout<<"read file "<<filename<<endl;
-
 	string str_line;
-	
 	while(getline(file, str_line, '\n')) {
 		stringstream line(str_line);
 		
 		procressLine(line);
 	}
-
-	cout<<m_infos.size()<<" frames"<<endl;
-
 	file.close();
 
 	uint size = m_infos.size();
-	string path;
+	path p(filename);
+	string s = p.string();
+	s.resize(s.size() - suffix.size());
+
 	for(uint i = 0; i < size; ++i) {
-		
+		cv::Mat img;
+		img = cv::imread()
 	}
+	
 }
 
 void FileRenderer::procressLine(stringstream& line) {

@@ -26,7 +26,9 @@
 #include <QGridLayout>
 #include <QFormLayout>
 #include <QGroupBox>
+#include <QComboBox>
 #include <QPushButton>
+#include <QRadioButton>
 #include <QLineEdit>
 #include <QLabel>
 #include <QWebSocketServer>

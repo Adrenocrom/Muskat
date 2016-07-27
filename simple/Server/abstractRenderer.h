@@ -15,14 +15,16 @@ struct SFrameInfo {
 };
 
 struct SFrameBuffer {
-	
+
 };
 
 class AbstractRenderer {
 	public:
 		virtual void getFrame(SFrameInfo& info, SFrameBuffer& fb) = 0; // Override
 
-		virtual void loadScene(string filename) = 0; // Override
+		virtual void loadScene(string filename, string suffix) = 0; // Override
+
+		virtual int	getMaxFrames() = 0; // Override
 
 		string getName() {return m_name;}
 	protected:
