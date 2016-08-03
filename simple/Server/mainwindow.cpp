@@ -7,37 +7,42 @@ MainWindow::MainWindow() {
 	setWindowTitle(QString("Server"));
 
 	setStyleSheet(QString("QOpenGLWidget{border: 1px solid #000000;}")+
-                 QString("QMainWindow{background-color: #ffffff;}")+
-                 QString("QMenuBar{background-color: #444444; color: #FFFFFF;}")+
-                 QString("QMenuBar::item{background-color: #444444; color: #FFFFFF;}")+
-                 QString("QMenuBar::item:selected{background-color: #333333; color: #FFFFFF;}")+
-                 QString("QMenu{background-color: #444444; color: #FFFFFF; selection-color: #FFFFFF; selection-background-color: #333333;}")+
-                 QString("QMenu::item:disabled{background-color: #444444; color: #AAAAAA;}")+
-                 QString("QLabel{color: #222222;}")+
-                 QString("QPushButton{color: #FFFFFF; background-color: #222222; border-radius: 5px;}")+
-                 QString("QPushButton:pressed{color: #FFFFFF; background-color: #555555;}")+
-                 QString("QLineEdit{background-color: #DDDDDD; border-radius: 2px; border: 1px solid #000000;}")+
-                 QString("QTextEdit{background-color: #DDDDDD; border-radius: 2px; border: 1px solid #000000;}")+
-                 QString("QSlider{background-color: #FFFFFF; color: #FFFFFF; border-style: none;}")+
-                 QString("QSlider::handle{background: #222222; border: 1px solid #FFFFFF; width: 5px;}")+
-                 QString("QProgressBar{border-radius: 2px; border: 1px solid #000000; color:#000000;text-align: center;}")+
-                 QString("QProgressBar::chunk{width: 10px; background-color: #22AA33}")+
-                 QString("QComboBox{background-color: #222222; color: #FFFFFF; border-radius: 2px;}") +
-                 QString("QComboBox:focus{background-color: #444444; color: #FFFFFF; border-radius: 2px;}"));
+                  QString("QMainWindow{background-color: #ffffff;}")+
+                  QString("QMenuBar{background-color: #444444; color: #FFFFFF;}")+
+                  QString("QMenuBar::item{background-color: #444444; color: #FFFFFF;}")+
+                  QString("QMenuBar::item:selected{background-color: #333333; color: #FFFFFF;}")+
+                  QString("QMenu{background-color: #444444; color: #FFFFFF; selection-color: #FFFFFF; selection-background-color: #333333;}")+
+                  QString("QMenu::item:disabled{background-color: #444444; color: #AAAAAA;}")+
+                  QString("QLabel{color: #222222;}")+
+                  QString("QPushButton{color: #FFFFFF; background-color: #222222; border-radius: 5px;}")+
+                  QString("QPushButton:pressed{color: #FFFFFF; background-color: #555555;}")+
+                  QString("QLineEdit{background-color: #DDDDDD; border-radius: 2px; border: 1px solid #000000;}")+
+                  QString("QTextEdit{background-color: #DDDDDD; border-radius: 2px; border: 1px solid #000000;}")+
+                  QString("QSlider{background-color: #FFFFFF; color: #FFFFFF; border-style: none;}")+
+                  QString("QSlider::handle{background: #222222; border: 1px solid #FFFFFF; width: 5px;}")+
+                  QString("QProgressBar{border-radius: 2px; border: 1px solid #000000; color:#000000;text-align: center;}")+
+                  QString("QProgressBar::chunk{width: 10px; background-color: #22AA33}")+
+                  QString("QComboBox{background-color: #222222; color: #FFFFFF; border-radius: 2px;}") +
+                  QString("QComboBox:focus{background-color: #444444; color: #FFFFFF; border-radius: 2px;}"));
 
 	m_widget_stacked = new QStackedWidget;
 
 	createWidgetStart();
 	createWidgetMain();
 	createMenu();
-		
 	
 	setCentralWidget(m_widget_stacked);
 
-	m_renderer = new FileRenderer;
+	m_serverDeamon 	= nullptr;
+	m_playlist		= nullptr;
+	m_filerenderer	= nullptr;
+	m_filerenderer	= new FileRenderer;
 }
 
 MainWindow::~MainWindow() {
+	SAFE_DELETE(m_serverDeamon);
+	SAFE_DELETE(m_playlist);
+	SAFE_DELETE(m_filerenderer);
 }
 
 void MainWindow::resizeEvent(QResizeEvent*) {}
@@ -84,14 +89,6 @@ QGroupBox* MainWindow::createWidgetScene() {
 	QGroupBox* 		groupBox = new QGroupBox(tr("scene"));
 	QFormLayout* formLayout = new QFormLayout;
 
-	m_comboBox_scenes 	= new QComboBox;
-	m_button_load_scene 	= new QPushButton("load");
-	m_label_num_frames 	= new QLabel("0");
-	connect(m_button_load_scene, &QPushButton::pressed, this, &MainWindow::load_scene);
-	
-	formLayout->addRow(new QLabel("scenes:"), m_comboBox_scenes);
-	formLayout->addRow(new QLabel(""), m_button_load_scene);
-	formLayout->addRow(new QLabel("num frames:"), m_label_num_frames);
 	groupBox->setLayout(formLayout);
 	return groupBox;
 }
@@ -104,79 +101,43 @@ QGroupBox* MainWindow::createWidgetTransport() {
 
 void MainWindow::createMenu() {
 	const QIcon icon_start_server = QIcon(":/img/start_icon2.png");
-   const QIcon icon_stop_server = QIcon(":/img/stop_icon2.png");
+   	const QIcon icon_stop_server = QIcon(":/img/stop_icon2.png");
     
 	m_action_start_server = new QAction(icon_start_server, tr("&Start"), this);
-   m_action_stop_server = new QAction(icon_stop_server, tr("Stop"), this);
-   m_action_stop_server->setDisabled(true);
+   	m_action_stop_server = new QAction(icon_stop_server, tr("Stop"), this);
+   	m_action_stop_server->setDisabled(true);
 
 	QMenu* menu_file = menuBar()->addMenu(tr("&Server"));
 
 	connect(m_action_start_server, &QAction::triggered, this, &MainWindow::start_server);
-   connect(m_action_stop_server,  &QAction::triggered, this, &MainWindow::stop_server);
+   	connect(m_action_stop_server,  &QAction::triggered, this, &MainWindow::stop_server);
 
-   menu_file->addAction(m_action_start_server);
-   menu_file->addAction(m_action_stop_server);
-   menu_file->addSeparator();
+   	menu_file->addAction(m_action_start_server);
+  	menu_file->addAction(m_action_stop_server);
+   	menu_file->addSeparator();
 
-   QAction* action_quit = menu_file->addAction(tr("&Quit"), this, &QWidget::close);
-   action_quit->setShortcuts(QKeySequence::Quit);
-   action_quit->setStatusTip(tr("Quit the application"));
+   	QAction* action_quit = menu_file->addAction(tr("&Quit"), this, &QWidget::close);
+   	action_quit->setShortcuts(QKeySequence::Quit);
+   	action_quit->setStatusTip(tr("Quit the application"));
 }
 
 void MainWindow::start_server() {
 	if(m_widget_stacked->currentIndex() == 0) {
-		m_server_port  = m_lineEdit_server_port->text().toInt();
+		m_server_port  	= m_lineEdit_server_port->text().toInt();
 		m_scenes_dir	= m_lineEdit_scenes_dir->text().toStdString();
-		m_scene_suffix = m_lineEdit_scene_suffix->text().toStdString();
+		m_scene_suffix 	= m_lineEdit_scene_suffix->text().toStdString();
 
-		loadScenesFromDir(m_scenes_dir, m_scene_suffix);
-		for(uint i = 0; i < m_scenes.size(); ++i)
-			m_comboBox_scenes->addItem(QString::fromStdString(m_scenes[i]));
+		m_playlist = new Playlist(m_scenes_dir, m_scene_suffix);
 	}
 
 	m_widget_stacked->setCurrentIndex(1);
 
-
+	SAFE_DELETE(m_serverDeamon);
+	m_serverDeamon = new ServerDeamon(this, m_server_port);
 }
 
 void MainWindow::stop_server() {
+	SAFE_DELETE(m_serverDeamon);
 }
 
-void MainWindow::load_scene() {
-	m_renderer->loadScene(m_scenes[m_comboBox_scenes->currentIndex()], m_scene_suffix);
-	m_label_num_frames->setText(QString::number(m_renderer->getMaxFrames()));
-}
 
-void MainWindow::loadScenesFromDir(string d, string s) {
-	path p(d);
-	addScenes(p, s);
-}
-
-void MainWindow::addScenes(path& p, string s) {
-	vector<path> ps = getFiles(p);
-	size_t t;
-	uint size = ps.size();
-
-	for(uint i = 0; i < size; ++i) {
-		if(is_directory(ps[i]))
-			addScenes(ps[i], s);
-		else if(is_regular_file(ps[i])) {
-			t = ps[i].filename().string().rfind(s);
-			if(t != string::npos)
-				m_scenes.push_back(ps[i].string());
-		}
-	}
-}
-	
-vector<path> MainWindow::getFiles(path& p) {
-	vector<path> result;
-
-	if(exists(p) && is_directory(p)) {
-		for(auto& entry : boost::make_iterator_range(directory_iterator(p), {}))
-			result.push_back(entry.path());
-	}
-
-
-	return result;
-}

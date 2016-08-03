@@ -36,6 +36,7 @@
 #include <QWebSocket>
 #include <QJsonDocument>
 #include <QJsonObject>
+#include <QJsonArray>
 #include <QMatrix4x4>
 #include <QVector3D>
 
@@ -56,9 +57,12 @@ using namespace std;
 string insertZeros(uint num_zeros, uint n);
 
 // PRO
-#include "abstractRenderer.h"
 #include "fileRenderer.h"
+#include "config.h"
+#include "scene.h"
+#include "playlist.h"
 #include "mainwindow.h"
+#include "compressor.h"
 #include "jsonrpc.h"
 #include "deamon.h"
 

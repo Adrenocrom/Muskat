@@ -3,34 +3,31 @@
 
 #pragma once
 
-struct SFrameInfo;
+struct SFrameInfo {
+	uint 		id;
+	QVector3D 	pos;
+	QVector3D 	lookAt;
+	QVector3D 	up;
+	float		near;
+	float 		far;
+	float 		offangle;
+};
 
-struct SFrameBuffer;
+struct SFrameBuffer {
+	cv::Mat rgb;
+	cv::Mat depth;
+};
 
-class FileRenderer : public AbstractRenderer {
+class Scene;
+
+class FileRenderer {
 	public:
-		string 					m_filename;
-		uint						m_timestep;
-		QVector3D				m_boundingbox_min;
-		QVector3D				m_boundingbox_max;
-		uint						m_width;
-		uint						m_height;
-		float						m_aspect;
-		float						m_aperture;
-
-		QMatrix4x4				m_camera;
-		QMatrix4x4				m_projection;
-
-		vector<SFrameInfo> 	m_infos;
-		vector<SFrameBuffer> m_fbs;
-
 		void getFrame(SFrameInfo& info, SFrameBuffer& fb);
-		void loadScene(string filename, string suffix);
-		int getMaxFrames() {return m_infos.size();}
-	
+
+		void setScene(Scene* pScene);
+		
 	private:
-		void procressLine(stringstream& line);
-		string removeChars(string& str);
+		Scene*	m_pScene;
 };
 
 #endif
