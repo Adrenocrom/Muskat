@@ -100,8 +100,8 @@ QGroupBox* MainWindow::createWidgetTransport() {
 }
 
 void MainWindow::createMenu() {
-	const QIcon icon_start_server = QIcon(":/img/start_icon2.png");
-   	const QIcon icon_stop_server = QIcon(":/img/stop_icon2.png");
+	const QIcon icon_start_server = QIcon(":/img/start_icon.png");
+   	const QIcon icon_stop_server = QIcon(":/img/stop_icon.png");
     
 	m_action_start_server = new QAction(icon_start_server, tr("&Start"), this);
    	m_action_stop_server = new QAction(icon_stop_server, tr("Stop"), this);
