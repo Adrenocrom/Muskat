@@ -28,16 +28,39 @@
 			</fieldset>
 		</div>
 		<div id="window_render">
-			<div id="display"></div>
+			<canvas id="display" width="512" height="512"></canvas>
         </div>
 
 		<script src="js/lib/jquery-2.2.3.min.js"></script>
-		<script src="js/lib/three.min.js"></script>
-        <script src="js/lib/Detector.js"></script>
-        <script src="js/lib/stats.min.js"></script>
-        <script src="js/lib/FirstPersonControls.js"></script>
+		<script src="js/lib/gl-matrix-min.js"></script>
 
-        <script src="js/app/config.js"></script>
+		<script id="shader-fs" type="x-shader/x-fragment">
+	   		precision mediump float;
+
+			varying vec2 vTextureCoord;
+
+	    	uniform sampler2D uSampler;
+
+	    	void main(void) {
+    	    	gl_FragColor = vec4(texture2D(uSampler, vec2(vTextureCoord.s, vTextureCoord.t)).rgb, 1.0);
+    		}
+		</script>
+		<script id="shader-vs" type="x-shader/x-vertex">
+    		attribute vec3 aVertexPosition;
+			attribute vec2 aTextureCoord;
+
+    		uniform mat4 uMVPMatrix;
+    		uniform mat4 uINVMVPMatrix;
+
+			varying vec2 vTextureCoord;
+
+    		void main(void) {
+        		gl_Position = uMVPMatrix * vec4(aVertexPosition, 1.0);
+    			vTextureCoord = aTextureCoord;
+			}
+		</script>
+
+		<script src="js/app/config.js"></script>
         <script src="js/app/app.js"></script>
     </body>
 </html>

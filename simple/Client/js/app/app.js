@@ -13,25 +13,14 @@ $(document).ready(function() {
 
 	debug("muskat client v0.0.1")
 
-	/*
-	*	toggle visibility of the debug console
-	*/
 
 	$('#button_toggle_debug').click(function toggleDebug() {
 		debug_console.style.visibility = (debug_console.style.visibility == "visible" || debug_console.style.visibility == "") ? "hidden" : "visible";
 	});
 
-	/*
-	*	WebSocket global variables	
-	*/
-
 	var wsUri 		= "ws://localhost:1234";
 	var websocket 	= null;
 	var idCnt		= 0;
-
-	/*
-	*	change visibility of windows
-	*/
 
 	$('#button_connect_to_server').click(function connectToServer() {
 		wsUri = $('#text_server_uri').val();	
@@ -44,31 +33,197 @@ $(document).ready(function() {
 		startWs();
 	});
 
-	/*
-	*	Check if webgl is available and global variables
-	*/
-
-	if ( ! Detector.webgl ) Detector.addGetWebGLMessage();
-
+	var gl;
+	var shaderProgram;
+	var meshTexture;
+	var mvMatrix	 = mat4.create();
+	var pMatrix 	 = mat4.create();
+	var mvpMatrix 	 = mat4.create();
+	var invMvpMatrix = mat4.create();
+	
 	var display;
-	var stats;
-	var camera, scene, renderer;
-	var uniforms;
-	var texture_rgb;
-	var texture;
-	var mesh;
-	var geometry;
-	var material;
-	var img;
-	var depthImg;
 	var canvas;
 	var context;
 	var theData;
 	
+	function initGL(canvas) {
+		try {
+    		gl = canvas.getContext("experimental-webgl");
+        	gl.viewportWidth 	= canvas.width;
+        	gl.viewportHeight 	= canvas.height;
+    	} catch (e) {}
+    	if (!gl) {
+    		alert("Could not initialise WebGL, sorry :-(");
+   		}
+	}
+    
+	function getShader(gl, id) {
+		var shaderScript = document.getElementById(id);
+    	if (!shaderScript) {
+    		return null;
+		}
 
-	/*
-	* WsFunctions
-	*/
+		var str = "";
+		var k = shaderScript.firstChild;
+		while (k) {
+			if (k.nodeType == 3) {
+				str += k.textContent;
+			}
+			k = k.nextSibling;
+		}
+
+		var shader;
+		if (shaderScript.type == "x-shader/x-fragment") {
+			shader = gl.createShader(gl.FRAGMENT_SHADER);
+		} else if (shaderScript.type == "x-shader/x-vertex") {
+			shader = gl.createShader(gl.VERTEX_SHADER);
+		} else {
+			return null;
+		}
+
+		gl.shaderSource(shader, str);
+		gl.compileShader(shader);
+
+		if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
+			alert(gl.getShaderInfoLog(shader));
+			return null;
+		}
+
+		return shader;
+	}
+
+	function initShaders() {
+		var fragmentShader = getShader(gl, "shader-fs");
+	    var vertexShader = getShader(gl, "shader-vs");
+
+		shaderProgram = gl.createProgram();
+	    gl.attachShader(shaderProgram, vertexShader);
+	    gl.attachShader(shaderProgram, fragmentShader);
+	    gl.linkProgram(shaderProgram);
+	
+   		if (!gl.getProgramParameter(shaderProgram, gl.LINK_STATUS)) {
+    		alert("Could not initialise shaders");
+    	}
+
+    	gl.useProgram(shaderProgram);
+
+		shaderProgram.vertexPositionAttribute = gl.getAttribLocation(shaderProgram, "aVertexPosition");
+    	gl.enableVertexAttribArray(shaderProgram.vertexPositionAttribute);
+
+		shaderProgram.textureCoordAttribute = gl.getAttribLocation(shaderProgram, "aTextureCoord");
+    	gl.enableVertexAttribArray(shaderProgram.textureCoordAttribute);
+	
+    	shaderProgram.invMvpMatrixUniform = gl.getUniformLocation(shaderProgram, "uINVMVPMatrix");
+    	shaderProgram.mvpMatrixUniform = gl.getUniformLocation(shaderProgram, "uMVPMatrix");
+		shaderProgram.samplerUniform = gl.getUniformLocation(shaderProgram, "uSampler");
+	}
+
+	function handleLoadedTexture(texture) {
+		gl.bindTexture(gl.TEXTURE_2D, texture);
+		//gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
+		gl.pixelStorei(gl.UNPACK_ALIGNMENT, true);
+		gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, texture.image);
+		gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
+		gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
+		gl.bindTexture(gl.TEXTURE_2D, null);
+	}
+
+	function initTexture() {
+		meshTexture = gl.createTexture();
+		meshTexture.image = new Image();
+		meshTexture.image.onload = function () {
+			handleLoadedTexture(meshTexture);
+			drawScene();
+
+		}
+
+		meshTexture.image.src = "img/UV_Grid_Sm.jpg";
+	}
+
+	function setTexture(base64) {
+		meshTexture.image.onload = function() {
+			handleLoadedTexture(meshTexture);
+			drawScene();
+		}
+
+		meshTexture.image.src = 'data:image/jpeg;base64, ' + base64.toString();
+	}
+
+	function setMatrixUniforms() {
+		gl.uniformMatrix4fv(shaderProgram.invMvpMatrixUniform, false, invMvpMatrix);
+		gl.uniformMatrix4fv(shaderProgram.mvpMatrixUniform, false, mvpMatrix);
+	}
+
+	var meshVertexPositionBuffer;
+	var meshVertexTextureCoordBuffer;
+	var meshVertexIndexBuffer;
+
+	function initBuffers() {
+		meshVertexPositionBuffer = gl.createBuffer();
+		gl.bindBuffer(gl.ARRAY_BUFFER, meshVertexPositionBuffer);
+		var vertices = [
+			-1.0,  1.0,  1.0,
+			 1.0,  1.0,  1.0,
+			-1.0, -1.0,  1.0,
+			 1.0, -1.0,  1.0
+		];
+		gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);
+		meshVertexPositionBuffer.itemSize = 3;
+		meshVertexPositionBuffer.numItems = 4;
+
+		meshVertexTextureCoordBuffer = gl.createBuffer();
+		gl.bindBuffer(gl.ARRAY_BUFFER, meshVertexTextureCoordBuffer);
+		var textureCoords = [
+			0.0, 0.0,
+			1.0, 0.0,
+			0.0, 1.0,
+			1.0, 1.0
+		];
+		gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(textureCoords), gl.STATIC_DRAW);
+		meshVertexTextureCoordBuffer.itemSize = 2;
+		meshVertexTextureCoordBuffer.numItems = 4;
+
+		meshVertexIndexBuffer = gl.createBuffer();
+		gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, meshVertexIndexBuffer);
+		var meshVertexIndices = [
+			0, 1, 2,      1, 3, 2 
+		];
+		gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(meshVertexIndices), gl.STATIC_DRAW);
+		meshVertexIndexBuffer.itemSize = 1;
+		meshVertexIndexBuffer.numItems = 6;
+	}
+
+	function degToRad(deg) {
+		return deg * 0.0174532925199432957692369076848;
+	}
+
+	function drawScene() {
+		gl.viewport(0, 0, gl.viewportWidth, gl.viewportHeight);
+		gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+
+		mat4.perspective(pMatrix, degToRad(45.0), gl.viewportWidth / gl.viewportHeight, 0.1, 100.0);
+
+		mat4.lookAt(mvMatrix, [0.0, 0.0, 0.0], [0.0, 0.0, -5.0], [0.0, 1.0, 0.0]);
+
+		mat4.translate(mvMatrix, mvMatrix, [0.0, 0.0, -5.0]);
+
+		mat4.multiply(mvpMatrix, pMatrix, mvMatrix);
+	
+		gl.bindBuffer(gl.ARRAY_BUFFER, meshVertexPositionBuffer);
+		gl.vertexAttribPointer(shaderProgram.vertexPositionAttribute, meshVertexPositionBuffer.itemSize, gl.FLOAT, false, 0, 0);
+
+		gl.bindBuffer(gl.ARRAY_BUFFER, meshVertexTextureCoordBuffer);
+		gl.vertexAttribPointer(shaderProgram.textureCoordAttribute, meshVertexTextureCoordBuffer.itemSize, gl.FLOAT, false, 0, 0);
+
+		gl.activeTexture(gl.TEXTURE0);
+		gl.bindTexture(gl.TEXTURE_2D, meshTexture);
+		gl.uniform1i(shaderProgram.samplerUniform, 0);
+
+		gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, meshVertexIndexBuffer);
+		setMatrixUniforms();
+		gl.drawElements(gl.TRIANGLES, meshVertexIndexBuffer.numItems, gl.UNSIGNED_SHORT, 0);
+	}
+
 
 	function startWs() {
 		try {
@@ -81,18 +236,21 @@ $(document).ready(function() {
 			websocket.onopen = function (evt) {
 				debug("connected to " + wsUri);
 
-				var test = new Person("test", "nicht", 2, "gray");
-				debug(test.name(","));
-
 				getPlaylistMessage();
 				loadSceneMessage();
-				initGl();
-				animateGl();
+				initWebGl();
+
+				getFrameMessage();
 			};
 
 			websocket.onmessage = function (evt) {
 				var obj = JSON.parse(evt.data);
 
+				if (typeof obj.result.rgb !== 'undefined') {
+					setTexture(obj.result.rgb);
+				}
+
+/*
 				//debug(evt.data);
 				if(obj.result.rgb != "") {
 
@@ -118,7 +276,7 @@ $(document).ready(function() {
 
 						depthImg.src = 'data:image/png;base64, ' + obj.result.depth.toString();
 					}
-				}
+				}*/
             };
 
 			websocket.onclose = function (evt) {
@@ -142,105 +300,19 @@ $(document).ready(function() {
 			websocket.close();
 	}
 
-	function initGl() {
+	function initWebGl() {
 		debug("init opengl");
 
 		display = document.getElementById( 'display' );
-		renderer = new THREE.WebGLRenderer();
-		renderer.setSize(512, 512);
-		//renderer.setPixelRatio( window.devicePixelRatio );		
-		display.appendChild( renderer.domElement );
-
-		scene = new THREE.Scene();
-
-		camera = new THREE.PerspectiveCamera(45, renderer.domElement.width / renderer.domElement.height, 1, 10000);
-		camera.position.set(0.0, 0.0, 10.0); 
-		camera.lookAt(0.0, 0.0, 0.0);
-		scene.add(camera);
-
+		initGL(display);
+		initShaders();
+		initBuffers();
+		initTexture();
 		
-		img = new Image();
-		depthImg = new Image();
-
-		canvas = document.createElement('canvas');
-		context = canvas.getContext('2d');
-
-		//var m3 = new THREE.Matrix4();
-		//m3.set();
-	
-
-		geometry = new THREE.BufferGeometry();
-		var vertices = new Float32Array( [
-			-1.0, -1.0,  1.0,
-			1.0, -1.0,  1.0,
-			1.0,  1.0,  1.0,
-					 
-			1.0,  1.0,  1.0,
-			-1.0,  1.0,  1.0,
-			-1.0, -1.0,  1.0
-		] );
-
-		geometry.addAttribute( 'position', new THREE.BufferAttribute( vertices, 3 ) );
-
-		var planeGeometry = new THREE.PlaneGeometry( 1, 1 );
-
-		var uvTexture = new THREE.ImageUtils.loadTexture("img/UV_Grid_Sm.jpg"); 
-
-		var planeMaterial = new THREE.MeshBasicMaterial({ 
-			map:uvTexture, 
-			side:THREE.DoubleSide 
-		}); 
-		
-	
-
-		mesh = new THREE.Mesh( planeGeometry, planeMaterial );
-		mesh.position.set(0.0, 0.0, -1.0); 
-		scene.add( mesh );
-
-	
-		debug("add stats");
-		stats = new Stats();
-		display.appendChild( stats.dom );
-
-		onWindowResize();
-		window.addEventListener( 'resize', onWindowResize, false );
+		gl.clearColor(0.0, 0.0, 0.0, 1.0);
+        gl.enable(gl.DEPTH_TEST);
 		
 		debug("opengl is ready");
-		
-	}
-
-	function onWindowResize( event ) {
-		camera = new THREE.PerspectiveCamera(45, renderer.domElement.width / renderer.domElement.height, 1, 100);
-		debug("resize to "+ renderer.domElement.width + "X" + renderer.domElement.height);
-
-		resizeMessage(renderer.domElement.width, renderer.domElement.height);	
-	}
-
-	function animateGl() {
-		getFrameMessage();
-
-		requestAnimationFrame( animateGl );
-		render();
-		stats.update();
-	}
-
-	function render() {
-		renderer.render( scene, camera );
-	}
-
-	function resizeMessage(w, h) {
-		var msg = {
-			"jsonrpc" : "2.0",
-			"method" : "resize",
-			"params" : { 
-				"width" : w, 
-				"height": h
-			},
-			"id" : idCnt
-		};
-		debug(JSON.stringify(msg));
-		websocket.send(JSON.stringify(msg));
-		idCnt++;
 	}
 
 	function getFrameMessage() {
@@ -281,8 +353,5 @@ $(document).ready(function() {
 		idCnt++;
 	}
 
-	function createIndizies() {
-	
-	}
 });
 
