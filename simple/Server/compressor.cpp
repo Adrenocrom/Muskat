@@ -1,6 +1,6 @@
 #include "muskat.h"
 
-QJsonObject Compressor::compressFrame(SFrameInfo& info, SFrameBuffer& fb) {
+QJsonObject Compressor::compressFrame(FrameInfo& info, FrameBuffer& fb) {
 	QJsonObject jo;
 
 	QMatrix4x4 perspective;

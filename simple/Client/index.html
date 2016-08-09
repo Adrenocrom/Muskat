@@ -2,8 +2,8 @@
 <html lang="en">
     <head>
         <meta charset="utf-8">
-        <!--meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0"-->
-		<meta name="viewport" content="width=640, height=480, initial-scale=1, maximum-scale=1">
+		
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
         <title>Muskat Client</title>
 
@@ -11,17 +11,24 @@
     </head>
     <body>
 		<textarea id="textarea_debug"></textarea>
+		<div id="window_menu">
+			<button class="btn" id="button_toggle_menu">
+				<div class="menu_b1"></div>
+				<div class="menu_b1"></div>
+				<div class="menu_b1"></div>
+			</button>
+		</div>
 		<div id="window_setting">
-			<button id="button_toggle_debug">Debug</button>
+			<button id="button_toogle_debug">debug</button>
 		</div>
 		<div id="window_config">
 			<fieldset id="form_init">
-				<p>Server adress: <input type="text" id="text_server_uri" value="ws://localhost:1234"></input></p>
-				<p><button id="button_connect_to_server">connect</button></p>
+				<p>Server adress: <input class="iput" type="text" id="text_server_uri" value="ws://localhost:1234"></input></p>
+				<p><button class="btn" id="button_connect_to_server">connect</button></p>
 			</fieldset>
 		</div>
 		<div id="window_render">
-		    <div id="display"></div>
+			<div id="display"></div>
         </div>
 
 		<script src="js/lib/jquery-2.2.3.min.js"></script>
@@ -30,6 +37,7 @@
         <script src="js/lib/stats.min.js"></script>
         <script src="js/lib/FirstPersonControls.js"></script>
 
+        <script src="js/app/config.js"></script>
         <script src="js/app/app.js"></script>
     </body>
 </html>

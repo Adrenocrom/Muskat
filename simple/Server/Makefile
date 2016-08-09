@@ -560,8 +560,7 @@ compiler_rcc_clean:
 	-$(DEL_FILE) qrc_server.cpp
 qrc_server.cpp: server.qrc \
 		img/start_icon.png \
-		img/start_icon2.png \
-		img/stop_icon2.png
+		img/stop_icon.png
 	/home/josef/Programme/Qt5.6.0/5.6/gcc_64/bin/rcc -name server server.qrc -o qrc_server.cpp
 
 compiler_moc_header_make_all: moc_deamon.cpp moc_mainwindow.cpp

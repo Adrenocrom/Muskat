@@ -57,8 +57,14 @@ $(document).ready(function() {
 	var texture_rgb;
 	var texture;
 	var mesh;
+	var geometry;
+	var material;
 	var img;
-
+	var depthImg;
+	var canvas;
+	var context;
+	var theData;
+	
 
 	/*
 	* WsFunctions
@@ -74,6 +80,9 @@ $(document).ready(function() {
 			websocket = new WebSocket( wsUri );
 			websocket.onopen = function (evt) {
 				debug("connected to " + wsUri);
+
+				var test = new Person("test", "nicht", 2, "gray");
+				debug(test.name(","));
 
 				getPlaylistMessage();
 				loadSceneMessage();
@@ -94,7 +103,21 @@ $(document).ready(function() {
 						mesh.material.map = texture;
 						mesh.material.needsUpdate = true;
 					};
-					img.src = 'data:image/jpeg;base64, ' + obj.result.rgb.toString();		
+					img.src = 'data:image/jpeg;base64, ' + obj.result.rgb.toString();
+
+					if(obj.result.depth != "") {
+
+						depthImg.onload = function() {
+							context.drawImage(depthImg, 0, 0 );
+							theData = context.getImageData(0, 0, depthImg.width, depthImg.height);
+							
+							for(var i = 0; i < theData.data.length; i += 4) {
+									//debug(theData.data[i]);
+							}
+						}
+
+						depthImg.src = 'data:image/png;base64, ' + obj.result.depth.toString();
+					}
 				}
             };
 
@@ -124,7 +147,8 @@ $(document).ready(function() {
 
 		display = document.getElementById( 'display' );
 		renderer = new THREE.WebGLRenderer();
-		renderer.setPixelRatio( window.devicePixelRatio );		
+		renderer.setSize(512, 512);
+		//renderer.setPixelRatio( window.devicePixelRatio );		
 		display.appendChild( renderer.domElement );
 
 		scene = new THREE.Scene();
@@ -136,11 +160,30 @@ $(document).ready(function() {
 
 		
 		img = new Image();
+		depthImg = new Image();
+
+		canvas = document.createElement('canvas');
+		context = canvas.getContext('2d');
+
+		//var m3 = new THREE.Matrix4();
+		//m3.set();
+	
+
+		geometry = new THREE.BufferGeometry();
+		var vertices = new Float32Array( [
+			-1.0, -1.0,  1.0,
+			1.0, -1.0,  1.0,
+			1.0,  1.0,  1.0,
+					 
+			1.0,  1.0,  1.0,
+			-1.0,  1.0,  1.0,
+			-1.0, -1.0,  1.0
+		] );
+
+		geometry.addAttribute( 'position', new THREE.BufferAttribute( vertices, 3 ) );
 
 		var planeGeometry = new THREE.PlaneGeometry( 1, 1 );
 
-		var boxGeometry = new THREE.BoxGeometry(1.0, 1.0, 1.0); 
-		
 		var uvTexture = new THREE.ImageUtils.loadTexture("img/UV_Grid_Sm.jpg"); 
 
 		var planeMaterial = new THREE.MeshBasicMaterial({ 
@@ -167,7 +210,6 @@ $(document).ready(function() {
 	}
 
 	function onWindowResize( event ) {
-		renderer.setSize( window.innerWidth, window.innerHeight );
 		camera = new THREE.PerspectiveCamera(45, renderer.domElement.width / renderer.domElement.height, 1, 100);
 		debug("resize to "+ renderer.domElement.width + "X" + renderer.domElement.height);
 
@@ -239,5 +281,8 @@ $(document).ready(function() {
 		idCnt++;
 	}
 
+	function createIndizies() {
+	
+	}
 });
 

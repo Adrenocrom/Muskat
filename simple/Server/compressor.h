@@ -6,7 +6,7 @@
 class Compressor {
 public:
 
-	static QJsonObject compressFrame(SFrameInfo& info, SFrameBuffer& fb);
+	static QJsonObject compressFrame(FrameInfo& info, FrameBuffer& fb);
 private:
 };
 

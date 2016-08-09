@@ -1,5 +1,4 @@
 body {
-    color: #000;
     background-color: #FFF;
     margin: 0px;
     overflow: hidden;
@@ -11,6 +10,20 @@ a {
 
 #window_render {
 	display: none;
+	width: 512px;
+	height: 512px;
+	margin-top: 0px;
+	margin-bottom: 0px;
+	margin-left: auto;
+	margin-right: auto;
+	box-shadow: 0px 10px 10px #888;
+}
+
+#display {
+	width: 512px;
+	height: 512px;
+	margin: 0px;
+	padding: 0 0 0 0;
 }
 
 #form_init {
@@ -52,15 +65,50 @@ a {
 	visibility: visible;
 }
 
-#window_setting {
+#window_menu {
 	text-align: right;
 	background-color: #222;
 	margin: 0 0 0 0;
 	width: 100%;
-	height: 30px;
+	height: 50px;
 }
 
-#button_toggle_debug {
-	height: 30;
+#window_setting {
+	visibility: hidden;
+}
+
+#button_toggle_menu {
+	height: 40px;
+	margin-top: 5px;
 	margin-right: 10px;
+	background-color: #333;
+	color: #EEE;
+}
+
+.btn {
+	background-color: #FFF;
+	color: #222;
+	border-style: solid;
+	border-width: 1px 1px 1px 1px;
+	border-color: #222;
+}
+
+.iput {
+	background-color: #333;
+	color: #EEE;
+	border-style: solid;
+	border-width: 1px 1px 1px 1px;
+	border-color: #AAA;
+}
+
+
+.menu_b1 {
+	width: 30px;
+	height: 3px;
+	background-color: #FFF;
+	margin-top: 5px;
+	margin-bottom: 5px;
+	margin-left: 0px;
+	margin-right: 0px;
+
 }

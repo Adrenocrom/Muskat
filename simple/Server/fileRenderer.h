@@ -3,7 +3,7 @@
 
 #pragma once
 
-struct SFrameInfo {
+struct FrameInfo {
 	uint 		id;
 	QVector3D 	pos;
 	QVector3D 	lookAt;
@@ -13,7 +13,7 @@ struct SFrameInfo {
 	float 		offangle;
 };
 
-struct SFrameBuffer {
+struct FrameBuffer {
 	cv::Mat rgb;
 	cv::Mat depth;
 };
@@ -22,7 +22,7 @@ class Scene;
 
 class FileRenderer {
 	public:
-		void getFrame(SFrameInfo& info, SFrameBuffer& fb);
+		void getFrame(FrameInfo& info, FrameBuffer& fb);
 
 		void setScene(Scene* pScene);
 		

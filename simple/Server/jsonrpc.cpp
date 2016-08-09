@@ -81,9 +81,9 @@ RPCResponse JsonRPC::getFrame(RPCRequest& request) {
 	RPCResponse response;
 	uint id = request.params["id"].toInt();
 	
-	SFrameInfo info;
+	FrameInfo info;
 	info.id = id;
-	SFrameBuffer fb;
+	FrameBuffer fb;
 
 	m_mainWindow->m_filerenderer->getFrame(info, fb);
 	

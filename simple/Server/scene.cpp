@@ -27,7 +27,7 @@ Scene::Scene(string filename, string suffix) {
 	string s = p.string();
 	s.resize(s.size() - suffix.size());
 
-	SFrameBuffer fb;
+	FrameBuffer fb;
 	for(uint i = 0; i < size; ++i) {
 		string fn = s + "_" + insertZeros(5, i);
 
@@ -41,7 +41,7 @@ Scene::Scene(string filename, string suffix) {
 void Scene::procressLine(stringstream& line) {
 	string 		tag;
 	string 	  	buf;
-	SFrameInfo 	info;
+	FrameInfo 	info;
 
 	while(getline(line, tag, ' ')) {
 		if(tag.empty()) continue;
@@ -108,23 +108,26 @@ QJsonObject Scene::getSceneInfo() {
 
 	jo["name"] 		= QString::fromStdString(m_scene_name);
 	jo["timestep"]	= (int) m_timestep;
+
 	QJsonArray aabb_min;
 	aabb_min.push_back(m_aabb_min.x());
 	aabb_min.push_back(m_aabb_min.y());
 	aabb_min.push_back(m_aabb_min.z());
 	jo["aabb_min"] 	= aabb_min;
+
 	QJsonArray aabb_max;
 	aabb_max.push_back(m_aabb_max.x());
 	aabb_max.push_back(m_aabb_max.y());
 	aabb_max.push_back(m_aabb_max.z());
 	jo["aabb_max"] 	= aabb_max;
+
 	jo["aspect"]	= m_aspect;
 	jo["aperture"]	= m_aperture;
 
 	QJsonArray	ja;
-	for(uint i = 0; i < m_infos.size(); ++i) {
+	for(uint i = 0; i < m_infos.size(); ++i)
 		ja.push_back(getFrameInfo(i));
-	}
+
 	jo["frames"] 	= ja;
 
 	return jo;
@@ -132,24 +135,28 @@ QJsonObject Scene::getSceneInfo() {
 
 QJsonObject Scene::getFrameInfo(uint frame_id) {
 	QJsonObject jo;
-	SFrameInfo& fb = m_infos[frame_id];
+	FrameInfo& fb = m_infos[frame_id];
 
 	jo["id"] = (int)fb.id;
+
 	QJsonArray pos;
 	pos.push_back(fb.pos.x());
 	pos.push_back(fb.pos.y());
 	pos.push_back(fb.pos.z());
 	jo["pos"] = pos;
+
 	QJsonArray lookAt;
 	lookAt.push_back(fb.lookAt.x());
 	lookAt.push_back(fb.lookAt.y());
 	lookAt.push_back(fb.lookAt.z());
 	jo["lookat"] = lookAt;
+
 	QJsonArray up;
 	up.push_back(fb.up.x());
 	up.push_back(fb.up.y());
 	up.push_back(fb.up.z());
 	jo["up"] 		= up;
+
 	jo["near"] 		= fb.near;
 	jo["far"] 		= fb.far;
 	jo["offangle"] 	= fb.offangle;

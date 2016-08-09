@@ -16,8 +16,8 @@ public:
 	float		m_aspect;
 	float		m_aperture;
 
-	vector<SFrameInfo> 		m_infos;
-	vector<SFrameBuffer> 	m_fbs;
+	vector<FrameInfo> 		m_infos;
+	vector<FrameBuffer> 	m_fbs;
 
 	Scene(string filename, string suffix);
 
