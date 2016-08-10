@@ -33,7 +33,7 @@ QJsonObject Compressor::compressFrame(FrameInfo& info, FrameBuffer& fb) {
 	for(uint i = 0; i < 16; ++i)
 		ja.push_back(invModelView.data()[i]);
 
-	jo["invMV"] = ja;
+	jo["invMVP"] = ja;
 	jo["rgb"]	= QString(ba_rgb.toBase64());
 	jo["depth"]	= QString(ba_depth.toBase64());
 	return jo;

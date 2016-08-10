@@ -42,6 +42,8 @@ $(document).ready(function() {
 	var invMvpMatrix = mat4.create();
 	
 	var display;
+
+	var depthImg;
 	var canvas;
 	var context;
 	var theData;
@@ -140,13 +142,17 @@ $(document).ready(function() {
 		meshTexture.image.src = "img/UV_Grid_Sm.jpg";
 	}
 
+	function setMesh(base64) {
+		setGeometry(base64);
+	}
+
 	function setTexture(base64) {
 		meshTexture.image.onload = function() {
 			handleLoadedTexture(meshTexture);
 			drawScene();
 		}
 
-		meshTexture.image.src = 'data:image/jpeg;base64, ' + base64.toString();
+		meshTexture.image.src = 'data:image/jpeg;base64, ' + base64.rgb.toString();
 	}
 
 	function setMatrixUniforms() {
@@ -188,9 +194,115 @@ $(document).ready(function() {
 		var meshVertexIndices = [
 			0, 1, 2,      1, 3, 2 
 		];
-		gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(meshVertexIndices), gl.STATIC_DRAW);
+		gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint32Array(meshVertexIndices), gl.STATIC_DRAW);
 		meshVertexIndexBuffer.itemSize = 1;
 		meshVertexIndexBuffer.numItems = 6;
+	}
+
+	function setInvMatrix(base64) {
+		var m = base64.invMV;
+
+		mat4.set(invMvpMatrix, m[0], m[1], m[2], m[3],
+							   m[4], m[5], m[6], m[7],
+							   m[8], m[9], m[10], m[11],
+							   m[12], m[13], m[14], m[15]);
+	}
+
+	function setGeometry(base64) {
+		setInvMatrix(base64);
+
+		depthImg.onload = function() {
+			context.canvas.width = 512;
+			context.canvas.height = 512;
+			context.canvas.style.width = 512 + 'px';
+        	context.canvas.style.height = 512 + 'px';
+			context.scale(1, 1);
+			context.fillStyle = '#FFFFFF'; // or 'rgba(255,255,255,1)'
+			context.fillRect(0,0,canvas.width, canvas.height)
+			context.drawImage(depthImg, 0, 0, depthImg.width, depthImg.height, 0, 0, depthImg.width, depthImg.height);
+			var data = context.getImageData(0, 0, depthImg.width, depthImg.height);
+		
+		/*	alert(canvas.width + " " + canvas.height);
+
+			var min = 255;
+			var max = 0;
+			for(var a = 0; a < data.data.length; a++) {
+				if(min > data.data[a]) min = data.data[a];
+				if(max < data.data[a]) max = data.data[a];
+
+				if(data.data[a] != 255) {
+					console.log("index: " + a + " " + data.data[a]);
+				}
+			}
+
+			alert(min + " "+ max);
+*/
+			var w 	= depthImg.width;
+			var h 	= depthImg.height;
+			var ws 	= w-1;
+			var hs 	= h-1;
+			var i 	= 0;
+			var j 	= 0;
+			var u	= 0;
+			var v	= 0;
+			var index = 0;
+			var tindex= 0;
+
+	
+			var vb = new Float32Array(w * h * 3);
+			var tb = new Float32Array(w * h * 2);
+			var ib = new Uint32Array((w-1) * (h-1) * 6);
+			
+			index = 0; i = 0;	
+			for(var y = 0; y < h; y++) {
+				for(var x = 0; x < w; x++) {
+					i = y*w + x;
+
+					ib[index] = i; 		index++;
+					ib[index] = i+1;	index++;
+					ib[index] = w+i;	index++;
+					ib[index] = i+1;	index++;
+					ib[index] = w+i+1;	index++;
+					ib[index] = w+i;	index++;
+				}
+			}
+
+			index = 0; tindex = 0; i = 0;
+			for(var y = 0; y < h; y++) {
+				v = y / hs;
+				j = 1 - v * 2;
+				for(var x = 0; x < w; x++) {
+					u = x / ws;
+					i = u * 2 - 1;
+
+					vb[index] = i; 								index++;
+					vb[index] = j; 								index++;
+					vb[index] = (data.data[(y*w+x) * 4] / 255);	index++;
+					
+					tb[tindex] = u;		tindex++;
+					tb[tindex] = v;		tindex++;
+				}
+			}
+
+			gl.bindBuffer(gl.ARRAY_BUFFER, meshVertexPositionBuffer);
+			gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vb), gl.STATIC_DRAW);
+			meshVertexPositionBuffer.itemSize = 3;
+			meshVertexPositionBuffer.numItems = w * h;
+
+			gl.bindBuffer(gl.ARRAY_BUFFER, meshVertexTextureCoordBuffer);
+			gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(tb), gl.STATIC_DRAW);
+			meshVertexTextureCoordBuffer.itemSize = 2;
+			meshVertexTextureCoordBuffer.numItems = w * h;
+
+			gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, meshVertexIndexBuffer);
+			gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint32Array(ib), gl.STATIC_DRAW);
+			meshVertexIndexBuffer.itemSize = 1;
+			meshVertexIndexBuffer.numItems = (w-1) * (h-1) * 6;
+
+			setTexture(base64);
+		}
+
+		depthImg.src = 'data:image/png;base64, ' + base64.depth.toString();	
 	}
 
 	function degToRad(deg) {
@@ -221,7 +333,7 @@ $(document).ready(function() {
 
 		gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, meshVertexIndexBuffer);
 		setMatrixUniforms();
-		gl.drawElements(gl.TRIANGLES, meshVertexIndexBuffer.numItems, gl.UNSIGNED_SHORT, 0);
+		gl.drawElements(gl.TRIANGLES, meshVertexIndexBuffer.numItems, gl.UNSIGNED_INT, 0);
 	}
 
 
@@ -246,37 +358,12 @@ $(document).ready(function() {
 			websocket.onmessage = function (evt) {
 				var obj = JSON.parse(evt.data);
 
-				if (typeof obj.result.rgb !== 'undefined') {
-					setTexture(obj.result.rgb);
+				
+				if(typeof obj.result.rgb !== 'undefined' &&
+				   typeof obj.result.depth !== 'undefined') {
+					
+					setMesh(obj.result);
 				}
-
-/*
-				//debug(evt.data);
-				if(obj.result.rgb != "") {
-
-			
-					texture = new THREE.Texture(img); 
-					img.onload = function() {
-						texture.needsUpdate = true;
-						mesh.material.map = texture;
-						mesh.material.needsUpdate = true;
-					};
-					img.src = 'data:image/jpeg;base64, ' + obj.result.rgb.toString();
-
-					if(obj.result.depth != "") {
-
-						depthImg.onload = function() {
-							context.drawImage(depthImg, 0, 0 );
-							theData = context.getImageData(0, 0, depthImg.width, depthImg.height);
-							
-							for(var i = 0; i < theData.data.length; i += 4) {
-									//debug(theData.data[i]);
-							}
-						}
-
-						depthImg.src = 'data:image/png;base64, ' + obj.result.depth.toString();
-					}
-				}*/
             };
 
 			websocket.onclose = function (evt) {
@@ -302,12 +389,22 @@ $(document).ready(function() {
 
 	function initWebGl() {
 		debug("init opengl");
-
+		
+		canvas  = document.createElement( 'canvas' );
 		display = document.getElementById( 'display' );
 		initGL(display);
 		initShaders();
 		initBuffers();
 		initTexture();
+
+		var uintExt = gl.getExtension("OES_element_index_uint");
+		if (!uintExt) {
+		   alert("Sorry, this app needs 32bit indices and your device or browser doesn't appear to support them");
+		   return;
+		}
+
+		context = canvas.getContext('2d');
+		depthImg = new Image();
 		
 		gl.clearColor(0.0, 0.0, 0.0, 1.0);
         gl.enable(gl.DEPTH_TEST);
