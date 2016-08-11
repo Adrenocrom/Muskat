@@ -27,7 +27,13 @@ a {
 }
 
 #canvas {
-	visibility: hidden;
+	width: 512px;
+	height: 512px;
+}
+
+#depthImage {
+	width: 512px;
+	height: 512px;
 }
 
 #form_init {
@@ -66,7 +72,8 @@ a {
 	border-style: solid none none none;
 	border-width: 1px;
 	border-color: #FFF;
-	visibility: visible;
+	visibility: hidden;
+	z-index: 1000;
 }
 
 #window_menu {
@@ -78,6 +85,12 @@ a {
 }
 
 #window_setting {
+	position: absolute;
+	top: 50px;
+	right: 0px;
+	width: 200px;
+	height: 100%;
+	background-color: #223;
 	visibility: hidden;
 }
 

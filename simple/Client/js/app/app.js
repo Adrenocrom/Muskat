@@ -4,18 +4,23 @@
 */
 
 $(document).ready(function() {
-	var debug_console = document.getElementById("textarea_debug");
+	var debug_console 	= document.getElementById("textarea_debug");
+	var menu_widget 	= document.getElementById("window_setting");
 
 	function debug(message) {
 		debug_console.value += message + "\n";
 		debug_console.scrollTop = debug_console.scrollHeight;
 	}
-
 	debug("muskat client v0.0.1")
-
+	debug_console.style.visibility = "hidden";
 
 	$('#button_toggle_debug').click(function toggleDebug() {
-		debug_console.style.visibility = (debug_console.style.visibility == "visible" || debug_console.style.visibility == "") ? "hidden" : "visible";
+		debug("console: " + debug_console.style.visibility);
+		debug_console.style.visibility = debug_console.style.visibility == "visible" ? "hidden" : "visible";
+	});
+
+	$('#button_toggle_menu').click(function toggleMenu(){
+		menu_widget.style.visibility = menu_widget.style.visibility == "visible" ? "hidden" : "visible";
 	});
 
 	var wsUri 		= "ws://localhost:1234";
@@ -42,6 +47,8 @@ $(document).ready(function() {
 	var invMvpMatrix = mat4.create();
 	
 	var display;
+
+	var playlist;
 
 	var depthImg;
 	var canvas;
@@ -200,43 +207,31 @@ $(document).ready(function() {
 	}
 
 	function setInvMatrix(base64) {
-		var m = base64.invMV;
+		var m = base64.invMVP;
 
-		mat4.set(invMvpMatrix, m[0], m[1], m[2], m[3],
-							   m[4], m[5], m[6], m[7],
-							   m[8], m[9], m[10], m[11],
-							   m[12], m[13], m[14], m[15]);
+		console.log(base64.invMVP);
+
+		mat4.set(invMvpMatrix, m[0], 	m[1], 	m[2], 	m[3],
+							   m[4], 	m[5], 	m[6], 	m[7],
+							   m[8], 	m[9], 	m[10],	m[11],
+							   m[12], 	m[13], 	m[14], 	m[15]);
 	}
 
 	function setGeometry(base64) {
 		setInvMatrix(base64);
 
 		depthImg.onload = function() {
-			context.canvas.width = 512;
-			context.canvas.height = 512;
-			context.canvas.style.width = 512 + 'px';
-        	context.canvas.style.height = 512 + 'px';
+			context.canvas.width = depthImg.width;
+			context.canvas.height = depthImg.height;
+			context.canvas.style.width = depthImg.width + 'px';
+        	context.canvas.style.height = depthImg.height + 'px';
 			context.scale(1, 1);
 			context.fillStyle = '#FFFFFF'; // or 'rgba(255,255,255,1)'
 			context.fillRect(0,0,canvas.width, canvas.height)
-			context.drawImage(depthImg, 0, 0, depthImg.width, depthImg.height, 0, 0, depthImg.width, depthImg.height);
-			var data = context.getImageData(0, 0, depthImg.width, depthImg.height);
+			context.drawImage(depthImg, 0, 0, depthImg.width, depthImg.height);
+
+			var data = context.getImageData(0, 0, depthImg.width, depthImg.height).data;
 		
-		/*	alert(canvas.width + " " + canvas.height);
-
-			var min = 255;
-			var max = 0;
-			for(var a = 0; a < data.data.length; a++) {
-				if(min > data.data[a]) min = data.data[a];
-				if(max < data.data[a]) max = data.data[a];
-
-				if(data.data[a] != 255) {
-					console.log("index: " + a + " " + data.data[a]);
-				}
-			}
-
-			alert(min + " "+ max);
-*/
 			var w 	= depthImg.width;
 			var h 	= depthImg.height;
 			var ws 	= w-1;
@@ -275,9 +270,9 @@ $(document).ready(function() {
 					u = x / ws;
 					i = u * 2 - 1;
 
-					vb[index] = i; 								index++;
-					vb[index] = j; 								index++;
-					vb[index] = (data.data[(y*w+x) * 4] / 255);	index++;
+					vb[index] = i; 							index++;
+					vb[index] = j; 							index++;
+					vb[index] = data[(y*w+x) * 4] / 255;	index++;
 					
 					tb[tindex] = u;		tindex++;
 					tb[tindex] = v;		tindex++;
@@ -302,7 +297,7 @@ $(document).ready(function() {
 			setTexture(base64);
 		}
 
-		depthImg.src = 'data:image/png;base64, ' + base64.depth.toString();	
+		depthImg.src = 'data:image/png;base64, ' + base64.depth.toString();
 	}
 
 	function degToRad(deg) {
@@ -313,11 +308,12 @@ $(document).ready(function() {
 		gl.viewport(0, 0, gl.viewportWidth, gl.viewportHeight);
 		gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
-		mat4.perspective(pMatrix, degToRad(45.0), gl.viewportWidth / gl.viewportHeight, 0.1, 100.0);
+		mat4.perspective(pMatrix, degToRad(45.0), gl.viewportWidth / gl.viewportHeight, 0.1, 5.1);
 
-		mat4.lookAt(mvMatrix, [0.0, 0.0, 0.0], [0.0, 0.0, -5.0], [0.0, 1.0, 0.0]);
+		mat4.lookAt(mvMatrix, [0.0, 0.0, 5.0], [0.0, 0.0, 0.0], [0.0, 1.0, 0.0]);
 
-		mat4.translate(mvMatrix, mvMatrix, [0.0, 0.0, -5.0]);
+		//mat4.translate(mvMatrix, mvMatrix, [0.0, 0.0, -5.0]);
+		//mat3.rotate(mvMatrix, mvMatrix, degToRad(91));
 
 		mat4.multiply(mvpMatrix, pMatrix, mvMatrix);
 	
@@ -357,6 +353,12 @@ $(document).ready(function() {
 
 			websocket.onmessage = function (evt) {
 				var obj = JSON.parse(evt.data);
+
+				if(typeof obj.result.scenes !== 'undefined') {
+					playlist = obj.result;
+
+					debug("numScenes: " + playlist.scenes.length);
+				}
 
 				
 				if(typeof obj.result.rgb !== 'undefined' &&
@@ -404,6 +406,7 @@ $(document).ready(function() {
 		}
 
 		context = canvas.getContext('2d');
+		
 		depthImg = new Image();
 		
 		gl.clearColor(0.0, 0.0, 0.0, 1.0);
@@ -417,7 +420,14 @@ $(document).ready(function() {
 			"jsonrpc" : "2.0",
 			"method" : "getFrame",
 			"params" : {
-				"id" : 0
+				"id" : 0 	/*	: 	info.id,
+				"pos"		: 	info.pos,
+				"lookat"	: 	info.lookat,
+				"up"		:	info.up,
+				"near"		:	info.near,
+				"far"		:	info.far,
+				"offangle"	: 	info.offangle
+*/
 			},
 			"id" : idCnt
 		};
