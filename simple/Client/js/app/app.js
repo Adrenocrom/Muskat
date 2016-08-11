@@ -38,6 +38,8 @@ $(document).ready(function() {
 		startWs();
 	});
 
+	var muskatgl = new muskatGl();
+
 	var gl;
 	var shaderProgram;
 	var meshTexture;
