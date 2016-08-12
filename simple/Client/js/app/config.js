@@ -1,0 +1,4 @@
+class MuskatConfig {
+	constructor() {
+	}
+}
