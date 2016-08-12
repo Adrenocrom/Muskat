@@ -1,22 +1,23 @@
-class muskatGl {
+class MuskatGl {
 	constructor(canvas) {
 		try {
-			this.gl = canvas.getContext("experimental-webgl");
-			this.gl.viewportWidth	= canvas.width;
-			this.gl.viewportHeight 	= canvas.height;
+			this.canvas = canvas;
+			this._gl 	= canvas.getContext("experimental-webgl");
+			this._gl.viewportWidth	= canvas.width;
+			this._gl.viewportHeight = canvas.height;
 		} catch (e) {
 			
 		}
 
-		if( !this.gl ) 
+		if( !this._gl ) 
 			alert("Could not initialise WebGl!");
 	}
 
 	get gl() {
-		return this.gl;
+		return this._gl;
 	}
 
-	getShaderById(id) {
+	compileShader(id) {
 		var code = document.getElementById(id);
 
 		if(!code) return null;
@@ -31,81 +32,95 @@ class muskatGl {
 		}
 
 		var shader;
-		if(code.type == "x-shader/x-fragment")		shader = this.gl.createShader(this.gl.FRAGMENT_SHADER);
-		else if(code.type == "x-shader/x-vertex")	shader = this.gl.createShader(this.gl.VERTEX_SHADER);
+		if(code.type == "x-shader/x-fragment")		shader = this._gl.createShader(this._gl.FRAGMENT_SHADER);
+		else if(code.type == "x-shader/x-vertex")	shader = this._gl.createShader(this._gl.VERTEX_SHADER);
 		else return null;
 
-		this.gl.shaderSource(shader, str);
-		this.gl.compileShader(shader);
+		this._gl.shaderSource(shader, str);
+		this._gl.compileShader(shader);
 
-		if(!this.gl.getShaderParameter(shader, this.gl.COMPILE_STATUS)) {
-			alert(this.gl.getShaderInfoLog(shader));
+		if(!this._gl.getShaderParameter(shader, this._gl.COMPILE_STATUS)) {
+			alert(this._gl.getShaderInfoLog(shader));
 			return null;
 		}
 
 		return shader;
 	}
 
-	linkShaders(shaderProgram) {
-		var fragmentShader  = this.getShaderById("shader-fs");
-		var vertexShader	= this.getShaderById("shader-vs");
+	linkShaderProgram(vertexShader, fragmentShader) {
+		var shaderProgram = this._gl.createProgram();
+		this._gl.attachShader(shaderProgram, vertexShader);
+		this._gl.attachShader(shaderProgram, fragmentShader);
+		this._gl.linkProgram(shaderProgram);
 
-		shaderProgram		= this.gl.createProgram();
-		this.gl.attachShader(shaderProgram, vertexShader);
-		this.gl.attachShader(shaderProgram, fragmentShader);
-		this.gl.linkProgram(shaderProgram);
-
-		if(!this.gl.getProgramParameter(shaderProgram, this.gl.LINK_STATUS)) {
+		if(!this._gl.getProgramParameter(shaderProgram, this._gl.LINK_STATUS)) {
 			alert("Could not link shaders!");
 		}
+
+		return shaderProgram;
+	}
+
+	useShaderProgram(shaderProgram) {
+		this._gl.useProgram(shaderProgram);
 	}
 
 	getVertexAttribLocation(shaderProgram, name) {
 		var add;
 		
-		this.gl.getAttribLocation(shaderProgram, name);
-		this.gl.enableVertexAttribArray(add);
+		add = this._gl.getAttribLocation(shaderProgram, name);
+		this._gl.enableVertexAttribArray(add);
 
 		return add;
 	} 
 
 	getUniformLocation(shaderProgram, name) {
-		return this.gl.getUniformLocation(shaderProgram, name);
+		return this._gl.getUniformLocation(shaderProgram, name);
+	}
+	
+	handleLoadedTexture(texture, callback) {
+		this._gl.bindTexture(this._gl.TEXTURE_2D, texture);
+		this._gl.pixelStorei(this._gl.UNPACK_ALIGNMENT, true);
+		this._gl.texImage2D(this._gl.TEXTURE_2D, 0, this._gl.RGBA, this._gl.RGBA, this._gl.UNSIGNED_BYTE, texture.image);
+		this._gl.texParameteri(this._gl.TEXTURE_2D, this._gl.TEXTURE_MAG_FILTER, this._gl.NEAREST);
+		this._gl.texParameteri(this._gl.TEXTURE_2D, this._gl.TEXTURE_MIN_FILTER, this._gl.NEAREST);
+		this._gl.bindTexture(this._gl.TEXTURE_2D, null);
+
+		if(callback !== 'undefine') callback();
 	}
 
-	handleLoadedTexture(texture) {
-		gl.bindTexture(gl.TEXTURE_2D, texture);
-		gl.pixelStorei(gl.UNPACK_ALIGNMENT, true);
-		gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, texture.image);
-		gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
-		gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
-		gl.bindTexture(gl.TEXTURE_2D, null);
-	}
-
-	createTextureFromBase64(type, base64, callback = null) {
-		var texture = this.gl.createTexture();
+	createTextureFromUrl(url, callback) {
+		var texture = this._gl.createTexture();
 		
 		texture.image = new Image();
-		texture.image.onload = function () {
-			this.handleLoadedTexture(texture);
+		texture.image.onload = function() {
+			this.handleLoadedTexture(texture, callback);
+		}.bind(this);
+		texture.image.src = url;
 
-			if(callback != null) callback();
-		}
+		return texture;
+	}
 
+	createTextureFromBase64(type, base64, callback) {
+		var texture = this._gl.createTexture();
+		
+		texture.image = new Image();
+		texture.image.onload = function() {
+			this.handleLoadedTexture(texture, callback);
+		}.bind(this);
 		texture.image.src = 'data:image/'+ type +';base64, '+ base64.toString();
 
 		return texture;
 	}
 
-	setTextureFromBase64(texture, type, base64, callback = null) {
-		texture.image.onload = function () {
-			this.handleLoadedTexture(texture);
-			callback();
-
-			if(callback != null) callback();
-		}
-
+	setTextureFromBase64(texture, type, base64, callback) {
+		texture.image.onload = function() {
+			this.handleLoadedTexture(texture, callback);
+		}.bind(this);
 		texture.image.src = 'data:image/'+ type +';base64, '+ base64.toString();
+	}
+
+	setUniformMatrix(uniformLocation, matrix) {
+		this._gl.uniformMatrix4fv(uniformLocation, false, matrix);
 	}
 
 	degToRad(deg) {

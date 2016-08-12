@@ -43,6 +43,7 @@
 
 	    	void main(void) {
     	    	gl_FragColor = vec4(texture2D(uSampler, vec2(vTextureCoord.s, vTextureCoord.t)).rgb, 1.0);
+				//gl_FragColor = vec4(1.0);
 			}
 		</script>
 		<script id="shader-vs" type="x-shader/x-vertex">
@@ -53,7 +54,14 @@
     		uniform mat4 uINVMVPMatrix;
 
 			varying vec2 vTextureCoord;
+/*
+			float getDepth() {
+				highp float val = texture2d(samplerTop8bits, tex_coord) * (255.0 / 256.0);
+				val += texture2d(samplerBotton8bits, tex_coord) * (1.0 / 256.0);
 
+				return val;
+			}
+*/
     		void main(void) {
         		gl_Position = uMVPMatrix * vec4(aVertexPosition, 1.0);
     			vTextureCoord = aTextureCoord;
@@ -62,6 +70,7 @@
 
 		<script src="js/app/config.js"></script>
 		<script src="js/app/gl.js"></script>
+		<script src="js/app/mesh.js"></script>
         <script src="js/app/app.js"></script>
     </body>
 </html>
