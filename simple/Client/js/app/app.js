@@ -12,15 +12,16 @@ $(document).ready(function() {
 		debug_console.scrollTop = debug_console.scrollHeight;
 	}
 	debug("muskat client v0.0.1")
-	debug_console.style.visibility = "hidden";
+	//debug_console.style.visibility = "hidden";
+	$('#window_setting').animate({width: "toggle"}, 0);
+	$('#textarea_debug').slideUp(0);
 
 	$('#button_toggle_debug').click(function toggleDebug() {
-		debug("console: " + debug_console.style.visibility);
-		debug_console.style.visibility = debug_console.style.visibility == "visible" ? "hidden" : "visible";
+		$('#textarea_debug').slideToggle(1000);
 	});
 
 	$('#button_toggle_menu').click(function toggleMenu(){
-		menu_widget.style.visibility = menu_widget.style.visibility == "visible" ? "hidden" : "visible";
+		$('#window_setting').animate({width: "toggle"}, 500);
 	});
 
 	var wsUri 		= "ws://localhost:1234";

@@ -19,12 +19,22 @@
 			</button>
 		</div>
 		<div id="window_setting">
-			<button id="button_toggle_debug">debug</button>
+			<fieldset id="form_scene">
+			</fieldset>
+			<fieldset id="form_console">
+				<button class="btn" id="button_toggle_debug">console</button>
+			</fieldset>
 		</div>
 		<div id="window_config">
 			<fieldset id="form_init">
-				<p>Server adress: <input class="iput" type="text" id="text_server_uri" value="ws://localhost:1234"></input></p>
-				<p><button class="btn" id="button_connect_to_server">connect</button></p>
+				<p>
+					<label for="text_server_uri">Server adress:</label>
+					<input class="iput" type="text" id="text_server_uri" value="ws://localhost:1234"></input>
+				</p>
+				<br>
+				<p>
+					<button class="btn" id="button_connect_to_server">connect</button>
+				</p>
 			</fieldset>
 		</div>
 		<div id="window_render">
