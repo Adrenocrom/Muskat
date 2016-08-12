@@ -39,10 +39,10 @@
 
 			varying vec2 vTextureCoord;
 
-	    	uniform sampler2D uSampler;
+	    	uniform sampler2D uColorSampler;
 
 	    	void main(void) {
-    	    	gl_FragColor = vec4(texture2D(uSampler, vec2(vTextureCoord.s, vTextureCoord.t)).rgb, 1.0);
+    	    	gl_FragColor = vec4(texture2D(uColorSampler, vec2(vTextureCoord.s, vTextureCoord.t)).rgb, 1.0);
 				//gl_FragColor = vec4(1.0);
 			}
 		</script>
@@ -53,6 +53,8 @@
     		uniform mat4 uMVPMatrix;
     		uniform mat4 uINVMVPMatrix;
 
+			uniform sampler2D uDepthSampler;
+
 			varying vec2 vTextureCoord;
 /*
 			float getDepth() {
@@ -62,8 +64,11 @@
 				return val;
 			}
 */
+
     		void main(void) {
-        		gl_Position = uMVPMatrix * vec4(aVertexPosition, 1.0);
+				float depth = texture2D(uDepthSampler, vec2(aTextureCoord.s, aTextureCoord.t)).r;
+
+        		gl_Position = uMVPMatrix * vec4(aVertexPosition.xy, depth, 1.0);
     			vTextureCoord = aTextureCoord;
 			}
 		</script>

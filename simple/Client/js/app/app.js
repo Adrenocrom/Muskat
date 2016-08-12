@@ -71,7 +71,8 @@ $(document).ready(function() {
 		
 		shaderProgram.invMvpMatrixUniform 	= muGl.getUniformLocation(shaderProgram, "uINVMVPMatrix");
     	shaderProgram.mvpMatrixUniform 		= muGl.getUniformLocation(shaderProgram, "uMVPMatrix");
-		shaderProgram.samplerUniform 		= muGl.getUniformLocation(shaderProgram, "uSampler");
+		shaderProgram.colorSamplerUniform 	= muGl.getUniformLocation(shaderProgram, "uColorSampler");
+		shaderProgram.depthSamplerUniform 	= muGl.getUniformLocation(shaderProgram, "uDepthSampler");
 
 		debug("set default colors");
 		muGl.gl.clearColor(0.0, 0.0, 0.2, 1.0);
@@ -80,10 +81,15 @@ $(document).ready(function() {
 		debug("set default mesh");
 		mesh = new MuskatMesh(muGl.gl);
 		mesh.createPlane();
+		resize(512, 512);
 
 		debug("set default textures");
 		colorTexture = muGl.createTextureFromUrl("img/UV_Grid_Sm.jpg", draw);
-		//depthTexture = muGl.createTextureFromUrl("img/default.png", draw());
+		depthTexture = muGl.createTextureFromUrl("img/default.png", draw);
+	}
+
+	function resize(w, h) {
+		mesh.createComplexPlane(w, h);
 	}
 
 	var mvMatrix	 = mat4.create();
@@ -123,9 +129,15 @@ $(document).ready(function() {
 		gl.vertexAttribPointer(shaderProgram.textureCoordAttrib, mesh.texCoords.itemSize, gl.FLOAT, false, 0, 0);
 
 		gl.activeTexture(gl.TEXTURE0);
-		gl.bindTexture(gl.TEXTURE_2D, colorTexture);
-		gl.uniform1i(shaderProgram.samplerUniform, 0);
+		gl.bindTexture(gl.TEXTURE_2D, depthTexture);
+		gl.uniform1i(shaderProgram.colorSamplerUniform, 0);
 
+
+		gl.activeTexture(gl.TEXTURE1);
+		gl.bindTexture(gl.TEXTURE_2D, colorTexture);
+		gl.uniform1i(shaderProgram.colorSamplerUniform, 1);
+
+		
 		gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, mesh.indices);
 		muGl.setUniformMatrix(shaderProgram.mvpMatrixUniform, mvpMatrix);
 		muGl.setUniformMatrix(shaderProgram.invMvpMatrixUniform, invMvpMatrix);
@@ -148,12 +160,12 @@ $(document).ready(function() {
 				loadSceneMessage();
 				initWebGl();
 
-				//getFrameMessage();
+				getFrameMessage();
 			};
 
 			websocket.onmessage = function (evt) {
 				var obj = JSON.parse(evt.data);
-	/*
+	
 				if(typeof obj.result.scenes !== 'undefined') {
 					playlist = obj.result;
 
@@ -161,11 +173,11 @@ $(document).ready(function() {
 				}
 
 				
-				if(typeof obj.result.rgb !== 'undefined' &&
-				   typeof obj.result.depth !== 'undefined') {
-					
-					setMesh(obj.result);
-				}*/
+				if(typeof obj.result.rgb !== 'undefined')
+					muGl.setTextureFromBase64(colorTexture, "jpeg", obj.result.rgb, draw);
+
+				if(typeof obj.result.depth !== 'undefined')
+					muGl.setTextureFromBase64(depthTexture, "png", obj.result.depth, draw);
             };
 
 			websocket.onclose = function (evt) {
