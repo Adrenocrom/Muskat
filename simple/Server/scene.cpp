@@ -15,6 +15,8 @@ Scene::Scene(string filename, string suffix) {
 		return;
 	}
 
+	m_scene_name = filename;
+
 	string str_line;
 	while(getline(file, str_line, '\n')) {
 		stringstream line(str_line);

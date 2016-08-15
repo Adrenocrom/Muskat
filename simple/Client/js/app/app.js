@@ -6,6 +6,10 @@
 $(document).ready(function() {
 	var debug_console 	= document.getElementById("textarea_debug");
 	var menu_widget 	= document.getElementById("window_setting");
+	var render_widget	= document.getElementById("window_render");
+	var g_width			= 512;
+	var g_height		= 512;
+	var g_isOut			= false;
 
 	function debug(message) {
 		debug_console.value += message + "\n";
@@ -13,7 +17,7 @@ $(document).ready(function() {
 	}
 	debug("muskat client v0.0.1")
 	//debug_console.style.visibility = "hidden";
-	$('#window_setting').animate({width: "toggle"}, 0);
+	$('#window_setting').animate({width: "0px"}, 0);
 	$('#textarea_debug').slideUp(0);
 
 	$('#button_toggle_debug').click(function toggleDebug() {
@@ -21,7 +25,26 @@ $(document).ready(function() {
 	});
 
 	$('#button_toggle_menu').click(function toggleMenu(){
-		$('#window_setting').animate({width: "toggle"}, 500);
+		if(!g_isOut) {
+
+			$('#window_render').animate({
+				margin: "50px auto 0px " +((window.innerWidth/2) - g_width) / 2
+			}, 500);
+
+			$('#window_setting').animate({
+				width: "50%"
+			}, 500);
+		} else {
+			$('#window_render').animate({
+				margin: "50px auto 0px "+ (window.innerWidth - g_width) / 2
+			}, 500);
+
+			$('#window_setting').animate({
+				width: "0px"
+			}, 500);
+		}
+
+		g_isOut = !g_isOut;
 	});
 
 	var wsUri 		= "ws://localhost:1234";
@@ -145,6 +168,16 @@ $(document).ready(function() {
 		gl.drawElements(gl.TRIANGLES, mesh.indices.numItems, gl.UNSIGNED_INT, 0);
 	}
 
+	function setPlaylist(playlist) {
+		var select = document.getElementById("select_scenes");
+		
+		for(var i = 0; i < playlist.scenes.length; i++) {
+			var option 	= document.createElement("option");
+			option.text = playlist.scenes[i].name;
+			select.add(option);
+		}
+	}
+
 
 	function startWs() {
 		try {
@@ -169,6 +202,8 @@ $(document).ready(function() {
 	
 				if(typeof obj.result.scenes !== 'undefined') {
 					playlist = obj.result;
+					
+					setPlaylist(playlist);
 
 					debug("numScenes: " + playlist.scenes.length);
 				}
