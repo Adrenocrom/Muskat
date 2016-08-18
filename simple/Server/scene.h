@@ -13,8 +13,8 @@ public:
 	uint		m_width;
 	QVector3D	m_aabb_min;
 	QVector3D	m_aabb_max;
-	float		m_aspect;
-	float		m_aperture;
+	double		m_aspect;
+	double		m_aperture;
 
 	vector<FrameInfo> 		m_infos;
 	vector<FrameBuffer> 	m_fbs;
@@ -25,8 +25,8 @@ public:
 
 private:
 	QJsonObject getFrameInfo(uint frame_id);
-	void 		procressLine(stringstream& line);
-	string 		removeChars(string& str);
+	void 		procressLine(stringstream& line, FrameInfo& info);
+	QString 	removeChars(string& str);
 };
 
 #endif

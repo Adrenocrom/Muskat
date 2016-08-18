@@ -17,10 +17,11 @@ Scene::Scene(string filename, string suffix) {
 
 	m_scene_name = filename;
 
+	FrameInfo 	info;
 	string str_line;
 	while(getline(file, str_line, '\n')) {
 		stringstream line(str_line);
-		procressLine(line);
+		procressLine(line, info);
 	}
 	file.close();
 
@@ -40,10 +41,9 @@ Scene::Scene(string filename, string suffix) {
 	}
 }
 
-void Scene::procressLine(stringstream& line) {
+void Scene::procressLine(stringstream& line, FrameInfo& info) {
 	string 		tag;
 	string 	  	buf;
-	FrameInfo 	info;
 
 	while(getline(line, tag, ' ')) {
 		if(tag.empty()) continue;
@@ -51,58 +51,57 @@ void Scene::procressLine(stringstream& line) {
 		else if(!tag.compare("file")) continue;
 		else if(!tag.compare("timestep")) {
 			line >> buf;
-			m_timestep = atoi(buf.c_str());
+			m_timestep = QString::fromStdString(buf).toInt();
 		}
 		else if(!tag.compare("boundingbox")) {
-			line >> buf; m_aabb_min.setX(atof(removeChars(buf).c_str()));
-			line >> buf; m_aabb_min.setY(atof(removeChars(buf).c_str()));
-			line >> buf; m_aabb_min.setZ(atof(removeChars(buf).c_str()));
+			line >> buf; m_aabb_min.setX(removeChars(buf).toDouble());
+			line >> buf; m_aabb_min.setY(removeChars(buf).toDouble());
+			line >> buf; m_aabb_min.setZ(removeChars(buf).toDouble());
 
-			line >> buf; m_aabb_max.setX(atof(removeChars(buf).c_str()));
-			line >> buf; m_aabb_max.setY(atof(removeChars(buf).c_str()));
-			line >> buf; m_aabb_max.setZ(atof(removeChars(buf).c_str()));
+			line >> buf; m_aabb_max.setX(removeChars(buf).toDouble());
+			line >> buf; m_aabb_max.setY(removeChars(buf).toDouble());
+			line >> buf; m_aabb_max.setZ(removeChars(buf).toDouble());
 		}
 		else if(!tag.compare("aperture")) {
 			line >> buf;
-			m_aperture = atof(buf.c_str());
+			m_aperture = QString::fromStdString(buf).toDouble();
 		}
 		else if(!tag.compare("image")) {
 			line >> buf;
-			info.id = stoi(buf.c_str());
+			info.id = QString::fromStdString(buf).toInt();
 		}
 		else if(!tag.compare("camera")) {
-			line >> buf; 	info.pos.setX(atof(removeChars(buf).c_str()));
-			line >> buf; 	info.pos.setY(atof(removeChars(buf).c_str()));
-			line >> buf; 	info.pos.setZ(atof(removeChars(buf).c_str()));
-
-			line >> buf; 	info.lookAt.setX(atof(removeChars(buf).c_str()));
-			line >> buf; 	info.lookAt.setY(atof(removeChars(buf).c_str()));
-			line >> buf; 	info.lookAt.setZ(atof(removeChars(buf).c_str()));
-
-			line >> buf; 	info.up.setX(atof(removeChars(buf).c_str()));
-			line >> buf; 	info.up.setY(atof(removeChars(buf).c_str()));
-			line >> buf; 	info.up.setZ(atof(removeChars(buf).c_str()));
+			line >> buf; 	info.pos.setX(removeChars(buf).toDouble());
+			line >> buf; 	info.pos.setY(removeChars(buf).toDouble());
+			line >> buf; 	info.pos.setZ(removeChars(buf).toDouble());
+			
+			line >> buf; 	info.lookAt.setX(removeChars(buf).toDouble());
+			line >> buf; 	info.lookAt.setY(removeChars(buf).toDouble());
+			line >> buf; 	info.lookAt.setZ(removeChars(buf).toDouble());
+			
+			line >> buf; 	info.up.setX(removeChars(buf).toDouble());
+			line >> buf; 	info.up.setY(removeChars(buf).toDouble());
+			line >> buf; 	info.up.setZ(removeChars(buf).toDouble());
 		}
 		else if(!tag.compare("clipdists")) {
-			line >> buf; 	info.near 	= atof(removeChars(buf).c_str());
-			line >> buf; 	info.far 	= atof(removeChars(buf).c_str());
+			line >> buf; 	info.near 	= removeChars(buf).toDouble();
+			line >> buf; 	info.far	= removeChars(buf).toDouble();
 		}
 		else if(!tag.compare("offangle")) {
-			line >> buf; 	info.offangle 	= atof(removeChars(buf).c_str());
-			
+			line >> buf; 	info.offangle 	= removeChars(buf).toDouble();
 			m_infos.push_back(info);
 		}
 	}
 }
 
-string Scene::removeChars(string& str) {
+QString Scene::removeChars(string& str) {
 	string res;
 
 	for (const auto c : str)
 		if(!(c == ',' || c == ' ' || c == ')' || c == '('))
 			res.push_back(c);
 
-	return res;
+	return QString::fromStdString(res);
 }
 
 QJsonObject Scene::getSceneInfo() {

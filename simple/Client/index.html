@@ -24,12 +24,48 @@
 		<div id="window_setting">
 			<fieldset id="form_scene">
 				<p>
-					<label for="select_scenes">scenes:</label>
-					<select id="select_scenes" name="scenes"></select>
-					<button class="btn" id="button_load_scene">load scene</button>
+					<label>scenes:</label>
+					<select id="select_scenes"></select>
 				</p>
 				<p>
+					<label>frames: </label>
+					<select id="select_frames_min"></select>
+					<select id="select_frames_max"></select>
 				</p>
+				<fieldset>
+					<p>
+						<label>id:</label>
+						<select id="select_frame"></select>
+					</p>
+					<p>
+						<label>pos:</label>
+						<input class="iput short" type="text" id="text_frame_pos_x" value=""></input>
+						<input class="iput short" type="text" id="text_frame_pos_y" value=""></input>
+						<input class="iput short" type="text" id="text_frame_pos_z" value=""></input>
+					</p>
+					<p>
+						<label>lookat:</label>
+						<input class="iput short" type="text" id="text_frame_lookat_x" value=""></input>
+						<input class="iput short" type="text" id="text_frame_lookat_y" value=""></input>
+						<input class="iput short" type="text" id="text_frame_lookat_z" value=""></input>
+					</p>
+					<p>
+						<label>up:</label>
+						<input class="iput short" type="text" id="text_frame_up_x" value=""></input>
+						<input class="iput short" type="text" id="text_frame_up_y" value=""></input>
+						<input class="iput short" type="text" id="text_frame_up_z" value=""></input>
+					</p>
+
+					<p>
+						<label>near/far:</label>
+						<input class="iput short" type="text" id="text_frame_near" value=""></input>
+						<input class="iput short" type="text" id="text_frame_far" value=""></input>
+					</p>
+					<p>
+						<label>offangle:</label>
+						<input class="iput short" type="text" id="text_frame_offangle" value=""></input>
+					</p>
+				</fieldset>
 			</fieldset>
 			<fieldset id="form_console">
 				<button class="btn" id="button_toggle_debug">console</button>

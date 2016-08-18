@@ -18,6 +18,7 @@ fieldset {
 label {
 	color: #444;
 	margin-right: 20px;
+	width: 100px;
 }
 
 
@@ -146,6 +147,9 @@ option {
 	border-color: #222;
 }
 
+.short {
+	width: 75px;
+}
 
 .menu_b1 {
 	width: 30px;

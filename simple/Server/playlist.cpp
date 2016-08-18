@@ -9,7 +9,11 @@ Playlist::Playlist(string dir, string suffix) {
 	
 	addScenes(p, m_suffix);
 
+	sort(m_file_names.begin(), m_file_names.end());
+
 	for(uint i = 0; i < m_file_names.size(); ++i) {
+		cout<<m_file_names[i]<<endl;
+		
 		Scene scene(m_file_names[i], m_suffix);
 		m_scenes.push_back(scene);
 	}

@@ -75,7 +75,7 @@ void MainWindow::createWidgetStart() {
 }
 
 void MainWindow::createWidgetMain() {
-	m_widget_main	  			= new QWidget;
+	m_widget_main	  		= new QWidget;
 	QGridLayout* gridLayout = new QGridLayout;
 
 	gridLayout->addWidget(createWidgetScene(), 		0, 0);
@@ -86,7 +86,7 @@ void MainWindow::createWidgetMain() {
 }
 
 QGroupBox* MainWindow::createWidgetScene() {
-	QGroupBox* 		groupBox = new QGroupBox(tr("scene"));
+	QGroupBox* 	groupBox 	= new QGroupBox(tr("scene"));
 	QFormLayout* formLayout = new QFormLayout;
 
 	groupBox->setLayout(formLayout);
@@ -128,6 +128,7 @@ void MainWindow::start_server() {
 		m_scene_suffix 	= m_lineEdit_scene_suffix->text().toStdString();
 
 		m_playlist = new Playlist(m_scenes_dir, m_scene_suffix);
+		m_filerenderer->setScene(&m_playlist->m_scenes[0]);
 	}
 
 	m_widget_stacked->setCurrentIndex(1);

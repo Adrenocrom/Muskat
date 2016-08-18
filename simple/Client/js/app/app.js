@@ -26,7 +26,6 @@ $(document).ready(function() {
 
 	$('#button_toggle_menu').click(function toggleMenu(){
 		if(!g_isOut) {
-
 			$('#window_render').animate({
 				margin: "50px auto 0px " +((window.innerWidth/2) - g_width) / 2
 			}, 500);
@@ -45,6 +44,11 @@ $(document).ready(function() {
 		}
 
 		g_isOut = !g_isOut;
+	});
+
+	$( "#select_scenes" ).change(function() {
+		setScene(g_playlist.scenes[this.selectedIndex]);
+		loadSceneMessage(this.selectedIndex);
 	});
 
 	var wsUri 		= "ws://localhost:1234";
@@ -69,6 +73,7 @@ $(document).ready(function() {
 	var colorTexture;
 
 	var mesh;
+	var g_playlist;
 	
 	function initWebGl() {
 		debug("init opengl");
@@ -169,15 +174,65 @@ $(document).ready(function() {
 	}
 
 	function setPlaylist(playlist) {
+		g_playlist = playlist;
+
 		var select = document.getElementById("select_scenes");
-		
+
 		for(var i = 0; i < playlist.scenes.length; i++) {
 			var option 	= document.createElement("option");
 			option.text = playlist.scenes[i].name;
 			select.add(option);
 		}
+
+		select.selectedIndex = 0;
+		setScene(playlist.scenes[0]);
+		loadSceneMessage(0);
 	}
 
+	function setScene(scene) {
+		var select_frames_min = document.getElementById("select_frames_min");
+		var select_frames_max = document.getElementById("select_frames_max");
+		var select_frame	  = document.getElementById("select_frame");
+		$("#select_frames_min").empty();
+		$("#select_frames_max").empty();
+		$("#select_frame").empty();
+		
+		for(var i = 0; i < scene.frames.length; i++) {
+			var option = document.createElement("option");
+			option.text = i;
+			select_frame.add(option);
+
+			var option_min = document.createElement("option");
+			option_min.text = i;
+			select_frames_min.add(option_min);
+
+			var option_max = document.createElement("option");
+			option_max.text = i;
+			select_frames_max.add(option_max);
+		}
+
+		select_frames_max.selectedIndex = scene.frames.length-1;
+		setFrame(scene.frames[0]);
+	}
+
+	function setFrame(frame) {
+		document.getElementById("text_frame_pos_x").value = frame.pos[0];
+		document.getElementById("text_frame_pos_y").value = frame.pos[1];
+		document.getElementById("text_frame_pos_z").value = frame.pos[2];
+		
+		document.getElementById("text_frame_lookat_x").value = frame.lookat[0];
+		document.getElementById("text_frame_lookat_y").value = frame.lookat[1];
+		document.getElementById("text_frame_lookat_z").value = frame.lookat[2];
+
+		document.getElementById("text_frame_up_x").value = frame.up[0];
+		document.getElementById("text_frame_up_y").value = frame.up[1];
+		document.getElementById("text_frame_up_z").value = frame.up[2];
+		
+		document.getElementById("text_frame_near").value = frame.near;
+		document.getElementById("text_frame_far").value = frame.far;
+		
+		document.getElementById("text_frame_offangle").value = frame.offangle;
+	}
 
 	function startWs() {
 		try {
@@ -191,7 +246,6 @@ $(document).ready(function() {
 				debug("connected to " + wsUri);
 
 				getPlaylistMessage();
-				loadSceneMessage();
 				initWebGl();
 
 				getFrameMessage();
@@ -204,7 +258,7 @@ $(document).ready(function() {
 					playlist = obj.result;
 					
 					setPlaylist(playlist);
-
+					debug(JSON.stringify(playlist));
 					debug("numScenes: " + playlist.scenes.length);
 				}
 
@@ -270,12 +324,12 @@ $(document).ready(function() {
 		idCnt++;
 	}
 
-	function loadSceneMessage() {
+	function loadSceneMessage(id) {
 		var msg = {
 			"jsonrpc" : "2.0",
 			"method"  : "loadScene",
 			"params"  : {
-				"id" : 0
+				"id" : id
 			},
 			"id"	  : idCnt
 		};
