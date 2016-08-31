@@ -15,7 +15,7 @@
 			<div id="logo">
 				Muskat
 			</div>
-			<button class="btn" id="button_toggle_menu">
+			<button id="button_toggle_menu">
 				<div class="menu_b1"></div>
 				<div class="menu_b1"></div>
 				<div class="menu_b1"></div>
@@ -31,44 +31,47 @@
 					<label>frames: </label>
 					<select id="select_frames_min"></select>
 					<select id="select_frames_max"></select>
+					<button id="button_run_scene">run</button>
+					<button id="button_render_single_frame">single frame</button>
 				</p>
+			</fieldset>
+			<fieldset>
 				<fieldset>
+					<legend>Texture</legend>
 					<p>
-						<label>id:</label>
-						<select id="select_frame"></select>
+						<input type="radio" name="texture" value="jpeg" checked="checked">
+						<label>JPEG Quality:</label>
+						<input class="islider" id="slider_jpeg_quality" type="range" min="0" max="100" step="1" value="0" /> 
+						<input class="iput short" type="text" id="text_jpeg_quality" value="0"></input>
 					</p>
 					<p>
-						<label>pos:</label>
-						<input class="iput short" type="text" id="text_frame_pos_x" value=""></input>
-						<input class="iput short" type="text" id="text_frame_pos_y" value=""></input>
-						<input class="iput short" type="text" id="text_frame_pos_z" value=""></input>
+						<input type="radio" name="texture" value="png">
+						<label>PNG Quality:</label>
+						<input class="islider" id="slider_png_quality" type="range" min="0" max="9" step="1" value="0" /> 
+						<input class="iput short" type="text" id="text_png_quality" value="0"></input>
+					</p>
+				</fieldset>
+				<fieldset>	
+					<legend>mesh</legend>
+					<p>
+						<input type="radio" name="mesh" value="8bit" checked="checked">
+						<label>8 bit</label>
+						<input class="islider" id="slider_mesh_quality" type="range" min="0" max="9" step="1" value="0" /> 
+						<input class="iput short" type="text" id="text_mesh_quality" value="0"></input>
 					</p>
 					<p>
-						<label>lookat:</label>
-						<input class="iput short" type="text" id="text_frame_lookat_x" value=""></input>
-						<input class="iput short" type="text" id="text_frame_lookat_y" value=""></input>
-						<input class="iput short" type="text" id="text_frame_lookat_z" value=""></input>
+						<input type="radio" name="mesh" value="16bit">
+						<label>16 bit</label>
 					</p>
 					<p>
-						<label>up:</label>
-						<input class="iput short" type="text" id="text_frame_up_x" value=""></input>
-						<input class="iput short" type="text" id="text_frame_up_y" value=""></input>
-						<input class="iput short" type="text" id="text_frame_up_z" value=""></input>
-					</p>
-
-					<p>
-						<label>near/far:</label>
-						<input class="iput short" type="text" id="text_frame_near" value=""></input>
-						<input class="iput short" type="text" id="text_frame_far" value=""></input>
-					</p>
-					<p>
-						<label>offangle:</label>
-						<input class="iput short" type="text" id="text_frame_offangle" value=""></input>
+						<input type="radio" name="mesh" value="delaunay">
+						<label>delaunay</label>
+						<input class="iput short" type="text" id="text_delaunay_num" value="1000"></input>
 					</p>
 				</fieldset>
 			</fieldset>
 			<fieldset id="form_console">
-				<button class="btn" id="button_toggle_debug">console</button>
+				<button id="button_toggle_debug">console</button>
 			</fieldset>
 		</div>
 		<div id="window_config">
@@ -79,7 +82,7 @@
 				</p>
 				<br>
 				<p>
-					<button class="btn" id="button_connect_to_server">connect</button>
+					<button id="button_connect_to_server">connect</button>
 				</p>
 			</fieldset>
 		</div>
@@ -109,6 +112,8 @@
     		uniform mat4 uMVPMatrix;
     		uniform mat4 uINVMVPMatrix;
 
+			uniform int uDepth;
+
 			uniform sampler2D uDepthSampler;
 
 			varying vec2 vTextureCoord;
@@ -122,9 +127,17 @@
 */
 
     		void main(void) {
-				float depth = texture2D(uDepthSampler, vec2(aTextureCoord.s, aTextureCoord.t)).r;
+				highp float depth = 0.0;
 
-        		gl_Position = uMVPMatrix * vec4(aVertexPosition.xy, depth, 1.0);
+				if(uDepth == 0) {
+					depth = texture2D(uDepthSampler, vec2(aTextureCoord.s, aTextureCoord.t)).r;
+				}
+				else if(uDepth == 1) {
+					depth = texture2D(uDepthSampler, vec2(aTextureCoord.s, aTextureCoord.t)).r * (255.0 / 256.0);
+					depth += texture2D(uDepthSampler, vec2(aTextureCoord.s, aTextureCoord.t)).g * (1.0 / 256.0);
+				}
+
+        		gl_Position = uMVPMatrix * (uINVMVPMatrix * vec4(aVertexPosition.xy, depth, 1.0));
     			vTextureCoord = aTextureCoord;
 			}
 		</script>

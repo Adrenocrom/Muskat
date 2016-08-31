@@ -13,6 +13,7 @@
 #include <fstream>
 #include <sstream>
 #include <iomanip>
+#include <bitset>
 
 // CV
 #include <opencv.hpp>
@@ -41,6 +42,7 @@
 #include <QJsonArray>
 #include <QMatrix4x4>
 #include <QVector3D>
+#include <QImage>
 
 // DEFINES
 #ifndef SAFE_DELETE

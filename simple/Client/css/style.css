@@ -21,6 +21,13 @@ label {
 	width: 100px;
 }
 
+button {
+	background-color: #FFF;
+	color: #222;
+	border-style: solid;
+	border-width: 1px 1px 1px 1px;
+	border-color: #222;
+}
 
 select {
   border: 1px solid black;
@@ -31,6 +38,14 @@ select {
 option {
   background:#FFF;
   border-top:1px solid #222;
+}
+
+input[type='radio'] {
+	background-color: #FFF;
+	color: #222;
+	border-style: solid;
+	border-width: 1px 1px 1px 1px;
+	border-color: #222;
 }
 
 #select_scenes {
@@ -131,7 +146,7 @@ option {
 	font-size: 20px;
 }
 
-.btn {
+.iput {
 	background-color: #FFF;
 	color: #222;
 	border-style: solid;
@@ -139,10 +154,10 @@ option {
 	border-color: #222;
 }
 
-.iput {
+.islider {
 	background-color: #FFF;
-	color: #222;
-	border-style: solid;
+	color: #111;
+	border-style: none;
 	border-width: 1px 1px 1px 1px;
 	border-color: #222;
 }

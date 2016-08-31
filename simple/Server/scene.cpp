@@ -71,14 +71,14 @@ void Scene::procressLine(stringstream& line, FrameInfo& info) {
 			info.id = QString::fromStdString(buf).toInt();
 		}
 		else if(!tag.compare("camera")) {
-			line >> buf; 	info.pos.setX(removeChars(buf).toDouble());
-			line >> buf; 	info.pos.setY(removeChars(buf).toDouble());
-			line >> buf; 	info.pos.setZ(removeChars(buf).toDouble());
-			
 			line >> buf; 	info.lookAt.setX(removeChars(buf).toDouble());
 			line >> buf; 	info.lookAt.setY(removeChars(buf).toDouble());
 			line >> buf; 	info.lookAt.setZ(removeChars(buf).toDouble());
-			
+
+			line >> buf; 	info.pos.setX(removeChars(buf).toDouble());
+			line >> buf; 	info.pos.setY(removeChars(buf).toDouble());
+			line >> buf; 	info.pos.setZ(removeChars(buf).toDouble());
+						
 			line >> buf; 	info.up.setX(removeChars(buf).toDouble());
 			line >> buf; 	info.up.setY(removeChars(buf).toDouble());
 			line >> buf; 	info.up.setZ(removeChars(buf).toDouble());

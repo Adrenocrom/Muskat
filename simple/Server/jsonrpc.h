@@ -19,8 +19,6 @@ struct RPCResponse {
 class JsonRPC {
 public:
 	uint 		m_msg_counter;
-	Config 		m_config;
-	Compressor	m_compressor;
 
     JsonRPC(MainWindow* mw);
     ~JsonRPC();
@@ -32,6 +30,7 @@ public:
 	RPCResponse getConfig(RPCRequest& request);
 	RPCResponse setConfig(RPCRequest& request);
 	RPCResponse getFrame(RPCRequest& request);
+	RPCResponse saveFrame(RPCRequest& request);
 	RPCResponse resize(RPCRequest& request);
 
 private:

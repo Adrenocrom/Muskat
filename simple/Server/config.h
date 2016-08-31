@@ -4,7 +4,13 @@
 #pragma once
 
 struct Config {
-	std::string renderer;
+
+	QString		textureCompressionMethod;
+	int			textureCompressionQuality;
+	QString		meshCompressionMethod;
+	int			meshCompressionQuality;
+
+	Config();
 
 	QJsonObject getConfig();
 	void		setConfig(QJsonObject& jo);

@@ -35,6 +35,8 @@ MainWindow::MainWindow() {
 
 	m_serverDeamon 	= nullptr;
 	m_playlist		= nullptr;
+	m_config		= nullptr;
+	m_compressor	= nullptr;
 	m_filerenderer	= nullptr;
 	m_filerenderer	= new FileRenderer;
 }
@@ -42,6 +44,8 @@ MainWindow::MainWindow() {
 MainWindow::~MainWindow() {
 	SAFE_DELETE(m_serverDeamon);
 	SAFE_DELETE(m_playlist);
+	SAFE_DELETE(m_config);
+	SAFE_DELETE(m_compressor);
 	SAFE_DELETE(m_filerenderer);
 }
 
@@ -127,7 +131,9 @@ void MainWindow::start_server() {
 		m_scenes_dir	= m_lineEdit_scenes_dir->text().toStdString();
 		m_scene_suffix 	= m_lineEdit_scene_suffix->text().toStdString();
 
-		m_playlist = new Playlist(m_scenes_dir, m_scene_suffix);
+		m_playlist 		= new Playlist(m_scenes_dir, m_scene_suffix);
+		m_config		= new Config();
+		m_compressor	= new Compressor(m_config);
 		m_filerenderer->setScene(&m_playlist->m_scenes[0]);
 	}
 

@@ -15,6 +15,8 @@ class QLabel;
 class FileRenderer;
 class ServerDeamon;
 class Playlist;
+class Config;
+class Compressor;
 
 /*
 namespace boost {
@@ -31,6 +33,8 @@ public:
 	FileRenderer*				m_filerenderer;
 
 	Playlist*					m_playlist;
+	Config*						m_config;
+	Compressor*					m_compressor;
 
 	MainWindow();
 	~MainWindow();

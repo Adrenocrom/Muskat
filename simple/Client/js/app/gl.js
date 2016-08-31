@@ -1,16 +1,20 @@
 class MuskatGl {
-	constructor(canvas) {
+	constructor(can) {
 		try {
-			this.canvas = canvas;
-			this._gl 	= canvas.getContext("experimental-webgl");
-			this._gl.viewportWidth	= canvas.width;
-			this._gl.viewportHeight = canvas.height;
+			this._display = can;
+			this._gl 	  = can.getContext("experimental-webgl");
+			this._gl.viewportWidth	= can.width;
+			this._gl.viewportHeight = can.height;
 		} catch (e) {
 			
 		}
 
 		if( !this._gl ) 
 			alert("Could not initialise WebGl!");
+	}
+
+	get canvas() {
+		return this._display;
 	}
 
 	get gl() {

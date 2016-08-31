@@ -35,6 +35,9 @@ void JsonRPC::parseMessage(QWebSocket* client, QString msg) {
 	else if(request.method == "getFrame") {
 		response = getFrame(request);
 	}
+	else if(request.method == "saveFrame") {
+		response = saveFrame(request);
+	}
 
 	response.id 	 = request.id;
 	response.jsonrpc = "2.0";
@@ -59,8 +62,8 @@ RPCResponse JsonRPC::getPlaylist(RPCRequest& request) {
 RPCResponse JsonRPC::loadScene(RPCRequest& request) {
 	RPCResponse response;
 
-	//QString scene_name = request.params["name"].toString();
-	m_mainWindow->m_filerenderer->setScene(&m_mainWindow->m_playlist->m_scenes[0]);
+	int scene_id = request.params["id"].toInt();
+	m_mainWindow->m_filerenderer->setScene(&m_mainWindow->m_playlist->m_scenes[scene_id]);
 
 	return response;
 }
@@ -74,6 +77,8 @@ RPCResponse JsonRPC::getConfig(RPCRequest& request) {
 RPCResponse JsonRPC::setConfig(RPCRequest& request) {
 	RPCResponse response;
 
+	m_mainWindow->m_config->setConfig(request.params);
+
 	return response;
 }
 
@@ -86,7 +91,29 @@ RPCResponse JsonRPC::getFrame(RPCRequest& request) {
 
 	m_mainWindow->m_filerenderer->getFrame(info, fb);
 	
-	response.result = Compressor::compressFrame(info, fb);
+	response.result = m_mainWindow->m_compressor->compressFrame(info, fb);
+
+	//Compressor::compressFrame2(info, fb);
+
+	return response;
+}
+
+RPCResponse JsonRPC::saveFrame(RPCRequest& request) {
+	RPCResponse response;
+	QByteArray base64Data;
+	QImage image;
+
+
+	int frame_id = request.params["id"].toInt();
+	QString rgb	 = request.params["rgb"].toString();
+	rgb.replace(0, 22, "");	// delete data:image/png;base64,
+
+	base64Data.append(rgb);
+
+	QString filename = "res/frame" + QString::number(frame_id) + ".png";
+
+	image.loadFromData(QByteArray::fromBase64(base64Data), "PNG");
+	image.save(filename, "PNG");
 
 	return response;
 }
