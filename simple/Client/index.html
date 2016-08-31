@@ -117,14 +117,6 @@
 			uniform sampler2D uDepthSampler;
 
 			varying vec2 vTextureCoord;
-/*
-			float getDepth() {
-				highp float val = texture2d(samplerTop8bits, tex_coord) * (255.0 / 256.0);
-				val += texture2d(samplerBotton8bits, tex_coord) * (1.0 / 256.0);
-
-				return val;
-			}
-*/
 
     		void main(void) {
 				highp float depth = 0.0;
@@ -133,8 +125,8 @@
 					depth = texture2D(uDepthSampler, vec2(aTextureCoord.s, aTextureCoord.t)).r;
 				}
 				else if(uDepth == 1) {
-					depth = texture2D(uDepthSampler, vec2(aTextureCoord.s, aTextureCoord.t)).r * (255.0 / 256.0);
-					depth += texture2D(uDepthSampler, vec2(aTextureCoord.s, aTextureCoord.t)).g * (1.0 / 256.0);
+					depth = texture2D(uDepthSampler, vec2(aTextureCoord.s, aTextureCoord.t)).r * (256.0 / 257.0);
+					depth += texture2D(uDepthSampler, vec2(aTextureCoord.s, aTextureCoord.t)).g * (1.0 / 257.0);
 				}
 
         		gl_Position = uMVPMatrix * (uINVMVPMatrix * vec4(aVertexPosition.xy, depth, 1.0));

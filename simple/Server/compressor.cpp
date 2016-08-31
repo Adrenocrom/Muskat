@@ -59,11 +59,14 @@ void Compressor::compressMesh16Bit(QJsonObject& jo, FrameBuffer& fb) {
 			uchar *p = (uchar*)ptr;
 
 			rgbDepth.at<cv::Vec3b>(y,x)[0] = 0;		// B
-			rgbDepth.at<cv::Vec3b>(y,x)[1] = p[1];	// G
-			rgbDepth.at<cv::Vec3b>(y,x)[2] = p[2];	// R
+			rgbDepth.at<cv::Vec3b>(y,x)[1] = p[0];	// G
+			rgbDepth.at<cv::Vec3b>(y,x)[2] = p[1];	// R
 
-			//cout<<
-
+		/*	bitset<16> a(*ptr);
+			bitset<8>  b(p[1]);
+			bitset<8>  c(p[0]);
+			cout<<a<<" "<<b<<c<<endl;
+*/
 			ptr++;
 		}
 	}
