@@ -18,47 +18,85 @@ void Evaluator::setScene(Scene* scene) {
 
 void Evaluator::runEvaluation(string path) {
 	uint r_size = results.size();
-	vector<double> vPSNR;
-	vector<Scalar> vMSSIM;
-	list<double>   lAngles;
+	list<ResultEntry> entries;
+	list<ResultEntry> meanEntries;
+	ResultEntry entry;
 
 	cout<<"start evaluation"<<endl;
 
 	for(uint i = 0; i < r_size; ++i) {
-		vPSNR.push_back(getPSNR(m_scene->m_fbs[i].rgb, results[i]));
-		vMSSIM.push_back(getMSSIM(m_scene->m_fbs[i].rgb, results[i]));
-		lAngles.push_back
-			
+		entry.PSNR  = getPSNR(m_scene->m_fbs[i].rgb, results[i]);
+		entry.MSSIM = getMSSIM(m_scene->m_fbs[i].rgb, results[i]);
+		entry.angle = m_scene->m_infos[i].offangle;
+		entries.push_back(entry);
+
 		QString filename = "res/frame_"+ QString::number(i) +".png";
 		imwrite(filename.toStdString(), results[i]);
+	}
+
+	entries.sort([this](ResultEntry& l, ResultEntry& r) {
+		if(l.angle > r.angle) 
+			return true; 
+		return false; 
+	});
+
+	entry = entries.front();
+	double cnt = 1;
+	for(auto it = entries.begin(); it != entries.end(); ++it) {
+		cout<<entry.angle<<" "<<it->angle<<endl;
+		if(it->angle < entry.angle) {
+			entry.angle;
+			entry.PSNR	   /= cnt;
+			entry.MSSIM[0] /= cnt;
+			entry.MSSIM[1] /= cnt;
+			entry.MSSIM[2] /= cnt;
+			entry.MSSIM[3] /= cnt;
+			meanEntries.push_back(entry);
+			
+			cnt   = 1;
+			entry = *it;
+		} else {
+			entry.PSNR	+= it->PSNR;
+			entry.MSSIM[0] += it->MSSIM[0];
+			entry.MSSIM[1] += it->MSSIM[1];
+			entry.MSSIM[2] += it->MSSIM[2];
+			entry.MSSIM[3] += it->MSSIM[3];
+
+			cnt++;
+		}
 	}
 
 	ofstream file;
   	file.open("res/results.tex");
 
-	file<< "\\begin{filecontents}{div_PSNR.data}\n";
-	file<< "# PSNR angle [degrees]\n";
-	for(uint i = 0; i < r_size; ++i)
-		file<<vPSNR[i]<<" "<<m_scene->m_infos[i].offangle<<"\n";
+	file<< "\\begin{filecontents}{div_data.csv}\n";
+	file<< "a,p,r,g,b,m\n";
+
+	for(auto it = entries.begin(); it != entries.end(); ++it) {
+		file<<it->angle<<","
+			<<it->PSNR<<","
+			<<it->MSSIM[2]<<","
+			<<it->MSSIM[1]<<","
+			<<it->MSSIM[0]<<","
+			<<it->MSSIM[3]<<"\n";
+	}
+	
 	file<< "\\end{filecontents}\n\n";
 
-	file<< "\\begin{filecontents}{div_MSSIM_b.data}\n";
-	file<< "# MSSIM b angle [degrees]\n";
-	for(uint i = 0; i < r_size; ++i)
-		file<<vMSSIM[i][0]<<" "<<m_scene->m_infos[i].offangle<<"\n";
-	file<< "\\end{filecontents}\n";
+	file<< "\\begin{filecontents}{div_data_mean.csv}\n";
+	file<< "a,p,r,g,b,m\n";
 
-	file<< "\\begin{filecontents}{div_MSSIM_g.data}\n";
-	file<< "# MSSIM g angle [degrees]\n";
-	for(uint i = 0; i < r_size; ++i)
-		file<<vMSSIM[i][1]<<" "<<m_scene->m_infos[i].offangle<<"\n";
-	file<< "\\end{filecontents}\n";
+	for(auto it = meanEntries.begin(); it != meanEntries.end(); ++it) {
+		file<<it->angle<<","
+			<<it->PSNR<<","
+			<<it->MSSIM[2]<<","
+			<<it->MSSIM[1]<<","
+			<<it->MSSIM[0]<<","
+			<<it->MSSIM[3]<<"\n";
+	}
+	
+	file<< "\\end{filecontents}\n\n";
 
-	file<< "\\begin{filecontents}{div_MSSIM_r.data}\n";
-	file<< "# MSSIM r angle [degrees]\n";
-	for(uint i = 0; i < r_size; ++i)
-		file<<vMSSIM[i][2]<<" "<<m_scene->m_infos[i].offangle<<"\n";
-	file<< "\\end{filecontents}\n";
 
 	file.close();
 	cout<<"end evaluation"<<endl;
@@ -149,5 +187,8 @@ Scalar Evaluator::getMSSIM( const Mat& i1, const Mat& i2)
     divide(t3, t1, ssim_map);      // ssim_map =  t3./t1;
 
     Scalar mssim = mean( ssim_map ); // mssim = average of ssim map
+
+	mssim[3] = (mssim[0] + mssim[1] + mssim[2]) / 3.0; // save mead in alpha
+
     return mssim;
 }

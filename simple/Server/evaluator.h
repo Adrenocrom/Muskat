@@ -3,13 +3,11 @@
 
 #pragma once
 
-struct Result {
+struct ResultEntry {
 	double 	   angle;
 	double 		PSNR;
 	cv::Scalar MSSIM;
-
-	
-}
+};
 
 class Evaluator{
 public:
