@@ -44,7 +44,7 @@ void Evaluator::runEvaluation(string path) {
 	double cnt = 1;
 	for(auto it = entries.begin(); it != entries.end(); ++it) {
 		cout<<entry.angle<<" "<<it->angle<<endl;
-		if(it->angle < entry.angle) {
+		if(it->angle < entry.angle || next(it) == entries.end()) {
 			entry.angle;
 			entry.PSNR	   /= cnt;
 			entry.MSSIM[0] /= cnt;
