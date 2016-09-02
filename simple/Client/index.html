@@ -26,13 +26,14 @@
 				<p>
 					<label>scenes:</label>
 					<select id="select_scenes"></select>
+					<input class="iput" type="text" id="text_res_filename" value="result.txt"></input>
 				</p>
 				<p>
 					<label>frames: </label>
 					<select id="select_frames_min"></select>
 					<select id="select_frames_max"></select>
-					<button id="button_run_scene">run</button>
-					<button id="button_render_single_frame">single frame</button>
+					<button id="button_run_scene">messure</button>
+					<button id="button_render_single_frame">download frame</button>
 				</p>
 			</fieldset>
 			<fieldset>
@@ -102,7 +103,6 @@
 
 	    	void main(void) {
     	    	gl_FragColor = vec4(texture2D(uColorSampler, vec2(vTextureCoord.s, vTextureCoord.t)).rgb, 1.0);
-				//gl_FragColor = vec4(1.0);
 			}
 		</script>
 		<script id="shader-vs" type="x-shader/x-vertex">

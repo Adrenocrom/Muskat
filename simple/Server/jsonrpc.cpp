@@ -38,6 +38,9 @@ void JsonRPC::parseMessage(QWebSocket* client, QString msg) {
 	else if(request.method == "saveFrame") {
 		response = saveFrame(request);
 	}
+	else if(request.method == "newMessure") {
+		response = newMessure(request);
+	}
 
 	response.id 	 = request.id;
 	response.jsonrpc = "2.0";
@@ -64,6 +67,7 @@ RPCResponse JsonRPC::loadScene(RPCRequest& request) {
 
 	int scene_id = request.params["id"].toInt();
 	m_mainWindow->m_filerenderer->setScene(&m_mainWindow->m_playlist->m_scenes[scene_id]);
+	m_mainWindow->m_evaluator->setScene(&m_mainWindow->m_playlist->m_scenes[scene_id]);
 
 	return response;
 }
@@ -93,8 +97,6 @@ RPCResponse JsonRPC::getFrame(RPCRequest& request) {
 	
 	response.result = m_mainWindow->m_compressor->compressFrame(info, fb);
 
-	//Compressor::compressFrame2(info, fb);
-
 	return response;
 }
 
@@ -113,7 +115,24 @@ RPCResponse JsonRPC::saveFrame(RPCRequest& request) {
 	QString filename = "res/frame" + QString::number(frame_id) + ".png";
 
 	image.loadFromData(QByteArray::fromBase64(base64Data), "PNG");
-	image.save(filename, "PNG");
+    
+    cv::Mat img(image.height(), image.width(), CV_8UC4, image.bits());
+
+	cv::Mat dst;
+	cv::cvtColor(img, dst, CV_BGRA2BGR);
+
+	//cv::imwrite(filename.toStdString(), dst);
+	
+	m_mainWindow->m_evaluator->results[frame_id] = dst;
+
+	m_mainWindow->m_evaluator->addResult();
+
+	if(m_mainWindow->m_evaluator->hasResults()) {
+		m_mainWindow->m_evaluator->runEvaluation("res");
+	}
+
+
+	//image.save(filename, "PNG");
 
 	return response;
 }
@@ -124,6 +143,18 @@ RPCResponse JsonRPC::resize(RPCRequest& request) {
 	QJsonObject jo;
 	jo["width"] 	= 512;
 	jo["height"]	= 512;
+	response.result = jo;
+
+	return response;
+}
+
+RPCResponse JsonRPC::newMessure(RPCRequest& request) {
+	RPCResponse response;
+
+	m_mainWindow->m_evaluator->newMessure();
+
+	QJsonObject jo;
+	jo["newMessureReady"] = true;
 	response.result = jo;
 
 	return response;

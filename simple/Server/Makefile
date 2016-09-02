@@ -36,7 +36,7 @@ DISTNAME      = server1.0.0
 DISTDIR = /home/josef/Dokumente/Studium/muskat/simple/Server/.tmp/server1.0.0
 LINK          = g++
 LFLAGS        = -Wl,-O1 -Wl,-z,origin -Wl,-rpath,\$$ORIGIN -Wl,-rpath,/home/josef/Programme/Qt5.6.0/5.6/gcc_64/lib
-LIBS          = $(SUBLIBS) -lboost_system -lboost_filesystem -lopencv_core -lopencv_highgui -L/home/josef/Programme/Qt5.6.0/5.6/gcc_64/lib -lQt5OpenGL -lQt5Widgets -lQt5Gui -lQt5WebSockets -lQt5Network -lQt5Core -lGL -lpthread 
+LIBS          = $(SUBLIBS) -lboost_system -lboost_filesystem -lopencv_core -lopencv_highgui -lopencv_imgproc -L/home/josef/Programme/Qt5.6.0/5.6/gcc_64/lib -lQt5OpenGL -lQt5Widgets -lQt5Gui -lQt5WebSockets -lQt5Network -lQt5Core -lGL -lpthread 
 AR            = ar cqs
 RANLIB        = 
 SED           = sed
@@ -50,6 +50,7 @@ OBJECTS_DIR   = ./
 
 SOURCES       = main.cpp \
 		muskat.cpp \
+		evaluator.cpp \
 		deamon.cpp \
 		scene.cpp \
 		playlist.cpp \
@@ -62,6 +63,7 @@ SOURCES       = main.cpp \
 		moc_mainwindow.cpp
 OBJECTS       = main.o \
 		muskat.o \
+		evaluator.o \
 		deamon.o \
 		scene.o \
 		playlist.o \
@@ -208,6 +210,7 @@ DIST          = /home/josef/Programme/Qt5.6.0/5.6/gcc_64/mkspecs/features/spec_p
 		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/mkspecs/features/lex.prf \
 		server.pro muskat.h \
 		deamon.h \
+		evaluator.h \
 		scene.h \
 		playlist.h \
 		config.h \
@@ -216,6 +219,7 @@ DIST          = /home/josef/Programme/Qt5.6.0/5.6/gcc_64/mkspecs/features/spec_p
 		fileRenderer.h \
 		mainwindow.h main.cpp \
 		muskat.cpp \
+		evaluator.cpp \
 		deamon.cpp \
 		scene.cpp \
 		playlist.cpp \
@@ -533,8 +537,8 @@ distdir: FORCE
 	@test -d $(DISTDIR) || mkdir -p $(DISTDIR)
 	$(COPY_FILE) --parents $(DIST) $(DISTDIR)/
 	$(COPY_FILE) --parents server.qrc $(DISTDIR)/
-	$(COPY_FILE) --parents muskat.h deamon.h scene.h playlist.h config.h compressor.h jsonrpc.h fileRenderer.h mainwindow.h $(DISTDIR)/
-	$(COPY_FILE) --parents main.cpp muskat.cpp deamon.cpp scene.cpp playlist.cpp config.cpp compressor.cpp jsonrpc.cpp fileRenderer.cpp mainwindow.cpp $(DISTDIR)/
+	$(COPY_FILE) --parents muskat.h deamon.h evaluator.h scene.h playlist.h config.h compressor.h jsonrpc.h fileRenderer.h mainwindow.h $(DISTDIR)/
+	$(COPY_FILE) --parents main.cpp muskat.cpp evaluator.cpp deamon.cpp scene.cpp playlist.cpp config.cpp compressor.cpp jsonrpc.cpp fileRenderer.cpp mainwindow.cpp $(DISTDIR)/
 
 
 clean: compiler_clean 
@@ -954,6 +958,7 @@ main.o: main.cpp muskat.h \
 		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtGui/qquaternion.h \
 		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtGui/qgenericmatrix.h \
 		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtGui/QVector3D \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtGui/QImage \
 		fileRenderer.h \
 		config.h \
 		scene.h \
@@ -961,7 +966,8 @@ main.o: main.cpp muskat.h \
 		mainwindow.h \
 		compressor.h \
 		jsonrpc.h \
-		deamon.h
+		deamon.h \
+		evaluator.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o main.o main.cpp
 
 muskat.o: muskat.cpp muskat.h \
@@ -1170,6 +1176,7 @@ muskat.o: muskat.cpp muskat.h \
 		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtGui/qquaternion.h \
 		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtGui/qgenericmatrix.h \
 		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtGui/QVector3D \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtGui/QImage \
 		fileRenderer.h \
 		config.h \
 		scene.h \
@@ -1177,8 +1184,12 @@ muskat.o: muskat.cpp muskat.h \
 		mainwindow.h \
 		compressor.h \
 		jsonrpc.h \
-		deamon.h
+		deamon.h \
+		evaluator.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o muskat.o muskat.cpp
+
+evaluator.o: evaluator.cpp 
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o evaluator.o evaluator.cpp
 
 deamon.o: deamon.cpp muskat.h \
 		/usr/include/opencv2/opencv.hpp \
@@ -1386,6 +1397,7 @@ deamon.o: deamon.cpp muskat.h \
 		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtGui/qquaternion.h \
 		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtGui/qgenericmatrix.h \
 		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtGui/QVector3D \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtGui/QImage \
 		fileRenderer.h \
 		config.h \
 		scene.h \
@@ -1393,7 +1405,8 @@ deamon.o: deamon.cpp muskat.h \
 		mainwindow.h \
 		compressor.h \
 		jsonrpc.h \
-		deamon.h
+		deamon.h \
+		evaluator.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o deamon.o deamon.cpp
 
 scene.o: scene.cpp muskat.h \
@@ -1602,6 +1615,7 @@ scene.o: scene.cpp muskat.h \
 		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtGui/qquaternion.h \
 		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtGui/qgenericmatrix.h \
 		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtGui/QVector3D \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtGui/QImage \
 		fileRenderer.h \
 		config.h \
 		scene.h \
@@ -1609,7 +1623,8 @@ scene.o: scene.cpp muskat.h \
 		mainwindow.h \
 		compressor.h \
 		jsonrpc.h \
-		deamon.h
+		deamon.h \
+		evaluator.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o scene.o scene.cpp
 
 playlist.o: playlist.cpp muskat.h \
@@ -1818,6 +1833,7 @@ playlist.o: playlist.cpp muskat.h \
 		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtGui/qquaternion.h \
 		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtGui/qgenericmatrix.h \
 		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtGui/QVector3D \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtGui/QImage \
 		fileRenderer.h \
 		config.h \
 		scene.h \
@@ -1825,7 +1841,8 @@ playlist.o: playlist.cpp muskat.h \
 		mainwindow.h \
 		compressor.h \
 		jsonrpc.h \
-		deamon.h
+		deamon.h \
+		evaluator.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o playlist.o playlist.cpp
 
 config.o: config.cpp muskat.h \
@@ -2034,6 +2051,7 @@ config.o: config.cpp muskat.h \
 		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtGui/qquaternion.h \
 		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtGui/qgenericmatrix.h \
 		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtGui/QVector3D \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtGui/QImage \
 		fileRenderer.h \
 		config.h \
 		scene.h \
@@ -2041,7 +2059,8 @@ config.o: config.cpp muskat.h \
 		mainwindow.h \
 		compressor.h \
 		jsonrpc.h \
-		deamon.h
+		deamon.h \
+		evaluator.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o config.o config.cpp
 
 compressor.o: compressor.cpp muskat.h \
@@ -2250,6 +2269,7 @@ compressor.o: compressor.cpp muskat.h \
 		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtGui/qquaternion.h \
 		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtGui/qgenericmatrix.h \
 		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtGui/QVector3D \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtGui/QImage \
 		fileRenderer.h \
 		config.h \
 		scene.h \
@@ -2257,7 +2277,8 @@ compressor.o: compressor.cpp muskat.h \
 		mainwindow.h \
 		compressor.h \
 		jsonrpc.h \
-		deamon.h
+		deamon.h \
+		evaluator.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o compressor.o compressor.cpp
 
 jsonrpc.o: jsonrpc.cpp muskat.h \
@@ -2466,6 +2487,7 @@ jsonrpc.o: jsonrpc.cpp muskat.h \
 		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtGui/qquaternion.h \
 		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtGui/qgenericmatrix.h \
 		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtGui/QVector3D \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtGui/QImage \
 		fileRenderer.h \
 		config.h \
 		scene.h \
@@ -2473,7 +2495,8 @@ jsonrpc.o: jsonrpc.cpp muskat.h \
 		mainwindow.h \
 		compressor.h \
 		jsonrpc.h \
-		deamon.h
+		deamon.h \
+		evaluator.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o jsonrpc.o jsonrpc.cpp
 
 fileRenderer.o: fileRenderer.cpp muskat.h \
@@ -2682,6 +2705,7 @@ fileRenderer.o: fileRenderer.cpp muskat.h \
 		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtGui/qquaternion.h \
 		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtGui/qgenericmatrix.h \
 		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtGui/QVector3D \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtGui/QImage \
 		fileRenderer.h \
 		config.h \
 		scene.h \
@@ -2689,7 +2713,8 @@ fileRenderer.o: fileRenderer.cpp muskat.h \
 		mainwindow.h \
 		compressor.h \
 		jsonrpc.h \
-		deamon.h
+		deamon.h \
+		evaluator.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o fileRenderer.o fileRenderer.cpp
 
 mainwindow.o: mainwindow.cpp muskat.h \
@@ -2898,6 +2923,7 @@ mainwindow.o: mainwindow.cpp muskat.h \
 		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtGui/qquaternion.h \
 		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtGui/qgenericmatrix.h \
 		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtGui/QVector3D \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtGui/QImage \
 		fileRenderer.h \
 		config.h \
 		scene.h \
@@ -2905,7 +2931,8 @@ mainwindow.o: mainwindow.cpp muskat.h \
 		mainwindow.h \
 		compressor.h \
 		jsonrpc.h \
-		deamon.h
+		deamon.h \
+		evaluator.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o mainwindow.o mainwindow.cpp
 
 qrc_server.o: qrc_server.cpp 

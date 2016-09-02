@@ -37,6 +37,8 @@ MainWindow::MainWindow() {
 	m_playlist		= nullptr;
 	m_config		= nullptr;
 	m_compressor	= nullptr;
+	m_evaluator		= nullptr;
+	m_evaluator		= new Evaluator;
 	m_filerenderer	= nullptr;
 	m_filerenderer	= new FileRenderer;
 }
@@ -47,6 +49,7 @@ MainWindow::~MainWindow() {
 	SAFE_DELETE(m_config);
 	SAFE_DELETE(m_compressor);
 	SAFE_DELETE(m_filerenderer);
+	SAFE_DELETE(m_evaluator);
 }
 
 void MainWindow::resizeEvent(QResizeEvent*) {}

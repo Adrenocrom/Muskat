@@ -5,6 +5,7 @@ TEMPLATE = app
 
 SOURCES +=	main.cpp \
 			muskat.cpp \
+			evaluator.cpp \
 			deamon.cpp \
 			scene.cpp \
 			playlist.cpp \
@@ -16,6 +17,7 @@ SOURCES +=	main.cpp \
 
 HEADERS += 	muskat.h \
 			deamon.h \
+			evaluator.h \
 			scene.h \
 			playlist.h \
 			config.h \
@@ -27,7 +29,8 @@ HEADERS += 	muskat.h \
 LIBS += -lboost_system \
 		-lboost_filesystem \
 		-lopencv_core \
-		-lopencv_highgui
+		-lopencv_highgui \
+		-lopencv_imgproc
 
 INCLUDEPATH += 	/usr/include/opencv2/ \
 				/usr/include/boost/

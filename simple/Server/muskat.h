@@ -14,6 +14,7 @@
 #include <sstream>
 #include <iomanip>
 #include <bitset>
+#include <limits.h>
 
 // CV
 #include <opencv.hpp>
@@ -69,5 +70,6 @@ string insertZeros(uint num_zeros, uint n);
 #include "compressor.h"
 #include "jsonrpc.h"
 #include "deamon.h"
+#include "evaluator.h"
 
 #endif

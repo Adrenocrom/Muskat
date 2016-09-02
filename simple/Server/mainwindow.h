@@ -17,13 +17,7 @@ class ServerDeamon;
 class Playlist;
 class Config;
 class Compressor;
-
-/*
-namespace boost {
-	namespace filesystem {
-		class path;
-	};
-};*/
+class Evaluator;
 
 class MainWindow : public QMainWindow {
 	Q_OBJECT
@@ -35,6 +29,7 @@ public:
 	Playlist*					m_playlist;
 	Config*						m_config;
 	Compressor*					m_compressor;
+	Evaluator*					m_evaluator;
 
 	MainWindow();
 	~MainWindow();

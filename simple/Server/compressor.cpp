@@ -62,11 +62,6 @@ void Compressor::compressMesh16Bit(QJsonObject& jo, FrameBuffer& fb) {
 			rgbDepth.at<cv::Vec3b>(y,x)[1] = p[0];	// G
 			rgbDepth.at<cv::Vec3b>(y,x)[2] = p[1];	// R
 
-		/*	bitset<16> a(*ptr);
-			bitset<8>  b(p[1]);
-			bitset<8>  c(p[0]);
-			cout<<a<<" "<<b<<c<<endl;
-*/
 			ptr++;
 		}
 	}
@@ -82,7 +77,13 @@ void Compressor::compressMesh16Bit(QJsonObject& jo, FrameBuffer& fb) {
 }
 
 void Compressor::compressMeshDelaunay(QJsonObject& jo, FrameBuffer& fb) {
+	cv::Mat grad_x, grad_y;
+
+	// Gradient X
+	Sobel( fb.depth, grad_x, -1, 1, 0, 3, 1, 0, cv::BORDER_DEFAULT );
 	
+	// Gradient Y
+	Sobel( fb.depth, grad_y, -1, 0, 1, 3, 1, 0, cv::BORDER_DEFAULT );
 }
 
 
@@ -108,3 +109,112 @@ QJsonObject Compressor::compressFrame(FrameInfo& info, FrameBuffer& fb) {
 	jo["invMVP"] = ja;
 	return jo;
 }
+
+QuadTree::QuadTree(uint w, uint h, uint max_depth) {
+	QTNode	 root;
+	root.x = 0;
+	root.y = 0;
+	root.w = w;
+	root.h = h;
+	root.parent = -1;
+	nodes.push_back(root);
+	createChildren(0, 1, max_depth);
+}
+
+void QuadTree::createChildren(uint pid, uint current_depth, uint max_depth) {
+	QTNode& parent = nodes[pid];
+	
+	if(current_depth >= max_depth) {
+		parent.l1 = -1;
+		parent.l2 = -1;
+		parent.l3 = -1;
+		parent.l4 = -1;
+		parent.isLeaf = true;
+		leafs.push_back(pid);
+	} else {
+		uint wh = (uint)((float)parent.w / 2.0f);
+		uint hh = (uint)((float)parent.h / 2.0f);
+
+		QTNode l1;
+		l1.x = parent.x;
+		l1.y = parent.y;
+		l1.w = wh-1;
+		l1.h = hh-1;
+		parent.l1 = nodes.size();
+		nodes.push_back(l1);
+
+		QTNode l2;
+		l2.x = wh;
+		l2.y = parent.y;
+		l2.w = parent.w;
+		l2.h = hh-1;
+		parent.l2 = nodes.size();
+		nodes.push_back(l2);
+
+		QTNode l3;
+		l3.x = parent.x;
+		l3.y = hh;
+		l3.w = wh-1;
+		l3.h = parent.h;
+		parent.l3 = nodes.size();
+		nodes.push_back(l3);
+
+		QTNode l4;
+		l4.x = wh;
+		l4.y = hh;
+		l4.w = parent.w;
+		l4.h = parent.h;
+		parent.l4 = nodes.size();
+		nodes.push_back(l4);
+
+		createChildren(parent.l1, current_depth+1, max_depth);
+		createChildren(parent.l2, current_depth+1, max_depth);
+		createChildren(parent.l3, current_depth+1, max_depth);
+		createChildren(parent.l4, current_depth+1, max_depth);
+	}
+}
+
+void QuadTree::calcCxyLeafs(cv::Mat& Gx, cv::Mat& Gy) {
+	uint  l_size = leafs.size();
+	QTNode& node = nodes[0];
+	ushort max_x = 0;
+	ushort min_x = USHRT_MAX;
+	ushort max_y = 0;
+	ushort min_y = USHRT_MAX;
+
+	for(uint i = 0; i < l_size; ++i) {
+		node = nodes[leafs[i]];
+
+		ushort* grad_x = reinterpret_cast<ushort*>(Gx.data);
+		ushort* grad_y = reinterpret_cast<ushort*>(Gy.data);
+		for(uint y = node.y; y < node.h; ++y) {
+			for(uint x = node.x; x < node.w; ++x) {
+				if(*grad_x < min_x) min_x = *grad_x;
+				if(*grad_x > max_x) max_x = *grad_x;
+				
+				if(*grad_y < min_y) min_y = *grad_y;
+				if(*grad_y > max_y) max_y = *grad_y;
+
+				grad_x++;
+				grad_y++;
+			}
+		}
+		
+		node.Cx = max_x - min_x;
+		node.Cy = max_y - min_y;
+		node.H_x = max_x;
+		node.H_y = max_y;
+		node.L_x = min_x;
+		node.L_y = min_y;
+	}
+}
+
+void QuadTree::calcCxy(uint pid) {
+}
+	/*
+ushort getH_x(uint pid) {
+	if(node.isLeaf)
+		return node.H_x;
+
+	
+}*/

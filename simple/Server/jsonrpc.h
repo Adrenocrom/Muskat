@@ -32,6 +32,7 @@ public:
 	RPCResponse getFrame(RPCRequest& request);
 	RPCResponse saveFrame(RPCRequest& request);
 	RPCResponse resize(RPCRequest& request);
+	RPCResponse newMessure(RPCRequest& request);
 
 private:
     MainWindow* m_mainWindow;

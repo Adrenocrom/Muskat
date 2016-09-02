@@ -54,7 +54,7 @@ $(document).ready(function() {
 	});
 
 	$( '#button_run_scene' ).click(function() {
-		runScene();
+		newMessureMessage();
 	});
 
 	$( '#button_render_single_frame' ).click(function() {
@@ -178,7 +178,8 @@ $(document).ready(function() {
 	}
 
 	function resize(w, h) {
-		g_mesh.createComplexPlane(w, h);
+		//g_mesh.createCookieCutter(w, h);
+		g_mesh.createIsometricPlane(w, h);
 	}
 
 	var mvMatrix	 = mat4.create();
@@ -229,6 +230,26 @@ $(document).ready(function() {
 		muGl.setUniformMatrix(shaderProgram.invMvpMatrixUniform, invMvpMatrix);
 		gl.uniform1i(shaderProgram.depthUniform, g_mesh_compression_method);
 		gl.drawElements(gl.TRIANGLES, g_mesh.indices.numItems, gl.UNSIGNED_INT, 0);
+	}
+
+	function drawFirstFrame() {
+		var gl = muGl.gl;
+		var scene = g_playlist.scenes[g_scene_index];
+		var frame = scene.frames[0];
+		
+		mat4.perspective(pMatrix, muGl.degToRad(scene.aperture), gl.viewportWidth / gl.viewportHeight, frame.near, frame.far);
+		mat4.lookAt(mvMatrix, frame.pos, frame.lookat, frame.up);
+		mat4.translate(mvMatrix, mvMatrix, frame.lookat);
+		mat4.multiply(invMvpMatrix, pMatrix, mvMatrix);
+		mat4.invert(invMvpMatrix, invMvpMatrix);
+
+
+		mat4.perspective(pMatrix, muGl.degToRad(scene.aperture), gl.viewportWidth / gl.viewportHeight, frame.near, frame.far);
+		mat4.lookAt(mvMatrix, frame.pos, frame.lookat, frame.up);
+		mat4.translate(mvMatrix, mvMatrix, frame.lookat);
+		mat4.multiply(mvpMatrix, pMatrix, mvMatrix);
+			
+		drawEx();
 	}
 
 	function drawEx() {
@@ -299,13 +320,15 @@ $(document).ready(function() {
 	}
 
 	function downloadFrameToPNG() {
+		drawFirstFrame();
+
 		var data = muGl.canvas.toDataURL("image/png;base64;");
-	
+		alert(data.toString());
 		var download = document.createElement('a');
 		document.body.appendChild(download);
 		download.setAttribute("href", data);
-		download.setAttribute("target", '_blank');
-		download.setAttribute("download", 'frame_1.png');
+		//download.setAttribute("target", '_blank');
+		download.setAttribute("download", 'frame.png');
 		download.click();
 		document.body.removeChild(download);
 	}
@@ -372,9 +395,13 @@ $(document).ready(function() {
 
 				
 				if(typeof obj.result.rgb !== 'undefined') {
-					muGl.setTextureFromBase64(colorTexture, g_config.textureCompressionMethod, obj.result.rgb, draw);
+					muGl.setTextureFromBase64(colorTexture, g_config.textureCompressionMethod, obj.result.rgb, drawFirstFrame);
 
-					muGl.setTextureFromBase64(depthTexture, "png", obj.result.depth, draw);
+					muGl.setTextureFromBase64(depthTexture, "png", obj.result.depth, drawFirstFrame);
+				}
+
+				if(typeof obj.result.newMessureReady !== 'undefined') {
+					runScene();
 				}
             };
 
@@ -431,6 +458,10 @@ $(document).ready(function() {
 	function loadSceneMessage(id) {
 		var params = {"id" : id};
 		sendMessage("loadScene", params);
+	}
+
+	function newMessureMessage() {
+		sendMessage("newMessure", {});
 	}
 
 	function setConfigMessage() {
