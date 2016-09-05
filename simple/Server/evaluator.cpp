@@ -101,7 +101,7 @@ void Evaluator::runEvaluation(string path) {
 	file.close();
 	cout<<"end evaluation"<<endl;
 
-	system("pdflatex res/test.tex");
+	system("pdflatex res/auto.tex");
 }
 
 void Evaluator::newMessure() {
