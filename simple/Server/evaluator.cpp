@@ -100,6 +100,8 @@ void Evaluator::runEvaluation(string path) {
 
 	file.close();
 	cout<<"end evaluation"<<endl;
+
+	system("pdflatex res/test.tex");
 }
 
 void Evaluator::newMessure() {

@@ -54,6 +54,23 @@
 #define SAFE_DELETE_ARRAY(p) { if(p != nullptr) { delete[] (p); (p) = nullptr; } }
 #endif
 
+#ifndef MU_MIN
+#define MU_MIN(a, b) ((a) < (b) ? (a) : (b))													// Minimum
+#endif
+
+#ifndef MU_MAX
+#define MU_MAX(a, b) ((a) > (b) ? (a) : (b))
+#endif
+
+#ifndef MU_MIN4
+#define MU_MIN4(a, b, c, d) (MU_MIN(a, MU_MIN(b, MU_MIN(c, d))))
+#endif
+
+#ifndef MU_MAX4
+#define MU_MAX4(a, b, c, d) (MU_MAX(a, MU_MAX(b, MU_MAX(c, d))))
+#endif
+
+
 typedef unsigned int uint;
 typedef unsigned short ushort;
 
