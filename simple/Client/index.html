@@ -41,13 +41,13 @@
 					<legend>Texture</legend>
 					<p>
 						<input type="radio" name="texture" value="jpeg" checked="checked">
-						<label>JPEG Quality:</label>
+						<label>JPEG compression:</label>
 						<input class="islider" id="slider_jpeg_quality" type="range" min="0" max="100" step="1" value="0" /> 
 						<input class="iput short" type="text" id="text_jpeg_quality" value="0"></input>
 					</p>
 					<p>
 						<input type="radio" name="texture" value="png">
-						<label>PNG Quality:</label>
+						<label>PNG compression:</label>
 						<input class="islider" id="slider_png_quality" type="range" min="0" max="9" step="1" value="0" /> 
 						<input class="iput short" type="text" id="text_png_quality" value="0"></input>
 					</p>
@@ -103,6 +103,8 @@
 
 	    	void main(void) {
     	    	gl_FragColor = vec4(texture2D(uColorSampler, vec2(vTextureCoord.s, vTextureCoord.t)).rgb, 1.0);
+
+				gl_FragColor = vec4(1.0);
 			}
 		</script>
 		<script id="shader-vs" type="x-shader/x-vertex">
@@ -123,14 +125,25 @@
 
 				if(uDepth == 0) {
 					depth = texture2D(uDepthSampler, vec2(aTextureCoord.s, aTextureCoord.t)).r;
+					depth = (depth * 2.0) -1.0;
+					gl_Position = uMVPMatrix * (uINVMVPMatrix * vec4(aVertexPosition.xy, depth, 1.0));
+    				vTextureCoord = aTextureCoord;
+
 				}
 				else if(uDepth == 1) {
 					depth = texture2D(uDepthSampler, vec2(aTextureCoord.s, aTextureCoord.t)).r * (256.0 / 257.0);
 					depth += texture2D(uDepthSampler, vec2(aTextureCoord.s, aTextureCoord.t)).g * (1.0 / 257.0);
+					depth = (depth * 2.0) -1.0;
+					gl_Position = uMVPMatrix * (uINVMVPMatrix * vec4(aVertexPosition.xy, depth, 1.0));
+    				vTextureCoord = aTextureCoord;
+				}
+				else {
+					vTextureCoord = aTextureCoord;
+					gl_Position = uMVPMatrix * (uINVMVPMatrix * vec4(aVertexPosition.xyz, 1.0));
 				}
 
-        		gl_Position = uMVPMatrix * (uINVMVPMatrix * vec4(aVertexPosition.xy, depth, 1.0));
-    			vTextureCoord = aTextureCoord;
+        		//gl_Position = uMVPMatrix * (uINVMVPMatrix * vec4(aVertexPosition.xy, depth, 1.0));
+    			//vTextureCoord = aTextureCoord;
 			}
 		</script>
 

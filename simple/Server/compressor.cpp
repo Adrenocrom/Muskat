@@ -2,6 +2,16 @@
 
 Compressor::Compressor(Config* config) {
 	m_config = config;
+
+	// generate quadtree, needs to be recreated after resize
+	m_quadtree = nullptr;
+	m_quadtree = new QuadTree(	m_config->getWidth(),
+								m_config->getHeight(),
+								m_config->getMaxDepth());
+}
+
+Compressor::~Compressor() {
+	SAFE_DELETE(m_quadtree);
 }
 
 void Compressor::compressTexture(QJsonObject& jo, FrameBuffer& fb) {
@@ -31,6 +41,9 @@ void Compressor::compressMesh(QJsonObject& jo, FrameBuffer& fb) {
 	}
 	else if(m_config->meshCompressionMethod == "16bit") {
 		compressMesh16Bit(jo, fb);
+	}
+	else if(m_config->meshCompressionMethod == "delaunay") {
+		compressMeshDelaunay(jo, fb);
 	}
 }
 
@@ -77,15 +90,86 @@ void Compressor::compressMesh16Bit(QJsonObject& jo, FrameBuffer& fb) {
 }
 
 void Compressor::compressMeshDelaunay(QJsonObject& jo, FrameBuffer& fb) {
-	cv::Mat grad_x, grad_y;
+	cv::Mat grad_x; 
+	cv::Mat grad_y;
 
-	// Gradient X
+	// calc sobel gradients for 2 dimensions and store them
 	Sobel( fb.depth, grad_x, -1, 1, 0, 3, 1, 0, cv::BORDER_DEFAULT );
-	
-	// Gradient Y
 	Sobel( fb.depth, grad_y, -1, 0, 1, 3, 1, 0, cv::BORDER_DEFAULT );
+
+	// calc seeds from quadtree
+	vector<cv::Point2f>	seeds = m_quadtree->generateSeeds(&grad_x, &grad_y);
+
+	vector<cv::Vec6f> triangles = delaunay(fb.depth, seeds);
+
+	// TODO refine
+	
+	vector<cv::Point> pt(3);
+	vector<cv::Point> vertices;
+	
+	cv::Size size = fb.depth.size();
+	cv::Rect rect(0,0, size.width, size.height);
+
+	cv::Mat meshImage(512, 512, CV_8UC3, cv::Scalar(255,255,255));
+
+	cv::Scalar 	delaunay_color(255,0,0);
+	cv::Scalar 	color(0,0,255);
+
+	QJsonArray ja_indices;
+	QJsonArray ja_vertices;
+
+	uint t_size = triangles.size();
+	for(uint i = 0; i < triangles.size(); ++i ) {
+		cv::Vec6f t = triangles[i];
+        pt[0] = cv::Point(cvRound(t[0]), cvRound(t[1]));
+        pt[1] = cv::Point(cvRound(t[2]), cvRound(t[3]));
+        pt[2] = cv::Point(cvRound(t[4]), cvRound(t[5]));
+
+		if ( rect.contains(pt[0]) && rect.contains(pt[1]) && rect.contains(pt[2])) {
+
+			// Draw delaunay triangles
+
+			line(meshImage, pt[0], pt[1], delaunay_color, 1, CV_AA, 0);
+            line(meshImage, pt[1], pt[2], delaunay_color, 1, CV_AA, 0);
+            line(meshImage, pt[2], pt[0], delaunay_color, 1, CV_AA, 0);
+
+ 			circle( meshImage, pt[0], 2, color, CV_FILLED, CV_AA, 0 );
+ 			circle( meshImage, pt[1], 2, color, CV_FILLED, CV_AA, 0 );
+ 			circle( meshImage, pt[2], 2, color, CV_FILLED, CV_AA, 0 );
+
+			ja_indices.push_back((int)getIndex(vertices, pt[0]));
+			ja_indices.push_back((int)getIndex(vertices, pt[1]));
+			ja_indices.push_back((int)getIndex(vertices, pt[2]));
+		}
+	}
+	
+	uint v_size = vertices.size();
+	int num_texCoord = 0;
+	for(uint i = 0; i < vertices.size(); ++i) {
+		ja_vertices.push_back((float)vertices[i].x / (float)511);
+		ja_vertices.push_back((float)vertices[i].y / (float)511);
+		ja_vertices.push_back( (float)(fb.depth.at<ushort>(vertices[i].x, vertices[i].y)) / (float)(USHRT_MAX));
+	
+		num_texCoord += 2;
+	}
+    
+	imwrite("res/delaunay.png", meshImage);
+
+	jo["indices"] 	= ja_indices;
+	jo["vertices"] 	= ja_vertices;
+	jo["numTexCoord"] = num_texCoord;
 }
 
+uint Compressor::getIndex(vector<cv::Point>& vertices, cv::Point p) {
+	uint size = vertices.size();
+	for(uint i = 0; i < size; ++i) {
+		if(vertices[i].x == p.x && vertices[i].y == p.y)
+			return i;
+	}
+
+	vertices.push_back(p);
+	return size;
+}
 
 QJsonObject Compressor::compressFrame(FrameInfo& info, FrameBuffer& fb) {
 	QJsonObject jo;
@@ -110,171 +194,8 @@ QJsonObject Compressor::compressFrame(FrameInfo& info, FrameBuffer& fb) {
 	return jo;
 }
 
-QuadTree::QuadTree(uint w, uint h, uint max_depth) {
-	QTNode	 root;
-	root.x = 0;
-	root.y = 0;
-	root.w = w;
-	root.h = h;
-	root.parent = -1;
-	nodes.push_back(root);
-	createChildren(0, 1, max_depth);
-	
-	hnodes.resize(max_depth-1);
-	hnodes[0].push_back(0);
-}
 
-void QuadTree::createChildren(uint pid, uint current_depth, uint max_depth) {
-	QTNode& parent = nodes[pid];
-	
-	if(current_depth >= max_depth) {
-		parent.l1 = -1;
-		parent.l2 = -1;
-		parent.l3 = -1;
-		parent.l4 = -1;
-		parent.isLeaf = true;
-		leafs.push_back(pid);
-	} else {
-		uint wh = (uint)((float)parent.w / 2.0f);
-		uint hh = (uint)((float)parent.h / 2.0f);
-
-		QTNode l1;
-		l1.x = parent.x;
-		l1.y = parent.y;
-		l1.w = wh-1;
-		l1.h = hh-1;
-		parent.l1 = nodes.size();
-		hnodes[current_depth].push_back(parent.l1);
-		nodes.push_back(l1);
-
-		QTNode l2;
-		l2.x = wh;
-		l2.y = parent.y;
-		l2.w = parent.w;
-		l2.h = hh-1;
-		parent.l2 = nodes.size();
-		hnodes[current_depth].push_back(parent.l2);
-		nodes.push_back(l2);
-
-		QTNode l3;
-		l3.x = parent.x;
-		l3.y = hh;
-		l3.w = wh-1;
-		l3.h = parent.h;
-		parent.l3 = nodes.size();
-		hnodes[current_depth].push_back(parent.l3);
-		nodes.push_back(l3);
-
-		QTNode l4;
-		l4.x = wh;
-		l4.y = hh;
-		l4.w = parent.w;
-		l4.h = parent.h;
-		parent.l4 = nodes.size();
-		hnodes[current_depth].push_back(parent.l4);
-		nodes.push_back(l4);
-
-		createChildren(parent.l1, current_depth+1, max_depth);
-		createChildren(parent.l2, current_depth+1, max_depth);
-		createChildren(parent.l3, current_depth+1, max_depth);
-		createChildren(parent.l4, current_depth+1, max_depth);
-	}
-}
-
-void QuadTree::calcCxyLeafs(cv::Mat& Gx, cv::Mat& Gy, int& T_leaf) {
-	uint  l_size = leafs.size();
-	QTNode& node = nodes[0];
-	ushort max_x = 0;
-	ushort min_x = USHRT_MAX;
-	ushort max_y = 0;
-	ushort min_y = USHRT_MAX;
-
-	for(uint i = 0; i < l_size; ++i) {
-		node = nodes[leafs[i]];
-
-		ushort* grad_x = reinterpret_cast<ushort*>(Gx.data);
-		ushort* grad_y = reinterpret_cast<ushort*>(Gy.data);
-		for(uint y = node.y; y < node.h; ++y) {
-			for(uint x = node.x; x < node.w; ++x) {
-				if(*grad_x < min_x) min_x = *grad_x;
-				if(*grad_x > max_x) max_x = *grad_x;
-				
-				if(*grad_y < min_y) min_y = *grad_y;
-				if(*grad_y > max_y) max_y = *grad_y;
-
-				grad_x++;
-				grad_y++;
-			}
-		}
-		
-		node.Cx = max_x - min_x;
-		node.Cy = max_y - min_y;
-		node.H_x = max_x;
-		node.H_y = max_y;
-		node.L_x = min_x;
-		node.L_y = min_y;
-
-		if(node.Cx > T_leaf || node.Cy > T_leaf) {
-			cv::Point2f pt1(node.x, node.y);
-			cv::Point2f pt2(node.w, node.y);
-			cv::Point2f pt3(node.x, node.h);
-			cv::Point2f pt4(node.w, node.h);
-
-			seeds.push_back(pt1);
-			seeds.push_back(pt2);
-			seeds.push_back(pt3);
-			seeds.push_back(pt4);
-		}
-	}
-}
-
-void QuadTree::calcCxy(cv::Mat& Gx, cv::Mat& Gy, int T_internal, int T_leaf) {
-	calcCxyLeafs(Gx, Gy, T_leaf);
-
-	for(uint i = hnodes.size(); i <= 0; --i) {
-		for(uint n = 0; n < hnodes[i].size(); ++n) {
-			QTNode& node = nodes[(int)hnodes[i][n]];
-
-			node.H_x = MU_MAX4(nodes[node.l1].H_x, 
-							   nodes[node.l2].H_x, 
-							   nodes[node.l3].H_x, 
-							   nodes[node.l4].H_x);
-
-			node.H_y = MU_MAX4(nodes[node.l1].H_y, 
-							   nodes[node.l2].H_y, 
-							   nodes[node.l3].H_y, 
-							   nodes[node.l4].H_y);
-
-			node.L_x = MU_MIN4(nodes[node.l1].L_x, 
-							   nodes[node.l2].L_x, 
-							   nodes[node.l3].L_x, 
-							   nodes[node.l4].L_x);
-
-			node.L_y = MU_MIN4(nodes[node.l1].L_y, 
-							   nodes[node.l2].L_y, 
-							   nodes[node.l3].L_y, 
-							   nodes[node.l4].L_y);
-			
-			node.Cx = node.H_x - node.L_x;
-			node.Cy = node.H_y - node.L_y;
-
-			if(node.Cx > T_internal || node.Cy > T_internal) {
-				cv::Point2f pt1(node.x, node.y);
-				cv::Point2f pt2(node.w, node.y);
-				cv::Point2f pt3(node.x, node.h);
-				cv::Point2f pt4(node.w, node.h);
-
-				seeds.push_back(pt1);
-				seeds.push_back(pt2);
-				seeds.push_back(pt3);
-				seeds.push_back(pt4);
-			}
-
-		}
-	}
-}
-
-vector<cv::Vec6f> Compressor::delaunay(cv::Mat& img, vector<cv::Point2f>& seeds, int T_angle, int T_join) {
+vector<cv::Vec6f> Compressor::delaunay(cv::Mat& img, vector<cv::Point2f>& seeds) {
 	cv::Rect rect(0, 0, img.rows, img.cols);
 	cv::Subdiv2D subdiv(rect);
 
@@ -283,47 +204,10 @@ vector<cv::Vec6f> Compressor::delaunay(cv::Mat& img, vector<cv::Point2f>& seeds,
 		subdiv.insert(seeds[i]);
 	}
 
-	vector<cv::Point> pt(3);
 	vector<cv::Vec6f> triangleList;
-	vector<cv::Vec6f> resultTriangles;
     subdiv.getTriangleList(triangleList);
 
-	Edge e[3];
-	ushort cnt;
-	for(uint i = 0; i < triangleList.size(); i++ ) {
-        cv::Vec6f t = triangleList[i];
-        pt[0] = cv::Point(cvRound(t[0]), cvRound(t[1]));
-        pt[1] = cv::Point(cvRound(t[2]), cvRound(t[3]));
-        pt[2] = cv::Point(cvRound(t[4]), cvRound(t[5]));
-     
-	 	e[0].p1 = pt[0];
-	 	e[0].p2 = pt[1];
-		e[1].p1 = pt[1];
-		e[1].p2 = pt[2];
-		e[2].p1 = pt[2];
-		e[2].p2 = pt[0];
-
-		cnt = 0;
-
-		cnt += testAngle(img, e[0], T_angle);
-		cnt += testAngle(img, e[1], T_angle);
-		cnt += testAngle(img, e[2], T_angle);
-
-		if(cnt > 2) {
-			cv::Vec6f triangle;
-			triangle[0] = pt[0].x;
-			triangle[1] = pt[0].y;
-			triangle[2] = pt[1].x;
-			triangle[3] = pt[1].y;
-			triangle[4] = pt[2].x;
-			triangle[5] = pt[2].y;
-			resultTriangles.push_back(triangle);
-		} else {
-			// TODO split triangles
-		}
-    }
-
-	return resultTriangles;
+	return triangleList;
 }
 
 bool Compressor::testAngle(cv::Mat& img, Edge& e, int T_angle) {

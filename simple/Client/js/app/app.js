@@ -24,6 +24,18 @@ $(document).ready(function() {
 		$('#textarea_debug').slideToggle(1000);
 	});
 
+	function closeMenu() {
+		if(g_isOut) {
+			$('#window_render').animate({
+				margin: "50px auto 0px "+ (window.innerWidth - g_width) / 2
+			}, 0);
+			
+			$('#window_setting').animate({
+				width: "0px"
+			}, 0);
+		}
+	}
+
 	$('#button_toggle_menu').click(function toggleMenu(){
 		if(!g_isOut) {
 			$('#window_render').animate({
@@ -230,6 +242,8 @@ $(document).ready(function() {
 		muGl.setUniformMatrix(shaderProgram.invMvpMatrixUniform, invMvpMatrix);
 		gl.uniform1i(shaderProgram.depthUniform, g_mesh_compression_method);
 		gl.drawElements(gl.TRIANGLES, g_mesh.indices.numItems, gl.UNSIGNED_INT, 0);
+
+		//gl.flush();
 	}
 
 	function drawFirstFrame() {
@@ -276,6 +290,10 @@ $(document).ready(function() {
 		muGl.setUniformMatrix(shaderProgram.mvpMatrixUniform, mvpMatrix);
 		muGl.setUniformMatrix(shaderProgram.invMvpMatrixUniform, invMvpMatrix);
 		gl.drawElements(gl.TRIANGLES, g_mesh.indices.numItems, gl.UNSIGNED_INT, 0);
+
+		// TODO
+		// gl.flush();
+		// end messure
 	}
 
 	function setPlaylist(playlist) {
@@ -351,6 +369,7 @@ $(document).ready(function() {
 		mat4.invert(invMvpMatrix, invMvpMatrix);
 
 		for(var i = frame_min; i <= frame_max; i++) {
+			// begin messure
 			frame = scene.frames[i];
 
 			mat4.perspective(pMatrix, muGl.degToRad(scene.aperture), gl.viewportWidth / gl.viewportHeight, frame.near, frame.far);
@@ -396,8 +415,38 @@ $(document).ready(function() {
 				
 				if(typeof obj.result.rgb !== 'undefined') {
 					muGl.setTextureFromBase64(colorTexture, g_config.textureCompressionMethod, obj.result.rgb, drawFirstFrame);
+				}
 
+				if(typeof obj.result.depth !== 'undefined') {
 					muGl.setTextureFromBase64(depthTexture, "png", obj.result.depth, drawFirstFrame);
+				}
+				
+				if(typeof obj.result.indices !== 'undefined') {
+				/*	g_mesh.indices = new Uint32Array(obj.result.indices);
+					g_mesh.vertices = new Float32Array(obj.result.vertices);
+					g_mesh.texCoords = new Float32Array(obj.result.numTexCoord); */
+
+					var array = new Float32Array([-1.0,  1.0,  0.0,
+			 		  							   1.0,  1.0,  0.0,
+					 	 						  -1.0, -1.0,  0.0,
+			 		  	  						   1.0, -1.0,  0.0]);
+					g_mesh.vertices = array;
+
+					array = new Uint32Array([0, 1, 2,	1, 3, 2]);
+					g_mesh.indices = array;
+
+					array = new Float32Array([0.0, 0.0,
+				 				  			  1.0, 0.0,
+				 				  			  0.0, 1.0,
+				 				  			  1.0, 1.0]);
+
+					g_mesh.texCoords = array;
+
+					if(typeof obj.result.rgb !== 'undefined') {
+						muGl.setTextureFromBase64(colorTexture, g_config.textureCompressionMethod, obj.result.rgb, drawFirstFrame);
+					}
+
+
 				}
 
 				if(typeof obj.result.newMessureReady !== 'undefined') {
@@ -407,6 +456,8 @@ $(document).ready(function() {
 
 			websocket.onclose = function (evt) {
 				debug("disconnected");
+
+				closeMenu();
 				
 				document.getElementById("window_config").style.display = "block";
 				document.getElementById("window_render").style.display = "none";

@@ -15,6 +15,7 @@
 #include <iomanip>
 #include <bitset>
 #include <limits.h>
+#include <map>
 
 // CV
 #include <opencv.hpp>
@@ -84,6 +85,7 @@ string insertZeros(uint num_zeros, uint n);
 #include "scene.h"
 #include "playlist.h"
 #include "mainwindow.h"
+#include "quadtree.h"
 #include "compressor.h"
 #include "jsonrpc.h"
 #include "deamon.h"

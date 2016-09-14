@@ -5,6 +5,7 @@ TEMPLATE = app
 
 SOURCES +=	main.cpp \
 			muskat.cpp \
+			quadtree.cpp \
 			evaluator.cpp \
 			deamon.cpp \
 			scene.cpp \
@@ -17,6 +18,7 @@ SOURCES +=	main.cpp \
 
 HEADERS += 	muskat.h \
 			deamon.h \
+			quadtree.h \
 			evaluator.h \
 			scene.h \
 			playlist.h \

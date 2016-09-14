@@ -50,6 +50,7 @@ OBJECTS_DIR   = ./
 
 SOURCES       = main.cpp \
 		muskat.cpp \
+		quadtree.cpp \
 		evaluator.cpp \
 		deamon.cpp \
 		scene.cpp \
@@ -63,6 +64,7 @@ SOURCES       = main.cpp \
 		moc_mainwindow.cpp
 OBJECTS       = main.o \
 		muskat.o \
+		quadtree.o \
 		evaluator.o \
 		deamon.o \
 		scene.o \
@@ -210,6 +212,7 @@ DIST          = /home/josef/Programme/Qt5.6.0/5.6/gcc_64/mkspecs/features/spec_p
 		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/mkspecs/features/lex.prf \
 		server.pro muskat.h \
 		deamon.h \
+		quadtree.h \
 		evaluator.h \
 		scene.h \
 		playlist.h \
@@ -219,6 +222,7 @@ DIST          = /home/josef/Programme/Qt5.6.0/5.6/gcc_64/mkspecs/features/spec_p
 		fileRenderer.h \
 		mainwindow.h main.cpp \
 		muskat.cpp \
+		quadtree.cpp \
 		evaluator.cpp \
 		deamon.cpp \
 		scene.cpp \
@@ -537,8 +541,8 @@ distdir: FORCE
 	@test -d $(DISTDIR) || mkdir -p $(DISTDIR)
 	$(COPY_FILE) --parents $(DIST) $(DISTDIR)/
 	$(COPY_FILE) --parents server.qrc $(DISTDIR)/
-	$(COPY_FILE) --parents muskat.h deamon.h evaluator.h scene.h playlist.h config.h compressor.h jsonrpc.h fileRenderer.h mainwindow.h $(DISTDIR)/
-	$(COPY_FILE) --parents main.cpp muskat.cpp evaluator.cpp deamon.cpp scene.cpp playlist.cpp config.cpp compressor.cpp jsonrpc.cpp fileRenderer.cpp mainwindow.cpp $(DISTDIR)/
+	$(COPY_FILE) --parents muskat.h deamon.h quadtree.h evaluator.h scene.h playlist.h config.h compressor.h jsonrpc.h fileRenderer.h mainwindow.h $(DISTDIR)/
+	$(COPY_FILE) --parents main.cpp muskat.cpp quadtree.cpp evaluator.cpp deamon.cpp scene.cpp playlist.cpp config.cpp compressor.cpp jsonrpc.cpp fileRenderer.cpp mainwindow.cpp $(DISTDIR)/
 
 
 clean: compiler_clean 
@@ -964,6 +968,7 @@ main.o: main.cpp muskat.h \
 		scene.h \
 		playlist.h \
 		mainwindow.h \
+		quadtree.h \
 		compressor.h \
 		jsonrpc.h \
 		deamon.h \
@@ -1182,13 +1187,449 @@ muskat.o: muskat.cpp muskat.h \
 		scene.h \
 		playlist.h \
 		mainwindow.h \
+		quadtree.h \
 		compressor.h \
 		jsonrpc.h \
 		deamon.h \
 		evaluator.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o muskat.o muskat.cpp
 
-evaluator.o: evaluator.cpp 
+quadtree.o: quadtree.cpp muskat.h \
+		/usr/include/opencv2/opencv.hpp \
+		/usr/include/boost/filesystem.hpp \
+		/usr/include/boost/range/iterator_range.hpp \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/QApplication \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/qapplication.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtCore/qcoreapplication.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtCore/qglobal.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtCore/qconfig.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtCore/qfeatures.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtCore/qsystemdetection.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtCore/qprocessordetection.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtCore/qcompilerdetection.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtCore/qtypeinfo.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtCore/qtypetraits.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtCore/qisenum.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtCore/qsysinfo.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtCore/qlogging.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtCore/qflags.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtCore/qatomic.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtCore/qbasicatomic.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtCore/qatomic_bootstrap.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtCore/qgenericatomic.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtCore/qatomic_cxx11.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtCore/qatomic_gcc.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtCore/qatomic_msvc.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtCore/qatomic_armv7.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtCore/qatomic_armv6.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtCore/qatomic_armv5.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtCore/qatomic_ia64.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtCore/qatomic_x86.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtCore/qatomic_unix.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtCore/qglobalstatic.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtCore/qmutex.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtCore/qnumeric.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtCore/qversiontagging.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtCore/qstring.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtCore/qchar.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtCore/qbytearray.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtCore/qrefcount.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtCore/qnamespace.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtCore/qarraydata.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtCore/qstringbuilder.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtCore/qobject.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtCore/qobjectdefs.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtCore/qobjectdefs_impl.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtCore/qlist.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtCore/qalgorithms.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtCore/qiterator.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtCore/qhashfunctions.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtCore/qpair.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtCore/qbytearraylist.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtCore/qstringlist.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtCore/qregexp.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtCore/qstringmatcher.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtCore/qcoreevent.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtCore/qscopedpointer.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtCore/qmetatype.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtCore/qvarlengtharray.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtCore/qcontainerfwd.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtCore/qobject_impl.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtCore/qeventloop.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtGui/qwindowdefs.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtGui/qwindowdefs_win.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtCore/qpoint.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtCore/qsize.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtGui/qcursor.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/qdesktopwidget.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/qwidget.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtCore/qmargins.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtGui/qpaintdevice.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtCore/qrect.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtGui/qpalette.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtGui/qcolor.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtGui/qrgb.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtGui/qrgba64.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtGui/qbrush.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtCore/qvector.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtGui/qmatrix.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtGui/qpolygon.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtGui/qregion.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtCore/qdatastream.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtCore/qiodevice.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtCore/qline.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtGui/qtransform.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtGui/qpainterpath.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtGui/qimage.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtGui/qpixelformat.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtGui/qpixmap.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtCore/qsharedpointer.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtCore/qshareddata.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtCore/qhash.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtCore/qsharedpointer_impl.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtGui/qfont.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtGui/qfontmetrics.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtGui/qfontinfo.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/qsizepolicy.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtGui/qkeysequence.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtGui/qevent.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtCore/qvariant.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtCore/qmap.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtCore/qdebug.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtCore/qtextstream.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtCore/qlocale.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtCore/qset.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtCore/qcontiguouscache.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtCore/qurl.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtCore/qurlquery.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtCore/qfile.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtCore/qfiledevice.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtGui/qvector2d.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtGui/qtouchdevice.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtGui/qguiapplication.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtGui/qinputmethod.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/QMainWindow \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/qmainwindow.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/qtabwidget.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtGui/qicon.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/QStackedWidget \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/qstackedwidget.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/qframe.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/QMenuBar \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/qmenubar.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/qmenu.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/qaction.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/qactiongroup.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/QGridLayout \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/qgridlayout.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/qlayout.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/qlayoutitem.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/qboxlayout.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/QFormLayout \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/qformlayout.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/QLayout \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/QGroupBox \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/qgroupbox.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/QComboBox \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/qcombobox.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/qabstractitemdelegate.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/qstyleoption.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/qabstractspinbox.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtGui/qvalidator.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtCore/qregularexpression.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/qslider.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/qabstractslider.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/qstyle.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/qtabbar.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/qrubberband.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtCore/qabstractitemmodel.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/QPushButton \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/qpushbutton.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/qabstractbutton.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/QRadioButton \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/qradiobutton.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/QLineEdit \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/qlineedit.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtGui/qtextcursor.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtGui/qtextformat.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtGui/qpen.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtGui/qtextoption.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/QLabel \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/qlabel.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWebSockets/QWebSocketServer \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWebSockets/qwebsocketserver.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWebSockets/qwebsockets_global.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWebSockets/qwebsocketprotocol.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtCore/QObject \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtCore/QString \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtNetwork/QHostAddress \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtNetwork/qhostaddress.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtNetwork/qabstractsocket.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtNetwork/QSslConfiguration \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtNetwork/qsslconfiguration.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtNetwork/qsslsocket.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtNetwork/qtcpsocket.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtNetwork/qsslerror.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtNetwork/qsslcertificate.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtCore/qcryptographichash.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtCore/qdatetime.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtNetwork/qssl.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtCore/QFlags \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtNetwork/QSslError \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWebSockets/QWebSocket \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWebSockets/qwebsocket.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtCore/QUrl \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtNetwork/QAbstractSocket \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtNetwork/QNetworkRequest \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtNetwork/qnetworkrequest.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtCore/QSharedDataPointer \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtCore/QVariant \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtNetwork/QNetworkProxy \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtNetwork/qnetworkproxy.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtCore/QJsonDocument \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtCore/qjsondocument.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtCore/qjsonvalue.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtCore/QJsonObject \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtCore/qjsonobject.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtCore/QJsonArray \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtCore/qjsonarray.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtGui/QMatrix4x4 \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtGui/qmatrix4x4.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtGui/qvector3d.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtGui/qvector4d.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtGui/qquaternion.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtGui/qgenericmatrix.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtGui/QVector3D \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtGui/QImage \
+		fileRenderer.h \
+		config.h \
+		scene.h \
+		playlist.h \
+		mainwindow.h \
+		quadtree.h \
+		compressor.h \
+		jsonrpc.h \
+		deamon.h \
+		evaluator.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o quadtree.o quadtree.cpp
+
+evaluator.o: evaluator.cpp muskat.h \
+		/usr/include/opencv2/opencv.hpp \
+		/usr/include/boost/filesystem.hpp \
+		/usr/include/boost/range/iterator_range.hpp \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/QApplication \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/qapplication.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtCore/qcoreapplication.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtCore/qglobal.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtCore/qconfig.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtCore/qfeatures.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtCore/qsystemdetection.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtCore/qprocessordetection.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtCore/qcompilerdetection.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtCore/qtypeinfo.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtCore/qtypetraits.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtCore/qisenum.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtCore/qsysinfo.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtCore/qlogging.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtCore/qflags.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtCore/qatomic.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtCore/qbasicatomic.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtCore/qatomic_bootstrap.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtCore/qgenericatomic.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtCore/qatomic_cxx11.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtCore/qatomic_gcc.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtCore/qatomic_msvc.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtCore/qatomic_armv7.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtCore/qatomic_armv6.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtCore/qatomic_armv5.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtCore/qatomic_ia64.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtCore/qatomic_x86.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtCore/qatomic_unix.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtCore/qglobalstatic.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtCore/qmutex.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtCore/qnumeric.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtCore/qversiontagging.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtCore/qstring.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtCore/qchar.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtCore/qbytearray.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtCore/qrefcount.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtCore/qnamespace.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtCore/qarraydata.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtCore/qstringbuilder.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtCore/qobject.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtCore/qobjectdefs.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtCore/qobjectdefs_impl.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtCore/qlist.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtCore/qalgorithms.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtCore/qiterator.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtCore/qhashfunctions.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtCore/qpair.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtCore/qbytearraylist.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtCore/qstringlist.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtCore/qregexp.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtCore/qstringmatcher.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtCore/qcoreevent.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtCore/qscopedpointer.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtCore/qmetatype.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtCore/qvarlengtharray.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtCore/qcontainerfwd.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtCore/qobject_impl.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtCore/qeventloop.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtGui/qwindowdefs.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtGui/qwindowdefs_win.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtCore/qpoint.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtCore/qsize.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtGui/qcursor.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/qdesktopwidget.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/qwidget.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtCore/qmargins.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtGui/qpaintdevice.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtCore/qrect.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtGui/qpalette.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtGui/qcolor.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtGui/qrgb.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtGui/qrgba64.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtGui/qbrush.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtCore/qvector.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtGui/qmatrix.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtGui/qpolygon.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtGui/qregion.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtCore/qdatastream.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtCore/qiodevice.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtCore/qline.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtGui/qtransform.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtGui/qpainterpath.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtGui/qimage.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtGui/qpixelformat.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtGui/qpixmap.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtCore/qsharedpointer.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtCore/qshareddata.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtCore/qhash.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtCore/qsharedpointer_impl.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtGui/qfont.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtGui/qfontmetrics.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtGui/qfontinfo.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/qsizepolicy.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtGui/qkeysequence.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtGui/qevent.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtCore/qvariant.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtCore/qmap.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtCore/qdebug.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtCore/qtextstream.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtCore/qlocale.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtCore/qset.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtCore/qcontiguouscache.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtCore/qurl.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtCore/qurlquery.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtCore/qfile.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtCore/qfiledevice.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtGui/qvector2d.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtGui/qtouchdevice.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtGui/qguiapplication.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtGui/qinputmethod.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/QMainWindow \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/qmainwindow.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/qtabwidget.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtGui/qicon.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/QStackedWidget \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/qstackedwidget.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/qframe.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/QMenuBar \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/qmenubar.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/qmenu.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/qaction.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/qactiongroup.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/QGridLayout \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/qgridlayout.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/qlayout.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/qlayoutitem.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/qboxlayout.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/QFormLayout \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/qformlayout.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/QLayout \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/QGroupBox \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/qgroupbox.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/QComboBox \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/qcombobox.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/qabstractitemdelegate.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/qstyleoption.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/qabstractspinbox.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtGui/qvalidator.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtCore/qregularexpression.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/qslider.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/qabstractslider.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/qstyle.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/qtabbar.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/qrubberband.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtCore/qabstractitemmodel.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/QPushButton \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/qpushbutton.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/qabstractbutton.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/QRadioButton \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/qradiobutton.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/QLineEdit \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/qlineedit.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtGui/qtextcursor.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtGui/qtextformat.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtGui/qpen.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtGui/qtextoption.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/QLabel \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/qlabel.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWebSockets/QWebSocketServer \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWebSockets/qwebsocketserver.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWebSockets/qwebsockets_global.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWebSockets/qwebsocketprotocol.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtCore/QObject \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtCore/QString \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtNetwork/QHostAddress \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtNetwork/qhostaddress.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtNetwork/qabstractsocket.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtNetwork/QSslConfiguration \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtNetwork/qsslconfiguration.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtNetwork/qsslsocket.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtNetwork/qtcpsocket.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtNetwork/qsslerror.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtNetwork/qsslcertificate.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtCore/qcryptographichash.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtCore/qdatetime.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtNetwork/qssl.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtCore/QFlags \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtNetwork/QSslError \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWebSockets/QWebSocket \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWebSockets/qwebsocket.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtCore/QUrl \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtNetwork/QAbstractSocket \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtNetwork/QNetworkRequest \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtNetwork/qnetworkrequest.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtCore/QSharedDataPointer \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtCore/QVariant \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtNetwork/QNetworkProxy \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtNetwork/qnetworkproxy.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtCore/QJsonDocument \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtCore/qjsondocument.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtCore/qjsonvalue.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtCore/QJsonObject \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtCore/qjsonobject.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtCore/QJsonArray \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtCore/qjsonarray.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtGui/QMatrix4x4 \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtGui/qmatrix4x4.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtGui/qvector3d.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtGui/qvector4d.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtGui/qquaternion.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtGui/qgenericmatrix.h \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtGui/QVector3D \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtGui/QImage \
+		fileRenderer.h \
+		config.h \
+		scene.h \
+		playlist.h \
+		mainwindow.h \
+		quadtree.h \
+		compressor.h \
+		jsonrpc.h \
+		deamon.h \
+		evaluator.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o evaluator.o evaluator.cpp
 
 deamon.o: deamon.cpp muskat.h \
@@ -1403,6 +1844,7 @@ deamon.o: deamon.cpp muskat.h \
 		scene.h \
 		playlist.h \
 		mainwindow.h \
+		quadtree.h \
 		compressor.h \
 		jsonrpc.h \
 		deamon.h \
@@ -1621,6 +2063,7 @@ scene.o: scene.cpp muskat.h \
 		scene.h \
 		playlist.h \
 		mainwindow.h \
+		quadtree.h \
 		compressor.h \
 		jsonrpc.h \
 		deamon.h \
@@ -1839,6 +2282,7 @@ playlist.o: playlist.cpp muskat.h \
 		scene.h \
 		playlist.h \
 		mainwindow.h \
+		quadtree.h \
 		compressor.h \
 		jsonrpc.h \
 		deamon.h \
@@ -2057,6 +2501,7 @@ config.o: config.cpp muskat.h \
 		scene.h \
 		playlist.h \
 		mainwindow.h \
+		quadtree.h \
 		compressor.h \
 		jsonrpc.h \
 		deamon.h \
@@ -2275,6 +2720,7 @@ compressor.o: compressor.cpp muskat.h \
 		scene.h \
 		playlist.h \
 		mainwindow.h \
+		quadtree.h \
 		compressor.h \
 		jsonrpc.h \
 		deamon.h \
@@ -2493,6 +2939,7 @@ jsonrpc.o: jsonrpc.cpp muskat.h \
 		scene.h \
 		playlist.h \
 		mainwindow.h \
+		quadtree.h \
 		compressor.h \
 		jsonrpc.h \
 		deamon.h \
@@ -2711,6 +3158,7 @@ fileRenderer.o: fileRenderer.cpp muskat.h \
 		scene.h \
 		playlist.h \
 		mainwindow.h \
+		quadtree.h \
 		compressor.h \
 		jsonrpc.h \
 		deamon.h \
@@ -2929,6 +3377,7 @@ mainwindow.o: mainwindow.cpp muskat.h \
 		scene.h \
 		playlist.h \
 		mainwindow.h \
+		quadtree.h \
 		compressor.h \
 		jsonrpc.h \
 		deamon.h \
