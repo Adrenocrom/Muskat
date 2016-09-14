@@ -119,7 +119,7 @@ void Compressor::compressMeshDelaunay(QJsonObject& jo, FrameBuffer& fb) {
 	QJsonArray ja_vertices;
 
 	uint t_size = triangles.size();
-	for(uint i = 0; i < triangles.size(); ++i ) {
+	for(uint i = 0; i < t_size; ++i ) {
 		cv::Vec6f t = triangles[i];
         pt[0] = cv::Point(cvRound(t[0]), cvRound(t[1]));
         pt[1] = cv::Point(cvRound(t[2]), cvRound(t[3]));
@@ -145,7 +145,7 @@ void Compressor::compressMeshDelaunay(QJsonObject& jo, FrameBuffer& fb) {
 	
 	uint v_size = vertices.size();
 	int num_texCoord = 0;
-	for(uint i = 0; i < vertices.size(); ++i) {
+	for(uint i = 0; i < v_size; ++i) {
 		ja_vertices.push_back((float)vertices[i].x / (float)511);
 		ja_vertices.push_back((float)vertices[i].y / (float)511);
 		ja_vertices.push_back( (float)(fb.depth.at<ushort>(vertices[i].x, vertices[i].y)) / (float)(USHRT_MAX));

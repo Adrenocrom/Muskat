@@ -20,13 +20,15 @@
 				<div class="menu_b1"></div>
 				<div class="menu_b1"></div>
 			</button>
+			<button id="button_toggle_debug">
+				<b>^</b>
+			</button>
 		</div>
 		<div id="window_setting">
 			<fieldset id="form_scene">
 				<p>
 					<label>scenes:</label>
 					<select id="select_scenes"></select>
-					<input class="iput" type="text" id="text_res_filename" value="result.txt"></input>
 				</p>
 				<p>
 					<label>frames: </label>
@@ -36,7 +38,6 @@
 					<button id="button_render_single_frame">download frame</button>
 				</p>
 			</fieldset>
-			<fieldset>
 				<fieldset>
 					<legend>Texture</legend>
 					<p>
@@ -53,27 +54,51 @@
 					</p>
 				</fieldset>
 				<fieldset>	
-					<legend>mesh</legend>
+					<legend>
+						<input type="radio" name="mesh_mode" value="full" checked="checked">
+						<label>full</label>
+					</legend>
 					<p>
-						<input type="radio" name="mesh" value="8bit" checked="checked">
+						<input type="radio" name="precision" value="8bit" checked="checked">
 						<label>8 bit</label>
+					
+						<input type="radio" name="precision" value="16bit">
+						<label>16 bit</label>
+						
+						<label>PNG compression</label>
 						<input class="islider" id="slider_mesh_quality" type="range" min="0" max="9" step="1" value="0" /> 
 						<input class="iput short" type="text" id="text_mesh_quality" value="0"></input>
 					</p>
 					<p>
-						<input type="radio" name="mesh" value="16bit">
-						<label>16 bit</label>
-					</p>
-					<p>
-						<input type="radio" name="mesh" value="delaunay">
-						<label>delaunay</label>
-						<input class="iput short" type="text" id="text_delaunay_num" value="1000"></input>
+						<input type="radio" name="grid_type" value="default" checked="checked">
+						<label>default</label>
+
+						<input type="radio" name="grid_type" value="cookie_cutter">
+						<label>cookie cutter</label>
+
+						<input type="radio" name="grid_type" value="isometric">
+						<label>isometric</label>
 					</p>
 				</fieldset>
-			</fieldset>
-			<fieldset id="form_console">
-				<button id="button_toggle_debug">console</button>
-			</fieldset>
+				<fieldset>
+					<legend>
+						<input type="radio" name="mesh_mode" value="delaunay">
+						<label>delaunay</label>
+					</legend>
+					<p>
+						<label>max depth</label>
+						<input class="iput middle" type="number" name="quantity" min="1" max="100" step="1" value="3">
+					</p>
+					<p>
+						<label>T internal</label>
+						<input class="iput middle" type="number" name="quantity" min="0.0" max="1.0" step="0.1" value="0.1">
+					<p>
+					</p>
+						<label>T leaf</label>
+						<input class="iput middle" type="number" name="quantity" min="0.0" max="1.0" step="0.1" value="0.1">
+					</p>
+
+				</fieldset>
 		</div>
 		<div id="window_config">
 			<fieldset id="form_init">
@@ -104,7 +129,7 @@
 	    	void main(void) {
     	    	gl_FragColor = vec4(texture2D(uColorSampler, vec2(vTextureCoord.s, vTextureCoord.t)).rgb, 1.0);
 
-				gl_FragColor = vec4(1.0);
+				//gl_FragColor = vec4(1.0);
 			}
 		</script>
 		<script id="shader-vs" type="x-shader/x-vertex">
@@ -138,12 +163,15 @@
     				vTextureCoord = aTextureCoord;
 				}
 				else {
-					vTextureCoord = aTextureCoord;
-					gl_Position = uMVPMatrix * (uINVMVPMatrix * vec4(aVertexPosition.xyz, 1.0));
-				}
+					vTextureCoord = aVertexPosition.xy;
 
-        		//gl_Position = uMVPMatrix * (uINVMVPMatrix * vec4(aVertexPosition.xy, depth, 1.0));
-    			//vTextureCoord = aTextureCoord;
+					vec3 position;
+					position.x = (2.0 * aVertexPosition.x) - 1.0;
+					position.y = (-2.0 * aVertexPosition.y) + 1.0;
+					position.z = (-2.0 * aVertexPosition.z) + 1.0;
+					
+					gl_Position = uMVPMatrix * (uINVMVPMatrix * vec4(position.xyz, 1.0));
+				}
 			}
 		</script>
 

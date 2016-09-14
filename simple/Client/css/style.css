@@ -137,6 +137,17 @@ input[type='radio'] {
 	float: right;
 }
 
+#button_toggle_debug {
+	height: 40px;
+	width: 50px;
+	margin-top: 5px;
+	margin-right: 10px;
+	background-color: #333;
+	color: #EEE;
+	float: right;
+	font-size: 170%;
+}
+
 #logo {
 	height: 40px;
 	margin-top: 15px;
@@ -163,8 +174,25 @@ input[type='radio'] {
 }
 
 .short {
+	width: 25px;
+}
+
+.middle {
+	width: 50px;
+}
+
+.long {
 	width: 75px;
 }
+
+.longer {
+	width: 100px;
+}
+
+.l1 {
+	min-width: 160px;
+}
+
 
 .menu_b1 {
 	width: 30px;

@@ -112,9 +112,11 @@ $(document).ready(function() {
 
 		if(g_config.meshCompressionMethod == "8bit") {
 			g_mesh_compression_method = 0;
+			resize(512, 512);
 		}
 		else if(g_config.meshCompressionMethod == "16bit") {
 			g_mesh_compression_method = 1;
+			resize(512, 512);
 		}
 		else {
 			g_mesh_compression_method = 2;
@@ -289,6 +291,7 @@ $(document).ready(function() {
 		gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, g_mesh.indices);
 		muGl.setUniformMatrix(shaderProgram.mvpMatrixUniform, mvpMatrix);
 		muGl.setUniformMatrix(shaderProgram.invMvpMatrixUniform, invMvpMatrix);
+		gl.uniform1i(shaderProgram.depthUniform, g_mesh_compression_method);
 		gl.drawElements(gl.TRIANGLES, g_mesh.indices.numItems, gl.UNSIGNED_INT, 0);
 
 		// TODO
@@ -412,41 +415,26 @@ $(document).ready(function() {
 					debug("numScenes: " + playlist.scenes.length);
 				}
 
-				
+
 				if(typeof obj.result.rgb !== 'undefined') {
 					muGl.setTextureFromBase64(colorTexture, g_config.textureCompressionMethod, obj.result.rgb, drawFirstFrame);
 				}
-
+				
 				if(typeof obj.result.depth !== 'undefined') {
 					muGl.setTextureFromBase64(depthTexture, "png", obj.result.depth, drawFirstFrame);
+
+
+					
+
 				}
 				
 				if(typeof obj.result.indices !== 'undefined') {
-				/*	g_mesh.indices = new Uint32Array(obj.result.indices);
+					g_mesh.indices = new Uint32Array(obj.result.indices);
 					g_mesh.vertices = new Float32Array(obj.result.vertices);
-					g_mesh.texCoords = new Float32Array(obj.result.numTexCoord); */
-
-					var array = new Float32Array([-1.0,  1.0,  0.0,
-			 		  							   1.0,  1.0,  0.0,
-					 	 						  -1.0, -1.0,  0.0,
-			 		  	  						   1.0, -1.0,  0.0]);
-					g_mesh.vertices = array;
-
-					array = new Uint32Array([0, 1, 2,	1, 3, 2]);
-					g_mesh.indices = array;
-
-					array = new Float32Array([0.0, 0.0,
-				 				  			  1.0, 0.0,
-				 				  			  0.0, 1.0,
-				 				  			  1.0, 1.0]);
-
-					g_mesh.texCoords = array;
-
-					if(typeof obj.result.rgb !== 'undefined') {
-						muGl.setTextureFromBase64(colorTexture, g_config.textureCompressionMethod, obj.result.rgb, drawFirstFrame);
-					}
+					g_mesh.texCoords = new Float32Array(obj.result.numTexCoord);
 
 
+					drawFirstFrame();
 				}
 
 				if(typeof obj.result.newMessureReady !== 'undefined') {

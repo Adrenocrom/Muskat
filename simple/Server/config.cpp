@@ -14,7 +14,7 @@ Config::Config() {
 	m_T_internal = 0;
 
 	// default creates just a plane
-	m_max_depth	 = 1;
+	m_max_depth	 = 5;
 }
 
 void Config::setConfig(QJsonObject& jo) {
