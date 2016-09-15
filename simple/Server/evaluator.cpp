@@ -30,7 +30,7 @@ void Evaluator::runEvaluation(string path) {
 		entry.angle = m_scene->m_infos[i].offangle;
 		entries.push_back(entry);
 
-		QString filename = "res/frame_"+ QString::number(i) +".png";
+		QString filename = "res/frame_0"+ QString::number(i) +".png";
 		imwrite(filename.toStdString(), results[i]);
 	}
 
@@ -43,7 +43,6 @@ void Evaluator::runEvaluation(string path) {
 	entry = entries.front();
 	double cnt = 1;
 	for(auto it = entries.begin(); it != entries.end(); ++it) {
-		cout<<entry.angle<<" "<<it->angle<<endl;
 		if(it->angle < entry.angle || next(it) == entries.end()) {
 			entry.angle;
 			entry.PSNR	   /= cnt;

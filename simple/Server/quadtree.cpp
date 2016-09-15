@@ -166,6 +166,14 @@ void QuadTree::calcCxy(vector<cv::Point2f>& seeds) {
 	}
 }
 
+void QuadTree::setTleaf( ushort T_leaf ) {
+	m_T_leaf = T_leaf;
+}
+
+void QuadTree::setTinternal( ushort T_internal ) {
+	m_T_internal = T_internal;
+}
+
 void QuadTree::subdivide(int id, uint current_depth) {
 	QtreeNode node = nodes[id];
 	hnodes[current_depth-1].push_back( (uint)id );

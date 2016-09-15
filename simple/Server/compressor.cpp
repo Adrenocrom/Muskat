@@ -18,14 +18,14 @@ void Compressor::compressTexture(QJsonObject& jo, FrameBuffer& fb) {
 	std::vector<uchar> rgb;	//buffer for coding
 	std::vector<int> param(2);
 
-	if(m_config->textureCompressionMethod == "jpeg") {
+	if(m_config->getTextureCompressionMethod() == "jpeg") {
 		param[0] = cv::IMWRITE_JPEG_QUALITY;
-		param[1] = m_config->textureCompressionQuality;	//default(95) 0-100
+		param[1] = m_config->getTextureCompressionQuality();	//default(95) 0-100
 		cv::imencode(".jpg", fb.rgb, rgb, param);
 	}
-	else if(m_config->textureCompressionMethod == "png") {
+	else if(m_config->getTextureCompressionMethod() == "png") {
 		param[0] = cv::IMWRITE_PNG_COMPRESSION;
-		param[1] = m_config->textureCompressionQuality;	//default(3) 0-9
+		param[1] = m_config->getTextureCompressionQuality();	//default(3) 0-9
 		cv::imencode(".png", fb.rgb, rgb, param);
 	}
 		
@@ -36,13 +36,13 @@ void Compressor::compressTexture(QJsonObject& jo, FrameBuffer& fb) {
 }
 
 void Compressor::compressMesh(QJsonObject& jo, FrameBuffer& fb) {
-	if(m_config->meshCompressionMethod == "8bit") {
-		compressMesh8Bit(jo, fb);
-	}
-	else if(m_config->meshCompressionMethod == "16bit") {
-		compressMesh16Bit(jo, fb);
-	}
-	else if(m_config->meshCompressionMethod == "delaunay") {
+	if(m_config->getMeshMode() == "full") {
+		if(m_config->getMeshPercesion() == "8bit") {
+			compressMesh8Bit(jo, fb);
+		} else {
+			compressMesh16Bit(jo, fb);
+		}
+	} else {
 		compressMeshDelaunay(jo, fb);
 	}
 }
@@ -52,7 +52,7 @@ void Compressor::compressMesh8Bit(QJsonObject& jo, FrameBuffer& fb) {
 	std::vector<int> 	param(2);
 	
 	param[0] = cv::IMWRITE_PNG_COMPRESSION;
-	param[1] = 1;//default(3) 0-9
+	param[1] = m_config->getMeshCompression();//default(3) 0-9
 	cv::imencode(".png", fb.depth, depth, param);
 	
 	QByteArray ba_depth;
@@ -80,7 +80,7 @@ void Compressor::compressMesh16Bit(QJsonObject& jo, FrameBuffer& fb) {
 	}
 	
 	param[0] = cv::IMWRITE_PNG_COMPRESSION;
-	param[1] = m_config->meshCompressionQuality;	//default(3) 0-9
+	param[1] = m_config->getMeshCompression();	//default(3) 0-9
 	cv::imencode(".png", rgbDepth, depth, param);
 	
 	QByteArray ba_depth;
@@ -96,6 +96,14 @@ void Compressor::compressMeshDelaunay(QJsonObject& jo, FrameBuffer& fb) {
 	// calc sobel gradients for 2 dimensions and store them
 	Sobel( fb.depth, grad_x, -1, 1, 0, 3, 1, 0, cv::BORDER_DEFAULT );
 	Sobel( fb.depth, grad_y, -1, 0, 1, 3, 1, 0, cv::BORDER_DEFAULT );
+
+	// resize Quadtree
+	SAFE_DELETE(m_quadtree);
+	m_quadtree = new QuadTree( 	m_config->getWidth(), 
+								m_config->getHeight(),
+								m_config->getMaxDepth());
+	m_quadtree->setTleaf(m_config->getTleaf());
+	m_quadtree->setTinternal(m_config->getTinternal());
 
 	// calc seeds from quadtree
 	vector<cv::Point2f>	seeds = m_quadtree->generateSeeds(&grad_x, &grad_y);

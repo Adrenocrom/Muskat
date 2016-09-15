@@ -87,15 +87,15 @@
 					</legend>
 					<p>
 						<label>max depth</label>
-						<input class="iput middle" type="number" name="quantity" min="1" max="100" step="1" value="3">
+						<input id="text_max_depth" class="iput middle" type="number" name="quantity" min="1" max="100" step="1" value="3">
 					</p>
 					<p>
 						<label>T internal</label>
-						<input class="iput middle" type="number" name="quantity" min="0.0" max="1.0" step="0.1" value="0.1">
+						<input id="text_T_internal" class="iput middle" type="number" name="quantity" min="0.0" max="1.0" step="0.1" value="0.1">
 					<p>
 					</p>
 						<label>T leaf</label>
-						<input class="iput middle" type="number" name="quantity" min="0.0" max="1.0" step="0.1" value="0.1">
+						<input id="text_T_leaf" class="iput middle" type="number" name="quantity" min="0.0" max="1.0" step="0.1" value="0.1">
 					</p>
 
 				</fieldset>
@@ -123,12 +123,16 @@
 	   		precision mediump float;
 
 			varying vec2 vTextureCoord;
+			varying float vColor;
 
 	    	uniform sampler2D uColorSampler;
 
 	    	void main(void) {
     	    	gl_FragColor = vec4(texture2D(uColorSampler, vec2(vTextureCoord.s, vTextureCoord.t)).rgb, 1.0);
 
+				if(vColor == 0.0) {
+					gl_FragColor = vec4(1.0);
+				}
 				//gl_FragColor = vec4(1.0);
 			}
 		</script>
@@ -140,13 +144,15 @@
     		uniform mat4 uINVMVPMatrix;
 
 			uniform int uDepth;
-
 			uniform sampler2D uDepthSampler;
+			uniform vec2 uResolution;
 
 			varying vec2 vTextureCoord;
+			varying float vColor;
 
     		void main(void) {
 				highp float depth = 0.0;
+				vColor = 1.0;
 
 				if(uDepth == 0) {
 					depth = texture2D(uDepthSampler, vec2(aTextureCoord.s, aTextureCoord.t)).r;
@@ -154,6 +160,9 @@
 					gl_Position = uMVPMatrix * (uINVMVPMatrix * vec4(aVertexPosition.xy, depth, 1.0));
     				vTextureCoord = aTextureCoord;
 
+				/*	if(depth > 0.5) {
+						vColor = 0.0;
+					}*/
 				}
 				else if(uDepth == 1) {
 					depth = texture2D(uDepthSampler, vec2(aTextureCoord.s, aTextureCoord.t)).r * (256.0 / 257.0);

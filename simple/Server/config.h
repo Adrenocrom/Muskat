@@ -6,10 +6,7 @@
 class Config {
 public:
 
-	QString		textureCompressionMethod;
-	int			textureCompressionQuality;
-	QString		meshCompressionMethod;
-	int			meshCompressionQuality;
+
 
 	// constructor set up defaults
 	Config();
@@ -26,6 +23,15 @@ public:
 	int		getHeight();
 	float	getAspect();
 
+	QString	getTextureCompressionMethod();
+	int		getTextureCompressionQuality();
+
+	QString	getMeshMode();
+	QString getGridType();
+	QString getMeshPercesion();
+
+	int		getMeshCompression();
+
 	// quadtree getter
 	uint	getMaxDepth();
 
@@ -39,6 +45,15 @@ private:
 	int 	m_width;		// screen-width
 	int 	m_height;		// screen-height
 	float 	m_asprect;		// aspect ratio calculated while resize
+
+	QString		m_textureCompressionMethod;
+	int			m_textureCompressionQuality;
+
+	QString		m_mesh_mode;
+	QString		m_grid_type;
+	QString		m_mesh_percesion;
+
+	int			m_mesh_compression;
 
 	// thresholds for delaunay triangulation
 	ushort	m_T_leaf;

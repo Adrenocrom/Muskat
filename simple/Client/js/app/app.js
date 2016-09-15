@@ -11,6 +11,7 @@ $(document).ready(function() {
 	var g_height		= 512;
 	var g_isOut			= false;
 
+	debug_console.style.height = (window.innerHeight - 60) + 'px';
 	function debug(message) {
 		debug_console.value += message + "\n";
 		debug_console.scrollTop = debug_console.scrollHeight;
@@ -88,6 +89,10 @@ $(document).ready(function() {
 		startWs();
 	});
 
+	$('input[name=texture]').on('change', function() {
+		g_config.textureCompressionMethod = $('input[name=texture]:checked').val(); 
+	});
+
 	$('#slider_jpeg_quality').on('input', function () {
 	    $('#text_jpeg_quality').val($('#slider_jpeg_quality').val());
 		g_config.textureCompressionQuality = parseInt($('#slider_jpeg_quality').val());
@@ -98,32 +103,41 @@ $(document).ready(function() {
 		g_config.textureCompressionQuality = parseInt($('#slider_png_quality').val());
 	});
 
+	$('input[name=mesh_mode]').on('change', function() {
+		g_config.meshMode = $('input[name=mesh_mode]:checked').val(); 
+	
+		if(g_config.meshMode == "full") {
+			resize(g_config.width, g_config.height);
+		}
+	});
+
+	$('input[name=percesion]').on('change', function() {
+		g_config.meshPercesion = $('input[name=percesion]:checked').val(); 
+	});
+
 	$('#slider_mesh_quality').on('input', function () {
 	    $('#text_mesh_quality').val($('#slider_mesh_quality').val());
-		g_config.meshCompressionQualtiy = parseInt($('#slider_mesh_quality').val());
+		g_config.meshCompression = parseInt($('#slider_mesh_quality').val());
 	});
 
-	$('input[name=texture]').on('change', function() {
-		g_config.textureCompressionMethod = $('input[name=texture]:checked').val(); 
+	$('input[name=grid_type]').on('change', function() {
+		g_config.gridType = $('input[name=grid_type]:checked').val();
+
+		resize(g_config.width, g_config.height);
 	});
 
-	$('input[name=mesh]').on('change', function() {
-		g_config.meshCompressionMethod = $('input[name=mesh]:checked').val();
-
-		if(g_config.meshCompressionMethod == "8bit") {
-			g_mesh_compression_method = 0;
-			resize(512, 512);
-		}
-		else if(g_config.meshCompressionMethod == "16bit") {
-			g_mesh_compression_method = 1;
-			resize(512, 512);
-		}
-		else {
-			g_mesh_compression_method = 2;
-		}
+	$('#text_max_depth').on('change', function() {
+		g_config.maxDepth = parseInt($('#text_max_depth').val());
 	});
 
+	$('#text_T_internal').on('change', function() {
+		g_config.Tinternal = parseFloat($('#text_T_internal').val());
+	});
 
+	$('#text_T_leaf').on('change', function() {
+		g_config.Tleaf = parseFloat($('#text_T_leaf').val());
+	});
+	
 	var muGl;
 	var shaderProgram;
 
@@ -134,7 +148,6 @@ $(document).ready(function() {
 	var g_mesh;
 	var g_playlist;
 	var g_scene_index;
-	var g_mesh_compression_method;
 
 	initConfig();
 	
@@ -166,6 +179,7 @@ $(document).ready(function() {
 		shaderProgram.colorSamplerUniform 	= muGl.getUniformLocation(shaderProgram, "uColorSampler");
 		shaderProgram.depthSamplerUniform 	= muGl.getUniformLocation(shaderProgram, "uDepthSampler");
 		shaderProgram.depthUniform			= muGl.getUniformLocation(shaderProgram, "uDepth");
+		shaderProgram.resolution			= muGl.getUniformLocation(shaderProgram, "uResolution");
 
 		debug("set default colors");
 		muGl.gl.clearColor(0.0, 0.0, 0.0, 1.0);
@@ -175,7 +189,6 @@ $(document).ready(function() {
 		g_mesh = new MuskatMesh(muGl.gl);
 		g_mesh.createPlane();
 		resize(512, 512);
-		g_mesh_compression_method = 0;
 
 		debug("set default textures");
 		colorTexture = muGl.createTextureFromUrl("img/UV_Grid_Sm.jpg", draw);
@@ -192,8 +205,13 @@ $(document).ready(function() {
 	}
 
 	function resize(w, h) {
-		//g_mesh.createCookieCutter(w, h);
-		g_mesh.createIsometricPlane(w, h);
+		if(g_config.gridType == "default") {
+			g_mesh.createComplexPlane(w, h);
+		} else if(g_config.gridType == "cookie_cutter") {
+			g_mesh.createCookieCutter(w, h);
+		} else {
+			g_mesh.createIsometricPlane(w, h);
+		}
 	}
 
 	var mvMatrix	 = mat4.create();
@@ -242,7 +260,7 @@ $(document).ready(function() {
 		gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, g_mesh.indices);
 		muGl.setUniformMatrix(shaderProgram.mvpMatrixUniform, mvpMatrix);
 		muGl.setUniformMatrix(shaderProgram.invMvpMatrixUniform, invMvpMatrix);
-		gl.uniform1i(shaderProgram.depthUniform, g_mesh_compression_method);
+		gl.uniform1i(shaderProgram.depthUniform, g_config.meshState);
 		gl.drawElements(gl.TRIANGLES, g_mesh.indices.numItems, gl.UNSIGNED_INT, 0);
 
 		//gl.flush();
@@ -288,14 +306,17 @@ $(document).ready(function() {
 		gl.bindTexture(gl.TEXTURE_2D, colorTexture);
 		gl.uniform1i(shaderProgram.colorSamplerUniform, 1);
 		
-		gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, g_mesh.indices);
+		gl.uniform1i(shaderProgram.depthUniform, g_config.meshState);
+		gl.uniform2f(shaderProgram.resolution, g_config.width, g_config.height);
+
 		muGl.setUniformMatrix(shaderProgram.mvpMatrixUniform, mvpMatrix);
 		muGl.setUniformMatrix(shaderProgram.invMvpMatrixUniform, invMvpMatrix);
-		gl.uniform1i(shaderProgram.depthUniform, g_mesh_compression_method);
+		
+		gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, g_mesh.indices);
 		gl.drawElements(gl.TRIANGLES, g_mesh.indices.numItems, gl.UNSIGNED_INT, 0);
 
 		// TODO
-		// gl.flush();
+		gl.flush();
 		// end messure
 	}
 
@@ -422,10 +443,6 @@ $(document).ready(function() {
 				
 				if(typeof obj.result.depth !== 'undefined') {
 					muGl.setTextureFromBase64(depthTexture, "png", obj.result.depth, drawFirstFrame);
-
-
-					
-
 				}
 				
 				if(typeof obj.result.indices !== 'undefined') {
@@ -505,10 +522,17 @@ $(document).ready(function() {
 
 	function setConfigMessage() {
 		var params = {
+			"width"						: g_config.width,
+			"height"					: g_config.height,
 			"textureCompressionMethod" 	: g_config.textureCompressionMethod,
 			"textureCompressionQuality"	: g_config.textureCompressionQuality,
-			"meshCompressionMethod"		: g_config.meshCompressionMethod,
-			"meshCompressionQualtiy"	: g_config.meshCompressionQualtiy
+			"meshMode"			: g_config.meshMode,
+			"gridType"			: g_config.gridType,
+			"meshPercesion"		: g_config.meshPercesion,
+			"meshCompression"	: g_config.meshCompression,
+			"maxDepth"			: g_config.maxDepth,
+			"Tleaf"				: g_config.Tleaf,
+			"Tinternal"			: g_config.Tinternal
 		};
 
 		debug(JSON.stringify(params));
