@@ -66,6 +66,11 @@ $(document).ready(function() {
 		getFrameMessage(0);
 	});
 
+	$( '#button_show_frame' ).click(function() {
+		var select_frames_max = document.getElementById("select_frames_max");
+		drawFrame(select_frames_max.selectedIndex);
+	});
+
 	$( '#button_run_scene' ).click(function() {
 		newMessureMessage();
 	});
@@ -111,8 +116,8 @@ $(document).ready(function() {
 		}
 	});
 
-	$('input[name=percesion]').on('change', function() {
-		g_config.meshPercesion = $('input[name=percesion]:checked').val(); 
+	$('input[name=precision]').on('change', function() {
+		g_config.meshPrecision = $('input[name=precision]:checked').val(); 
 	});
 
 	$('#slider_mesh_quality').on('input', function () {
@@ -132,6 +137,10 @@ $(document).ready(function() {
 
 	$('#text_T_internal').on('change', function() {
 		g_config.Tinternal = parseFloat($('#text_T_internal').val());
+		
+		if(g_config.Tinternal >= g_config.Tleaf) {
+			$('#text_T_leaf').val(g_config.Tinternal);
+		}
 	});
 
 	$('#text_T_leaf').on('change', function() {
@@ -148,6 +157,8 @@ $(document).ready(function() {
 	var g_mesh;
 	var g_playlist;
 	var g_scene_index;
+	var g_time_start;
+	var g_time_end;
 
 	initConfig();
 	
@@ -218,17 +229,6 @@ $(document).ready(function() {
 	var pMatrix 	 = mat4.create();
 	var mvpMatrix 	 = mat4.create();
 	var invMvpMatrix = mat4.create();
-
-	function setInvMatrix(base64) {
-		var m = base64.invMVP;
-
-		console.log(base64.invMVP);
-
-		mat4.set(invMvpMatrix, m[0], 	m[1], 	m[2], 	m[3],
-							   m[4], 	m[5], 	m[6], 	m[7],
-							   m[8], 	m[9], 	m[10],	m[11],
-							   m[12], 	m[13], 	m[14], 	m[15]);
-	}
 	
 	function draw() {
 		var gl = muGl.gl;
@@ -267,9 +267,14 @@ $(document).ready(function() {
 	}
 
 	function drawFirstFrame() {
+		drawFrame(0);
+	}
+
+	function drawFrame(to) {
 		var gl = muGl.gl;
 		var scene = g_playlist.scenes[g_scene_index];
 		var frame = scene.frames[0];
+		var frameTo = scene.frames[to];
 		
 		mat4.perspective(pMatrix, muGl.degToRad(scene.aperture), gl.viewportWidth / gl.viewportHeight, frame.near, frame.far);
 		mat4.lookAt(mvMatrix, frame.pos, frame.lookat, frame.up);
@@ -277,10 +282,9 @@ $(document).ready(function() {
 		mat4.multiply(invMvpMatrix, pMatrix, mvMatrix);
 		mat4.invert(invMvpMatrix, invMvpMatrix);
 
-
-		mat4.perspective(pMatrix, muGl.degToRad(scene.aperture), gl.viewportWidth / gl.viewportHeight, frame.near, frame.far);
-		mat4.lookAt(mvMatrix, frame.pos, frame.lookat, frame.up);
-		mat4.translate(mvMatrix, mvMatrix, frame.lookat);
+		mat4.perspective(pMatrix, muGl.degToRad(scene.aperture), gl.viewportWidth / gl.viewportHeight, frameTo.near, frameTo.far);
+		mat4.lookAt(mvMatrix, frameTo.pos, frameTo.lookat, frameTo.up);
+		mat4.translate(mvMatrix, mvMatrix, frameTo.lookat);
 		mat4.multiply(mvpMatrix, pMatrix, mvMatrix);
 			
 		drawEx();
@@ -317,7 +321,9 @@ $(document).ready(function() {
 
 		// TODO
 		gl.flush();
+
 		// end messure
+		g_time_end = new Date().getTime();
 	}
 
 	function setPlaylist(playlist) {
@@ -356,9 +362,9 @@ $(document).ready(function() {
 		select_frames_max.selectedIndex = scene.frames.length-1;
 	}
 
-	function saveFrameToPNG(id) {
+	function saveFrameToPNG(id, time) {
 		var data = muGl.canvas.toDataURL("image/png;base64;");
-		saveFrameMessage(id, data);
+		saveFrameMessage(id, data, time);
 	}
 
 	function downloadFrameToPNG() {
@@ -393,7 +399,9 @@ $(document).ready(function() {
 		mat4.invert(invMvpMatrix, invMvpMatrix);
 
 		for(var i = frame_min; i <= frame_max; i++) {
-			// begin messure
+			// messure time
+			g_time_start = new Date().getTime();
+
 			frame = scene.frames[i];
 
 			mat4.perspective(pMatrix, muGl.degToRad(scene.aperture), gl.viewportWidth / gl.viewportHeight, frame.near, frame.far);
@@ -402,7 +410,7 @@ $(document).ready(function() {
 			mat4.multiply(mvpMatrix, pMatrix, mvMatrix);
 			
 			drawEx();
-			saveFrameToPNG(i);
+			saveFrameToPNG(i, g_time_end-g_time_start);
 		}
 
 	}
@@ -432,7 +440,7 @@ $(document).ready(function() {
 					playlist = obj.result;
 					
 					setPlaylist(playlist);
-					debug(JSON.stringify(playlist));
+					//debug(JSON.stringify(playlist));
 					debug("numScenes: " + playlist.scenes.length);
 				}
 
@@ -446,10 +454,19 @@ $(document).ready(function() {
 				}
 				
 				if(typeof obj.result.indices !== 'undefined') {
-					g_mesh.indices = new Uint32Array(obj.result.indices);
-					g_mesh.vertices = new Float32Array(obj.result.vertices);
+					debug(JSON.stringify(obj.result.indices));
+					
+					var indices  = JSON.parse(obj.result.indices);
+					var vertices = JSON.parse(obj.result.vertices);
+
+					g_mesh.indices = new Uint32Array(indices);
+					g_mesh.vertices = new Float32Array(vertices);
 					g_mesh.texCoords = new Float32Array(obj.result.numTexCoord);
 
+
+					debug(obj.result.indices);
+					debug(obj.result.vertices);
+					debug(obj.result.numTexCoord);
 
 					drawFirstFrame();
 				}
@@ -524,15 +541,20 @@ $(document).ready(function() {
 		var params = {
 			"width"						: g_config.width,
 			"height"					: g_config.height,
+			"meshWidth"					: g_config.meshWidth,
+			"meshHeight"				: g_config.meshHeight,
 			"textureCompressionMethod" 	: g_config.textureCompressionMethod,
 			"textureCompressionQuality"	: g_config.textureCompressionQuality,
-			"meshMode"			: g_config.meshMode,
-			"gridType"			: g_config.gridType,
-			"meshPercesion"		: g_config.meshPercesion,
-			"meshCompression"	: g_config.meshCompression,
-			"maxDepth"			: g_config.maxDepth,
-			"Tleaf"				: g_config.Tleaf,
-			"Tinternal"			: g_config.Tinternal
+			"meshMode"					: g_config.meshMode,
+			"gridType"					: g_config.gridType,
+			"meshPercesion"				: g_config.meshPercesion,
+			"meshCompression"			: g_config.meshCompression,
+			"maxDepth"					: g_config.maxDepth,
+			"Tleaf"						: g_config.Tleaf,
+			"Tinternal"					: g_config.Tinternal,
+			"Tangle"					: g_config.Tangle,
+			"Tjoin"						: g_config.Tjoin,
+			"useBackground"				: g_config.useBackground
 		};
 
 		debug(JSON.stringify(params));

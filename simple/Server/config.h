@@ -3,13 +3,13 @@
 
 #pragma once
 
+class MainWindow;
+
 class Config {
 public:
 
-
-
 	// constructor set up defaults
-	Config();
+	Config(MainWindow* mw);
 
 	// produces json object for transfer via jsonrpc
 	QJsonObject getConfig();
@@ -22,6 +22,11 @@ public:
 	int		getWidth();
 	int		getHeight();
 	float	getAspect();
+
+	int		getMeshWidth();
+	int		getMeshHeight();
+
+	bool	hasDifferentSize();
 
 	QString	getTextureCompressionMethod();
 	int		getTextureCompressionQuality();
@@ -39,12 +44,22 @@ public:
 	ushort	getTleaf();
 	ushort	getTinternal();
 
+	double	getTangle();
+	double	getTjoin();
+
+	bool	getUseBackground();
+
 private:
+	// pointer to mainwindow
+	MainWindow* m_mw;
 
 	// screen settings
 	int 	m_width;		// screen-width
 	int 	m_height;		// screen-height
 	float 	m_asprect;		// aspect ratio calculated while resize
+
+	int		m_mesh_width;
+	int		m_mesh_height;
 
 	QString		m_textureCompressionMethod;
 	int			m_textureCompressionQuality;
@@ -59,8 +74,14 @@ private:
 	ushort	m_T_leaf;
 	ushort	m_T_internal;
 
+	double	m_T_angle;
+	double	m_T_join;
+
 	// quadtree config
 	uint 	m_max_depth;	// max depth
+
+	// delete background triangles, if low max depth produces errors
+	bool	m_use_background;
 };
 
 #endif

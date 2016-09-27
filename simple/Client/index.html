@@ -34,6 +34,7 @@
 					<label>frames: </label>
 					<select id="select_frames_min"></select>
 					<select id="select_frames_max"></select>
+					<button id="button_show_frame">render</button>
 					<button id="button_run_scene">messure</button>
 					<button id="button_render_single_frame">download frame</button>
 				</p>
@@ -58,9 +59,9 @@
 						<input type="radio" name="mesh_mode" value="full" checked="checked">
 						<label>full</label>
 					</legend>
-					<p>
+					<div style="float: left;">
 						<input type="radio" name="precision" value="8bit" checked="checked">
-						<label>8 bit</label>
+						<label>8 bit</label> <br>
 					
 						<input type="radio" name="precision" value="16bit">
 						<label>16 bit</label>
@@ -68,35 +69,36 @@
 						<label>PNG compression</label>
 						<input class="islider" id="slider_mesh_quality" type="range" min="0" max="9" step="1" value="0" /> 
 						<input class="iput short" type="text" id="text_mesh_quality" value="0"></input>
-					</p>
-					<p>
+					</div>
+					<div style="float: right;">
 						<input type="radio" name="grid_type" value="default" checked="checked">
-						<label>default</label>
+						<label>default</label> <br>
 
 						<input type="radio" name="grid_type" value="cookie_cutter">
-						<label>cookie cutter</label>
+						<label>cookie cutter</label> <br>
 
 						<input type="radio" name="grid_type" value="isometric">
 						<label>isometric</label>
-					</p>
+					</div>
 				</fieldset>
 				<fieldset>
 					<legend>
 						<input type="radio" name="mesh_mode" value="delaunay">
 						<label>delaunay</label>
 					</legend>
-					<p>
-						<label>max depth</label>
-						<input id="text_max_depth" class="iput middle" type="number" name="quantity" min="1" max="100" step="1" value="3">
-					</p>
-					<p>
-						<label>T internal</label>
-						<input id="text_T_internal" class="iput middle" type="number" name="quantity" min="0.0" max="1.0" step="0.1" value="0.1">
-					<p>
-					</p>
-						<label>T leaf</label>
-						<input id="text_T_leaf" class="iput middle" type="number" name="quantity" min="0.0" max="1.0" step="0.1" value="0.1">
-					</p>
+					<div style="float: left;">
+						<p>
+						<input id="text_max_depth" class="iput middle" type="number" name="quantity" min="1" max="20" step="1" value="8">
+						<label>max depth</label></p>
+						
+						<p>
+						<input id="text_T_internal" class="iput middle" type="number" name="quantity" min="0.0" max="1.0" step="0.1" value="0.0">
+						<label>T internal</label></p>
+						
+						<p>
+						<input id="text_T_leaf" class="iput middle" type="number" name="quantity" min="0.0" max="1.0" step="0.1" value="0.0">
+						<label>T leaf</label></p>
+					</div>
 
 				</fieldset>
 		</div>
@@ -123,17 +125,18 @@
 	   		precision mediump float;
 
 			varying vec2 vTextureCoord;
-			varying float vColor;
+			varying float vState;
 
 	    	uniform sampler2D uColorSampler;
 
 	    	void main(void) {
-    	    	gl_FragColor = vec4(texture2D(uColorSampler, vec2(vTextureCoord.s, vTextureCoord.t)).rgb, 1.0);
-
-				if(vColor == 0.0) {
-					gl_FragColor = vec4(1.0);
+				
+				if(vState > 0.1) {
+					gl_FragColor = vec4(0.0, 0.0, 0.0, 0.0);
 				}
-				//gl_FragColor = vec4(1.0);
+				else {
+    	    		gl_FragColor = vec4(texture2D(uColorSampler, vec2(vTextureCoord.s, vTextureCoord.t)).rgb, 1.0);
+				}
 			}
 		</script>
 		<script id="shader-vs" type="x-shader/x-vertex">
@@ -143,41 +146,99 @@
     		uniform mat4 uMVPMatrix;
     		uniform mat4 uINVMVPMatrix;
 
-			uniform int uDepth;
-			uniform sampler2D uDepthSampler;
-			uniform vec2 uResolution;
+			uniform int 		uDepth;
+			uniform sampler2D 	uDepthSampler;
+			uniform vec2 		uResolution;
 
-			varying vec2 vTextureCoord;
-			varying float vColor;
+			varying vec2 	vTextureCoord;
+			varying float 	vState;
+
+			float getDepthFromTexture(vec2 tex) {
+				if(uDepth == 0)
+					return texture2D(uDepthSampler, tex).r; 
+			
+				return texture2D(uDepthSampler, tex).r * (256.0 / 257.0) + texture2D(uDepthSampler, tex).g * (1.0 / 257.0);
+			}
+
+			vec2 forwardDifference() {
+				vec2 g;
+
+				float dx = 1.0 / (uResolution.x - 1.0);
+				float dy = 1.0 / (uResolution.y - 1.0);
+
+				float  d_x = aTextureCoord.s + dx;
+				float  d_y = aTextureCoord.t + dy;
+
+				//float v = texelFetch(uDepthSampler, ivec2(0,0), 0).r;
+
+				g.x = abs( getDepthFromTexture(vec2(d_x, aTextureCoord.t)) - getDepthFromTexture(aTextureCoord.st) ) / dx;
+				g.y = abs( getDepthFromTexture(vec2(aTextureCoord.s, d_y)) - getDepthFromTexture(aTextureCoord.st) ) / dy;
+
+				return g;
+			}
+
+			vec2 backwardDifference() {
+				vec2 g;
+
+				float dx = 1.0 / (uResolution.x - 1.0);
+				float dy = 1.0 / (uResolution.y - 1.0);
+
+				float  _d_x = aTextureCoord.s - dx;
+				float  _d_y = aTextureCoord.t - dy;
+
+				g.x = abs( getDepthFromTexture(aTextureCoord.st) - getDepthFromTexture(vec2(_d_x, aTextureCoord.t)) ) / dx;
+				g.y = abs( getDepthFromTexture(aTextureCoord.st) - getDepthFromTexture(vec2(aTextureCoord.s, _d_y)) ) / dy;
+
+				return g;
+			}
+
+			vec2 centralDifference() {
+				vec2 g;
+
+				float dx = 1.0 / (uResolution.x - 1.0);
+				float dy = 1.0 / (uResolution.y - 1.0);
+
+				
+				float  d_x = aTextureCoord.s + dx;
+				float  d_y = aTextureCoord.t + dy;
+
+				float  _d_x = aTextureCoord.s - dx;
+				float  _d_y = aTextureCoord.t - dy;
+
+				g.x = abs( getDepthFromTexture(vec2(_d_x, aTextureCoord.t)) - getDepthFromTexture(vec2(d_x, aTextureCoord.t)) ) / (2.0 * dx);
+				g.y = abs( getDepthFromTexture(vec2(aTextureCoord.s, _d_y)) - getDepthFromTexture(vec2(aTextureCoord.s, d_y)) ) / (2.0 * dy); 
+
+				return g;
+			}
+
 
     		void main(void) {
-				highp float depth = 0.0;
-				vColor = 1.0;
+				
+				float depth = 0.0;
+				vState = 0.0;
 
-				if(uDepth == 0) {
-					depth = texture2D(uDepthSampler, vec2(aTextureCoord.s, aTextureCoord.t)).r;
-					depth = (depth * 2.0) -1.0;
-					gl_Position = uMVPMatrix * (uINVMVPMatrix * vec4(aVertexPosition.xy, depth, 1.0));
-    				vTextureCoord = aTextureCoord;
+				if(uDepth != 2) {
+					depth = getDepthFromTexture(aTextureCoord);
 
-				/*	if(depth > 0.5) {
-						vColor = 0.0;
-					}*/
-				}
-				else if(uDepth == 1) {
-					depth = texture2D(uDepthSampler, vec2(aTextureCoord.s, aTextureCoord.t)).r * (256.0 / 257.0);
-					depth += texture2D(uDepthSampler, vec2(aTextureCoord.s, aTextureCoord.t)).g * (1.0 / 257.0);
+					vec2 g = forwardDifference();
+
+					if(g.x > 100.0 || g.y > 100.0)
+						vState = 1.0;
+
+					// rerange depth
 					depth = (depth * 2.0) -1.0;
+					
 					gl_Position = uMVPMatrix * (uINVMVPMatrix * vec4(aVertexPosition.xy, depth, 1.0));
     				vTextureCoord = aTextureCoord;
 				}
 				else {
-					vTextureCoord = aVertexPosition.xy;
-
 					vec3 position;
+					vTextureCoord.s = aVertexPosition.x;
+					vTextureCoord.t = aVertexPosition.y;
+
 					position.x = (2.0 * aVertexPosition.x) - 1.0;
 					position.y = (-2.0 * aVertexPosition.y) + 1.0;
-					position.z = (-2.0 * aVertexPosition.z) + 1.0;
+					position.z = (2.0 * aVertexPosition.z) - 1.0;
 					
 					gl_Position = uMVPMatrix * (uINVMVPMatrix * vec4(position.xyz, 1.0));
 				}

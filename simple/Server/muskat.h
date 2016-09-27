@@ -45,6 +45,8 @@
 #include <QMatrix4x4>
 #include <QVector3D>
 #include <QImage>
+#include <QVariant>
+#include <QList>
 
 // DEFINES
 #ifndef SAFE_DELETE

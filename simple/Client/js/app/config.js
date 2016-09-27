@@ -3,6 +3,9 @@ class MuskatConfig {
 		// render resolution
 		this._width		= 512;
 		this._height 	= 512;
+
+		this._mesh_width	= 512;
+		this._mesh_height	= 512;
 		
 		// texture compression params
 		this._textureCompressionMethod 	= "jpeg"; // jpeg or png
@@ -17,15 +20,19 @@ class MuskatConfig {
 		this._grid_type = "default";
 
 		// 8 or 16 bit values (full connected)
-		this._mesh_percesion = "8bit";
+		this._mesh_precision = "8bit";
 
 		// PNG compression for full connected meshs
-		this._mesh_compression	= 1;
+		this._mesh_compression	= 0;
 
-		this._max_depth		= 1;	// max depth of quadtree
+		this._max_depth		= 8;	// max depth of quadtree
 		this._T_leaf 		= 0;	// thresholds needed to generate seeds
 		this._T_internal 	= 0;	// - " -
+		this._T_angle		= 0.2;
+		this._T_join		= 0.5;
 		
+		this._use_background = false;
+
 		// callback function, for example sending the config
 		this._callback = callback;
 	}
@@ -46,6 +53,14 @@ class MuskatConfig {
 		return this._height;
 	}
 
+	get meshWidth() {
+		return this._mesh_width;
+	}
+
+	get meshHeight() {
+		return this._mesh_height;
+	}
+
 	get meshMode() {
 		return this._mesh_mode;
 	}
@@ -54,8 +69,8 @@ class MuskatConfig {
 		return this._grid_type;
 	}
 
-	get meshPercesion() {
-		return this._mesh_percesion;
+	get meshPrecision() {
+		return this._mesh_precision;
 	}
 
 	get meshCompression() {
@@ -74,16 +89,28 @@ class MuskatConfig {
 		return this._T_internal;
 	}
 
+	get Tangle() {
+		return this._T_angle;
+	}
+
+	get Tjoin() {
+		return this._T_join;
+	}
+
 	get meshState() {
 		if(this._mesh_mode == "delaunay") {
 			return 2;
 		} else if(this._mesh_mode == "full") {
-			if(this._mesh_percesion == "8bit") {
+			if(this._mesh_precision == "8bit") {
 				return 0;
 			} else {
 				return 1;
 			}
 		}
+	}
+
+	get useBackground() {
+		return this._use_background;
 	}
 
 	set textureCompressionMethod(method) {
@@ -106,6 +133,16 @@ class MuskatConfig {
 		this._callback();
 	}
 
+	set meshWidth(w) {
+		this._mesh_width = w;
+		this._callback();
+	}
+
+	set meshHeight(h) {
+		this._mesh_height = h;
+		this._callback();
+	}
+
 	set meshMode(mode) {
 		this._mesh_mode = mode;
 		this._callback();
@@ -116,8 +153,8 @@ class MuskatConfig {
 		this._callback();
 	}
 
-	set meshPercesion(percesion) {
-		this._mesh_percesion = percesion;
+	set meshPrecision(precision) {
+		this._mesh_precision = precision;
 		this._callback();
 	}
 
@@ -138,6 +175,21 @@ class MuskatConfig {
 
 	set Tinternal(T) {
 		this._T_internal = T;
+		this._callback();
+	}
+
+	set Tangle(T) {
+		this._T_angle = T;
+		this._callback();
+	}
+
+	set Tjoin(T) {
+		this._T_join = T;
+		this._callback();
+	}
+
+	set useBackground(value) {
+		this._use_background = value;
 		this._callback();
 	}
 }

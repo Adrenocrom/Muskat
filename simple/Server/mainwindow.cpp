@@ -135,7 +135,7 @@ void MainWindow::start_server() {
 		m_scene_suffix 	= m_lineEdit_scene_suffix->text().toStdString();
 
 		m_playlist 		= new Playlist(m_scenes_dir, m_scene_suffix);
-		m_config		= new Config();
+		m_config		= new Config(this);
 		m_compressor	= new Compressor(m_config);
 		m_filerenderer->setScene(&m_playlist->m_scenes[0]);
 	}
