@@ -6,6 +6,8 @@ class MuskatConfig {
 
 		this._mesh_width	= 512;
 		this._mesh_height	= 512;
+
+		this._smooth_depth	= false;
 		
 		// texture compression params
 		this._textureCompressionMethod 	= "jpeg"; // jpeg or png
@@ -31,7 +33,8 @@ class MuskatConfig {
 		this._T_angle		= 0.2;
 		this._T_join		= 0.5;
 		
-		this._use_background = false;
+		this._pre_background_subtraction = false;
+		this._pra_background_subtraction = false;
 
 		// callback function, for example sending the config
 		this._callback = callback;
@@ -59,6 +62,10 @@ class MuskatConfig {
 
 	get meshHeight() {
 		return this._mesh_height;
+	}
+
+	get smoothDepth() {
+		return this._smooth_depth;
 	}
 
 	get meshMode() {
@@ -109,8 +116,12 @@ class MuskatConfig {
 		}
 	}
 
-	get useBackground() {
-		return this._use_background;
+	get preBackgroundSubtraction() {
+		return this._pre_background_subtraction;
+	}
+
+	get praBackgroundSubtraction() {
+		return this._pra_background_subtraction;
 	}
 
 	set textureCompressionMethod(method) {
@@ -124,7 +135,7 @@ class MuskatConfig {
 	}
 
 	set width(w) {
-		this._width = w;
+	//	this._width = w;
 		this._callback();
 	}
 
@@ -135,11 +146,16 @@ class MuskatConfig {
 
 	set meshWidth(w) {
 		this._mesh_width = w;
-		this._callback();
+	//	this._callback();
 	}
 
 	set meshHeight(h) {
 		this._mesh_height = h;
+		this._callback();
+	}
+
+	set smoothDepth(value) {
+		this._smooth_depth = value;
 		this._callback();
 	}
 
@@ -188,8 +204,13 @@ class MuskatConfig {
 		this._callback();
 	}
 
-	set useBackground(value) {
-		this._use_background = value;
+	set preBackgroundSubtraction(value) {
+		this._pre_background_subtraction = value;
+		this._callback();
+	}
+
+	set praBackgroundSubtraction(value) {
+		this._pra_background_subtraction = value;
 		this._callback();
 	}
 }

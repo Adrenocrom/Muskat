@@ -10,6 +10,8 @@ Config::Config(MainWindow* mw) {
 	m_mesh_width 	= 512;
 	m_mesh_height 	= 512;
 
+	m_smooth_depth	= false;
+
 	m_textureCompressionMethod 	= "jpeg";
 	m_textureCompressionQuality = 0;
 
@@ -27,7 +29,8 @@ Config::Config(MainWindow* mw) {
 	// default creates just a plane
 	m_max_depth	 = 8;
 
-	m_use_background = false;
+	m_pre_background_subtraction = false;
+	m_pra_background_subtraction = false;
 }
 
 void Config::setConfig(QJsonObject& jo) {
@@ -37,6 +40,7 @@ void Config::setConfig(QJsonObject& jo) {
 
 	m_width		= jo["width"].toInt();
 	m_height	= jo["height"].toInt();
+	m_smooth_depth = jo["smoothDepth"].toBool();
 	m_textureCompressionMethod 	= jo["textureCompressionMethod"].toString();
 	m_textureCompressionQuality	= jo["textureCompressionQuality"].toInt();
 	m_mesh_mode 		= jo["meshMode"].toString();
@@ -47,7 +51,8 @@ void Config::setConfig(QJsonObject& jo) {
 	m_T_internal 		= (ushort)((float)jo["Tinternal"].toDouble() * (float)(USHRT_MAX));
 	m_T_angle			= jo["Tangle"].toDouble();
 	m_T_join			= jo["Tjoin"].toDouble();
-	m_use_background	= jo["useBackground"].toBool();
+	m_pre_background_subtraction = jo["preBackgroundSubtraction"].toBool();
+	m_pra_background_subtraction = jo["praBackgroundSubtraction"].toBool();
 
 	if(maxDepth != m_max_depth || mesh_width != m_mesh_width || mesh_height != m_mesh_height) {
 		m_max_depth 	= maxDepth;
@@ -57,6 +62,11 @@ void Config::setConfig(QJsonObject& jo) {
 	}
 }
 
+string Config::getNameFromConfig() {
+	string name;
+
+	return name;
+}
 
 QJsonObject Config::getConfig() {
 	QJsonObject jo;
@@ -64,6 +74,7 @@ QJsonObject Config::getConfig() {
 	jo["height"] 	= m_height;
 	jo["meshWidth"] = m_mesh_width;
 	jo["meshHeight"]= m_mesh_height;
+	jo["smoothDepth"] = m_smooth_depth;
 	jo["textureCompressionMethod"] 	= m_textureCompressionMethod;
 	jo["textureCompressionQuality"]	= m_textureCompressionQuality;
 	jo["meshMode"]	= m_mesh_mode;
@@ -75,13 +86,16 @@ QJsonObject Config::getConfig() {
 	jo["Tinternal"] = (double) m_T_internal / (double) (USHRT_MAX);
 	jo["Tangle"]	= m_T_angle;
 	jo["Tjoin"]		= m_T_join;
-	jo["useBackground"] = m_use_background;
+	jo["preBackgroundSubtraction"] = m_pre_background_subtraction;
+	jo["praBackgroundSubtraction"] = m_pra_background_subtraction;
 	return jo;
 }
 
 bool Config::hasDifferentSize() {
-	if(m_width != m_mesh_width || m_height != m_mesh_height)
+	if(m_width != m_mesh_width || m_height != m_mesh_height) {
+		cout<<m_mesh_width<<" "<<m_mesh_height<<endl;
 		return true;
+	}
 	return false;
 }
 
@@ -106,6 +120,10 @@ int Config::getMeshHeight() {
 	return m_mesh_height;
 }
 
+bool Config::getSmoothDepth() {
+	return m_smooth_depth;
+}
+	
 QString Config::getTextureCompressionMethod() {
 	return m_textureCompressionMethod;
 }
@@ -142,8 +160,12 @@ uint Config::getMaxDepth() {
 	return m_max_depth;
 }
 
-bool Config::getUseBackground() {
-	return m_use_background;
+bool Config::preBackgroundSubtraction() {
+	return m_pre_background_subtraction;
+}
+
+bool Config::praBackgroundSubtraction() {
+	return m_pra_background_subtraction;
 }
 
 double Config::getTangle() {

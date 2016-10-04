@@ -144,10 +144,14 @@ void MainWindow::start_server() {
 
 	SAFE_DELETE(m_serverDeamon);
 	m_serverDeamon = new ServerDeamon(this, m_server_port);
+   	m_action_stop_server->setDisabled(false);
+   	m_action_start_server->setDisabled(true);
 }
 
 void MainWindow::stop_server() {
 	SAFE_DELETE(m_serverDeamon);
+   	m_action_stop_server->setDisabled(true);
+   	m_action_start_server->setDisabled(false);
 }
 
 

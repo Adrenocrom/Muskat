@@ -26,6 +26,8 @@ public:
 	int		getMeshWidth();
 	int		getMeshHeight();
 
+	bool	getSmoothDepth();
+
 	bool	hasDifferentSize();
 
 	QString	getTextureCompressionMethod();
@@ -47,7 +49,10 @@ public:
 	double	getTangle();
 	double	getTjoin();
 
-	bool	getUseBackground();
+	bool	preBackgroundSubtraction();
+	bool	praBackgroundSubtraction();
+
+	std::string getNameFromConfig();
 
 private:
 	// pointer to mainwindow
@@ -60,6 +65,8 @@ private:
 
 	int		m_mesh_width;
 	int		m_mesh_height;
+
+	bool	m_smooth_depth;
 
 	QString		m_textureCompressionMethod;
 	int			m_textureCompressionQuality;
@@ -81,7 +88,8 @@ private:
 	uint 	m_max_depth;	// max depth
 
 	// delete background triangles, if low max depth produces errors
-	bool	m_use_background;
+	bool	m_pre_background_subtraction;
+	bool	m_pra_background_subtraction;
 };
 
 #endif

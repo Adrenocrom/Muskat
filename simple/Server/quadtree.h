@@ -27,7 +27,7 @@ class QuadTree {
 public:
 	QuadTree(uint w, uint h, uint max_depth);
 
-	std::vector<cv::Point2f> generateSeeds(cv::Mat* Gx, cv::Mat* Gy);
+	std::list<cv::Point2f> generateSeeds(cv::Mat* Gx, cv::Mat* Gy);
 
 
 	void setTleaf( ushort T_leaf );
@@ -61,7 +61,7 @@ private:
 	// id: id of node which will be divided
 	void subdivide(int id, uint current_depth);
 
-	void calcCxy(std::vector<cv::Point2f>& seeds);
+	void calcCxy(std::list<cv::Point2f>& seeds);
 
 	// get nodes by reference
 	std::vector<QtreeNode>*	 getNodes() {return &nodes;}

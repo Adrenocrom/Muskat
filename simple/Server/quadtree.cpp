@@ -30,43 +30,10 @@ QuadTree::QuadTree(uint w, uint h, uint max_depth) {
 	// id: id of the root node
 	// next depth is 1
 	subdivide(0, 1);
-/*
-	for(uint i = 0; i < nodes.size(); ++i) {
-		cout<<"id: "<<i<<endl;
-		cout<<nodes[i].rect.min_x<<" ";
-		cout<<nodes[i].rect.min_y<<" ";
-		cout<<nodes[i].rect.max_x<<" ";
-		cout<<nodes[i].rect.max_y<<endl;
-	}
-
-	cv::Mat meshImage(512, 512, CV_8UC3, cv::Scalar(255,255,255));
-	cv::Scalar 	color(0,0,255);
-	for(uint i = 0; i < hnodes.size(); ++i) {
-		cout<<"depth: "<<i<<endl;
-
-		for(uint n = 0; n < hnodes[i].size(); ++n) {
-			cout<<hnodes[i][n]<<" ";
-			QtreeNode no = nodes[hnodes[i][n]];
-
-			cv::Point p1( (int)no.rect.min_x, (int)no.rect.min_y );
-			cv::Point p2( (int)no.rect.max_x, (int)no.rect.min_y );
-			cv::Point p3( (int)no.rect.min_x, (int)no.rect.max_y );
-			cv::Point p4( (int)no.rect.max_x, (int)no.rect.max_y );
- 			circle( meshImage, p1, 2, color, CV_FILLED, CV_AA, 0 );
- 			circle( meshImage, p2, 2, color, CV_FILLED, CV_AA, 0 );
- 			circle( meshImage, p3, 2, color, CV_FILLED, CV_AA, 0 );
- 			circle( meshImage, p4, 2, color, CV_FILLED, CV_AA, 0 );
-		}
-
-		cout<<endl;
-	}
-
-	imshow("qt", meshImage);
-	*/
 }
 
-vector<cv::Point2f> QuadTree::generateSeeds(cv::Mat* Gx, cv::Mat* Gy) {
-	vector<cv::Point2f> seeds;
+list<cv::Point2f> QuadTree::generateSeeds(cv::Mat* Gx, cv::Mat* Gy) {
+	list<cv::Point2f> seeds;
 
 	m_Gx = Gx;
 	m_Gy = Gy;
@@ -80,7 +47,7 @@ vector<cv::Point2f> QuadTree::generateSeeds(cv::Mat* Gx, cv::Mat* Gy) {
 	return seeds;
 }
 
-void QuadTree::calcCxy(vector<cv::Point2f>& seeds) {
+void QuadTree::calcCxy(list<cv::Point2f>& seeds) {
 	uint r_size = m_max_depth-1;
 	uint size = hnodes[r_size].size();
 

@@ -13,11 +13,12 @@ Evaluator::~Evaluator() {
 
 void Evaluator::setScene(Scene* scene) {
 	m_scene = scene;
-	results.resize(m_scene->m_infos.size());
+	m_results.resize(m_scene->m_infos.size());
+	m_durations.resize(m_scene->m_infos.size());
 }
 
 void Evaluator::runEvaluation(string path) {
-	uint r_size = results.size();
+	uint r_size = m_results.size();
 	list<ResultEntry> entries;
 	list<ResultEntry> meanEntries;
 	ResultEntry entry;
@@ -25,13 +26,13 @@ void Evaluator::runEvaluation(string path) {
 	cout<<"start evaluation"<<endl;
 
 	for(uint i = 0; i < r_size; ++i) {
-		entry.PSNR  = getPSNR(m_scene->m_fbs[i].rgb, results[i]);
-		entry.MSSIM = getMSSIM(m_scene->m_fbs[i].rgb, results[i]);
+		entry.PSNR  = getPSNR(m_scene->m_fbs[i].rgb, m_results[i]);
+		entry.MSSIM = getMSSIM(m_scene->m_fbs[i].rgb, m_results[i]);
 		entry.angle = m_scene->m_infos[i].offangle;
 		entries.push_back(entry);
 
 		QString filename = "res/frame_0"+ QString::number(i) +".png";
-		imwrite(filename.toStdString(), results[i]);
+		imwrite(filename.toStdString(), m_results[i]);
 	}
 
 	entries.sort([this](ResultEntry& l, ResultEntry& r) {
@@ -65,6 +66,14 @@ void Evaluator::runEvaluation(string path) {
 		}
 	}
 
+	m_mean_duration /= m_cnt;
+	
+	// create folder from Config
+	//system("mkdir results");
+	//system("cd results");
+
+	
+
 	ofstream file;
   	file.open("res/results.tex");
 
@@ -95,9 +104,21 @@ void Evaluator::runEvaluation(string path) {
 	}
 	
 	file<< "\\end{filecontents}\n\n";
-
-
 	file.close();
+
+	file<< "\\begin{filecontents}{div_duration_info.csv}\n";
+	file<< "i,d,min,max,mean\n";
+
+	for(uint i = 0; i < m_cnt; ++i) {
+		file<<i<<","
+			<<m_durations[i]<<","
+			<<m_min_duration<<","
+			<<m_max_duration<<","
+			<<m_mean_duration<<"\n";
+	}
+	
+	file<< m_min_duration <<","<< m_max_duration << "," << m_mean_duration<<"\n";
+	file<< "\\end{filecontents}\n\n";
 	cout<<"end evaluation"<<endl;
 
 	//system("pdflatex res/auto.tex");
@@ -107,7 +128,18 @@ void Evaluator::newMessure() {
 	m_cnt = 0;
 }
 
-void Evaluator::addResult() {
+void Evaluator::addResult(int id, cv::Mat* img, double duration) {
+	m_results[id] = *img;
+	m_durations[id] = duration;
+
+	if(m_min_duration > duration || m_min_duration == -1.0)
+		m_min_duration = duration;
+
+	if(m_max_duration < duration)
+		m_max_duration = duration;
+
+	m_mean_duration += duration;
+
 	m_cnt++;
 }	
 

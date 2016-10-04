@@ -11,7 +11,6 @@ struct ResultEntry {
 
 class Evaluator{
 public:
-	vector<cv::Mat> results;
 	
 	Evaluator();
 	~Evaluator();
@@ -25,13 +24,20 @@ public:
 	double getPSNR(const cv::Mat& I1, const cv::Mat& I2);
 
 	void newMessure();
-	void addResult();
+	void addResult(int id, cv::Mat* img, double duration);
 	bool hasResults();
 
 private:
 
 	Scene*	m_scene;
-	uint	m_cnt;		// counts recived results 
+	uint	m_cnt;		// counts recived results
+
+	vector<cv::Mat> m_results;
+	vector<double>	m_durations;
+	
+	double	m_min_duration;
+	double	m_max_duration;
+	double	m_mean_duration;
 };
 
 #endif

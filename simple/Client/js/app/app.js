@@ -94,6 +94,23 @@ $(document).ready(function() {
 		startWs();
 	});
 
+	$('#select_image_size').change(function() {
+		if(this.selectedIndex == 0) {
+			g_config.meshWidth  = g_config.width;
+			g_config.meshHeight = g_config.height;
+		}
+		else if(this.selectedIndex == 1) {
+			g_config.meshWidth  = g_config.width / 2;
+			g_config.meshHeight = g_config.height / 2;
+		}
+		else if(this.selectedIndex == 2) {
+			g_config.meshWidth  = g_config.width / 4;
+			g_config.meshHeight = g_config.height / 4;
+		}
+
+		resize(g_config.meshWidth, g_config.meshHeight);
+	});
+
 	$('input[name=texture]').on('change', function() {
 		g_config.textureCompressionMethod = $('input[name=texture]:checked').val(); 
 	});
@@ -112,7 +129,7 @@ $(document).ready(function() {
 		g_config.meshMode = $('input[name=mesh_mode]:checked').val(); 
 	
 		if(g_config.meshMode == "full") {
-			resize(g_config.width, g_config.height);
+			resize(g_config.meshWidth, g_config.meshHeight);
 		}
 	});
 
@@ -128,7 +145,7 @@ $(document).ready(function() {
 	$('input[name=grid_type]').on('change', function() {
 		g_config.gridType = $('input[name=grid_type]:checked').val();
 
-		resize(g_config.width, g_config.height);
+		resize(g_config.meshWidth, g_config.meshHeight);
 	});
 
 	$('#text_max_depth').on('change', function() {
@@ -137,16 +154,29 @@ $(document).ready(function() {
 
 	$('#text_T_internal').on('change', function() {
 		g_config.Tinternal = parseFloat($('#text_T_internal').val());
-		
-		if(g_config.Tinternal >= g_config.Tleaf) {
-			$('#text_T_leaf').val(g_config.Tinternal);
-		}
 	});
 
 	$('#text_T_leaf').on('change', function() {
 		g_config.Tleaf = parseFloat($('#text_T_leaf').val());
 	});
+
+	$('#text_T_angle').on('change', function() {
+		g_config.Tangle = parseFloat($('#text_T_angle').val());
+	});
 	
+	$('#text_T_join').on('change', function() {
+		g_config.Tangle = parseFloat($('#text_T_join').val());
+	});
+
+	$('#check_pre_background').change(function() {
+		g_config.preBackgroundSubtraction = $('#check_pre_background').prop('checked');
+	});
+
+	$('#check_pra_background').change(function() {
+		g_config.praBackgroundSubtraction = $('#check_pra_background').prop('checked');
+	});
+
+
 	var muGl;
 	var shaderProgram;
 
@@ -195,6 +225,10 @@ $(document).ready(function() {
 		debug("set default colors");
 		muGl.gl.clearColor(0.0, 0.0, 0.0, 1.0);
         muGl.gl.enable(muGl.gl.DEPTH_TEST);
+		muGl.gl.enable(muGl.gl.BLEND);
+		muGl.gl.blendFunc(muGl.gl.SRC_ALPHA, muGl.gl.ONE_MINUS_SRC_ALPHA);
+
+		//muGl.gl.blendFunc(muGl.gl.SRC_ALPHA_SATURATE, muGl.gl.ONE);
 
 		debug("set default mesh");
 		g_mesh = new MuskatMesh(muGl.gl);
@@ -430,6 +464,7 @@ $(document).ready(function() {
 				getPlaylistMessage();
 				initWebGl();
 
+				loadSceneMessage(0);
 				getFrameMessage(0);
 			};
 
@@ -516,10 +551,11 @@ $(document).ready(function() {
 		sendMessage("getFrame", params);
 	}
 
-	function saveFrameMessage(id, base64) {
+	function saveFrameMessage(id, base64, time) {
 		var params = {
 			"id" 	: id,
-			"rgb" 	: base64
+			"rgb" 	: base64,
+			"time"	: time
 		};
 		sendMessage("saveFrame", params);
 	}
@@ -543,6 +579,7 @@ $(document).ready(function() {
 			"height"					: g_config.height,
 			"meshWidth"					: g_config.meshWidth,
 			"meshHeight"				: g_config.meshHeight,
+			"smoothDepth"				: g_config.smoothDepth,
 			"textureCompressionMethod" 	: g_config.textureCompressionMethod,
 			"textureCompressionQuality"	: g_config.textureCompressionQuality,
 			"meshMode"					: g_config.meshMode,
@@ -554,7 +591,8 @@ $(document).ready(function() {
 			"Tinternal"					: g_config.Tinternal,
 			"Tangle"					: g_config.Tangle,
 			"Tjoin"						: g_config.Tjoin,
-			"useBackground"				: g_config.useBackground
+			"preBackgroundSubtraction"	: g_config.preBackgroundSubtraction,
+			"praBackgroundSubtraction"	: g_config.praBackgroundSubtraction
 		};
 
 		debug(JSON.stringify(params));

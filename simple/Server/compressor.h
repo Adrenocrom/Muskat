@@ -11,11 +11,25 @@ struct Point {
 
 	ushort z;
 
-	Point(int _x = 0, int _y = 0) : x(_x), y(_y) {}
-	Point(const cv::Point& p) : x(p.x), y(p.y) {}
+	double u;
+	double v;
+	double dz;
 
-	cv::Point toCVPoint() {
+	Point(int _x = 0, int _y = 0, ushort _z = 0,
+		  double _u = 0.0, double _v = 0.0, double _dz = 0.0) : 	x(_x), y(_y), z(_z),
+		  															u(_u), v(_v), dz(_dz) {}
+	Point(const cv::Point& p) : x(p.x), y(p.y), z(0), u(0.0), v(0.0), dz(0.0) {}
+
+	cv::Point toCVPoint() const {
 		return cv::Point(x, y);
+	}
+
+	void setP(const cv::Mat& img, int w, int h) {
+		z = img.at<ushort>(y, x);
+		
+		u = (double)x / (double) (w-1);
+		v = (double)y / (double) (h-1);
+		dz = (double)z / ((double) (USHRT_MAX) + 1.0);
 	}
 
 	bool operator == (const Point& p) {
@@ -24,7 +38,7 @@ struct Point {
 		return false;
 	}
 
-	Point& operator = (const Point& p) {x = p.x; y = p.y; return *this;}
+	//Point& operator = (const Point& p) {x = p.x; y = p.y; return *this;}
 	Point& operator = (const cv::Point& p) {x = p.x; y = p.y; return *this;}
 };
 
@@ -41,10 +55,14 @@ inline bool operator < (const Point& a, const Point& b) {
 }
 
 inline double norm(const Point& a, const Point& b) {
-	double x = (double)(a.x - b.x);
-	double y = (double)(a.y - b.y);
+	double x = a.u - b.u;
+	double y = a.v - b.v;
 	return sqrt(x*x + y*y);
 }
+
+inline Point operator * (const Point& p, const double d) {return Point((int)((double)p.x * d), (int)((double)p.y * d));}
+inline Point operator + (const Point& a, const Point& b) {return Point(a.x + b.x, a.y + b.y);}
+inline Point operator - (const Point& a, const Point& b) {return Point(a.x - b.x, a.y - b.y);}
 
 struct Edge {
 	Point a;
@@ -53,9 +71,22 @@ struct Edge {
 	Edge() {}
 	Edge(const Point& _a, const Point& _b) : a(_a), b(_b) {}
 
-	Point getPM() {
+	Point getPM() const {
 		return Point((int)((double)(a.x + b.x) / 2.0), (int)((double)(a.y + b.y) / 2.0));
 	}
+
+	Point getPM(const cv::Mat& img, int w, int h) const {
+		Point p((int)((double)(a.x + b.x) / 2.0), (int)((double)(a.y + b.y) / 2.0));
+		p.z = img.at<ushort>(p.y, p.x);
+		
+		p.u = (double)p.x / (double) (w-1);
+		p.v = (double)p.y / (double) (h-1);
+		p.dz = (double)p.z / ((double) (USHRT_MAX) + 1.0);
+		return p;
+	}
+
+
+	double length() {return norm(a, b);}
 };
 
 class Compressor {
@@ -73,7 +104,15 @@ private:
 	
 	// pointer for accessing config
 	Config* 	m_config;
-	
+
+	// predefined colors
+	cv::Scalar 	m_color_point;
+	cv::Scalar 	m_color_edge;
+	cv::Scalar 	m_color_green;
+	cv::Scalar 	m_color_red;
+	cv::Scalar 	m_color_triangle;
+
+
 	// stores quadtree for delaunay triangulation
 	QuadTree* 	m_quadtree;
 
@@ -90,12 +129,15 @@ private:
 	void compressMeshDelaunay(QJsonObject& jo, cv::Mat& img);
 
 
-	vector<cv::Vec6f> delaunay(cv::Mat& img, vector<cv::Point2f>& seeds);
+	vector<cv::Vec6f> delaunay(cv::Mat& img, std::list<cv::Point2f>& seeds);
 
-	bool isValid(cv::Mat& img, const Point& p1, const Point& p2);
+	bool isValid(const Edge& e);
 
-//	bool testAngle(cv::Mat& img, Edge& e, int T_angle);
-//	bool testJoinable(cv::Mat& img, Edge& e, int T_join);
+	bool isJoinable(cv::Mat& img, const Edge& e);
+
+	vector<Point> splitTriangle(cv::Mat& img, const Point& a, const Point& b, const Point& c, cv::Mat* out = nullptr);
+
+	Point getMaxJoinable(cv::Mat& img, const Point& p, const Point& a);
 
 	int getIndex(vector<cv::Point>& vb, cv::Point p);
 	int getIndex(map<Point, int>& vertices, const Point& p);

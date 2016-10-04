@@ -105,34 +105,26 @@ RPCResponse JsonRPC::saveFrame(RPCRequest& request) {
 	QByteArray base64Data;
 	QImage image;
 
-
-	int frame_id = request.params["id"].toInt();
-	QString rgb	 = request.params["rgb"].toString();
+	int frame_id 		= request.params["id"].toInt();
+	QString rgb	 		= request.params["rgb"].toString();
+	double	duration 	= request.params["time"].toDouble();
+	
 	rgb.replace(0, 22, "");	// delete data:image/png;base64,
-
 	base64Data.append(rgb);
 
-	QString filename = "res/frame" + QString::number(frame_id) + ".png";
 
 	image.loadFromData(QByteArray::fromBase64(base64Data), "PNG");
-    
     cv::Mat img(image.height(), image.width(), CV_8UC4, image.bits());
 
 	cv::Mat dst;
 	cv::cvtColor(img, dst, CV_BGRA2BGR);
-
-	//cv::imwrite(filename.toStdString(), dst);
 	
-	m_mainWindow->m_evaluator->results[frame_id] = dst;
-
-	m_mainWindow->m_evaluator->addResult();
+	m_mainWindow->m_evaluator->addResult(frame_id, &dst, duration);
 
 	if(m_mainWindow->m_evaluator->hasResults()) {
 		m_mainWindow->m_evaluator->runEvaluation("res");
 	}
 
-
-	//image.save(filename, "PNG");
 
 	return response;
 }

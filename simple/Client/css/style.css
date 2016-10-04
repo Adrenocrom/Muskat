@@ -126,6 +126,7 @@ input[type='radio'] {
 	border-style: none none none solid;
 	border-width: 1px;
 	border-color: #222;
+	overflow: scroll;
 }
 
 #button_toggle_menu {
@@ -171,6 +172,7 @@ input[type='radio'] {
 	border-style: none;
 	border-width: 1px 1px 1px 1px;
 	border-color: #222;
+	width: 100px;
 }
 
 .short {
