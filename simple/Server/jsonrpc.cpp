@@ -122,7 +122,7 @@ RPCResponse JsonRPC::saveFrame(RPCRequest& request) {
 	m_mainWindow->m_evaluator->addResult(frame_id, &dst, duration);
 
 	if(m_mainWindow->m_evaluator->hasResults()) {
-		m_mainWindow->m_evaluator->runEvaluation("res");
+		m_mainWindow->m_evaluator->runEvaluation("results");
 	}
 
 

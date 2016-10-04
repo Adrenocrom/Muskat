@@ -3,7 +3,7 @@
 using namespace boost::filesystem;
 
 MainWindow::MainWindow() {
-	setMinimumSize(1024, 768);
+	setMinimumSize(640, 480);
 	setWindowTitle(QString("Server"));
 
 	setStyleSheet(QString("QOpenGLWidget{border: 1px solid #000000;}")+

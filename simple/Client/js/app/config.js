@@ -32,6 +32,7 @@ class MuskatConfig {
 		this._T_internal 	= 0;	// - " -
 		this._T_angle		= 0.2;
 		this._T_join		= 0.5;
+		this._T_grad		= 1.0;
 		
 		this._pre_background_subtraction = false;
 		this._pra_background_subtraction = false;
@@ -102,6 +103,10 @@ class MuskatConfig {
 
 	get Tjoin() {
 		return this._T_join;
+	}
+
+	get Tgrad() {
+		return this._T_grad;
 	}
 
 	get meshState() {
@@ -201,6 +206,11 @@ class MuskatConfig {
 
 	set Tjoin(T) {
 		this._T_join = T;
+		this._callback();
+	}
+
+	set Tgrad(T) {
+		this._T_grad = T;
 		this._callback();
 	}
 

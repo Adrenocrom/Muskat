@@ -69,6 +69,7 @@ $(document).ready(function() {
 	$( '#button_show_frame' ).click(function() {
 		var select_frames_max = document.getElementById("select_frames_max");
 		drawFrame(select_frames_max.selectedIndex);
+
 	});
 
 	$( '#button_run_scene' ).click(function() {
@@ -168,6 +169,10 @@ $(document).ready(function() {
 		g_config.Tangle = parseFloat($('#text_T_join').val());
 	});
 
+	$('#text_T_grad').on('change', function() {
+		g_config.Tgrad = parseFloat($('#text_T_grad').val());
+	});
+
 	$('#check_pre_background').change(function() {
 		g_config.preBackgroundSubtraction = $('#check_pre_background').prop('checked');
 	});
@@ -176,6 +181,9 @@ $(document).ready(function() {
 		g_config.praBackgroundSubtraction = $('#check_pra_background').prop('checked');
 	});
 
+	$('#check_smooth_depth').change(function() {
+		g_config.smoothDepth = $('#check_smooth_depth').prop('checked');
+	});
 
 	var muGl;
 	var shaderProgram;
@@ -221,6 +229,7 @@ $(document).ready(function() {
 		shaderProgram.depthSamplerUniform 	= muGl.getUniformLocation(shaderProgram, "uDepthSampler");
 		shaderProgram.depthUniform			= muGl.getUniformLocation(shaderProgram, "uDepth");
 		shaderProgram.resolution			= muGl.getUniformLocation(shaderProgram, "uResolution");
+		shaderProgram.Tgrad					= muGl.getUniformLocation(shaderProgram, "uTgrad");
 
 		debug("set default colors");
 		muGl.gl.clearColor(0.0, 0.0, 0.0, 1.0);
@@ -297,7 +306,7 @@ $(document).ready(function() {
 		gl.uniform1i(shaderProgram.depthUniform, g_config.meshState);
 		gl.drawElements(gl.TRIANGLES, g_mesh.indices.numItems, gl.UNSIGNED_INT, 0);
 
-		//gl.flush();
+		gl.flush();
 	}
 
 	function drawFirstFrame() {
@@ -345,7 +354,8 @@ $(document).ready(function() {
 		gl.uniform1i(shaderProgram.colorSamplerUniform, 1);
 		
 		gl.uniform1i(shaderProgram.depthUniform, g_config.meshState);
-		gl.uniform2f(shaderProgram.resolution, g_config.width, g_config.height);
+		gl.uniform2f(shaderProgram.resolution, g_config.meshWidth, g_config.meshHeight);
+		gl.uniform1f(shaderProgram.Tgrad, g_config.Tgrad);
 
 		muGl.setUniformMatrix(shaderProgram.mvpMatrixUniform, mvpMatrix);
 		muGl.setUniformMatrix(shaderProgram.invMvpMatrixUniform, invMvpMatrix);
@@ -424,6 +434,9 @@ $(document).ready(function() {
 		var frame_max = select_frames_max.selectedIndex;
 
 		var scene = g_playlist.scenes[g_scene_index];
+
+		frame_max = scene.frames.length-1;
+
 		var frame = scene.frames[0];
 		
 		mat4.perspective(pMatrix, muGl.degToRad(scene.aperture), gl.viewportWidth / gl.viewportHeight, frame.near, frame.far);
@@ -447,6 +460,17 @@ $(document).ready(function() {
 			saveFrameToPNG(i, g_time_end-g_time_start);
 		}
 
+	}
+
+		
+	function runEvaluation() {
+		var texture_qual = [0, 20, 40, 60, 80, 100];
+		
+
+		for(var i = 0; i < texture_qual.length; i++) {
+			$('#slider_jpeg_quality').val(texture_qual[i]);
+
+		}
 	}
 
 	function startWs() {
@@ -498,11 +522,11 @@ $(document).ready(function() {
 					g_mesh.vertices = new Float32Array(vertices);
 					g_mesh.texCoords = new Float32Array(obj.result.numTexCoord);
 
-
+/*
 					debug(obj.result.indices);
 					debug(obj.result.vertices);
 					debug(obj.result.numTexCoord);
-
+*/
 					drawFirstFrame();
 				}
 

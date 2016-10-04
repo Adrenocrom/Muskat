@@ -177,7 +177,7 @@ void Compressor::compressMeshDelaunay(QJsonObject& jo, cv::Mat& img) {
 			points[2].z = img.at<ushort>(points[2].y, points[2].x);
 
 
-			if(m_config->praBackgroundSubtraction() && points[0].z == USHRT_MAX && points[1].z == USHRT_MAX && points[2].z == USHRT_MAX) {
+			if(m_config->praBackgroundSubtraction() && (points[0].z == USHRT_MAX || points[1].z == USHRT_MAX || points[2].z == USHRT_MAX)) {
 				continue;
 			}
 

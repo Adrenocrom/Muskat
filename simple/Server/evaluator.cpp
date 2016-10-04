@@ -24,7 +24,12 @@ void Evaluator::runEvaluation(string path) {
 	ResultEntry entry;
 
 	cout<<"start evaluation"<<endl;
-
+	cout<<"create files"<<endl;
+/*
+	system(string("mkdir " + path).c_str());
+	system(string("cd " + path).c_str());
+	system(string(""))
+*/
 	for(uint i = 0; i < r_size; ++i) {
 		entry.PSNR  = getPSNR(m_scene->m_fbs[i].rgb, m_results[i]);
 		entry.MSSIM = getMSSIM(m_scene->m_fbs[i].rgb, m_results[i]);

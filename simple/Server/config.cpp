@@ -63,9 +63,22 @@ void Config::setConfig(QJsonObject& jo) {
 }
 
 string Config::getNameFromConfig() {
-	string name;
-
-	return name;
+	stringstream name;
+	name<<"r"<<m_width<<"x"<<m_height<<"_";
+	name<<"m"<<m_mesh_width<<"x"<<m_mesh_height<<"_";
+	name<<"s"<<m_smooth_depth<<"_";
+	name<<"t"<<m_textureCompressionQuality<<"_";
+	name<<"mm"<<m_mesh_mode.toStdString()<<"_";
+	name<<"gt"<<m_grid_type.toStdString()<<"_";
+	name<<"mp"<<m_mesh_percesion.toStdString()<<"_";
+	name<<"md"<<m_max_depth<<"_";
+	name<<"Tl"<<(double)m_T_leaf / (double)(USHRT_MAX)<<"_";
+	name<<"Ti"<<(double)m_T_internal / (double)(USHRT_MAX)<<"_";
+	name<<"Ta"<<m_T_angle<<"_";
+	name<<"Tj"<<m_T_join<<"_";
+	name<<"pre"<<m_pre_background_subtraction<<"_";
+	name<<"pra"<<m_pra_background_subtraction;
+	return name.str();
 }
 
 QJsonObject Config::getConfig() {

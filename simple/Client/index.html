@@ -79,11 +79,21 @@
 				<div style="float: left;">
 					<p>
 						<input type="radio" name="precision" value="8bit" checked="checked">
-						<label>8 bit</label> <br>
+						<label>8 bit</label> 
+						
+						<br>
 					
 						<input type="radio" name="precision" value="16bit">
 						<label>16 bit</label>
+					</p>
+				</div>
+				<div style="float: left;">
+					<p>
+						<label>threshold gradient</label>
+						<input id="text_T_grad" class="iput middle" type="number" name="quantity" min="0.0" max="1.0" step="0.01" value="1.0">
 						
+						<br>
+
 						<label>PNG compression</label>
 						<input class="islider" id="slider_mesh_quality" type="range" min="0" max="9" step="1" value="0" /> 
 						<input class="iput short" type="text" id="text_mesh_quality" value="0"></input>
@@ -138,7 +148,7 @@
 						<label>T angle</label>
 					</p>
 					<p>
-						<input id="text_T_join" class="iput middle" type="number" name="quantity" min="0.0" max="1.0" step="0.01" value="1.0">
+						<input id="text_T_join" class="iput middle" type="number" name="quantity" min="0.0" max="2.0" step="0.01" value="1.0">
 						<label>T join</label>
 					</p>
 				</div>
@@ -191,6 +201,7 @@
 			uniform int 		uDepth;
 			uniform sampler2D 	uDepthSampler;
 			uniform vec2 		uResolution;
+			uniform float		uTgrad;
 
 			varying vec2 	vTextureCoord;
 			varying float 	vState;
@@ -213,8 +224,8 @@
 
 				//float v = texelFetch(uDepthSampler, ivec2(0,0), 0).r;
 
-				g.x = abs( getDepthFromTexture(vec2(d_x, aTextureCoord.t)) - getDepthFromTexture(aTextureCoord.st) ) / dx;
-				g.y = abs( getDepthFromTexture(vec2(aTextureCoord.s, d_y)) - getDepthFromTexture(aTextureCoord.st) ) / dy;
+				g.x = abs( getDepthFromTexture(vec2(d_x, aTextureCoord.t)) - getDepthFromTexture(aTextureCoord.st) );
+				g.y = abs( getDepthFromTexture(vec2(aTextureCoord.s, d_y)) - getDepthFromTexture(aTextureCoord.st) );
 
 				return g;
 			}
@@ -228,8 +239,8 @@
 				float  _d_x = aTextureCoord.s - dx;
 				float  _d_y = aTextureCoord.t - dy;
 
-				g.x = abs( getDepthFromTexture(aTextureCoord.st) - getDepthFromTexture(vec2(_d_x, aTextureCoord.t)) ) / dx;
-				g.y = abs( getDepthFromTexture(aTextureCoord.st) - getDepthFromTexture(vec2(aTextureCoord.s, _d_y)) ) / dy;
+				g.x = abs( getDepthFromTexture(aTextureCoord.st) - getDepthFromTexture(vec2(_d_x, aTextureCoord.t)) );
+				g.y = abs( getDepthFromTexture(aTextureCoord.st) - getDepthFromTexture(vec2(aTextureCoord.s, _d_y)) );
 
 				return g;
 			}
@@ -247,8 +258,8 @@
 				float  _d_x = aTextureCoord.s - dx;
 				float  _d_y = aTextureCoord.t - dy;
 
-				g.x = abs( getDepthFromTexture(vec2(_d_x, aTextureCoord.t)) - getDepthFromTexture(vec2(d_x, aTextureCoord.t)) ) / (2.0 * dx);
-				g.y = abs( getDepthFromTexture(vec2(aTextureCoord.s, _d_y)) - getDepthFromTexture(vec2(aTextureCoord.s, d_y)) ) / (2.0 * dy); 
+				g.x = abs( getDepthFromTexture(vec2(_d_x, aTextureCoord.t)) - getDepthFromTexture(vec2(d_x, aTextureCoord.t)) ); // / (2.0 * dx);
+				g.y = abs( getDepthFromTexture(vec2(aTextureCoord.s, _d_y)) - getDepthFromTexture(vec2(aTextureCoord.s, d_y)) ); // / (2.0 * dy); 
 
 				return g;
 			}
@@ -264,7 +275,7 @@
 
 					vec2 g = forwardDifference();
 
-					if(g.x > 100.0 || g.y > 100.0)
+					if(g.x > uTgrad || g.y > uTgrad)
 						vState = 1.0;
 
 					// rerange depth
