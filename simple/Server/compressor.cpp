@@ -366,13 +366,13 @@ vector<Point> Compressor::splitTriangle(cv::Mat& img, const Point& a, const Poin
 			triangles[1] = getMaxJoinable(img, c, a);
 			triangles[2] = getMaxJoinable(img, c, b);
 
-			Point temp = getMaxJoinable(img, b, c);
+			pair<Point, Point> p = getMaxJoinables(img, b, a, c);
 			triangles[3] = a;
-			triangles[4] = temp;
-			triangles[5] = getMaxJoinable(img, a, c);
+			triangles[4] = p.first;
+			triangles[5] = p.second;
 
 			triangles[6] = b;
-			triangles[7] = temp;
+			triangles[7] = p.first;
 			triangles[8] = a;
 		}
 		else if(valid_edge == 1) {
@@ -380,13 +380,13 @@ vector<Point> Compressor::splitTriangle(cv::Mat& img, const Point& a, const Poin
 			triangles[1] = getMaxJoinable(img, a, b);
 			triangles[2] = getMaxJoinable(img, a, c);
 
-			Point temp = getMaxJoinable(img, c, a);
+			pair<Point, Point> p = getMaxJoinables(img, c, b, a);
 			triangles[3] = b;
-			triangles[4] = temp;
-			triangles[5] = getMaxJoinable(img, b, a);
+			triangles[4] = p.first;
+			triangles[5] = p.second;
 
 			triangles[6] = c;
-			triangles[7] = temp;
+			triangles[7] = p.first;
 			triangles[8] = b;
 		}
 		else if(valid_edge == 2) {
@@ -394,13 +394,13 @@ vector<Point> Compressor::splitTriangle(cv::Mat& img, const Point& a, const Poin
 			triangles[1] = getMaxJoinable(img, b, c);
 			triangles[2] = getMaxJoinable(img, b, a);
 
-			Point temp = getMaxJoinable(img, a, b);
+			pair<Point, Point> p = getMaxJoinables(img, a, c, b);
 			triangles[3] = c;
-			triangles[4] = temp;
-			triangles[5] = getMaxJoinable(img, c, a);
+			triangles[4] = p.first;
+			triangles[5] = p.second;
 
 			triangles[6] = a;
-			triangles[7] = temp;
+			triangles[7] = p.first;
 			triangles[8] = c;
 		}
 	} else {
@@ -418,7 +418,8 @@ Point Compressor::getMaxJoinable(cv::Mat& img, const Point& p, const Point& a) {
 	Point n;
 	Point d = a - p;
 	
-	for(double i = 0.0; i <= 1.0; i += 0.2) {
+	double step = 1.0 / length(a, p);
+	for(double i = 0.0; i <= 1.0; i += step) {
 		n = p + d * i;
 		n.setP(img, m_config->getMeshWidth(), m_config->getMeshHeight());
 
@@ -430,4 +431,57 @@ Point Compressor::getMaxJoinable(cv::Mat& img, const Point& p, const Point& a) {
 	}
 
 	return m;
+}
+
+vector<Point> Compressor::getMaxJoinablesPoints(cv::Mat& img, const Point& p, const Point& a) {
+	vector<Point> res;
+	res.push_back(p);
+	Point n;
+	Point d = a - p;
+	
+	double step = 1.0 / length(a, p);
+	for(double i = 0.0; i <= 1.0; i += step) {
+		n = p + d * i;
+		n.setP(img, m_config->getMeshWidth(), m_config->getMeshHeight());
+
+		if(isJoinable(img, Edge(p, n))) {
+			res.push_back(n);
+		} else {
+			return res;
+		}
+	}
+
+	return res;
+}
+
+pair<Point, Point> Compressor::getMaxJoinables(cv::Mat& img, const Point& a, const Point& b, const Point& c) {
+	list<pair<int, Edge> > l;
+
+	vector<Point> v1 = getMaxJoinablesPoints(img, a, c);
+	vector<Point> v2 = getMaxJoinablesPoints(img, b, c);
+
+	uint size_1 = v1.size();
+	uint size_2 = v2.size();
+	for(uint i1 = 0; i1 < size_1; ++i1) {
+		for(uint i2 = 0; i2 < size_2; ++i2) {
+			Edge e(v1[i1], v2[i2]);
+
+			// add to list length
+			if(isJoinable(img, e)) {
+				l.push_back(make_pair(i1 + i2, e));
+			}
+		}
+	}
+
+	l.sort([](const pair<int, Edge>& _p1, const pair<int, Edge>& _p2){
+		if(_p1.first > _p2.first)
+			return true;
+		return false;
+	});
+
+	Edge e_r = l.begin()->second;
+	pair<Point, Point> r;
+	r.first = e_r.a;
+	r.second = e_r.b;
+	return r;
 }

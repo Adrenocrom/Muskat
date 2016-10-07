@@ -11,7 +11,7 @@ public:
 	vector<string> 	m_file_names;
 	vector<Scene> 	m_scenes;
 
-	Playlist(string dir, string suffix);
+	Playlist(MainWindow* mw, string dir, string suffix);
 
 	QJsonObject	getPlaylist();
 

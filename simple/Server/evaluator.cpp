@@ -77,8 +77,6 @@ void Evaluator::runEvaluation(string path) {
 	//system("mkdir results");
 	//system("cd results");
 
-	
-
 	ofstream file;
   	file.open("res/results.tex");
 
@@ -109,7 +107,6 @@ void Evaluator::runEvaluation(string path) {
 	}
 	
 	file<< "\\end{filecontents}\n\n";
-	file.close();
 
 	file<< "\\begin{filecontents}{div_duration_info.csv}\n";
 	file<< "i,d,min,max,mean\n";
@@ -124,6 +121,8 @@ void Evaluator::runEvaluation(string path) {
 	
 	file<< m_min_duration <<","<< m_max_duration << "," << m_mean_duration<<"\n";
 	file<< "\\end{filecontents}\n\n";
+	file.close();
+	
 	cout<<"end evaluation"<<endl;
 
 	//system("pdflatex res/auto.tex");
@@ -131,6 +130,13 @@ void Evaluator::runEvaluation(string path) {
 
 void Evaluator::newMessure() {
 	m_cnt = 0;
+
+	// mkdir
+	system("mkdir results");
+	system("cd results");
+	system("mkdir 0");
+	system("cd ..");
+
 }
 
 void Evaluator::addResult(int id, cv::Mat* img, double duration) {

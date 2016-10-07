@@ -4,6 +4,7 @@ using namespace boost::filesystem;
 
 MainWindow::MainWindow() {
 	setMinimumSize(640, 480);
+	setMaximumSize(640, 480);
 	setWindowTitle(QString("Server"));
 
 	setStyleSheet(QString("QOpenGLWidget{border: 1px solid #000000;}")+
@@ -28,6 +29,7 @@ MainWindow::MainWindow() {
 	m_widget_stacked = new QStackedWidget;
 
 	createWidgetStart();
+	createWidgetLoad();
 	createWidgetMain();
 	createMenu();
 	
@@ -79,6 +81,23 @@ void MainWindow::createWidgetStart() {
 	
 	m_widget_start->setLayout(gridLayout);
 	m_widget_stacked->addWidget(m_widget_start);
+}
+
+void MainWindow::createWidgetLoad() {
+	m_widget_load			= new QWidget;
+
+	QGridLayout* gridLayout = new QGridLayout;
+
+	m_progress_load 		= new QProgressBar;
+	m_progress_load->setMinimumWidth(300);
+	m_progress_load->setRange(0, 100);
+	m_progress_load->setValue(0);
+
+
+	gridLayout->addWidget(m_progress_load, 0, 0, 0, 0, Qt::AlignHCenter | Qt::AlignVCenter);
+	
+	m_widget_load->setLayout(gridLayout);
+	m_widget_stacked->addWidget(m_widget_load);
 }
 
 void MainWindow::createWidgetMain() {
@@ -134,13 +153,18 @@ void MainWindow::start_server() {
 		m_scenes_dir	= m_lineEdit_scenes_dir->text().toStdString();
 		m_scene_suffix 	= m_lineEdit_scene_suffix->text().toStdString();
 
-		m_playlist 		= new Playlist(m_scenes_dir, m_scene_suffix);
+
+		m_widget_stacked->setCurrentIndex(1);
+		this->repaint();
+
+		m_playlist 		= new Playlist(this, m_scenes_dir, m_scene_suffix);
 		m_config		= new Config(this);
 		m_compressor	= new Compressor(m_config);
 		m_filerenderer->setScene(&m_playlist->m_scenes[0]);
+		
+		m_widget_stacked->setCurrentIndex(2);
 	}
 
-	m_widget_stacked->setCurrentIndex(1);
 
 	SAFE_DELETE(m_serverDeamon);
 	m_serverDeamon = new ServerDeamon(this, m_server_port);

@@ -174,17 +174,19 @@
 		<script src="js/lib/gl-matrix-min.js"></script>
 
 		<script id="shader-fs" type="x-shader/x-fragment">
-	   		precision mediump float;
+	   		//precision mediump float;
+	   		precision highp float;
 
-			varying vec2 vTextureCoord;
-			varying float vState;
+			varying vec2 		vTextureCoord;
+			varying float 		vState;
 
-	    	uniform sampler2D uColorSampler;
+	    	uniform sampler2D 	uColorSampler;
+			uniform float 		uAlpha;
 
 	    	void main(void) {
 				
 				if(vState > 0.1) {
-    	    		gl_FragColor = vec4(texture2D(uColorSampler, vec2(vTextureCoord.s, vTextureCoord.t)).rgb, 0.0);
+    	    		gl_FragColor = vec4(texture2D(uColorSampler, vec2(vTextureCoord.s, vTextureCoord.t)).rgb, uAlpha);
 				}
 				else {
     	    		gl_FragColor = vec4(texture2D(uColorSampler, vec2(vTextureCoord.s, vTextureCoord.t)).rgb, 1.0);
@@ -195,16 +197,16 @@
     		attribute vec3 aVertexPosition;
 			attribute vec2 aTextureCoord;
 
-    		uniform mat4 uMVPMatrix;
-    		uniform mat4 uINVMVPMatrix;
+    		uniform mat4 		uMVPMatrix;
+    		uniform mat4 		uINVMVPMatrix;
 
 			uniform int 		uDepth;
 			uniform sampler2D 	uDepthSampler;
 			uniform vec2 		uResolution;
 			uniform float		uTgrad;
 
-			varying vec2 	vTextureCoord;
-			varying float 	vState;
+			varying vec2 		vTextureCoord;
+			varying float 		vState;
 
 			float getDepthFromTexture(vec2 tex) {
 				if(uDepth == 0)
@@ -273,9 +275,9 @@
 				if(uDepth != 2) {
 					depth = getDepthFromTexture(aTextureCoord);
 
-					vec2 g = forwardDifference();
+					vec2 g = centralDifference();
 
-					if(g.x > uTgrad || g.y > uTgrad)
+					if(g.x > uTgrad || g.y > uTgrad || depth == 1.0)
 						vState = 1.0;
 
 					// rerange depth

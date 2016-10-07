@@ -11,6 +11,7 @@ class QPushButton;
 class QLineEdit;
 class QComboBox;
 class QLabel;
+class QProgressBar;
 
 class FileRenderer;
 class ServerDeamon;
@@ -23,13 +24,15 @@ class MainWindow : public QMainWindow {
 	Q_OBJECT
 
 public:
-	ServerDeamon*				m_serverDeamon;
-	FileRenderer*				m_filerenderer;
+	ServerDeamon*			m_serverDeamon;
+	FileRenderer*			m_filerenderer;
 
-	Playlist*					m_playlist;
-	Config*						m_config;
-	Compressor*					m_compressor;
-	Evaluator*					m_evaluator;
+	Playlist*				m_playlist;
+	Config*					m_config;
+	Compressor*				m_compressor;
+	Evaluator*				m_evaluator;
+	
+	QProgressBar*			m_progress_load;
 
 	MainWindow();
 	~MainWindow();
@@ -48,6 +51,7 @@ private:
 
 	QStackedWidget*	m_widget_stacked;
 	QWidget*		m_widget_start;
+	QWidget*		m_widget_load;
 	QWidget*		m_widget_main;
 
 	QAction*		m_action_start_server;
@@ -58,7 +62,9 @@ private:
 	QLineEdit*		m_lineEdit_scene_suffix;
 	QLineEdit*		m_lineEdit_scenes_dir;
 
+
 	void 		createWidgetStart();
+	void 		createWidgetLoad();
 	void 		createWidgetMain();
 	QGroupBox* 	createWidgetTransport();
 	QGroupBox* 	createWidgetScene();

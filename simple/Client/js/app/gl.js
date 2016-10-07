@@ -2,7 +2,7 @@ class MuskatGl {
 	constructor(can) {
 		try {
 			this._display = can;
-			this._gl 	  = can.getContext("experimental-webgl");
+			this._gl 	  = can.getContext("experimental-webgl", { alpha: false });
 			this._gl.viewportWidth	= can.width;
 			this._gl.viewportHeight = can.height;
 		} catch (e) {

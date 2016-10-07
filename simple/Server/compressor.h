@@ -60,6 +60,12 @@ inline double norm(const Point& a, const Point& b) {
 	return sqrt(x*x + y*y);
 }
 
+inline double length(const Point& a, const Point& b) {
+	double x = a.x - b.x;
+	double y = a.y - b.y;
+	return sqrt(x*x + y*y);
+}
+
 inline Point operator * (const Point& p, const double d) {return Point((int)((double)p.x * d), (int)((double)p.y * d));}
 inline Point operator + (const Point& a, const Point& b) {return Point(a.x + b.x, a.y + b.y);}
 inline Point operator - (const Point& a, const Point& b) {return Point(a.x - b.x, a.y - b.y);}
@@ -84,9 +90,6 @@ struct Edge {
 		p.dz = (double)p.z / ((double) (USHRT_MAX) + 1.0);
 		return p;
 	}
-
-
-	double length() {return norm(a, b);}
 };
 
 class Compressor {
@@ -138,6 +141,10 @@ private:
 	vector<Point> splitTriangle(cv::Mat& img, const Point& a, const Point& b, const Point& c, cv::Mat* out = nullptr);
 
 	Point getMaxJoinable(cv::Mat& img, const Point& p, const Point& a);
+	
+	vector<Point> getMaxJoinablesPoints(cv::Mat& img, const Point& p, const Point& a);
+	
+	pair<Point, Point> getMaxJoinables(cv::Mat& img, const Point& a, const Point& b, const Point& c);
 
 	int getIndex(vector<cv::Point>& vb, cv::Point p);
 	int getIndex(map<Point, int>& vertices, const Point& p);

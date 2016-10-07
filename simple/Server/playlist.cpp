@@ -2,7 +2,7 @@
 
 using namespace boost::filesystem;
 
-Playlist::Playlist(string dir, string suffix) {
+Playlist::Playlist(MainWindow* mw, string dir, string suffix) {
 	m_dir 		= dir;
 	m_suffix 	= suffix;
 	path p(m_dir);
@@ -11,8 +11,12 @@ Playlist::Playlist(string dir, string suffix) {
 
 	sort(m_file_names.begin(), m_file_names.end());
 
+	mw->m_progress_load->setRange(0, m_file_names.size()-1);
+
 	for(uint i = 0; i < m_file_names.size(); ++i) {
-		cout<<m_file_names[i]<<endl;
+		//cout<<m_file_names[i]<<endl;
+		mw->m_progress_load->setValue(i);
+		mw->repaint();
 		
 		Scene scene(m_file_names[i], m_suffix);
 		m_scenes.push_back(scene);

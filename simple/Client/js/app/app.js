@@ -230,13 +230,18 @@ $(document).ready(function() {
 		shaderProgram.depthUniform			= muGl.getUniformLocation(shaderProgram, "uDepth");
 		shaderProgram.resolution			= muGl.getUniformLocation(shaderProgram, "uResolution");
 		shaderProgram.Tgrad					= muGl.getUniformLocation(shaderProgram, "uTgrad");
+		shaderProgram.alpha					= muGl.getUniformLocation(shaderProgram, "uAlpha");
 
 		debug("set default colors");
 		muGl.gl.clearColor(0.0, 0.0, 0.0, 1.0);
         muGl.gl.enable(muGl.gl.DEPTH_TEST);
+		
+		muGl.gl.disable(muGl.gl.CULL_FACE)
+		//muGl.gl.enable(muGl.gl.CULL_FACE);
+		
 		muGl.gl.enable(muGl.gl.BLEND);
 		muGl.gl.blendFunc(muGl.gl.SRC_ALPHA, muGl.gl.ONE_MINUS_SRC_ALPHA);
-
+		//muGl.gl.blendFunc(muGl.gl.ONE, muGl.gl.ONE_MINUS_SRC_ALPHA);
 		//muGl.gl.blendFunc(muGl.gl.SRC_ALPHA_SATURATE, muGl.gl.ONE);
 
 		debug("set default mesh");
@@ -361,8 +366,31 @@ $(document).ready(function() {
 		muGl.setUniformMatrix(shaderProgram.invMvpMatrixUniform, invMvpMatrix);
 		
 		gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, g_mesh.indices);
-		gl.drawElements(gl.TRIANGLES, g_mesh.indices.numItems, gl.UNSIGNED_INT, 0);
 
+	//	gl.drawElements(gl.TRIANGLES, g_mesh.indices.numItems, gl.UNSIGNED_INT, 0);
+		// now draw front facing polygons
+
+	
+		gl.depthFunc(gl.LEQUAL);
+		gl.uniform1f(shaderProgram.alpha, 0.0);
+		gl.drawElements(gl.TRIANGLES, g_mesh.indices.numItems, gl.UNSIGNED_INT, 0);
+		
+		gl.depthFunc(gl.GREATER);
+		gl.uniform1f(shaderProgram.alpha, 0.0);
+		gl.drawElements(gl.TRIANGLES, g_mesh.indices.numItems, gl.UNSIGNED_INT, 0);
+		
+		gl.depthFunc(gl.LEQUAL);
+		gl.uniform1f(shaderProgram.alpha, 0.0);
+		gl.drawElements(gl.TRIANGLES, g_mesh.indices.numItems, gl.UNSIGNED_INT, 0);
+/*
+   		// draw back facing polygons first
+    	gl.cullFace(gl.BACK);
+		gl.drawElements(gl.TRIANGLES, g_mesh.indices.numItems, gl.UNSIGNED_INT, 0);
+		
+		gl.cullFace(gl.FRONT);
+		gl.drawElements(gl.TRIANGLES, g_mesh.indices.numItems, gl.UNSIGNED_INT, 0);
+*/
+	
 		// TODO
 		gl.flush();
 
@@ -513,8 +541,6 @@ $(document).ready(function() {
 				}
 				
 				if(typeof obj.result.indices !== 'undefined') {
-					debug(JSON.stringify(obj.result.indices));
-					
 					var indices  = JSON.parse(obj.result.indices);
 					var vertices = JSON.parse(obj.result.vertices);
 
@@ -522,11 +548,6 @@ $(document).ready(function() {
 					g_mesh.vertices = new Float32Array(vertices);
 					g_mesh.texCoords = new Float32Array(obj.result.numTexCoord);
 
-/*
-					debug(obj.result.indices);
-					debug(obj.result.vertices);
-					debug(obj.result.numTexCoord);
-*/
 					drawFirstFrame();
 				}
 

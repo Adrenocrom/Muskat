@@ -47,6 +47,7 @@
 #include <QImage>
 #include <QVariant>
 #include <QList>
+#include <QProgressBar>
 
 // DEFINES
 #ifndef SAFE_DELETE
