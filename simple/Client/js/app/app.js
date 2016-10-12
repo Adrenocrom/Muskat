@@ -73,7 +73,7 @@ $(document).ready(function() {
 	});
 
 	$( '#button_run_scene' ).click(function() {
-		newMessureMessage();
+		runEvaluation(0);
 	});
 
 	$( '#button_render_single_frame' ).click(function() {
@@ -110,6 +110,14 @@ $(document).ready(function() {
 		}
 
 		resize(g_config.meshWidth, g_config.meshHeight);
+	});
+
+	$('#select_five_pass').change(function() {
+		if(this.selectedIndex == 0) {
+			g_config.fivePass = true;
+		} else {
+			g_config.fivePass = false;
+		}
 	});
 
 	$('input[name=texture]').on('change', function() {
@@ -197,6 +205,7 @@ $(document).ready(function() {
 	var g_scene_index;
 	var g_time_start;
 	var g_time_end;
+	var g_evaluator;
 
 	initConfig();
 	
@@ -223,7 +232,6 @@ $(document).ready(function() {
 		shaderProgram.vertexPositionAttrib 	= muGl.getVertexAttribLocation(shaderProgram, "aVertexPosition");
 		shaderProgram.textureCoordAttrib	= muGl.getVertexAttribLocation(shaderProgram, "aTextureCoord");
 		
-		shaderProgram.invMvpMatrixUniform 	= muGl.getUniformLocation(shaderProgram, "uINVMVPMatrix");
     	shaderProgram.mvpMatrixUniform 		= muGl.getUniformLocation(shaderProgram, "uMVPMatrix");
 		shaderProgram.colorSamplerUniform 	= muGl.getUniformLocation(shaderProgram, "uColorSampler");
 		shaderProgram.depthSamplerUniform 	= muGl.getUniformLocation(shaderProgram, "uDepthSampler");
@@ -256,6 +264,9 @@ $(document).ready(function() {
 
 	function initConfig() {
 		g_config = new MuskatConfig(updateConfig);
+
+		g_evaluator = new MuskatEvaluator();
+		g_evaluator.add(new MuskatConfig(null));
 	}
 
 	function updateConfig() {
@@ -277,6 +288,7 @@ $(document).ready(function() {
 	var pMatrix 	 = mat4.create();
 	var mvpMatrix 	 = mat4.create();
 	var invMvpMatrix = mat4.create();
+	var resMvpMatrix = mat4.create();
 	
 	function draw() {
 		var gl = muGl.gl;
@@ -307,7 +319,6 @@ $(document).ready(function() {
 		
 		gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, g_mesh.indices);
 		muGl.setUniformMatrix(shaderProgram.mvpMatrixUniform, mvpMatrix);
-		muGl.setUniformMatrix(shaderProgram.invMvpMatrixUniform, invMvpMatrix);
 		gl.uniform1i(shaderProgram.depthUniform, g_config.meshState);
 		gl.drawElements(gl.TRIANGLES, g_mesh.indices.numItems, gl.UNSIGNED_INT, 0);
 
@@ -334,6 +345,7 @@ $(document).ready(function() {
 		mat4.lookAt(mvMatrix, frameTo.pos, frameTo.lookat, frameTo.up);
 		mat4.translate(mvMatrix, mvMatrix, frameTo.lookat);
 		mat4.multiply(mvpMatrix, pMatrix, mvMatrix);
+		mat4.multiply(resMvpMatrix, mvpMatrix, invMvpMatrix);
 			
 		drawEx();
 	}
@@ -362,40 +374,64 @@ $(document).ready(function() {
 		gl.uniform2f(shaderProgram.resolution, g_config.meshWidth, g_config.meshHeight);
 		gl.uniform1f(shaderProgram.Tgrad, g_config.Tgrad);
 
-		muGl.setUniformMatrix(shaderProgram.mvpMatrixUniform, mvpMatrix);
-		muGl.setUniformMatrix(shaderProgram.invMvpMatrixUniform, invMvpMatrix);
+		gl.uniform1f(shaderProgram.alpha, 1.0);
+		muGl.setUniformMatrix(shaderProgram.mvpMatrixUniform, resMvpMatrix);
 		
 		gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, g_mesh.indices);
 
-	//	gl.drawElements(gl.TRIANGLES, g_mesh.indices.numItems, gl.UNSIGNED_INT, 0);
-		// now draw front facing polygons
+		if(g_config.meshState == 2) {
+			// draw delaunay 
+			gl.disable(gl.CULL_FACE);
+			gl.drawElements(gl.TRIANGLES, g_mesh.indices.numItems, gl.UNSIGNED_INT, 0);
+		} else {
+			if(g_config.fivePass) {
+				/*
+ 				*	Quint Pas
+ 				*/
+   		
+				gl.disable(gl.CULL_FACE);
+				gl.uniform1f(shaderProgram.alpha, 0.0);
+				gl.depthFunc(gl.LESS);
+				gl.drawElements(gl.TRIANGLES, g_mesh.indices.numItems, gl.UNSIGNED_INT, 0);
 
+				gl.enable(gl.CULL_FACE);
+				gl.cullFace(gl.FRONT);
+		
+				gl.depthFunc(gl.ALWAYS);
+				gl.drawElements(gl.TRIANGLES, g_mesh.indices.numItems, gl.UNSIGNED_INT, 0);
 	
-		gl.depthFunc(gl.LEQUAL);
-		gl.uniform1f(shaderProgram.alpha, 0.0);
-		gl.drawElements(gl.TRIANGLES, g_mesh.indices.numItems, gl.UNSIGNED_INT, 0);
+				gl.depthFunc(gl.LEQUAL);
+				gl.drawElements(gl.TRIANGLES, g_mesh.indices.numItems, gl.UNSIGNED_INT, 0);
+
+				gl.cullFace(gl.BACK);
+				gl.depthFunc(gl.ALWAYS);
+				gl.drawElements(gl.TRIANGLES, g_mesh.indices.numItems, gl.UNSIGNED_INT, 0);
+
+				gl.disable(gl.CULL_FACE);
+				gl.depthFunc(gl.LEQUAL);
+				gl.drawElements(gl.TRIANGLES, g_mesh.indices.numItems, gl.UNSIGNED_INT, 0);
+			} else {
+				/*	
+				 *	Tri Pass wrong depth values
+ 			 	 */
+
+				gl.depthFunc(gl.LEQUAL);
+				gl.uniform1f(shaderProgram.alpha, 0.0);
+				gl.drawElements(gl.TRIANGLES, g_mesh.indices.numItems, gl.UNSIGNED_INT, 0);
 		
-		gl.depthFunc(gl.GREATER);
-		gl.uniform1f(shaderProgram.alpha, 0.0);
-		gl.drawElements(gl.TRIANGLES, g_mesh.indices.numItems, gl.UNSIGNED_INT, 0);
+				gl.depthFunc(gl.GREATER);
+				gl.uniform1f(shaderProgram.alpha, 0.0);
+				gl.drawElements(gl.TRIANGLES, g_mesh.indices.numItems, gl.UNSIGNED_INT, 0);
 		
-		gl.depthFunc(gl.LEQUAL);
-		gl.uniform1f(shaderProgram.alpha, 0.0);
-		gl.drawElements(gl.TRIANGLES, g_mesh.indices.numItems, gl.UNSIGNED_INT, 0);
-/*
-   		// draw back facing polygons first
-    	gl.cullFace(gl.BACK);
-		gl.drawElements(gl.TRIANGLES, g_mesh.indices.numItems, gl.UNSIGNED_INT, 0);
-		
-		gl.cullFace(gl.FRONT);
-		gl.drawElements(gl.TRIANGLES, g_mesh.indices.numItems, gl.UNSIGNED_INT, 0);
-*/
-	
-		// TODO
+				gl.depthFunc(gl.LEQUAL);
+				gl.uniform1f(shaderProgram.alpha, 0.0);
+				gl.drawElements(gl.TRIANGLES, g_mesh.indices.numItems, gl.UNSIGNED_INT, 0);
+			}
+		}
+
 		gl.flush();
-
 		// end messure
-		g_time_end = new Date().getTime();
+		g_time_end = performance.now();
 	}
 
 	function setPlaylist(playlist) {
@@ -443,7 +479,6 @@ $(document).ready(function() {
 		drawFirstFrame();
 
 		var data = muGl.canvas.toDataURL("image/png;base64;");
-		alert(data.toString());
 		var download = document.createElement('a');
 		document.body.appendChild(download);
 		download.setAttribute("href", data);
@@ -475,7 +510,7 @@ $(document).ready(function() {
 
 		for(var i = frame_min; i <= frame_max; i++) {
 			// messure time
-			g_time_start = new Date().getTime();
+			g_time_start = performance.now();
 
 			frame = scene.frames[i];
 
@@ -483,23 +518,20 @@ $(document).ready(function() {
 			mat4.lookAt(mvMatrix, frame.pos, frame.lookat, frame.up);
 			mat4.translate(mvMatrix, mvMatrix, frame.lookat);
 			mat4.multiply(mvpMatrix, pMatrix, mvMatrix);
+			mat4.multiply(resMvpMatrix, mvpMatrix, invMvpMatrix);
 			
 			drawEx();
+
 			saveFrameToPNG(i, g_time_end-g_time_start);
 		}
-
 	}
 
-		
-	function runEvaluation() {
-		var texture_qual = [0, 20, 40, 60, 80, 100];
-		
-
-		for(var i = 0; i < texture_qual.length; i++) {
-			$('#slider_jpeg_quality').val(texture_qual[i]);
-
-		}
+	function runEvaluation(id) {
+		g_config = g_evaluator.getConfig(id);
+		updateConfig();
+		newMessureMessage(g_scene_index, id, g_config.name);
 	}
+
 
 	function startWs() {
 		try {
@@ -553,6 +585,13 @@ $(document).ready(function() {
 
 				if(typeof obj.result.newMessureReady !== 'undefined') {
 					runScene();
+				}
+
+				if(typeof obj.result.messureReady !== 'undefined') {
+					var index = obj.result.messureReady + 1;
+					if(index < g_evaluator.length)
+						runEvaluation(index);
+					else alert("Evaluation Done!")
 				}
             };
 
@@ -614,8 +653,13 @@ $(document).ready(function() {
 		sendMessage("loadScene", params);
 	}
 
-	function newMessureMessage() {
-		sendMessage("newMessure", {});
+	function newMessureMessage(scene_id, messure_id, name) {
+		var params = {
+			"sceneId"	: scene_id,
+			"messureId" : messure_id,
+			"name" 		: name
+		};
+		sendMessage("newMessure", params);
 	}
 
 	function setConfigMessage() {
@@ -636,6 +680,7 @@ $(document).ready(function() {
 			"Tinternal"					: g_config.Tinternal,
 			"Tangle"					: g_config.Tangle,
 			"Tjoin"						: g_config.Tjoin,
+			"refine"					: g_config.refine,
 			"preBackgroundSubtraction"	: g_config.preBackgroundSubtraction,
 			"praBackgroundSubtraction"	: g_config.praBackgroundSubtraction
 		};
@@ -643,6 +688,5 @@ $(document).ready(function() {
 		debug(JSON.stringify(params));
 		sendMessage("setConfig", params);
 	}
-
 });
 
