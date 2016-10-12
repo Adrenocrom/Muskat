@@ -113,8 +113,10 @@ private:
 	cv::Scalar 	m_color_edge;
 	cv::Scalar 	m_color_green;
 	cv::Scalar 	m_color_red;
+	cv::Scalar 	m_color_blue;
 	cv::Scalar 	m_color_triangle;
 
+	cv::Mat		m_delaunay_image;
 
 	// stores quadtree for delaunay triangulation
 	QuadTree* 	m_quadtree;

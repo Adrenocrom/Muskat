@@ -122,7 +122,11 @@ RPCResponse JsonRPC::saveFrame(RPCRequest& request) {
 	m_mainWindow->m_evaluator->addResult(frame_id, &dst, duration);
 
 	if(m_mainWindow->m_evaluator->hasResults()) {
-		m_mainWindow->m_evaluator->runEvaluation("results");
+		m_mainWindow->m_evaluator->runEvaluation();
+
+		QJsonObject jo;
+		jo["messureReady"] = m_mainWindow->m_evaluator->getEvaluationId();
+		response.result = jo;
 	}
 
 
@@ -143,7 +147,13 @@ RPCResponse JsonRPC::resize(RPCRequest& request) {
 RPCResponse JsonRPC::newMessure(RPCRequest& request) {
 	RPCResponse response;
 
-	m_mainWindow->m_evaluator->newMessure();
+	int	scene_id 	= request.params["sceneId"].toInt();
+	int messure_id	= request.params["messureId"].toInt();
+	QString name 	= request.params["name"].toString();
+
+	m_mainWindow->m_evaluator->newMessure(scene_id,
+										  messure_id, 
+										  name.toStdString());
 
 	QJsonObject jo;
 	jo["newMessureReady"] = true;

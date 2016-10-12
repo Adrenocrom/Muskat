@@ -13,7 +13,10 @@ Compressor::Compressor(Config* config) {
 	m_color_edge		= cv::Scalar(120, 120, 120);
 	m_color_green		= cv::Scalar(0, 120, 0);
 	m_color_red			= cv::Scalar(0, 0, 120);
+	m_color_red			= cv::Scalar(255, 0, 0);
 	m_color_triangle	= cv::Scalar(0, 120, 0);
+	
+	m_delaunay_image = cv::Mat(m_config->getMeshWidth(), m_config->getMeshHeight(), CV_8UC3, cv::Scalar(255,255,255));
 }
 
 Compressor::~Compressor() {
@@ -156,7 +159,7 @@ void Compressor::compressMeshDelaunay(QJsonObject& jo, cv::Mat& img) {
 	cv::Size size = img.size();
 	cv::Rect rect(0,0, size.width, size.height);
 
-	cv::Mat meshImage(m_config->getMeshWidth(), m_config->getMeshHeight(), CV_8UC3, cv::Scalar(255,255,255));
+	m_delaunay_image = cv::Mat(m_config->getMeshWidth(), m_config->getMeshHeight(), CV_8UC3, cv::Scalar(255,255,255));
 
 	bool first_index = true;
 	ostringstream osstream_i;
@@ -181,17 +184,6 @@ void Compressor::compressMeshDelaunay(QJsonObject& jo, cv::Mat& img) {
 				continue;
 			}
 
-			// Draw delaunay triangles
-			const cv::Point* ppt[1] = { pt.data() };
-			int npt[] = { 3 };
-			fillPoly(meshImage, ppt, npt, 1, m_color_triangle);
-/*
-
- 			circle( meshImage, pt[0], 2, m_color_point, CV_FILLED, CV_AA, 0 );
- 			circle( meshImage, pt[1], 2, m_color_point, CV_FILLED, CV_AA, 0 );
- 			circle( meshImage, pt[2], 2, m_color_point, CV_FILLED, CV_AA, 0 );*/
-
-	
 			points[0].u  = (double) points[0].x * invWidth;
 			points[0].v  = (double) points[0].y * invHeight;
 			points[0].dz = (double) points[0].z * invMax;
@@ -204,7 +196,7 @@ void Compressor::compressMeshDelaunay(QJsonObject& jo, cv::Mat& img) {
 			points[2].v  = (double) points[2].y * invHeight;
 			points[2].dz = (double) points[2].z * invMax;
 
-			vector<Point> n_points = splitTriangle(img, points[0], points[1], points[2], &meshImage);
+			vector<Point> n_points = splitTriangle(img, points[0], points[1], points[2], &m_delaunay_image);
 			uint n_size = n_points.size();
 			for(uint i = 0; i < n_size; ++i) {
 				if(first_index) {
@@ -239,7 +231,7 @@ void Compressor::compressMeshDelaunay(QJsonObject& jo, cv::Mat& img) {
 	
 		osstream_v<<"]";
     
-		imwrite("res/delaunay.png", meshImage);
+		//imwrite("res/delaunay.png", meshImage);
 
 		jo["indices"] 	= QString(osstream_i.str().c_str());
 		jo["vertices"] 	= QString(osstream_v.str().c_str());
@@ -295,7 +287,7 @@ bool Compressor::isValid(const Edge& e) {
 }
 
 bool Compressor::isJoinable(cv::Mat& img, const Edge& e) {
-	Point pm = e.getPM(img, m_config->getMeshWidth(), m_config->getMeshHeight());
+	Point pm = e.getPM(img, m_config->getMeshWidth(), m_config->getMeshHeight());	
 	double a = e.b.dz - pm.dz;
 	double b = pm.dz  - e.a.dz;
 	return fabs(a - b) < m_config->getTjoin();
@@ -344,6 +336,9 @@ vector<Point> Compressor::splitTriangle(cv::Mat& img, const Point& a, const Poin
 	}
 
 	int i_size = invalid_edges.size();
+	if(!m_config->getRefine()) 
+		i_size = -1;
+
 	if(i_size == 3) {
 		triangles.resize(9);
 		triangles[0] = a;
@@ -357,8 +352,21 @@ vector<Point> Compressor::splitTriangle(cv::Mat& img, const Point& a, const Poin
 		triangles[6] = c;
 		triangles[7] = getMaxJoinable(img, c, a);
 		triangles[8] = getMaxJoinable(img, c, b);
+
+		if(out != nullptr) {
+			line(*out, triangles[0].toCVPoint(), triangles[1].toCVPoint(), m_color_green, 1, CV_AA, 0);
+			line(*out, triangles[1].toCVPoint(), triangles[2].toCVPoint(), m_color_green, 1, CV_AA, 0);
+			line(*out, triangles[2].toCVPoint(), triangles[0].toCVPoint(), m_color_green, 1, CV_AA, 0);
+
+			line(*out, triangles[3].toCVPoint(), triangles[4].toCVPoint(), m_color_green, 1, CV_AA, 0);
+			line(*out, triangles[4].toCVPoint(), triangles[5].toCVPoint(), m_color_green, 1, CV_AA, 0);
+			line(*out, triangles[5].toCVPoint(), triangles[3].toCVPoint(), m_color_green, 1, CV_AA, 0);
+			
+			line(*out, triangles[6].toCVPoint(), triangles[7].toCVPoint(), m_color_green, 1, CV_AA, 0);
+			line(*out, triangles[7].toCVPoint(), triangles[8].toCVPoint(), m_color_green, 1, CV_AA, 0);
+			line(*out, triangles[8].toCVPoint(), triangles[6].toCVPoint(), m_color_green, 1, CV_AA, 0);
+		}
 	}
-	
 	if(i_size == 2) {
 		triangles.resize(9);
 		if(valid_edge == 0) {
@@ -403,6 +411,20 @@ vector<Point> Compressor::splitTriangle(cv::Mat& img, const Point& a, const Poin
 			triangles[7] = p.first;
 			triangles[8] = c;
 		}
+
+		if(out != nullptr && valid_edge == 0) {
+			line(*out, triangles[0].toCVPoint(), triangles[1].toCVPoint(), m_color_blue, 1, CV_AA, 0);
+			line(*out, triangles[1].toCVPoint(), triangles[2].toCVPoint(), m_color_blue, 1, CV_AA, 0);
+			line(*out, triangles[2].toCVPoint(), triangles[0].toCVPoint(), m_color_blue, 1, CV_AA, 0);
+
+			line(*out, triangles[3].toCVPoint(), triangles[4].toCVPoint(), m_color_blue, 1, CV_AA, 0);
+			line(*out, triangles[4].toCVPoint(), triangles[5].toCVPoint(), m_color_blue, 1, CV_AA, 0);
+			line(*out, triangles[5].toCVPoint(), triangles[3].toCVPoint(), m_color_blue, 1, CV_AA, 0);
+			
+			line(*out, triangles[6].toCVPoint(), triangles[7].toCVPoint(), m_color_blue, 1, CV_AA, 0);
+			line(*out, triangles[7].toCVPoint(), triangles[8].toCVPoint(), m_color_blue, 1, CV_AA, 0);
+			line(*out, triangles[8].toCVPoint(), triangles[6].toCVPoint(), m_color_blue, 1, CV_AA, 0);
+		}
 	} else {
 		triangles.resize(3);
 		triangles[0] = a;
@@ -420,7 +442,7 @@ Point Compressor::getMaxJoinable(cv::Mat& img, const Point& p, const Point& a) {
 	
 	double step = 1.0 / length(a, p);
 	for(double i = 0.0; i <= 1.0; i += step) {
-		n = p + d * i;
+		n = p + (d * i);
 		n.setP(img, m_config->getMeshWidth(), m_config->getMeshHeight());
 
 		if(isJoinable(img, Edge(p, n))) {
@@ -441,8 +463,9 @@ vector<Point> Compressor::getMaxJoinablesPoints(cv::Mat& img, const Point& p, co
 	
 	double step = 1.0 / length(a, p);
 	for(double i = 0.0; i <= 1.0; i += step) {
-		n = p + d * i;
+		n = p + (d * i);
 		n.setP(img, m_config->getMeshWidth(), m_config->getMeshHeight());
+
 
 		if(isJoinable(img, Edge(p, n))) {
 			res.push_back(n);
@@ -462,10 +485,13 @@ pair<Point, Point> Compressor::getMaxJoinables(cv::Mat& img, const Point& a, con
 
 	uint size_1 = v1.size();
 	uint size_2 = v2.size();
+
 	for(uint i1 = 0; i1 < size_1; ++i1) {
 		for(uint i2 = 0; i2 < size_2; ++i2) {
+
 			Edge e(v1[i1], v2[i2]);
 
+			
 			// add to list length
 			if(isJoinable(img, e)) {
 				l.push_back(make_pair(i1 + i2, e));
@@ -479,9 +505,14 @@ pair<Point, Point> Compressor::getMaxJoinables(cv::Mat& img, const Point& a, con
 		return false;
 	});
 
+
+	if(l.size() == 0)
+		l.push_back(make_pair(0, Edge(a, b)));
+
 	Edge e_r = l.begin()->second;
 	pair<Point, Point> r;
 	r.first = e_r.a;
+	//r.first.a.setP(img, )
 	r.second = e_r.b;
 	return r;
 }

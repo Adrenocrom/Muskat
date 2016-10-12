@@ -49,10 +49,10 @@ public:
 	double	getTangle();
 	double	getTjoin();
 
+	bool	getRefine();
+
 	bool	preBackgroundSubtraction();
 	bool	praBackgroundSubtraction();
-
-	std::string getNameFromConfig();
 
 private:
 	// pointer to mainwindow
@@ -86,6 +86,9 @@ private:
 
 	// quadtree config
 	uint 	m_max_depth;	// max depth
+
+	// do refinement step
+	bool	m_refine;
 
 	// delete background triangles, if low max depth produces errors
 	bool	m_pre_background_subtraction;

@@ -29,6 +29,8 @@ Config::Config(MainWindow* mw) {
 	// default creates just a plane
 	m_max_depth	 = 8;
 
+	m_refine	 = true;
+
 	m_pre_background_subtraction = false;
 	m_pra_background_subtraction = false;
 }
@@ -47,10 +49,11 @@ void Config::setConfig(QJsonObject& jo) {
 	m_grid_type 		= jo["gridType"].toString();
 	m_mesh_percesion 	= jo["meshPercesion"].toString();
 	m_mesh_compression 	= jo["meshCompression"].toInt();
-	m_T_leaf 			= (ushort)((float)jo["Tleaf"].toDouble() * (float)(USHRT_MAX));
-	m_T_internal 		= (ushort)((float)jo["Tinternal"].toDouble() * (float)(USHRT_MAX));
+	m_T_leaf 			= jo["Tleaf"].toDouble();
+	m_T_internal 		= jo["Tinternal"].toDouble();
 	m_T_angle			= jo["Tangle"].toDouble();
 	m_T_join			= jo["Tjoin"].toDouble();
+	m_refine			= jo["refine"].toBool();
 	m_pre_background_subtraction = jo["preBackgroundSubtraction"].toBool();
 	m_pra_background_subtraction = jo["praBackgroundSubtraction"].toBool();
 
@@ -60,25 +63,6 @@ void Config::setConfig(QJsonObject& jo) {
 		m_mesh_height	= mesh_height;
 		m_mw->m_compressor->resizeQuadtree();
 	}
-}
-
-string Config::getNameFromConfig() {
-	stringstream name;
-	name<<"r"<<m_width<<"x"<<m_height<<"_";
-	name<<"m"<<m_mesh_width<<"x"<<m_mesh_height<<"_";
-	name<<"s"<<m_smooth_depth<<"_";
-	name<<"t"<<m_textureCompressionQuality<<"_";
-	name<<"mm"<<m_mesh_mode.toStdString()<<"_";
-	name<<"gt"<<m_grid_type.toStdString()<<"_";
-	name<<"mp"<<m_mesh_percesion.toStdString()<<"_";
-	name<<"md"<<m_max_depth<<"_";
-	name<<"Tl"<<(double)m_T_leaf / (double)(USHRT_MAX)<<"_";
-	name<<"Ti"<<(double)m_T_internal / (double)(USHRT_MAX)<<"_";
-	name<<"Ta"<<m_T_angle<<"_";
-	name<<"Tj"<<m_T_join<<"_";
-	name<<"pre"<<m_pre_background_subtraction<<"_";
-	name<<"pra"<<m_pra_background_subtraction;
-	return name.str();
 }
 
 QJsonObject Config::getConfig() {
@@ -95,10 +79,11 @@ QJsonObject Config::getConfig() {
 	jo["meshPercesion"] 	= m_mesh_percesion;
 	jo["meshCompression"] 	= m_mesh_compression;
 	jo["maxDepth"]	= (int) m_max_depth;
-	jo["Tleaf"]  	= (double) m_T_leaf / (double) (USHRT_MAX);
-	jo["Tinternal"] = (double) m_T_internal / (double) (USHRT_MAX);
+	jo["Tleaf"]  	= m_T_leaf;
+	jo["Tinternal"] = m_T_internal;
 	jo["Tangle"]	= m_T_angle;
 	jo["Tjoin"]		= m_T_join;
+	jo["refine"]	= m_refine;
 	jo["preBackgroundSubtraction"] = m_pre_background_subtraction;
 	jo["praBackgroundSubtraction"] = m_pra_background_subtraction;
 	return jo;
@@ -187,4 +172,8 @@ double Config::getTangle() {
 
 double Config::getTjoin() {
 	return m_T_join;
+}
+
+bool Config::getRefine() {
+	return m_refine;
 }

@@ -2,9 +2,14 @@
 
 using namespace cv;
 
+using namespace boost::filesystem;
+
 Evaluator::Evaluator() {
 	m_cnt 	= 0;
 	m_scene = nullptr;
+	m_messure_id = -1;
+	m_scene_id	 = -1;
+	m_filename   = "res";
 }
 
 Evaluator::~Evaluator() {
@@ -17,26 +22,20 @@ void Evaluator::setScene(Scene* scene) {
 	m_durations.resize(m_scene->m_infos.size());
 }
 
-void Evaluator::runEvaluation(string path) {
+void Evaluator::runEvaluation() {
 	uint r_size = m_results.size();
 	list<ResultEntry> entries;
 	list<ResultEntry> meanEntries;
 	ResultEntry entry;
 
 	cout<<"start evaluation"<<endl;
-	cout<<"create files"<<endl;
-/*
-	system(string("mkdir " + path).c_str());
-	system(string("cd " + path).c_str());
-	system(string(""))
-*/
 	for(uint i = 0; i < r_size; ++i) {
 		entry.PSNR  = getPSNR(m_scene->m_fbs[i].rgb, m_results[i]);
 		entry.MSSIM = getMSSIM(m_scene->m_fbs[i].rgb, m_results[i]);
 		entry.angle = m_scene->m_infos[i].offangle;
 		entries.push_back(entry);
 
-		QString filename = "res/frame_0"+ QString::number(i) +".png";
+		QString filename = QString(m_filename.c_str()) + "/frame_0"+ QString::number(i) +".png";
 		imwrite(filename.toStdString(), m_results[i]);
 	}
 
@@ -78,7 +77,7 @@ void Evaluator::runEvaluation(string path) {
 	//system("cd results");
 
 	ofstream file;
-  	file.open("res/results.tex");
+  	file.open(m_filename + "/results.tex");
 
 	file<< "\\begin{filecontents}{div_data.csv}\n";
 	file<< "a,p,r,g,b,m\n";
@@ -128,22 +127,25 @@ void Evaluator::runEvaluation(string path) {
 	//system("pdflatex res/auto.tex");
 }
 
-void Evaluator::newMessure() {
-	m_cnt = 0;
+void Evaluator::newMessure(int sceneId, int messureId, const string& name) {
+	m_cnt 			= 0;
+	m_min_duration 	= -1.0;
+	m_scene_id		= sceneId;
+	m_messure_id 	= messureId;
 
 	// mkdir
-	system("mkdir results");
-	system("cd results");
-	system("mkdir 0");
-	system("cd ..");
+	string filename = "results/" + QString::number(m_scene_id).toStdString() + "/" + QString::number(m_messure_id).toStdString() + "_" + name;
+	m_filename = filename;
 
+	path p(filename);
+	create_directories(p);
 }
 
 void Evaluator::addResult(int id, cv::Mat* img, double duration) {
 	m_results[id] = *img;
 	m_durations[id] = duration;
 
-	if(m_min_duration > duration || m_min_duration == -1.0)
+	if(m_min_duration > duration || m_min_duration < 0.0)
 		m_min_duration = duration;
 
 	if(m_max_duration < duration)
@@ -158,6 +160,10 @@ bool Evaluator::hasResults() {
 	if(m_cnt == m_scene->m_infos.size())
 		return true;
 	return false;
+}
+
+int Evaluator::getEvaluationId() {
+	return m_messure_id;
 }
 
 double Evaluator::getPSNR(const Mat& I1, const Mat& I2)
