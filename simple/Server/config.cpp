@@ -177,3 +177,9 @@ double Config::getTjoin() {
 bool Config::getRefine() {
 	return m_refine;
 }
+
+bool Config::useDelaunay() {
+	if(m_mesh_mode == QString("delaunay"))
+		return true;
+	return false;
+}

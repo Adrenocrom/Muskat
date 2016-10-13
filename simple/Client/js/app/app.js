@@ -73,6 +73,13 @@ $(document).ready(function() {
 	});
 
 	$( '#button_run_scene' ).click(function() {
+		g_scene_list_index = 0;
+
+		setScene(g_playlist.scenes[g_scene_list[g_scene_list_index]]);
+		loadSceneMessage(g_scene_list[g_scene_list_index]);
+		g_scene_index = g_scene_list[g_scene_list_index];
+		getFrameMessage(0);
+
 		runEvaluation(0);
 	});
 
@@ -206,6 +213,8 @@ $(document).ready(function() {
 	var g_time_start;
 	var g_time_end;
 	var g_evaluator;
+	var g_scene_list 		= [2, 4, 3, 5, 0, 1];
+	var g_scene_list_index 	= 0;
 
 	initConfig();
 	
@@ -266,7 +275,8 @@ $(document).ready(function() {
 		g_config = new MuskatConfig(updateConfig);
 
 		g_evaluator = new MuskatEvaluator();
-		g_evaluator.add(new MuskatConfig(null));
+
+		$('#label_evaluation').text("0 /" + g_evaluator.length);
 	}
 
 	function updateConfig() {
@@ -529,6 +539,8 @@ $(document).ready(function() {
 	function runEvaluation(id) {
 		g_config = g_evaluator.getConfig(id);
 		updateConfig();
+		updateConfig();
+		updateConfig();
 		newMessureMessage(g_scene_index, id, g_config.name);
 	}
 
@@ -589,9 +601,24 @@ $(document).ready(function() {
 
 				if(typeof obj.result.messureReady !== 'undefined') {
 					var index = obj.result.messureReady + 1;
+					$('#label_evaluation').text(index + " / " + g_evaluator.length);
+					
 					if(index < g_evaluator.length)
 						runEvaluation(index);
-					else alert("Evaluation Done!")
+					else  {
+						g_scene_list_index++;
+
+						if(g_scene_list_index < g_scene_list.length) {
+							setScene(g_playlist.scenes[g_scene_list[g_scene_list_index]]);
+							loadSceneMessage(g_scene_list[g_scene_list_index]);
+							g_scene_index = g_scene_list[g_scene_list_index];
+							getFrameMessage(0);
+							
+							runEvaluation(0);
+						} else { 
+							alert("Evaluation Done!");
+						}
+					}
 				}
             };
 
@@ -655,9 +682,12 @@ $(document).ready(function() {
 
 	function newMessureMessage(scene_id, messure_id, name) {
 		var params = {
-			"sceneId"	: scene_id,
-			"messureId" : messure_id,
-			"name" 		: name
+			"sceneId"		: scene_id,
+			"messureId" 	: messure_id,
+			"name" 			: name,
+			"numVertices"	: g_mesh.getNumVertices(),
+			"numIndices"	: g_mesh.getNumIndices(),
+			"numTriangles"	: g_mesh.getNumTriangles()
 		};
 		sendMessage("newMessure", params);
 	}

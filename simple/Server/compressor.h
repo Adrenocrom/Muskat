@@ -100,6 +100,8 @@ public:
 
 	QJsonObject compressFrame(FrameInfo& info, FrameBuffer& fb);	
 	
+	cv::Mat*	getDelaunayImage();
+
 	// resize quadtree
 	void resizeQuadtree();
 
@@ -132,7 +134,6 @@ private:
 	void compressMesh8Bit(QJsonObject& jo, cv::Mat& img);
 	void compressMesh16Bit(QJsonObject& jo, cv::Mat& img);
 	void compressMeshDelaunay(QJsonObject& jo, cv::Mat& img);
-
 
 	vector<cv::Vec6f> delaunay(cv::Mat& img, std::list<cv::Point2f>& seeds);
 

@@ -40,7 +40,7 @@ MainWindow::MainWindow() {
 	m_config		= nullptr;
 	m_compressor	= nullptr;
 	m_evaluator		= nullptr;
-	m_evaluator		= new Evaluator;
+	m_evaluator		= nullptr;
 	m_filerenderer	= nullptr;
 	m_filerenderer	= new FileRenderer;
 }
@@ -160,6 +160,7 @@ void MainWindow::start_server() {
 		m_playlist 		= new Playlist(this, m_scenes_dir, m_scene_suffix);
 		m_config		= new Config(this);
 		m_compressor	= new Compressor(m_config);
+		m_evaluator		= new Evaluator(m_config, m_compressor);
 		m_filerenderer->setScene(&m_playlist->m_scenes[0]);
 		
 		m_widget_stacked->setCurrentIndex(2);

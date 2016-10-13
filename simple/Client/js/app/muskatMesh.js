@@ -227,4 +227,16 @@ class MuskatMesh {
 		this._texCoords.itemSize = 2;
 		this._texCoords.numItems = array.length;
 	}
+
+	getNumVertices() {
+		return this._vertices.numItems;
+	}
+
+	getNumIndices() {
+		return this._indices.numItems;
+	}
+
+	getNumTriangles() {
+		return this._indices.numItems / 3;
+	}
 }

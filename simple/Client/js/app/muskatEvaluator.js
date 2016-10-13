@@ -3,12 +3,13 @@ class MuskatEvaluator {
 		this._evaluation = [];
 	
 		// Full Mesh
+		
 		var gridTypes = ["default", "cookie_cutter", "isometric"];
 		var meshPercision = ["8bit", "16bit"];
-		for(var m = 1; m <= 4; m += m) {
+		for(var m = 1; m <= 1; m += m) {
 			for(var g = 0; g < gridTypes.length; g++) {
 				for(var p = 0; p < meshPercision.length; p++) {
-					for(var i = 0.0; i <= 1.0; i += 0.1) {
+					for(var i = 1.0; i > 0.0; i -= 0.1) {
 						var c1 = new MuskatConfig(this.nullFunction);
 						c1.meshWidth 		= c1.width 	/ m;
 						c1.meshHeight 		= c1.height / m;
@@ -29,21 +30,69 @@ class MuskatEvaluator {
 					}
 				}
 			}
+		}
+		
+		// Delaunay Mesh
+		for(var d = 6; d <= 10; d++) {
+			for(var l = 0.0; l <= 1.0; l += 0.1) {
+				for(var i = 0.0; i <= l; i += 0.1) {
+					var c7 = new MuskatConfig(this.nullFunction);
+					c7.meshMode = "delaunay";
+					c7.maxDepth = d;
+					c7.Tleaf	 = l;
+					c7.Tinternal = i;
+					c7.refine	 = false;
+					c7.preBackgroundSubtraction = false;
+					c7.praBackgroundSubtraction = false;
+					this.add(c7);
 
-			var config = new MuskatConfig(this.nullFunction);
-			config.mesh_mode = "delaunay";
+					var c8 = new MuskatConfig(this.nullFunction);
+					c8.meshMode = "delaunay";
+					c8.maxDepth = d;
+					c8.Tleaf	 = l;
+					c8.Tinternal = i;
+					c8.refine	 = false;
+					c8.preBackgroundSubtraction = false;
+					c8.praBackgroundSubtraction = true;
+					this.add(c8);
+								
+					var c9 = new MuskatConfig(this.nullFunction);
+					c9.meshMode = "delaunay";
+					c9.maxDepth = d;
+					c9.Tleaf	 = l;
+					c9.Tinternal = i;
+					c9.refine	 = false;
+					c9.preBackgroundSubtraction = true;
+					c9.praBackgroundSubtraction = false;
+					this.add(c9);
+
+					var c10 = new MuskatConfig(this.nullFunction);
+					c10.meshMode = "delaunay";
+					c10.maxDepth = d;
+					c10.Tleaf	 = l;
+					c10.Tinternal = i;
+					c10.refine	 = false;
+					c10.preBackgroundSubtraction = true;
+					c10.praBackgroundSubtraction = true;
+					this.add(c10);
+				}
+			}
+		}
+/*
+		var config = new MuskatConfig(this.nullFunction);
+		config.mesh_mode = "delaunay";
 			
-			var max_depth = 8;
-			if(m == 1) max_depth = 10;
-			if(m == 2) max_depth = 9;
-			if(m == 4) max_depth = 8;
+		var max_depth = 8;
+		if(m == 1) max_depth = 10;
+		if(m == 2) max_depth = 9;
+		if(m == 4) max_depth = 8;
 
-			for(var d = 1; d <= max_depth; d++) {
-				for(var l = 0.0; l <= 1.0; l += 0.1) {
-					for(var i = 0.0; i <= l; i += 0.1) {
-						for(var a = 0.0; a <= 200.0; a += 20.0) {
-							for(var j = 0.0; j <= 2.0; j += 1.0) {
-								var c3 = new MuskatConfig(this.nullFunction);
+		for(var d = 1; d <= max_depth; d++) {
+			for(var l = 0.0; l <= 1.0; l += 0.1) {
+				for(var i = 0.0; i <= l; i += 0.1) {
+					for(var a = 0.0; a <= 200.0; a += 20.0) {
+						for(var j = 0.0; j <= 2.0; j += 1.0) {
+							var c3 = new MuskatConfig(this.nullFunction);
 								c3.mesh_mode = "delaunay";
 								c3.max_depth = d;
 								c3.Tleaf	 = l;
@@ -135,7 +184,7 @@ class MuskatEvaluator {
 					}
 				}
 			}
-		}
+		}*/
 	}
 
 	add(config) {

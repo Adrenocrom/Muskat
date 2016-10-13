@@ -106,7 +106,8 @@ class MuskatConfig {
 			name += "_"+ this.Tgrad;
 		} else {
 			name += "Delaunay/D"+this.maxDepth+"_L"+this.Tleaf+"_I"+this.Tinternal;
-			name += "_A"+ this.Tangle +"_J"+ this.Tjoin;
+	
+			if(this.refine) name += "_A"+ this.Tangle +"_J"+ this.Tjoin;
 
 			if(this.preBackgroundSubtraction) name += "_pre";
 			if(this.praBackgroundSubtraction) name += "_pra";

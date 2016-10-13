@@ -300,137 +300,149 @@ vector<Point> Compressor::splitTriangle(cv::Mat& img, const Point& a, const Poin
 	Edge bc(b, c);
 	Edge ca(c, a);
 
-	vector<Edge*> invalid_edges;
-	int			  valid_edge = -1;
+	if(m_config->getRefine()) {
+		vector<Edge*> invalid_edges;
+		int			  valid_edge = -1;
 
-	if(out == nullptr) {
-		if(isValid(ab)) valid_edge = 0;
-		else invalid_edges.push_back(&ab);
-		if(isValid(bc)) valid_edge = 1;
-		else invalid_edges.push_back(&bc);
-		if(isValid(ca)) valid_edge = 2;
-		else invalid_edges.push_back(&ca);
-	}
-	else {
-		if(isValid(ab)) {
-			valid_edge = 0;
-			line(*out, a.toCVPoint(), b.toCVPoint(), m_color_edge, 1, CV_AA, 0);
-		} else {
-			invalid_edges.push_back(&ab);
-			line(*out, a.toCVPoint(), b.toCVPoint(), m_color_red, 1, CV_AA, 0);
+		if(out == nullptr) {
+			if(isValid(ab)) valid_edge = 0;
+			else invalid_edges.push_back(&ab);
+			if(isValid(bc)) valid_edge = 1;
+			else invalid_edges.push_back(&bc);
+			if(isValid(ca)) valid_edge = 2;
+			else invalid_edges.push_back(&ca);
 		}
-		if(isValid(bc)) {
-			valid_edge = 1;
-			line(*out, b.toCVPoint(), c.toCVPoint(), m_color_edge, 1, CV_AA, 0);
-		} else {
-			invalid_edges.push_back(&bc);
-			line(*out, b.toCVPoint(), c.toCVPoint(), m_color_red, 1, CV_AA, 0);
+		else {
+			if(isValid(ab)) {
+				valid_edge = 0;
+				line(*out, a.toCVPoint(), b.toCVPoint(), m_color_edge, 1, CV_AA, 0);
+			} else {
+				invalid_edges.push_back(&ab);
+				line(*out, a.toCVPoint(), b.toCVPoint(), m_color_red, 1, CV_AA, 0);
+			}
+			if(isValid(bc)) {
+				valid_edge = 1;
+				line(*out, b.toCVPoint(), c.toCVPoint(), m_color_edge, 1, CV_AA, 0);
+			} else {
+				invalid_edges.push_back(&bc);
+				line(*out, b.toCVPoint(), c.toCVPoint(), m_color_red, 1, CV_AA, 0);
+			}
+			if(isValid(ca)) {
+				valid_edge = 2;
+				line(*out, c.toCVPoint(), a.toCVPoint(), m_color_edge, 1, CV_AA, 0);
+			} else {
+				invalid_edges.push_back(&ca);
+				line(*out, c.toCVPoint(), a.toCVPoint(), m_color_red, 1, CV_AA, 0);
+			}
 		}
-		if(isValid(ca)) {
-			valid_edge = 2;
-			line(*out, c.toCVPoint(), a.toCVPoint(), m_color_edge, 1, CV_AA, 0);
-		} else {
-			invalid_edges.push_back(&ca);
-			line(*out, c.toCVPoint(), a.toCVPoint(), m_color_red, 1, CV_AA, 0);
-		}
-	}
 
-	int i_size = invalid_edges.size();
-	if(!m_config->getRefine()) 
-		i_size = -1;
-
-	if(i_size == 3) {
-		triangles.resize(9);
-		triangles[0] = a;
-		triangles[1] = getMaxJoinable(img, a, b);
-		triangles[2] = getMaxJoinable(img, a, c);
-
-		triangles[3] = b;
-		triangles[4] = getMaxJoinable(img, b, c);
-		triangles[5] = getMaxJoinable(img, b, c);
-
-		triangles[6] = c;
-		triangles[7] = getMaxJoinable(img, c, a);
-		triangles[8] = getMaxJoinable(img, c, b);
-
-		if(out != nullptr) {
-			line(*out, triangles[0].toCVPoint(), triangles[1].toCVPoint(), m_color_green, 1, CV_AA, 0);
-			line(*out, triangles[1].toCVPoint(), triangles[2].toCVPoint(), m_color_green, 1, CV_AA, 0);
-			line(*out, triangles[2].toCVPoint(), triangles[0].toCVPoint(), m_color_green, 1, CV_AA, 0);
-
-			line(*out, triangles[3].toCVPoint(), triangles[4].toCVPoint(), m_color_green, 1, CV_AA, 0);
-			line(*out, triangles[4].toCVPoint(), triangles[5].toCVPoint(), m_color_green, 1, CV_AA, 0);
-			line(*out, triangles[5].toCVPoint(), triangles[3].toCVPoint(), m_color_green, 1, CV_AA, 0);
-			
-			line(*out, triangles[6].toCVPoint(), triangles[7].toCVPoint(), m_color_green, 1, CV_AA, 0);
-			line(*out, triangles[7].toCVPoint(), triangles[8].toCVPoint(), m_color_green, 1, CV_AA, 0);
-			line(*out, triangles[8].toCVPoint(), triangles[6].toCVPoint(), m_color_green, 1, CV_AA, 0);
-		}
-	}
-	if(i_size == 2) {
-		triangles.resize(9);
-		if(valid_edge == 0) {
-			triangles[0] = c;
-			triangles[1] = getMaxJoinable(img, c, a);
-			triangles[2] = getMaxJoinable(img, c, b);
-
-			pair<Point, Point> p = getMaxJoinables(img, b, a, c);
-			triangles[3] = a;
-			triangles[4] = p.first;
-			triangles[5] = p.second;
-
-			triangles[6] = b;
-			triangles[7] = p.first;
-			triangles[8] = a;
-		}
-		else if(valid_edge == 1) {
+		int i_size = invalid_edges.size();
+		if(i_size == 3) {
+			triangles.resize(9);
 			triangles[0] = a;
 			triangles[1] = getMaxJoinable(img, a, b);
 			triangles[2] = getMaxJoinable(img, a, c);
 
-			pair<Point, Point> p = getMaxJoinables(img, c, b, a);
 			triangles[3] = b;
-			triangles[4] = p.first;
-			triangles[5] = p.second;
+			triangles[4] = getMaxJoinable(img, b, c);
+			triangles[5] = getMaxJoinable(img, b, c);
 
 			triangles[6] = c;
-			triangles[7] = p.first;
-			triangles[8] = b;
-		}
-		else if(valid_edge == 2) {
-			triangles[0] = b;
-			triangles[1] = getMaxJoinable(img, b, c);
-			triangles[2] = getMaxJoinable(img, b, a);
+			triangles[7] = getMaxJoinable(img, c, a);
+			triangles[8] = getMaxJoinable(img, c, b);
 
-			pair<Point, Point> p = getMaxJoinables(img, a, c, b);
-			triangles[3] = c;
-			triangles[4] = p.first;
-			triangles[5] = p.second;
+			if(out != nullptr) {
+				line(*out, triangles[0].toCVPoint(), triangles[1].toCVPoint(), m_color_green, 1, CV_AA, 0);
+				line(*out, triangles[1].toCVPoint(), triangles[2].toCVPoint(), m_color_green, 1, CV_AA, 0);
+				line(*out, triangles[2].toCVPoint(), triangles[0].toCVPoint(), m_color_green, 1, CV_AA, 0);
 
-			triangles[6] = a;
-			triangles[7] = p.first;
-			triangles[8] = c;
-		}
-
-		if(out != nullptr && valid_edge == 0) {
-			line(*out, triangles[0].toCVPoint(), triangles[1].toCVPoint(), m_color_blue, 1, CV_AA, 0);
-			line(*out, triangles[1].toCVPoint(), triangles[2].toCVPoint(), m_color_blue, 1, CV_AA, 0);
-			line(*out, triangles[2].toCVPoint(), triangles[0].toCVPoint(), m_color_blue, 1, CV_AA, 0);
-
-			line(*out, triangles[3].toCVPoint(), triangles[4].toCVPoint(), m_color_blue, 1, CV_AA, 0);
-			line(*out, triangles[4].toCVPoint(), triangles[5].toCVPoint(), m_color_blue, 1, CV_AA, 0);
-			line(*out, triangles[5].toCVPoint(), triangles[3].toCVPoint(), m_color_blue, 1, CV_AA, 0);
+				line(*out, triangles[3].toCVPoint(), triangles[4].toCVPoint(), m_color_green, 1, CV_AA, 0);
+				line(*out, triangles[4].toCVPoint(), triangles[5].toCVPoint(), m_color_green, 1, CV_AA, 0);
+				line(*out, triangles[5].toCVPoint(), triangles[3].toCVPoint(), m_color_green, 1, CV_AA, 0);
 			
-			line(*out, triangles[6].toCVPoint(), triangles[7].toCVPoint(), m_color_blue, 1, CV_AA, 0);
-			line(*out, triangles[7].toCVPoint(), triangles[8].toCVPoint(), m_color_blue, 1, CV_AA, 0);
-			line(*out, triangles[8].toCVPoint(), triangles[6].toCVPoint(), m_color_blue, 1, CV_AA, 0);
+				line(*out, triangles[6].toCVPoint(), triangles[7].toCVPoint(), m_color_green, 1, CV_AA, 0);
+				line(*out, triangles[7].toCVPoint(), triangles[8].toCVPoint(), m_color_green, 1, CV_AA, 0);
+				line(*out, triangles[8].toCVPoint(), triangles[6].toCVPoint(), m_color_green, 1, CV_AA, 0);
+			}
+		}
+		if(i_size == 2) {
+			triangles.resize(9);
+			
+			if(valid_edge == 0) {
+				triangles[0] = c;
+				triangles[1] = getMaxJoinable(img, c, a);
+				triangles[2] = getMaxJoinable(img, c, b);
+
+				pair<Point, Point> p = getMaxJoinables(img, b, a, c);
+				triangles[3] = a;
+				triangles[4] = p.first;
+				triangles[5] = p.second;
+
+				triangles[6] = b;
+				triangles[7] = p.first;
+				triangles[8] = a;
+			}
+			else if(valid_edge == 1) {
+				triangles[0] = a;
+				triangles[1] = getMaxJoinable(img, a, b);
+				triangles[2] = getMaxJoinable(img, a, c);
+
+				pair<Point, Point> p = getMaxJoinables(img, c, b, a);
+				triangles[3] = b;
+				triangles[4] = p.first;
+				triangles[5] = p.second;
+
+				triangles[6] = c;
+				triangles[7] = p.first;
+				triangles[8] = b;
+			}
+			else if(valid_edge == 2) {
+				triangles[0] = b;
+				triangles[1] = getMaxJoinable(img, b, c);
+				triangles[2] = getMaxJoinable(img, b, a);
+
+				pair<Point, Point> p = getMaxJoinables(img, a, c, b);
+				triangles[3] = c;
+				triangles[4] = p.first;
+				triangles[5] = p.second;
+
+				triangles[6] = a;
+				triangles[7] = p.first;
+				triangles[8] = c;
+			}
+
+			if(out != nullptr) {
+				line(*out, triangles[0].toCVPoint(), triangles[1].toCVPoint(), m_color_blue, 1, CV_AA, 0);
+				line(*out, triangles[1].toCVPoint(), triangles[2].toCVPoint(), m_color_blue, 1, CV_AA, 0);
+				line(*out, triangles[2].toCVPoint(), triangles[0].toCVPoint(), m_color_blue, 1, CV_AA, 0);
+
+				line(*out, triangles[3].toCVPoint(), triangles[4].toCVPoint(), m_color_blue, 1, CV_AA, 0);
+				line(*out, triangles[4].toCVPoint(), triangles[5].toCVPoint(), m_color_blue, 1, CV_AA, 0);
+				line(*out, triangles[5].toCVPoint(), triangles[3].toCVPoint(), m_color_blue, 1, CV_AA, 0);
+			
+				line(*out, triangles[6].toCVPoint(), triangles[7].toCVPoint(), m_color_blue, 1, CV_AA, 0);
+				line(*out, triangles[7].toCVPoint(), triangles[8].toCVPoint(), m_color_blue, 1, CV_AA, 0);
+				line(*out, triangles[8].toCVPoint(), triangles[6].toCVPoint(), m_color_blue, 1, CV_AA, 0);
+			}
+		} else {
+			triangles.resize(3);
+			triangles[0] = a;
+			triangles[1] = b;
+			triangles[2] = c;
 		}
 	} else {
 		triangles.resize(3);
 		triangles[0] = a;
 		triangles[1] = b;
 		triangles[2] = c;
+
+		if(out != nullptr) {
+			line(*out, a.toCVPoint(), b.toCVPoint(), m_color_edge, 1, CV_AA, 0);
+			line(*out, b.toCVPoint(), c.toCVPoint(), m_color_edge, 1, CV_AA, 0);
+			line(*out, c.toCVPoint(), a.toCVPoint(), m_color_edge, 1, CV_AA, 0);
+		}
 	}
+		
 
 	return triangles;
 }
@@ -515,4 +527,8 @@ pair<Point, Point> Compressor::getMaxJoinables(cv::Mat& img, const Point& a, con
 	//r.first.a.setP(img, )
 	r.second = e_r.b;
 	return r;
+}
+
+cv::Mat* Compressor::getDelaunayImage() {
+	return &m_delaunay_image;
 }

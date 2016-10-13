@@ -38,6 +38,7 @@ public:
 	QString getMeshPercesion();
 
 	int		getMeshCompression();
+	bool	useDelaunay();
 
 	// quadtree getter
 	uint	getMaxDepth();

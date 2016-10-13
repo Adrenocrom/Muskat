@@ -151,9 +151,17 @@ RPCResponse JsonRPC::newMessure(RPCRequest& request) {
 	int messure_id	= request.params["messureId"].toInt();
 	QString name 	= request.params["name"].toString();
 
+	int num_vertices	= request.params["numVertices"].toInt();
+	int	num_indices 	= request.params["numIndices"].toInt();
+	int num_triangles	= request.params["numTriangles"].toInt();
+	
+
 	m_mainWindow->m_evaluator->newMessure(scene_id,
 										  messure_id, 
-										  name.toStdString());
+										  name.toStdString(),
+										  num_vertices,
+										  num_indices,
+										  num_triangles);
 
 	QJsonObject jo;
 	jo["newMessureReady"] = true;

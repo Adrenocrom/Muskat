@@ -4,12 +4,14 @@ using namespace cv;
 
 using namespace boost::filesystem;
 
-Evaluator::Evaluator() {
+Evaluator::Evaluator(Config* config, Compressor* compressor) {
 	m_cnt 	= 0;
 	m_scene = nullptr;
 	m_messure_id = -1;
 	m_scene_id	 = -1;
 	m_filename   = "res";
+	m_config	 = config;
+	m_compressor = compressor;
 }
 
 Evaluator::~Evaluator() {
@@ -71,13 +73,15 @@ void Evaluator::runEvaluation() {
 	}
 
 	m_mean_duration /= m_cnt;
-	
-	// create folder from Config
-	//system("mkdir results");
-	//system("cd results");
+	cout<<"Folder: "<<m_filename<<endl;
 
 	ofstream file;
   	file.open(m_filename + "/results.tex");
+
+	file<<"\\begin{filecontents}{div_mesh_infos.csv}\n";
+	file<<"v,i,t\n";
+	file<<m_num_vertices<<","<<m_num_indices<<","<<m_num_triangles<<"\n";
+	file<<"\\end{filecontents}\n\n";
 
 	file<< "\\begin{filecontents}{div_data.csv}\n";
 	file<< "a,p,r,g,b,m\n";
@@ -121,20 +125,28 @@ void Evaluator::runEvaluation() {
 	file<< m_min_duration <<","<< m_max_duration << "," << m_mean_duration<<"\n";
 	file<< "\\end{filecontents}\n\n";
 	file.close();
+
+	// if delaunay save image
+	if(m_config->useDelaunay())
+		cv::imwrite(m_filename + "/delaunay.png" , *m_compressor->getDelaunayImage());
 	
 	cout<<"end evaluation"<<endl;
 
 	//system("pdflatex res/auto.tex");
 }
 
-void Evaluator::newMessure(int sceneId, int messureId, const string& name) {
+void Evaluator::newMessure(int sceneId, int messureId, const string& name, int num_vertices, int num_indices, int num_triangles) {
 	m_cnt 			= 0;
 	m_min_duration 	= -1.0;
 	m_scene_id		= sceneId;
 	m_messure_id 	= messureId;
 
+	m_num_vertices	= num_vertices;
+	m_num_indices	= num_indices;
+	m_num_triangles	= num_triangles;
+
 	// mkdir
-	string filename = "results/" + QString::number(m_scene_id).toStdString() + "/" + QString::number(m_messure_id).toStdString() + "_" + name;
+	string filename = "../results/" + QString::number(m_scene_id).toStdString() + "/" + name;
 	m_filename = filename;
 
 	path p(filename);
