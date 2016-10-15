@@ -58,6 +58,7 @@ void Config::setConfig(QJsonObject& jo) {
 	m_pra_background_subtraction = jo["praBackgroundSubtraction"].toBool();
 
 	if(maxDepth != m_max_depth || mesh_width != m_mesh_width || mesh_height != m_mesh_height) {
+		cout<<"NOW"<<endl;
 		m_max_depth 	= maxDepth;
 		m_mesh_width	= mesh_width;
 		m_mesh_height	= mesh_height;

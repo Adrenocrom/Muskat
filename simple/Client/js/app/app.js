@@ -223,7 +223,7 @@ $(document).ready(function() {
 	var g_time_start;
 	var g_time_end;
 	var g_evaluator;
-	var g_scene_list 		= [4,2];//2,4,3,5,0,1];
+	var g_scene_list 		= [2,4,5,3,0,1];//2,4,3,5,0,1];
 	var g_scene_list_index 	= 0;
 
 	initConfig();
@@ -289,6 +289,8 @@ $(document).ready(function() {
 
 	function updateConfig() {
 		setConfigMessage();
+		if(g_config.meshMode == "full")
+			resize(g_config.meshWidth, g_config.meshWidth);
 		getFrameMessage(0);
 	}
 

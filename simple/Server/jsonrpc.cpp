@@ -19,8 +19,6 @@ void JsonRPC::parseMessage(QWebSocket* client, QString msg) {
     request.params  = reqObj["params"].toObject();
     request.id      = reqObj["id"].toInt();
 
-	cout<<"id: "<<request.id<<" | "<<request.method.toStdString()<<endl;
-
 	if(request.method == "getPlaylist") {
 		response = getPlaylist(request);
 	}

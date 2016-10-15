@@ -59,7 +59,7 @@ void Compressor::compressMesh(QJsonObject& jo, FrameBuffer& fb) {
 	cv::Mat img;
 
 	if(m_config->hasDifferentSize()) {
-		cv::resize(fb.depth, res, cv::Size(m_config->getMeshWidth(), m_config->getMeshHeight()));
+		cv::resize(fb.depth, res, cv::Size(m_config->getMeshWidth(), m_config->getMeshHeight()), 0, 0, cv::INTER_CUBIC);
 		
 		if(m_config->getSmoothDepth())
 			cv::medianBlur ( res, img, 3 );
