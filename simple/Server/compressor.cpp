@@ -69,7 +69,7 @@ void Compressor::compressMesh(QJsonObject& jo, FrameBuffer& fb) {
 
 
 	if(m_config->getMeshMode() == "full") {
-		if(m_config->getMeshPercesion() == "8bit") {
+		if(m_config->getMeshPrecision() == "8bit") {
 			compressMesh8Bit(jo, img);
 		} else {
 			compressMesh16Bit(jo, img);

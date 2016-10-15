@@ -17,7 +17,7 @@ Config::Config(MainWindow* mw) {
 
 	m_mesh_mode = "full";
 	m_grid_type = "default";
-	m_mesh_percesion = "8bit";
+	m_mesh_precision = "8bit";
 
 	m_mesh_compression = 1;
 
@@ -47,10 +47,10 @@ void Config::setConfig(QJsonObject& jo) {
 	m_textureCompressionQuality	= jo["textureCompressionQuality"].toInt();
 	m_mesh_mode 		= jo["meshMode"].toString();
 	m_grid_type 		= jo["gridType"].toString();
-	m_mesh_percesion 	= jo["meshPercesion"].toString();
+	m_mesh_precision 	= jo["meshPrecision"].toString();
 	m_mesh_compression 	= jo["meshCompression"].toInt();
-	m_T_leaf 			= jo["Tleaf"].toDouble();
-	m_T_internal 		= jo["Tinternal"].toDouble();
+	m_T_leaf 			= (ushort)(jo["Tleaf"].toDouble()     * (double)(USHRT_MAX));
+	m_T_internal 		= (ushort)(jo["Tinternal"].toDouble() * (double)(USHRT_MAX));
 	m_T_angle			= jo["Tangle"].toDouble();
 	m_T_join			= jo["Tjoin"].toDouble();
 	m_refine			= jo["refine"].toBool();
@@ -76,11 +76,11 @@ QJsonObject Config::getConfig() {
 	jo["textureCompressionQuality"]	= m_textureCompressionQuality;
 	jo["meshMode"]	= m_mesh_mode;
 	jo["gridType"]	= m_grid_type;
-	jo["meshPercesion"] 	= m_mesh_percesion;
+	jo["meshPrecision"] 	= m_mesh_precision;
 	jo["meshCompression"] 	= m_mesh_compression;
 	jo["maxDepth"]	= (int) m_max_depth;
-	jo["Tleaf"]  	= m_T_leaf;
-	jo["Tinternal"] = m_T_internal;
+	jo["Tleaf"]		= (double) m_T_leaf 	/ (double) (USHRT_MAX);
+	jo["Tinternal"] = (double) m_T_internal / (double) (USHRT_MAX);
 	jo["Tangle"]	= m_T_angle;
 	jo["Tjoin"]		= m_T_join;
 	jo["refine"]	= m_refine;
@@ -138,8 +138,8 @@ QString Config::getGridType() {
 	return m_grid_type;
 }
 
-QString Config::getMeshPercesion() {
-	return m_mesh_percesion;
+QString Config::getMeshPrecision() {
+	return m_mesh_precision;
 }
 
 int Config::getMeshCompression() {

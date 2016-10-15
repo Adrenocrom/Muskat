@@ -4,36 +4,34 @@ class MuskatEvaluator {
 	
 		// Full Mesh
 		
-		var gridTypes = ["default", "cookie_cutter", "isometric"];
-		var meshPercision = ["8bit", "16bit"];
-		for(var m = 1; m <= 1; m += m) {
-			for(var g = 0; g < gridTypes.length; g++) {
-				for(var p = 0; p < meshPercision.length; p++) {
-					for(var i = 1.0; i > 0.0; i -= 0.1) {
-						var c1 = new MuskatConfig(this.nullFunction);
-						c1.meshWidth 		= c1.width 	/ m;
-						c1.meshHeight 		= c1.height / m;
-						c1.gridType			= gridTypes[g];
-						c1.meshPercision	= meshPercision[p];
-						c1.Tgrad 			= i;
-						c1.fivePass			= true;
-						var c2 = new MuskatConfig(this.nullFunction);
-						c2.meshWidth 		= c2.width 	/ m;
-						c2.meshHeight 		= c2.height / m;
-						c2.gridType			= gridTypes[g];
-						c2.meshPercision	= meshPercision[p];
-						c2.Tgrad 			= i;
-						c2.fivePass			= false;
-
-						this.add(c1);
-						this.add(c2);
-					}
+		var gridTypes 		= ["default", "cookie_cutter", "isometric"];
+		var meshPrecision 	= ["16bit", "8bit"];
+		var gradients 		= [1.0, 0.7, 0.5, 0.2, 0.1];
+		for(var m = 1; m <= 4; m += m) {
+			for(var p = 0; p < meshPrecision.length; p++) {
+				for(var g = 0; g < gradients.length; g++) {
+					var c1 = new MuskatConfig(this.nullFunction);
+					c1.meshWidth 		= c1.width 	/ m;
+					c1.meshHeight 		= c1.height / m;
+					c1.gridType			= gridTypes[0];
+					c1.meshPrecision	= meshPrecision[p];
+					c1.Tgrad 			= gradients[g];
+					c1.fivePass			= true;
+					var c2 = new MuskatConfig(this.nullFunction);
+					c2.meshWidth 		= c2.width 	/ m;
+					c2.meshHeight 		= c2.height / m;
+					c2.gridType			= gridTypes[0];
+					c2.meshPrecision	= meshPrecision[p];
+					c2.Tgrad 			= gradients[g];
+					c2.fivePass			= false;
+					this.add(c1);
+					this.add(c2);
 				}
 			}
 		}
 		
 		// Delaunay Mesh
-		for(var d = 6; d <= 10; d++) {
+		for(var d = 8; d <= 8; d++) {
 			for(var l = 0.0; l <= 1.0; l += 0.1) {
 				for(var i = 0.0; i <= l; i += 0.1) {
 					var c7 = new MuskatConfig(this.nullFunction);

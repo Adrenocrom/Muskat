@@ -78,12 +78,12 @@ void Evaluator::runEvaluation() {
 	ofstream file;
   	file.open(m_filename + "/results.tex");
 
-	file<<"\\begin{filecontents}{div_mesh_infos.csv}\n";
+	file<<"\\begin{filecontents}{div_mesh_infos_"<<m_scene_id<<"_"<<m_short_name<<".csv}\n";
 	file<<"v,i,t\n";
 	file<<m_num_vertices<<","<<m_num_indices<<","<<m_num_triangles<<"\n";
 	file<<"\\end{filecontents}\n\n";
 
-	file<< "\\begin{filecontents}{div_data.csv}\n";
+	file<< "\\begin{filecontents}{div_data_"<<m_scene_id<<"_"<<m_short_name<<".csv}\n";
 	file<< "a,p,r,g,b,m\n";
 
 	for(auto it = entries.begin(); it != entries.end(); ++it) {
@@ -97,7 +97,7 @@ void Evaluator::runEvaluation() {
 	
 	file<< "\\end{filecontents}\n\n";
 
-	file<< "\\begin{filecontents}{div_data_mean.csv}\n";
+	file<< "\\begin{filecontents}{div_data_mean_"<<m_scene_id<<"_"<<m_short_name<<".csv}\n";
 	file<< "a,p,r,g,b,m\n";
 
 	for(auto it = meanEntries.begin(); it != meanEntries.end(); ++it) {
@@ -111,7 +111,7 @@ void Evaluator::runEvaluation() {
 	
 	file<< "\\end{filecontents}\n\n";
 
-	file<< "\\begin{filecontents}{div_duration_info.csv}\n";
+	file<< "\\begin{filecontents}{div_duration_info_"<<m_scene_id<<"_"<<m_short_name<<".csv}\n";
 	file<< "i,d,min,max,mean\n";
 
 	for(uint i = 0; i < m_cnt; ++i) {
@@ -122,7 +122,6 @@ void Evaluator::runEvaluation() {
 			<<m_mean_duration<<"\n";
 	}
 	
-	file<< m_min_duration <<","<< m_max_duration << "," << m_mean_duration<<"\n";
 	file<< "\\end{filecontents}\n\n";
 	file.close();
 
@@ -135,9 +134,11 @@ void Evaluator::runEvaluation() {
 	//system("pdflatex res/auto.tex");
 }
 
-void Evaluator::newMessure(int sceneId, int messureId, const string& name, int num_vertices, int num_indices, int num_triangles) {
+void Evaluator::newMessure(int sceneId, int messureId, const string& name, const string& short_name, int num_vertices, int num_indices, int num_triangles) {
 	m_cnt 			= 0;
 	m_min_duration 	= -1.0;
+	m_max_duration 	= -1.0;
+	m_mean_duration =  0.0;
 	m_scene_id		= sceneId;
 	m_messure_id 	= messureId;
 
@@ -146,7 +147,10 @@ void Evaluator::newMessure(int sceneId, int messureId, const string& name, int n
 	m_num_triangles	= num_triangles;
 
 	// mkdir
-	string filename = "../results/" + QString::number(m_scene_id).toStdString() + "/" + name;
+	m_name 		 = name;
+	m_short_name = short_name;
+
+	string filename = "../../results/" + QString::number(m_scene_id).toStdString() + "/" + name;
 	m_filename = filename;
 
 	path p(filename);
@@ -160,7 +164,7 @@ void Evaluator::addResult(int id, cv::Mat* img, double duration) {
 	if(m_min_duration > duration || m_min_duration < 0.0)
 		m_min_duration = duration;
 
-	if(m_max_duration < duration)
+	if(m_max_duration < duration || m_max_duration < 0.0)
 		m_max_duration = duration;
 
 	m_mean_duration += duration;

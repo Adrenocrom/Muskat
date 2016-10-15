@@ -96,21 +96,52 @@ class MuskatConfig {
 		var name = this.meshWidth+"x"+this.meshHeight+"_";
 
 		if(this.meshMode == "full") {
-			name += "Full/"+this.gridType+"_"+this.meshPrecision;
+			name += "Full/"+this.gridType+"/"+this.meshPrecision;
 			
-			if(this.fivePass) 	name += "_5Pass";
-			else		 		name += "_3Pass";
+			if(this.fivePass) 	name += "/5Pass";
+			else		 		name += "/3Pass";
 			
 			if(this.smoothDepth) name += "_smooth";
 
-			name += "_"+ this.Tgrad;
+			name += "/G"+ this.Tgrad.toFixed(1);
 		} else {
-			name += "Delaunay/D"+this.maxDepth+"_L"+this.Tleaf+"_I"+this.Tinternal;
+			name += "Delaunay/D"+this.maxDepth+"/L"+this.Tleaf.toFixed(1)+"/I"+this.Tinternal.toFixed(1);
 	
-			if(this.refine) name += "_A"+ this.Tangle +"_J"+ this.Tjoin;
+			if(this.refine) name += "/A"+ this.Tangle.toFixed(1) +"/J"+ this.Tjoin.toFixed(1);
 
+			if(this.preBackgroundSubtraction || this.praBackgroundSubtraction) name += "/";
 			if(this.preBackgroundSubtraction) name += "_pre";
 			if(this.praBackgroundSubtraction) name += "_pra";
+		}
+
+		return name;
+	}
+
+	get shortName() {
+		var name = this.meshWidth+"x"+this.meshHeight;
+
+		if(this.meshMode == "full") {
+			name += "F";
+			if(this.gridType == "default") name += "d";
+			else if(this.gridType == "cookie_cutter") name += "c";
+			else name += "i";
+			
+			if(this.meshPrecision == "8bit") name += "8";
+			else name += "16";
+			
+			if(this.fivePass) 	name += "5";
+			else		 		name += "3";
+			
+			name += this.Tgrad.toFixed(1);
+			
+			if(this.smoothDepth) name += "s";
+		} else {
+			name += "D"+this.maxDepth+"L"+this.Tleaf.toFixed(1)+"I"+this.Tinternal.toFixed(1);
+	
+			if(this.refine) name += "A"+ this.Tangle.toFixed(1) +"J"+ this.Tjoin.toFixed(1);
+
+			if(this.preBackgroundSubtraction) name += "pre";
+			if(this.praBackgroundSubtraction) name += "pra";
 		}
 
 		return name;

@@ -19,6 +19,8 @@ void JsonRPC::parseMessage(QWebSocket* client, QString msg) {
     request.params  = reqObj["params"].toObject();
     request.id      = reqObj["id"].toInt();
 
+	cout<<"id: "<<request.id<<" | "<<request.method.toStdString()<<endl;
+
 	if(request.method == "getPlaylist") {
 		response = getPlaylist(request);
 	}
@@ -147,9 +149,10 @@ RPCResponse JsonRPC::resize(RPCRequest& request) {
 RPCResponse JsonRPC::newMessure(RPCRequest& request) {
 	RPCResponse response;
 
-	int	scene_id 	= request.params["sceneId"].toInt();
-	int messure_id	= request.params["messureId"].toInt();
-	QString name 	= request.params["name"].toString();
+	int	scene_id 		= request.params["sceneId"].toInt();
+	int messure_id		= request.params["messureId"].toInt();
+	QString name 		= request.params["name"].toString();
+	QString short_name 	= request.params["shortName"].toString();
 
 	int num_vertices	= request.params["numVertices"].toInt();
 	int	num_indices 	= request.params["numIndices"].toInt();
@@ -159,6 +162,7 @@ RPCResponse JsonRPC::newMessure(RPCRequest& request) {
 	m_mainWindow->m_evaluator->newMessure(scene_id,
 										  messure_id, 
 										  name.toStdString(),
+										  short_name.toStdString(),
 										  num_vertices,
 										  num_indices,
 										  num_triangles);

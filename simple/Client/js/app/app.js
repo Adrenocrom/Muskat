@@ -16,6 +16,11 @@ $(document).ready(function() {
 		debug_console.value += message + "\n";
 		debug_console.scrollTop = debug_console.scrollHeight;
 	}
+
+	$( window ).resize(function() {
+  		debug_console.style.height = (window.innerHeight - 60) + 'px';
+	});
+	
 	debug("muskat client v0.0.1")
 	//debug_console.style.visibility = "hidden";
 	$('#window_setting').animate({width: "0px"}, 0);
@@ -34,6 +39,8 @@ $(document).ready(function() {
 			$('#window_setting').animate({
 				width: "0px"
 			}, 0);
+
+			g_isOut = false;
 		}
 	}
 
@@ -78,8 +85,11 @@ $(document).ready(function() {
 		setScene(g_playlist.scenes[g_scene_list[g_scene_list_index]]);
 		loadSceneMessage(g_scene_list[g_scene_list_index]);
 		g_scene_index = g_scene_list[g_scene_list_index];
-		getFrameMessage(0);
 
+		
+		$('fieldset').prop('disabled', true);
+		
+		getFrameMessage(0);
 		runEvaluation(0);
 	});
 
@@ -213,7 +223,7 @@ $(document).ready(function() {
 	var g_time_start;
 	var g_time_end;
 	var g_evaluator;
-	var g_scene_list 		= [2, 4, 3, 5, 0, 1];
+	var g_scene_list 		= [4,2];//2,4,3,5,0,1];
 	var g_scene_list_index 	= 0;
 
 	initConfig();
@@ -273,10 +283,8 @@ $(document).ready(function() {
 
 	function initConfig() {
 		g_config = new MuskatConfig(updateConfig);
-
 		g_evaluator = new MuskatEvaluator();
-
-		$('#label_evaluation').text("0 /" + g_evaluator.length);
+		$('#label_evaluation').text("    0 / " + g_evaluator.length + " | scene " + g_scene_list[g_scene_list_index]);
 	}
 
 	function updateConfig() {
@@ -441,7 +449,6 @@ $(document).ready(function() {
 
 		gl.flush();
 		// end messure
-		g_time_end = performance.now();
 	}
 
 	function setPlaylist(playlist) {
@@ -500,15 +507,12 @@ $(document).ready(function() {
 
 	function runScene() {
 		var gl = muGl.gl;
-		var select_frames_min = document.getElementById("select_frames_min");
-		var select_frames_max = document.getElementById("select_frames_max");
 
-		var frame_min = select_frames_min.selectedIndex;
-		var frame_max = select_frames_max.selectedIndex;
 
 		var scene = g_playlist.scenes[g_scene_index];
-
-		frame_max = scene.frames.length-1;
+		
+		var frame_min = 0;
+		var frame_max = scene.frames.length-1;
 
 		var frame = scene.frames[0];
 		
@@ -519,6 +523,7 @@ $(document).ready(function() {
 		mat4.invert(invMvpMatrix, invMvpMatrix);
 
 		for(var i = frame_min; i <= frame_max; i++) {
+
 			// messure time
 			g_time_start = performance.now();
 
@@ -531,6 +536,8 @@ $(document).ready(function() {
 			mat4.multiply(resMvpMatrix, mvpMatrix, invMvpMatrix);
 			
 			drawEx();
+	
+			g_time_end = performance.now();
 
 			saveFrameToPNG(i, g_time_end-g_time_start);
 		}
@@ -539,11 +546,10 @@ $(document).ready(function() {
 	function runEvaluation(id) {
 		g_config = g_evaluator.getConfig(id);
 		updateConfig();
-		updateConfig();
-		updateConfig();
-		newMessureMessage(g_scene_index, id, g_config.name);
-	}
 
+		newMessureMessage(g_scene_index, id, g_config.name, g_config.shortName);
+		runScene();
+	}
 
 	function startWs() {
 		try {
@@ -595,28 +601,35 @@ $(document).ready(function() {
 					drawFirstFrame();
 				}
 
-				if(typeof obj.result.newMessureReady !== 'undefined') {
-					runScene();
-				}
-
 				if(typeof obj.result.messureReady !== 'undefined') {
 					var index = obj.result.messureReady + 1;
-					$('#label_evaluation').text(index + " / " + g_evaluator.length);
+					$('#label_evaluation').text("    " + index + " / " + g_evaluator.length + " | scene " + g_scene_index);
 					
+					$('#window_menu_overlay').width(100 * (index / g_evaluator.length) + '%');
+
 					if(index < g_evaluator.length)
 						runEvaluation(index);
 					else  {
 						g_scene_list_index++;
+						g_config = new MuskatConfig(updateConfig);
+						updateConfig();
+
 
 						if(g_scene_list_index < g_scene_list.length) {
-							setScene(g_playlist.scenes[g_scene_list[g_scene_list_index]]);
-							loadSceneMessage(g_scene_list[g_scene_list_index]);
+							debug("index: " + g_scene_list_index + " " + g_scene_list[g_scene_list_index]);
+							
 							g_scene_index = g_scene_list[g_scene_list_index];
+							setScene(g_playlist.scenes[g_scene_index]);
+							loadSceneMessage(g_scene_index);
+
 							getFrameMessage(0);
 							
+							$('#window_menu_overlay').width(0 + '%');
 							runEvaluation(0);
 						} else { 
 							alert("Evaluation Done!");
+							$('#window_menu_overlay').width(0 + '%');
+							$('fieldset').prop('disabled', false);
 						}
 					}
 				}
@@ -676,15 +689,18 @@ $(document).ready(function() {
 	}
 
 	function loadSceneMessage(id) {
+		idCnt = 0;
+		
 		var params = {"id" : id};
 		sendMessage("loadScene", params);
 	}
 
-	function newMessureMessage(scene_id, messure_id, name) {
+	function newMessureMessage(scene_id, messure_id, name, short_name) {
 		var params = {
 			"sceneId"		: scene_id,
 			"messureId" 	: messure_id,
 			"name" 			: name,
+			"shortName"		: short_name,
 			"numVertices"	: g_mesh.getNumVertices(),
 			"numIndices"	: g_mesh.getNumIndices(),
 			"numTriangles"	: g_mesh.getNumTriangles()
@@ -703,7 +719,7 @@ $(document).ready(function() {
 			"textureCompressionQuality"	: g_config.textureCompressionQuality,
 			"meshMode"					: g_config.meshMode,
 			"gridType"					: g_config.gridType,
-			"meshPercesion"				: g_config.meshPercesion,
+			"meshPrecision"				: g_config.meshPrecision,
 			"meshCompression"			: g_config.meshCompression,
 			"maxDepth"					: g_config.maxDepth,
 			"Tleaf"						: g_config.Tleaf,

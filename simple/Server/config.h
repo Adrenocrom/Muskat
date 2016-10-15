@@ -35,7 +35,7 @@ public:
 
 	QString	getMeshMode();
 	QString getGridType();
-	QString getMeshPercesion();
+	QString getMeshPrecision();
 
 	int		getMeshCompression();
 	bool	useDelaunay();
@@ -74,7 +74,7 @@ private:
 
 	QString		m_mesh_mode;
 	QString		m_grid_type;
-	QString		m_mesh_percesion;
+	QString		m_mesh_precision;
 
 	int			m_mesh_compression;
 

@@ -116,6 +116,18 @@ input[type='radio'] {
 	height: 50px;
 }
 
+#window_menu_overlay {
+	position: absolute;
+	top: 0px;
+	left: 0px;
+	opacity: 0.2;
+	background-color: #0000FF;
+	margin: 0 0 0 0;
+	width: 0%;
+	height: 50px;
+}
+
+
 #window_setting {
 	position: absolute;
 	top: 50px;
