@@ -26,27 +26,37 @@ void Evaluator::setScene(Scene* scene) {
 
 void Evaluator::runEvaluation() {
 	uint r_size = m_results.size();
-	list<ResultEntry> entries;
 	list<ResultEntry> meanEntries;
-	ResultEntry entry;
 
 	cout<<"start evaluation"<<endl;
+
+time_t tbegin, tend;
+time(&tbegin);
+
+	vector<ResultEntry> vEntries(r_size);
+	#pragma omp parallel for schedule(static, 1)
 	for(uint i = 0; i < r_size; ++i) {
+		ResultEntry entry;
 		entry.PSNR  = getPSNR(m_scene->m_fbs[i].rgb, m_results[i]);
 		entry.MSSIM = getMSSIM(m_scene->m_fbs[i].rgb, m_results[i]);
 		entry.angle = m_scene->m_infos[i].offangle;
-		entries.push_back(entry);
+		vEntries[i] = entry;
 
-		QString filename = QString(m_filename.c_str()) + "/frame_0"+ QString::number(i) +".png";
-		imwrite(filename.toStdString(), m_results[i]);
+		//QString filename = QString(m_filename.c_str()) + "/frame_"+ QString(insertZeros(5, i).c_str()) +".png";
+		//imwrite(filename.toStdString(), m_results[i]);
 	}
 
+time(&tend);
+printf("time in seconds: %.2f\n", difftime(tend, tbegin));
+
+	list<ResultEntry> entries(vEntries.begin(), vEntries.end());
 	entries.sort([this](ResultEntry& l, ResultEntry& r) {
 		if(l.angle > r.angle) 
 			return true; 
 		return false; 
 	});
 
+	ResultEntry entry;
 	entry = entries.front();
 	double cnt = 1;
 	for(auto it = entries.begin(); it != entries.end(); ++it) {
@@ -150,7 +160,7 @@ void Evaluator::newMessure(int sceneId, int messureId, const string& name, const
 	m_name 		 = name;
 	m_short_name = short_name;
 
-	string filename = "../../results/" + QString::number(m_scene_id).toStdString() + "/" + name;
+	string filename = "results/" + QString::number(m_scene_id).toStdString() + "/" + name;
 	m_filename = filename;
 
 	path p(filename);

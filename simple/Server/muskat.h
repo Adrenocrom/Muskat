@@ -16,9 +16,11 @@
 #include <bitset>
 #include <limits.h>
 #include <map>
+#include <ctime>
 
 // CV
 #include <opencv.hpp>
+#include <opencv2/gpu/gpu.hpp>
 
 // Boost
 #include <filesystem.hpp>

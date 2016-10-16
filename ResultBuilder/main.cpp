@@ -10,6 +10,8 @@
 
 using namespace std;
 
+#define T_MIN -1.0
+
 struct Entry {
 	double x;
 	double y;
@@ -24,9 +26,10 @@ Col 	loadFromTex(string filename);
 void 	saveToTex(string filename, const Diagram& diagram);
 
 double	sumCol(const Col& col);
+double	meanCol(const Col& col);
 
 int main(int argc, char* argv[]) {
-	loadFromTex("../results/4/512x512_Delaunay/D8/L0.2/I0.2/results.tex");
+	//loadFromTex("../results/4/512x512_Delaunay/D8/L0.2/I0.2/results.tex");
 
 	Diagram diagram;
 	for(double l = 0.0; l <= 1.0; l += 0.1) {
@@ -38,7 +41,7 @@ int main(int argc, char* argv[]) {
 			if(i <= l) {
 				char val[20];
 
-				string name = "../results/4/512x512_Delaunay/D8/L";
+				string name = "../results/2/512x512_Delaunay/D8/L";
 			
 				sprintf(val, "%.1f", l);
 				name += val;
@@ -47,9 +50,9 @@ int main(int argc, char* argv[]) {
 				name += val;
 				name += "/results.tex";
 
-				entry.z = sumCol(loadFromTex(name));
+				entry.z = meanCol(loadFromTex(name));
 			} else {
-				entry.z = 50.0;
+				entry.z = -1.0;
 			}
 
 			diagram.push_back(entry);
@@ -101,12 +104,25 @@ double	sumCol(const Col& col) {
 	
 	double sum = 0.0;
 	for(uint i = 0; i < size; ++i) {
-		if(col[i] > 0.1)
+		if(col[i] > T_MIN)
 			sum += col[i];
 	}
 
 	return sum;
 }
+
+double	meanCol(const Col& col) {
+	uint size = col.size();
+	
+	double sum = 0.0;
+	for(uint i = 0; i < size; ++i) {
+		if(col[i] > T_MIN)
+			sum += col[i];
+	}
+
+	return sum / ((double) size);
+}
+
 
 void 	saveToTex(string filename, const Diagram& diagram) {
 	ofstream file;
@@ -118,8 +134,7 @@ void 	saveToTex(string filename, const Diagram& diagram) {
 	for(uint i = 0; i < size; ++i) {
 		const Entry& entry = diagram[i];
 
-		if(entry.x == -1.0 && entry.y == -1.0 && entry.z == -1.0)
-			file<<"\n";
+		if(entry.x == -1.0 || entry.y == -1.0 || entry.z == -1.0) {}//	file<<"\n";
 		else {
 			file<<entry.y<<" "<<entry.x<<" "<<entry.z<<"\n";
 		}

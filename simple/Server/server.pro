@@ -3,6 +3,8 @@ QT += core gui widgets websockets opengl
 TARGET = server
 TEMPLATE = app
 
+QMAKE_CXXFLAGS += -fopenmp
+
 SOURCES +=	main.cpp \
 			muskat.cpp \
 			quadtree.cpp \
@@ -32,7 +34,8 @@ LIBS += -lboost_system \
 		-lboost_filesystem \
 		-lopencv_core \
 		-lopencv_highgui \
-		-lopencv_imgproc
+		-lopencv_imgproc \
+		-fopenmp 
 
 INCLUDEPATH += 	/usr/include/opencv2/ \
 				/usr/include/boost/

@@ -14,7 +14,7 @@ CC            = gcc
 CXX           = g++
 DEFINES       = -DQT_NO_DEBUG -DQT_OPENGL_LIB -DQT_WIDGETS_LIB -DQT_GUI_LIB -DQT_WEBSOCKETS_LIB -DQT_NETWORK_LIB -DQT_CORE_LIB
 CFLAGS        = -pipe -O2 -Wall -W -D_REENTRANT -fPIC $(DEFINES)
-CXXFLAGS      = -pipe -O2 -std=gnu++0x -Wall -W -D_REENTRANT -fPIC $(DEFINES)
+CXXFLAGS      = -pipe -fopenmp -O2 -std=gnu++0x -Wall -W -D_REENTRANT -fPIC $(DEFINES)
 INCPATH       = -I. -I/usr/include/opencv2 -I/usr/include/boost -I/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include -I/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtOpenGL -I/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets -I/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtGui -I/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWebSockets -I/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtNetwork -I/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtCore -I. -I/home/josef/Programme/Qt5.6.0/5.6/gcc_64/mkspecs/linux-g++
 QMAKE         = /home/josef/Programme/Qt5.6.0/5.6/gcc_64/bin/qmake
 DEL_FILE      = rm -f
@@ -36,7 +36,7 @@ DISTNAME      = server1.0.0
 DISTDIR = /home/josef/Dokumente/Studium/muskat/simple/Server/.tmp/server1.0.0
 LINK          = g++
 LFLAGS        = -Wl,-O1 -Wl,-z,origin -Wl,-rpath,\$$ORIGIN -Wl,-rpath,/home/josef/Programme/Qt5.6.0/5.6/gcc_64/lib
-LIBS          = $(SUBLIBS) -lboost_system -lboost_filesystem -lopencv_core -lopencv_highgui -lopencv_imgproc -L/home/josef/Programme/Qt5.6.0/5.6/gcc_64/lib -lQt5OpenGL -lQt5Widgets -lQt5Gui -lQt5WebSockets -lQt5Network -lQt5Core -lGL -lpthread 
+LIBS          = $(SUBLIBS) -lboost_system -lboost_filesystem -lopencv_core -lopencv_highgui -lopencv_imgproc -fopenmp -L/home/josef/Programme/Qt5.6.0/5.6/gcc_64/lib -lQt5OpenGL -lQt5Widgets -lQt5Gui -lQt5WebSockets -lQt5Network -lQt5Core -lGL -lpthread 
 AR            = ar cqs
 RANLIB        = 
 SED           = sed
@@ -963,6 +963,9 @@ main.o: main.cpp muskat.h \
 		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtGui/qgenericmatrix.h \
 		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtGui/QVector3D \
 		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtGui/QImage \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtCore/QList \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/QProgressBar \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/qprogressbar.h \
 		fileRenderer.h \
 		config.h \
 		scene.h \
@@ -1182,6 +1185,9 @@ muskat.o: muskat.cpp muskat.h \
 		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtGui/qgenericmatrix.h \
 		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtGui/QVector3D \
 		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtGui/QImage \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtCore/QList \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/QProgressBar \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/qprogressbar.h \
 		fileRenderer.h \
 		config.h \
 		scene.h \
@@ -1401,6 +1407,9 @@ quadtree.o: quadtree.cpp muskat.h \
 		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtGui/qgenericmatrix.h \
 		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtGui/QVector3D \
 		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtGui/QImage \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtCore/QList \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/QProgressBar \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/qprogressbar.h \
 		fileRenderer.h \
 		config.h \
 		scene.h \
@@ -1620,6 +1629,9 @@ evaluator.o: evaluator.cpp muskat.h \
 		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtGui/qgenericmatrix.h \
 		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtGui/QVector3D \
 		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtGui/QImage \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtCore/QList \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/QProgressBar \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/qprogressbar.h \
 		fileRenderer.h \
 		config.h \
 		scene.h \
@@ -1839,6 +1851,9 @@ deamon.o: deamon.cpp muskat.h \
 		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtGui/qgenericmatrix.h \
 		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtGui/QVector3D \
 		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtGui/QImage \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtCore/QList \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/QProgressBar \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/qprogressbar.h \
 		fileRenderer.h \
 		config.h \
 		scene.h \
@@ -2058,6 +2073,9 @@ scene.o: scene.cpp muskat.h \
 		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtGui/qgenericmatrix.h \
 		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtGui/QVector3D \
 		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtGui/QImage \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtCore/QList \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/QProgressBar \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/qprogressbar.h \
 		fileRenderer.h \
 		config.h \
 		scene.h \
@@ -2277,6 +2295,9 @@ playlist.o: playlist.cpp muskat.h \
 		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtGui/qgenericmatrix.h \
 		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtGui/QVector3D \
 		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtGui/QImage \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtCore/QList \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/QProgressBar \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/qprogressbar.h \
 		fileRenderer.h \
 		config.h \
 		scene.h \
@@ -2496,6 +2517,9 @@ config.o: config.cpp muskat.h \
 		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtGui/qgenericmatrix.h \
 		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtGui/QVector3D \
 		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtGui/QImage \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtCore/QList \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/QProgressBar \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/qprogressbar.h \
 		fileRenderer.h \
 		config.h \
 		scene.h \
@@ -2715,6 +2739,9 @@ compressor.o: compressor.cpp muskat.h \
 		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtGui/qgenericmatrix.h \
 		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtGui/QVector3D \
 		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtGui/QImage \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtCore/QList \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/QProgressBar \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/qprogressbar.h \
 		fileRenderer.h \
 		config.h \
 		scene.h \
@@ -2934,6 +2961,9 @@ jsonrpc.o: jsonrpc.cpp muskat.h \
 		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtGui/qgenericmatrix.h \
 		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtGui/QVector3D \
 		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtGui/QImage \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtCore/QList \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/QProgressBar \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/qprogressbar.h \
 		fileRenderer.h \
 		config.h \
 		scene.h \
@@ -3153,6 +3183,9 @@ fileRenderer.o: fileRenderer.cpp muskat.h \
 		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtGui/qgenericmatrix.h \
 		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtGui/QVector3D \
 		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtGui/QImage \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtCore/QList \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/QProgressBar \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/qprogressbar.h \
 		fileRenderer.h \
 		config.h \
 		scene.h \
@@ -3372,6 +3405,9 @@ mainwindow.o: mainwindow.cpp muskat.h \
 		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtGui/qgenericmatrix.h \
 		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtGui/QVector3D \
 		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtGui/QImage \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtCore/QList \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/QProgressBar \
+		/home/josef/Programme/Qt5.6.0/5.6/gcc_64/include/QtWidgets/qprogressbar.h \
 		fileRenderer.h \
 		config.h \
 		scene.h \

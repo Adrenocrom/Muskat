@@ -31,6 +31,7 @@ public:
 
 private:
 
+
 	Scene*			m_scene;
 	
 	Config* 		m_config;
