@@ -50,7 +50,7 @@ int main(int argc, char* argv[]) {
 				name += val;
 				name += "/results.tex";
 
-				entry.z = meanCol(loadFromTex(name));
+				entry.z = sumCol(loadFromTex(name));
 			} else {
 				entry.z = -1.0;
 			}
