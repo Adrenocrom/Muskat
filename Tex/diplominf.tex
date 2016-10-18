@@ -9,6 +9,8 @@
 % notoc			kein Inhaltsverzeichnis
 % twoside		zweiseitig
 
+\usepackage{lmodern}
+
 \author{Josef Schulz}
 \title{Optimierung und Übertragung von Tiefengeometrie für Remote-Visualisierung}
 \birthday{20. Oktober 1989}
@@ -81,9 +83,84 @@ Bild"ubernahmen zitieren.}
 
 \chapter{Einleitung}
 
+Bei der Remote-Visualisierung, wird die Bildsynthese und die eigentliche Darstellung voneinander getrennt.
+Der Server-Prozess erzeugt und kodiert jedes Bild zu einem kompakten Datenpaket, welches im Anschluss
+an den Klient-Prozess gesendet, von diesem dekodiert und auf einem Bildschirm ausgegeben wird.
+Remote-Visualisierung ist ein insbesondere für mobile Endgeräte interessantes Konzept,
+weil es die Visualisierung von komplexen Szenen auch auf Leistungsarmen Geräten ermöglicht.
+Neben Computerspielen, ist die wissenschaftliche Visualisierung ein wichtiges Anwendungsgebiet,
+da Datensätze Größenordnungen erreichen, die den Speicher herkömmlicher Desktops, Laptops,
+Smartphones etc. bei weitem übersteigen. 
+Auch wenn ausreichend Speicher zur Verfügung steht, kann die Übertragung langwierig und teuer werden.
+Mit Hilfe der Remote-Visualisierung kann die Visualisierung vom Server übernommen werden und
+es muss nicht der komplette Datensatz übertragen werden.
+Mit leistungsstarken Serversystemen lassen sich komplexe Beleuchtungsmethoden verwendet,
+die mit normalen Endgeräten nicht zu realisieren sind.
+
+Die Latenz bezeichnet in der Netzwerktechnik die Übertragungszeit von einem zum anderen Gerät.
+Diese ist in modernen Netzwerken gering, für die Interaktive Visualisierung allerdings immer
+noch zu Groß um eine für den Menschen nicht wahrnehmbare flüssige Betrachtung von Szenen
+Bild für Bild zu ermöglichen.
+
+Ein Ausweg besteht darin, dass der Klient-Prozess ein bereits empfangenes Bild extrapoliert, 
+dadurch kann dem Betrachter ein neues Bild präsentiert werden, obwohl es noch nicht empfangen wurde.
+Bei der Bildsynthese des Server-Prozesses entsteht neben dem Farbbild zusätzlich ein Tiefenbild,
+das genutzt werden kann um geometrische Informationen an den Klient-Prozess weiter zu reichen
+und damit die Extrapolation durchzuführen.
+
+In dieser Arbeit wird aus dem Tiefenbild ein Dreiecksnetz erzeugt, das mit Hilfe des Farbbildes als Textur,
+in einer neuen Kameraperspektive gezeichnet wird.
+Zu diesem Zweck wurde eine Server- und eine Klient-Komponente entwickelt...
 
 
 \chapter{Verwandte Arbeiten}
+
+Wessels et al. stellen ein Konzept für den Programmaufbau eines Remote-Visualisierungssystem, 
+das auf der Basis von WebSockets arbeitet \cite{DBLP:conf/itng/WesselsPJR11}.
+In ihrem System setzt sich der Server-Prozess aus zwei Hauptkomponenten zusammen,
+der Visualisierungs-Engine und dem Deamon. Der Deamon übernimmt die Kommunikation
+mit dem Klient-Prozess.
+Der Klient schickt dabei seine Eingabeinformationen von Maus und Tastatur direkt an den Server,
+dieser erzeugt mit diesen ein komprimiertes JPEG Bild, das mit Base64 kodiert und an den Klient
+geschickt wird. Mit Hilfe eines HTML5 Canvas wird es dekodiert und dargestellt.
+
+Ein Remote-Visualisierungssystem kann auch als ein Verteiltes-Visualisierungssystem bezeichnet werden. 
+Zhefan Jin stellt drei Klassen solcher Systeme vor: sort-first, sort-middle und sort-last
+\cite{Jin:2006:RRI:1128923.1128927}.
+In einen sort-first System werden geometrische Primitive vor transformiert um ihren Host
+zu bestimmen, der die eigentliche Transformation berechnet.
+Werden die geometrischen Primitive zwischen der Transformation und der Rasterisierung
+an verschiedene Host-Systeme verteilt, dann gehört es zur Klasse der sort-middle Systeme.
+In einem sort-last System werden die 
+
+\chapter{Grundlagen}
+
+\section{Extrapolation}
+
+\begin{figure}
+	\centering
+	\begin{tikzpicture}
+	
+			\draw(-1.0, 1.0, 1.0) -- (1.0, 1.0, 1.0);
+			\draw(-1.0, -1.0, 1.0) -- (1.0, -1.0, 1.0);
+	
+			\draw(1.0, 1.0, 1.0) -- (1.0, -1.0, 1,0) -- (1.0, -1.0, -1.0) -- (1.0, 1.0, -1.0) -- (1.0, 1.0, 1.0);
+			\draw(-1.0, 1.0, 1.0) -- (-1.0, -1.0, 1,0) -- (-1.0, -1.0, -1.0) -- (-1.0, 1.0, -1.0) -- (-1.0, 1.0, 1.0);
+			
+			\draw(-1.0, 1.0, -1.0) -- (1.0, 1.0, -1.0);
+			\draw(-1.0, -1.0, -1.0) -- (1.0, -1.0, -1.0);
+			
+			% axis
+			\draw(0.0, 0.0, 1.0) -> (0.0, 0.0, -1.0);
+			\draw(0.0, 1.0, 0.0) -> (0.0,-1.0, 0.0);
+			\draw(1.0, 0.0, 0.0) -> (-1.0, 0.0, 0.0);
+	
+	\end{tikzpicture}
+\end{figure}
+
+\section{SSIM}
+\section{PSNR}
+
 \chapter{Ergebnisse}
 
 \begin{figure}[htbp]
@@ -129,7 +206,7 @@ Bild"ubernahmen zitieren.}
 \end{tikzpicture}
 
 \begin{tikzpicture}
-\begin{axis}[axis lines = middle, enlargelimits = true]
+\begin{axis}[axis lines = middle, enlargelimits = true, ylabel=t in ms]
 \addplot[green] table [x=i, y=min, col sep=comma]{div_duration_info_4_512x512D10L0.0I0.0A0.0J0.0pre.csv};
 \addplot[red] table [x=i, y=max, col sep=comma]{div_duration_info_4_512x512D10L0.0I0.0A0.0J0.0pre.csv};
 \addplot[black] table [x=i, y=mean, col sep=comma]{div_duration_info_4_512x512D10L0.0I0.0A0.0J0.0pre.csv};
@@ -137,29 +214,34 @@ Bild"ubernahmen zitieren.}
 \end{axis}
 \end{tikzpicture}
 
-\begin{tikzpicture}
-    \begin{axis}[view={0}{90}, 
-    			 grid=major,
-    			 point meta min=0.7, point meta max=0.73,
-    			 colormap={greenyellow}{
-    			 	rgb255(0cm)	 =(128,0,0)
-    			 	rgb255(0.5cm) =(255,255,0) 
-    			 	rgb255(1cm) =(0,200,0)
-    			 }, 
-    			 colorbar, 
-    			 enlargelimits=true, 
-    			 xtick={0.0,0.1,...,1.1},
-        		 ytick={0.0,0.1,...,1.1},
-        		 xmajorgrids=true,
-        		 ymajorgrids=true]
-        
-        \addplot3 [only marks, 
-        		   mark=square*, 
-        		   mark size=7,
-        		   ycomb, 
-        		   scatter] file {div.csv};      
-    \end{axis}
-\end{tikzpicture}
+\begin{figure}
+	\centering
+	\begin{tikzpicture}
+		\begin{axis}[view={0}{90}, 
+		 			 grid=major,
+		 			 xlabel=$T_{internal}$,
+		 			 ylabel=$T_{leaf}$,
+		 			 point meta min=0.7, point meta max=0.73,
+		 			 colormap={greenyellow}{
+		   			 	rgb255(0cm)	 =(128,0,0)
+		   			 	rgb255(0.5cm) =(255,255,0) 
+		   			 	rgb255(1cm) =(0,200,0)
+		 			 }, 
+		 			 colorbar, 
+		 			 enlargelimits=true, 
+		 			 xtick={0.0,0.1,...,1.1},
+		     		 ytick={0.0,0.1,...,1.1},
+		     		 xmajorgrids=true,
+		     		 ymajorgrids=true]
+		 
+		 \addplot3 [only marks, 
+		 		   mark=square*, 
+		 		   mark size=7,
+		 		   ycomb, 
+		 		   scatter] file {div.csv};      
+		\end{axis}
+	\end{tikzpicture}
+\end{figure}
 
 \cite*{}
 \end{document}
