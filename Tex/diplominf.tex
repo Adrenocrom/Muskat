@@ -122,33 +122,34 @@ Im Folgenden werden existierende Konzepte und Ideen vorgestellt.
 
 \chapter{Verwandte Arbeiten}
 
-Einen Überblick über Methoden und Architekturen der interaktiven Remote-Visualisierung geben Shu Shi et al. \cite{Shi:2015:SIR:2775083.2719921}.
-Bevor 3D Anwendungen im Fokus der Forschung waren, wurden Desktop und Remote-Anwendungen
-sogenannte Thin Client systems entwickelt.
-Als Beispiele sollen SLIM \cite{Schmidt:1999:IPS:319344.319154} und THiNC \cite{Baratto:2005:TVD:1095809.1095837} dienen.
-Ihre Aufgabe besteht darin Desktop-Systeme fern zusteuern,
-zu diesem Zweck wurden sie für den Einsatz von 2D Grafiken optimiert.
+Einen Überblick über Architekturen und Methoden der interaktiven Remote-Visualisierung geben Shu Shi et al. \cite{Shi:2015:SIR:2775083.2719921}.
+Zum zentralen Problem ihrer Arbeit, wird die Latenz und die effiziente Übertragung der Daten vom Server zum Klient.
+Lösungen hängen vom Anwendungsfall ab, in \textit{THIN}-Systemen besteht die Aufgabe in der Übertragung von
+2D Informationen, mit denen sich zum Beispiel Desktop-Anwendungen Fernsteuern lassen.
+Als Beispiele dienen SLIM \cite{Schmidt:1999:IPS:319344.319154} und THiNC \cite{Baratto:2005:TVD:1095809.1095837}.
+Die Übertragung der Daten wurde in beiden Systemen für den Einsatz von 2D Grafiken optimiert.
 Ein Vorteil bei diesen Anwendungen besteht darin, dass nur relativ kleine Änderungen
 tatsächlich übertragen werden müssen, wenn sich zum Beispiel ein Fenster ändert muss auch
 nur diese Änderung zum Klient übertragen werden.
+Zur Verbesserung der Latenz wird von Shu Shi et al. die Bildextrapolation vorgeschlagen.
+Diese kann durch die zusätzliche Übertragung von Tiefenbildern oder Dreiecksnetzen erreicht werden.
+Bei der Bildsynthese auf dem Klient-System, entsteht eine Menge von Artefakten, diese kann durch Verzerrung und Verformung der Geometrieinformationen verkleinert werden, durch sogenanntes \textit{Warping} \cite{1331221}, \cite{4810995}.
+Wenn eine Extrapolation der Bilder, durch den Klient, aus Hardware-Gründen nicht möglich ist,
+können auch die nächst möglichen Bewegungen geschätzt werden und deren Ergebnisse werden mit übertragen.
+Zur Verbesserung der Qualität werden deshalb in vielen Anwendungen die Bewegungsmöglichkeiten
+des Nutzers auf Pfade oder Aussichtspunkte beschränkt.
 
-Ein Remote-Visualisierungssystem lässt sich weiterhin auch als ein verteiltes System betrachten.
-Zhefan Jin stellt drei Klassen solcher Systeme vor: sort-first, sort-middle und sort-last
-\cite{Jin:2006:RRI:1128923.1128927}.
-Die drei Klassen unterscheiden, wann welche Informationen getrennt werden und von
-unterschiedlichen Host-Systemen weiter verarbeitet werden.
-In Abhängigkeit wie ein solches System konstruiert wurde können Zeicheninstruktionen, Attribute, oder Bilder von einem Knoten zum anderen weiter gereicht werden.
-Kompressionsmethoden werden für alle arten von Informationen erläutert.
+\section{Architektur}
 
-Peter Eisert und Philipp Fechteler haben ein Remote-Visualisierungssystem
+Ein spezielles Remote-Visualisierungssystem haben Peter Eisert und Philipp Fechteler 
 für Computerspiele entwickelt \cite{Eisert07remoterendering}.
+Ihr System kommt ohne Beschränkung der Bewegungsfreiheit aus.
 Sie haben sich dafür zwei Ansätze zunutze gemacht. 
 Im ersten Ansatz erzeugt der Server die fertigen Bilder,
 welche mit Video-Codecs codiert und an den Klient gestreamt werden.
 Im zweiten Ansatz, werden Zeicheninstruktionen an den Klient gestreamt, welcher mit diesen
 das Ergebnissbild produziert.
-Ihr System ist für den Einsatz im lokalen Netzwerk konstruiert, trotzdem ist
-die Verzögerungszeit von der Eingabe bis zum fertigen Bild zu groß.
+Ihr System ist für den Einsatz im lokalen Netzwerk konstruiert.
 
 Wessels et al. stellen eine Konzeption für den Programmaufbau eines interaktiven Remote-Visualisierungssystem basierend auf dem WebSocket-Protokoll vor \cite{DBLP:conf/itng/WesselsPJR11}.
 In ihrem System besteht der Server-Prozess aus zwei Hauptkomponenten,
@@ -160,33 +161,50 @@ Dieser wertet die Daten aus und erzeugt darauf hin ein mit JPEG komprimiertes Bi
 Dieser kann das Bild nativ mit Hilfe eines HTML5 Canvas dekodieren und darstellen.
 Ihr System wird zur Grundlage dieser Arbeit.
 
+\section{Extrapolation}
+
 Die Grundidee das Problem der Latenz mit Bildexploration in den Griff zu bekommen wurde in der Arbeit von Palomo et al. betrachtet \cite{Palomo:2010:EAD:1900179.1900236}.
 
+Das erzeugte Tiefenbild lässt sich 
+Pauly et al. \cite{Pauly:2002:ESP:602099.602123}
 
 Simon Stegmaier \cite{Stegmaier02ageneric} 
 A Generic Solution for Hardware-Accelerated Remote Visualization
 
-Gabriel Taubin und Jarek Rossignac \cite{Taubin:1998:GCT:274363.274365}
-Geometric Compression Through
-Topological Surgery
-Erzeugung von Dreiecksnetzen durch Bäume
+\section{Kompression}
+
+Gabriel Taubin und Jarek Rossignac haben ein Algorithmus zur Erzeugung und effizienten Kodierung von Dreiecksstreifen aus Dreiecksnetzen entwickelt \cite{Taubin:1998:GCT:274363.274365}.
+Dazu konstruiert ihr Algorithmus Spannbäume über dem Netz, die zur Erzeugung möglichst großer
+Dreiecksstreifen genutzt werden. Die Kompression kann wahlweise verlustfrei oder verlustbehaftet
+durchgeführt werden. Typische Kompressionsraten werden mit 1:50 angegeben.
+
+Eine weitere Arbeit die sich mit der Kompression von Dreiecksnetzen und einer kompakten Repräsentation
+von diesen beschäftigt wurde Stefan Gumhold und Wolfgang Straßer geschrieben \cite{Gumhold:1998:RTC:280814.280836}.
+Kompression und Dekompression sind echtzeitfähig.
+
+Michael Deering hat ebenfalls ein Geometrisches Kompressionsverfahren entwickelt. \cite{Deering:1995:GC:218380.218391}
 
 Federico Ponchio  und Matteo Dellepiane \cite{Ponchio:2015:FDW:2775292.2775308}
 Fast decompression for web-based view-dependent 3D rendering
 
-Gumhold, Stefan and Straßer, Wolfgang \cite{Gumhold:1998:RTC:280814.280836}
-Real Time Compression of Triangle Mesh Connectivity
+
 
 Diplomarbeit mädcheninformatiker Effiziente Datenübertragung von Modellen und
 Texturen für die Verwendung in WebGL
 Stefan Wagner noch kein cite
 
-Geometry Compression Michael Deering \cite{Deering:1995:GC:218380.218391}
+
 
 WEB-BASED VISUALISATION OF ON-SET POINT CLOUD
 DATA Alun Evans et al \cite{Evans:2014:WVO:2668904.2668937}
 
 planarer scheiß \cite{Ma13ecmr}
+
+Ein Remote-Visualisierungssystem als ein verteiltes System betrachtet werden.
+Zhefan Jin stellt drei Klassen solcher Systeme vor \cite{Jin:2006:RRI:1128923.1128927}.
+Diese unterscheiden sich anhand der Verteilung ihrer Daten auf unterschiedliche Host-Systeme.
+Dabei können Zeicheninstruktionen, Attribute, oder Bilder von einem Knoten zum anderen weiter gereicht werden.
+Auch bei einfache Remote-Visualisierungssysteme unterscheiden sich an Hand der Daten die übertragen werden.
 
 \chapter{Grundlagen}
 
@@ -271,16 +289,54 @@ Das Resultat dieser Forderung ist die maximierte Innenwinkelsumme aller Dreiecke
 Für eine gegebene Punktmenge, ist die Lösung nicht eindeutig, es kann verschiedene
 Netzkonfigurationen geben, welche die Forderung erfüllen.
 
- 
+
+
+\section{PSNR}
+
+\begin{equation}
+	MSE = \frac{1}{mn} \sum\limits_{i=0}^{m-1} \sum\limits_{j=0}^{n-1}[I(i, j) - K(i, j)]^2
+\end{equation}
+
+\begin{align}
+PSNR &= 10 \times \log_{10} \left( \frac{MAX^2_I}{MSE} \right) \\
+	 &= 20 \times \log_{10} \left( \frac{MAX_I}{\sqrt{MSE}} \right) \\
+	 &= 20 \times \log_{10} (MAX_I) - 10 \times \log_{10} (MSE)
+\end{align}
 
 \section{SSIM}
 
 Image Quality Assessment: From Error Visibility to
 Structural Similarity \cite{Wang04imagequality}
 
-\section{PSNR}
+\begin{equation}
+	SSIM(x, y) = [l(x,y)]^\alpha \times [c(x, y)]^\beta \times [s(x, y)]^\gamma
+\end{equation}
+
+$\alpha > 0, \beta > 0, \gamma > 0$
+
+\begin{equation}
+	SSIM(x, y) = \frac{(2 \mu_x \mu_y + C_1)(2\sigma_{xy} + C_2)}{(\mu^2_x + \mu^2_y + C_1)(\sigma^2_x + \sigma^2_y + C_2)}
+\end{equation}
+
+\begin{align}
+	\mu_x &= \sum\limits_{i=1}^{N} w_i x_i \\
+	\sigma_x &= \left( \sum\limits_{i=1}^{N} w_i(x_i - \mu_x)^2 \right)^\frac{1}{2} \\
+	\sigma_xy &= \sum\limits_{i=1}^{N} w_i(x_i - \mu_x)(y_i - \mu_y)
+\end{align}
+
+\begin{equation}
+	MSSIM(X, Y) = \frac{1}{M} \sum\limits_{j=1}^{M} SSIM(x_j, y_j)
+\end{equation}
+
+\chapter{Methodik und Umsetzung}
 
 \chapter{Ergebnisse}
+
+\chapter{Diskussion}
+
+\chapter{Zusammenfassung}
+
+\chapter{Ausblick}
 
 \begin{figure}[htbp]
 	\centering
