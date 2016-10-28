@@ -17,6 +17,8 @@ Compressor::Compressor(Config* config) {
 	m_color_triangle	= cv::Scalar(0, 120, 0);
 	
 	m_delaunay_image = cv::Mat(m_config->getMeshWidth(), m_config->getMeshHeight(), CV_8UC3, cv::Scalar(255,255,255));
+	
+	m_time_comression = 0.0;
 }
 
 Compressor::~Compressor() {
@@ -26,9 +28,14 @@ Compressor::~Compressor() {
 QJsonObject Compressor::compressFrame(FrameInfo& info, FrameBuffer& fb) {
 	QJsonObject jo;
 	
+	clock_t c_begin = clock();
+	
 	compressTexture(jo, fb);
 	compressMesh(jo, fb);
-
+	
+	clock_t c_end	= clock();
+	m_time_comression = ((c_end - c_begin) * 1000.0) / CLOCKS_PER_SEC;
+	
 	return jo;
 }
 
@@ -293,8 +300,14 @@ bool Compressor::isJoinable(cv::Mat& img, const Edge& e) {
 	return fabs(a - b) < m_config->getTjoin();
 }
 
+bool Compressor::isCollinear(const Point& p1, const Point& p2, const Point& p3) {
+	if((p1.x * (p2.y - p3.y) + p2.x * (p3.y - p1.y) + p3.x * (p1.y - p2.y)) == 0)
+		return true;
+	return false;
+}
+
 vector<Point> Compressor::splitTriangle(cv::Mat& img, const Point& a, const Point& b, const Point& c, cv::Mat* out) {
-	vector<Point> triangles;
+	vector<Point> result;
 
 	Edge ab(a, b);
 	Edge bc(b, c);
@@ -338,7 +351,7 @@ vector<Point> Compressor::splitTriangle(cv::Mat& img, const Point& a, const Poin
 
 		int i_size = invalid_edges.size();
 		if(i_size == 3) {
-			triangles.resize(9);
+			vector<Point> triangles(9);
 			triangles[0] = a;
 			triangles[1] = getMaxJoinable(img, a, b);
 			triangles[2] = getMaxJoinable(img, a, c);
@@ -350,23 +363,61 @@ vector<Point> Compressor::splitTriangle(cv::Mat& img, const Point& a, const Poin
 			triangles[6] = c;
 			triangles[7] = getMaxJoinable(img, c, a);
 			triangles[8] = getMaxJoinable(img, c, b);
-
-			if(out != nullptr) {
-				line(*out, triangles[0].toCVPoint(), triangles[1].toCVPoint(), m_color_green, 1, CV_AA, 0);
-				line(*out, triangles[1].toCVPoint(), triangles[2].toCVPoint(), m_color_green, 1, CV_AA, 0);
-				line(*out, triangles[2].toCVPoint(), triangles[0].toCVPoint(), m_color_green, 1, CV_AA, 0);
-
-				line(*out, triangles[3].toCVPoint(), triangles[4].toCVPoint(), m_color_green, 1, CV_AA, 0);
-				line(*out, triangles[4].toCVPoint(), triangles[5].toCVPoint(), m_color_green, 1, CV_AA, 0);
-				line(*out, triangles[5].toCVPoint(), triangles[3].toCVPoint(), m_color_green, 1, CV_AA, 0);
 			
-				line(*out, triangles[6].toCVPoint(), triangles[7].toCVPoint(), m_color_green, 1, CV_AA, 0);
-				line(*out, triangles[7].toCVPoint(), triangles[8].toCVPoint(), m_color_green, 1, CV_AA, 0);
-				line(*out, triangles[8].toCVPoint(), triangles[6].toCVPoint(), m_color_green, 1, CV_AA, 0);
+			if(!isCollinear(triangles[0], triangles[1], triangles[2])) {
+				result.push_back(triangles[0]);
+				result.push_back(triangles[1]);
+				result.push_back(triangles[2]);
+
+				if(out != nullptr) {
+					line(*out, triangles[0].toCVPoint(), triangles[1].toCVPoint(), m_color_green, 1, CV_AA, 0);
+					line(*out, triangles[1].toCVPoint(), triangles[2].toCVPoint(), m_color_green, 1, CV_AA, 0);
+					line(*out, triangles[2].toCVPoint(), triangles[0].toCVPoint(), m_color_green, 1, CV_AA, 0);
+				}
+			} else {
+				if(out != nullptr) {
+					line(*out, triangles[0].toCVPoint(), triangles[1].toCVPoint(), m_color_red, 1, CV_AA, 0);
+					line(*out, triangles[1].toCVPoint(), triangles[2].toCVPoint(), m_color_red, 1, CV_AA, 0);
+					line(*out, triangles[2].toCVPoint(), triangles[0].toCVPoint(), m_color_red, 1, CV_AA, 0);
+				}
+			}
+			if(!isCollinear(triangles[3], triangles[4], triangles[5])) {
+				result.push_back(triangles[3]);
+				result.push_back(triangles[4]);
+				result.push_back(triangles[5]);
+
+				if(out != nullptr) {
+					line(*out, triangles[3].toCVPoint(), triangles[4].toCVPoint(), m_color_green, 1, CV_AA, 0);
+					line(*out, triangles[4].toCVPoint(), triangles[5].toCVPoint(), m_color_green, 1, CV_AA, 0);
+					line(*out, triangles[5].toCVPoint(), triangles[3].toCVPoint(), m_color_green, 1, CV_AA, 0);
+				}
+			} else {
+				if(out != nullptr) {
+					line(*out, triangles[3].toCVPoint(), triangles[4].toCVPoint(), m_color_red, 1, CV_AA, 0);
+					line(*out, triangles[4].toCVPoint(), triangles[5].toCVPoint(), m_color_red, 1, CV_AA, 0);
+					line(*out, triangles[5].toCVPoint(), triangles[3].toCVPoint(), m_color_red, 1, CV_AA, 0);
+				}
+			}
+			if(!isCollinear(triangles[6], triangles[7], triangles[8])) {
+				result.push_back(triangles[6]);
+				result.push_back(triangles[7]);
+				result.push_back(triangles[8]);
+
+				if(out != nullptr) {
+					line(*out, triangles[6].toCVPoint(), triangles[7].toCVPoint(), m_color_green, 1, CV_AA, 0);
+					line(*out, triangles[7].toCVPoint(), triangles[8].toCVPoint(), m_color_green, 1, CV_AA, 0);
+					line(*out, triangles[8].toCVPoint(), triangles[6].toCVPoint(), m_color_green, 1, CV_AA, 0);
+				}
+			} else {
+				if(out != nullptr) {
+					line(*out, triangles[6].toCVPoint(), triangles[7].toCVPoint(), m_color_red, 1, CV_AA, 0);
+					line(*out, triangles[7].toCVPoint(), triangles[8].toCVPoint(), m_color_red, 1, CV_AA, 0);
+					line(*out, triangles[8].toCVPoint(), triangles[6].toCVPoint(), m_color_red, 1, CV_AA, 0);
+				}
 			}
 		}
 		if(i_size == 2) {
-			triangles.resize(9);
+			vector<Point> triangles(9);
 			
 			if(valid_edge == 0) {
 				triangles[0] = c;
@@ -411,30 +462,68 @@ vector<Point> Compressor::splitTriangle(cv::Mat& img, const Point& a, const Poin
 				triangles[8] = c;
 			}
 
-			if(out != nullptr) {
-				line(*out, triangles[0].toCVPoint(), triangles[1].toCVPoint(), m_color_blue, 1, CV_AA, 0);
-				line(*out, triangles[1].toCVPoint(), triangles[2].toCVPoint(), m_color_blue, 1, CV_AA, 0);
-				line(*out, triangles[2].toCVPoint(), triangles[0].toCVPoint(), m_color_blue, 1, CV_AA, 0);
+			if(!isCollinear(triangles[0], triangles[1], triangles[2])) {
+				result.push_back(triangles[0]);
+				result.push_back(triangles[1]);
+				result.push_back(triangles[2]);
 
-				line(*out, triangles[3].toCVPoint(), triangles[4].toCVPoint(), m_color_blue, 1, CV_AA, 0);
-				line(*out, triangles[4].toCVPoint(), triangles[5].toCVPoint(), m_color_blue, 1, CV_AA, 0);
-				line(*out, triangles[5].toCVPoint(), triangles[3].toCVPoint(), m_color_blue, 1, CV_AA, 0);
-			
-				line(*out, triangles[6].toCVPoint(), triangles[7].toCVPoint(), m_color_blue, 1, CV_AA, 0);
-				line(*out, triangles[7].toCVPoint(), triangles[8].toCVPoint(), m_color_blue, 1, CV_AA, 0);
-				line(*out, triangles[8].toCVPoint(), triangles[6].toCVPoint(), m_color_blue, 1, CV_AA, 0);
+				if(out != nullptr) {
+					line(*out, triangles[0].toCVPoint(), triangles[1].toCVPoint(), m_color_green, 1, CV_AA, 0);
+					line(*out, triangles[1].toCVPoint(), triangles[2].toCVPoint(), m_color_green, 1, CV_AA, 0);
+					line(*out, triangles[2].toCVPoint(), triangles[0].toCVPoint(), m_color_green, 1, CV_AA, 0);
+				}
+			} else {
+				if(out != nullptr) {
+					line(*out, triangles[0].toCVPoint(), triangles[1].toCVPoint(), m_color_red, 1, CV_AA, 0);
+					line(*out, triangles[1].toCVPoint(), triangles[2].toCVPoint(), m_color_red, 1, CV_AA, 0);
+					line(*out, triangles[2].toCVPoint(), triangles[0].toCVPoint(), m_color_red, 1, CV_AA, 0);
+				}
+			}
+			if(!isCollinear(triangles[3], triangles[4], triangles[5])) {
+				result.push_back(triangles[3]);
+				result.push_back(triangles[4]);
+				result.push_back(triangles[5]);
+
+				if(out != nullptr) {
+					line(*out, triangles[3].toCVPoint(), triangles[4].toCVPoint(), m_color_green, 1, CV_AA, 0);
+					line(*out, triangles[4].toCVPoint(), triangles[5].toCVPoint(), m_color_green, 1, CV_AA, 0);
+					line(*out, triangles[5].toCVPoint(), triangles[3].toCVPoint(), m_color_green, 1, CV_AA, 0);
+				}
+			} else {
+				if(out != nullptr) {
+					line(*out, triangles[3].toCVPoint(), triangles[4].toCVPoint(), m_color_red, 1, CV_AA, 0);
+					line(*out, triangles[4].toCVPoint(), triangles[5].toCVPoint(), m_color_red, 1, CV_AA, 0);
+					line(*out, triangles[5].toCVPoint(), triangles[3].toCVPoint(), m_color_red, 1, CV_AA, 0);
+				}
+			}
+			if(!isCollinear(triangles[6], triangles[7], triangles[8])) {
+				result.push_back(triangles[6]);
+				result.push_back(triangles[7]);
+				result.push_back(triangles[8]);
+
+				if(out != nullptr) {
+					line(*out, triangles[6].toCVPoint(), triangles[7].toCVPoint(), m_color_green, 1, CV_AA, 0);
+					line(*out, triangles[7].toCVPoint(), triangles[8].toCVPoint(), m_color_green, 1, CV_AA, 0);
+					line(*out, triangles[8].toCVPoint(), triangles[6].toCVPoint(), m_color_green, 1, CV_AA, 0);
+				}
+			} else {
+				if(out != nullptr) {
+					line(*out, triangles[6].toCVPoint(), triangles[7].toCVPoint(), m_color_red, 1, CV_AA, 0);
+					line(*out, triangles[7].toCVPoint(), triangles[8].toCVPoint(), m_color_red, 1, CV_AA, 0);
+					line(*out, triangles[8].toCVPoint(), triangles[6].toCVPoint(), m_color_red, 1, CV_AA, 0);
+				}
 			}
 		} else {
-			triangles.resize(3);
-			triangles[0] = a;
-			triangles[1] = b;
-			triangles[2] = c;
+			result.resize(3);
+			result[0] = a;
+			result[1] = b;
+			result[2] = c;
 		}
 	} else {
-		triangles.resize(3);
-		triangles[0] = a;
-		triangles[1] = b;
-		triangles[2] = c;
+		result.resize(3);
+		result[0] = a;
+		result[1] = b;
+		result[2] = c;
 
 		if(out != nullptr) {
 			line(*out, a.toCVPoint(), b.toCVPoint(), m_color_edge, 1, CV_AA, 0);
@@ -444,7 +533,7 @@ vector<Point> Compressor::splitTriangle(cv::Mat& img, const Point& a, const Poin
 	}
 		
 
-	return triangles;
+	return result;
 }
 
 Point Compressor::getMaxJoinable(cv::Mat& img, const Point& p, const Point& a) {
@@ -531,4 +620,8 @@ pair<Point, Point> Compressor::getMaxJoinables(cv::Mat& img, const Point& a, con
 
 cv::Mat* Compressor::getDelaunayImage() {
 	return &m_delaunay_image;
+}
+
+clock_t Compressor::getCompressionTime() {
+	return m_time_comression;
 }

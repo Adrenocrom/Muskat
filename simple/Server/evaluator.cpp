@@ -29,10 +29,6 @@ void Evaluator::runEvaluation() {
 	list<ResultEntry> meanEntries;
 
 	cout<<"start evaluation"<<endl;
-
-time_t tbegin, tend;
-time(&tbegin);
-
 	vector<ResultEntry> vEntries(r_size);
 	#pragma omp parallel for schedule(static, 1)
 	for(uint i = 0; i < r_size; ++i) {
@@ -45,9 +41,6 @@ time(&tbegin);
 		//QString filename = QString(m_filename.c_str()) + "/frame_"+ QString(insertZeros(5, i).c_str()) +".png";
 		//imwrite(filename.toStdString(), m_results[i]);
 	}
-
-time(&tend);
-printf("time in seconds: %.2f\n", difftime(tend, tbegin));
 
 	list<ResultEntry> entries(vEntries.begin(), vEntries.end());
 	entries.sort([this](ResultEntry& l, ResultEntry& r) {
@@ -121,6 +114,10 @@ printf("time in seconds: %.2f\n", difftime(tend, tbegin));
 	
 	file<< "\\end{filecontents}\n\n";
 
+	file<< "\\begin{filecontents}{div_c_duration_info_"<<m_scene_id<<"_"<<m_short_name<<".csv}\n";
+	file<< "c\n" << m_compressor->getCompressionTime() << "\n";
+	file<< "\\end{filecontents}\n\n";
+	
 	file<< "\\begin{filecontents}{div_duration_info_"<<m_scene_id<<"_"<<m_short_name<<".csv}\n";
 	file<< "i,d,min,max,mean\n";
 

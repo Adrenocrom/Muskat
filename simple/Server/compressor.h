@@ -101,6 +101,7 @@ public:
 	QJsonObject compressFrame(FrameInfo& info, FrameBuffer& fb);	
 	
 	cv::Mat*	getDelaunayImage();
+	clock_t		getCompressionTime();
 
 	// resize quadtree
 	void resizeQuadtree();
@@ -119,6 +120,7 @@ private:
 	cv::Scalar 	m_color_triangle;
 
 	cv::Mat		m_delaunay_image;
+	clock_t		m_time_comression;
 
 	// stores quadtree for delaunay triangulation
 	QuadTree* 	m_quadtree;
@@ -140,6 +142,8 @@ private:
 	bool isValid(const Edge& e);
 
 	bool isJoinable(cv::Mat& img, const Edge& e);
+
+	bool isCollinear(const Point& p1, const Point& p2, const Point& p3);
 
 	vector<Point> splitTriangle(cv::Mat& img, const Point& a, const Point& b, const Point& c, cv::Mat* out = nullptr);
 
