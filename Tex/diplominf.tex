@@ -565,6 +565,49 @@ Die Darstellung der Darstellungspipeline nach dem OpenGL ES 2.0 ist in Abbildung
 Mit gelb Farblich hervorgehoben sind die programmierbaren
 Elemente, der Vertex- und der Fragment-Shader.
 
+\subsection{16 Bit}
+
+Farb- und Tiefenbild werden mit base64 kodiert übertragen und lassen
+sich vom Browser nativ dekodieren.
+Die Farbtiefe pro Kanal ist Browserseitig auf 8 Bit beschränkt.
+Um 16 Bit Tiefeninformationen im Vertex-Shader nutzen zu können,
+müssen diese 16 Bit auf zwei 8 Bit Kanäle aufgeteilt werden.
+Die Abbildung \ref{fig:use2channels} verdeutlicht dieses Verfahren.
+In den roten-Farbkanal werden die ersten 8 Bit und in den
+grünen-Farbkanal die restlichen 8 Bit aufgeteilt.
+Die Aufteilung der 16 Bit auf die Farbkanäle erfolgt Server-seitig.
+
+\begin{figure}
+	\begin{tikzpicture}
+		\node[draw=none] (A) at (0,0) {$2^{16}$};
+		\node[draw=none, fill=red!20, minimum width=6cm, minimum height=1cm] (B) at (-3,-1) {$2^{8}$};
+		\node[draw=none, fill=green!20, minimum width=6cm, minimum height=1cm] (C) at (3,-1) {$2^{8}$};
+		\node[draw=none] (D) at (-3,-2) {heigh};
+		\node[draw=none] (E) at (3, -2) {low};
+		
+		\draw (-6, -2.5) -- (-6, 0.5) -- (6, 0.5) -- (6, -2.5);
+		\draw (-6, -0.5) -- (6, -0.5);
+		\draw (-6, -1.5) -- (6, -1.5);
+		\draw (-6, -2.5) -- (6, -2.5);
+		\draw (0, -2.5) -- (0, -0.5);
+	\end{tikzpicture}
+	\centering
+	\caption{Hier wird die Aufteilung einer 16 Bit Zahl auf die Farbkanäle, links rot und rechts grün, visuell verdeutlicht. Das Schlüsselwort \textit{heigh} bezeichnet die ersten 8 Bit und \textit{low} die zweiten 8 Bit.}
+	\label{fig:use2channels}
+\end{figure}
+
+Um aus \textit{heigh} und \textit{low} die 16 Bit $v$ zu berechnen, genügt es den Wert von \textit{heigh}
+zuerst mit 255 zu multiplizieren und dann den Wert von \textit{low} zu addieren.
+Die Gleichung \ref{eq:reconstruct1} zeigt genau diesen Zusammenhang:
+
+\begin{equation}
+	v = low + heigh \times 255.
+	\label{eq:reconstruct1}
+\end{equation}
+
+Beim Laden einer Textur auf die Grafikkarte, werden alle Farbkanäle normiert, im Fall
+eines 8 Bit Bildes, wird jeder Wert durch den Maximalwert 255 geteilt, so dass
+der Wert im Intervall von $[0, 1]$ liegt.
 
 \begin{figure}[h]
 	\begin{tikzpicture}
