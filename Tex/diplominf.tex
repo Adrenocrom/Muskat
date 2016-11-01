@@ -71,14 +71,15 @@ Bild"ubernahmen zitieren.}
 \abstractde{ Zusammenfassung Text Deutsch}
 
 \usepackage{pgfplots}
+%\usepackage{pgf-umlsd}
 \usepackage{filecontents}
+\usepackage{subfigure}
 
-\input{../results/2/512x512_Delaunay/D8/L1.0/I0.0/results.tex}
-\input{../results/2/512x512_Delaunay/D8/L1.0/I0.5/results.tex}
-\input{../results/2/512x512_Delaunay/D8/L1.0/I1.0/results.tex}
-\input{../results/4/512x512_Delaunay/D10/L0.0/I0.0/A0.0/J0.0/_pre/results.tex}
+\input{../results/4/512x512_Delaunay/D10/L0.0/I0.0/results.tex}
 
-\input{../results/test.tex}
+
+
+\input{../results/d_0.tex}
 
 \begin{document}
 
@@ -289,13 +290,32 @@ Das Resultat dieser Forderung ist die maximierte Innenwinkelsumme aller Dreiecke
 Für eine gegebene Punktmenge, ist die Lösung nicht eindeutig, es kann verschiedene
 Netzkonfigurationen geben, welche die Forderung erfüllen.
 
-
-
 \section{PSNR}
+
+Die Abkürzung PSNR in Englisch \textit{Peak signal-to-noise ratio}, gibt das Verhältnis
+zwischen dem 
+
+\textit{Peak signal-to-noise ratio}, kurz PSNR, gibt das Verhältnis zwischen dem Maximalwert und
+der maximalen Störung an. 
+Da die meisten Signale sehr große Skalen haben,
+wird der PSNR häufig mittels einer logarithmischen Skala angeben.
+
+Der PSNR wird zur Messung der Qualität von nicht verlustfreien Kompressionsalgorithmen verwendet.
+Dazu wird das Originalbild als Signal interpretiert und der Fehler, der durch die Kompression
+eingeführt wird als Rauschen.
+Ein größer der PSNR-Wert bedeutet eine besser Qualität des dekomprimierten Bildes. 
+
+Bei einer Farbtiefe von 8 Bit pro Kanal, stehen Werte von 30 - 40 dB für ein
+geringes Störsignal.
+
+Der \textit{mean squared error}, kurz $MSE$ summiert einem Fenster der Größe $m \times n$
+die quadratischen Abstände zwischen dem Original und dem rekonstruierten Bild auf.
 
 \begin{equation}
 	MSE = \frac{1}{mn} \sum\limits_{i=0}^{m-1} \sum\limits_{j=0}^{n-1}[I(i, j) - K(i, j)]^2
 \end{equation}
+
+Beim PSNR wird der maximal mögliche Wert $MAX_I$ mit dem $MSE$ ins Verhältnis gesetzt:
 
 \begin{align}
 PSNR &= 10 \times \log_{10} \left( \frac{MAX^2_I}{MSE} \right) \\
@@ -305,42 +325,433 @@ PSNR &= 10 \times \log_{10} \left( \frac{MAX^2_I}{MSE} \right) \\
 
 \section{SSIM}
 
-Image Quality Assessment: From Error Visibility to
-Structural Similarity \cite{Wang04imagequality}
+Eine weitere Metrik, die zum Vergleich von Bilder eingesetzt wird, wurde von Wang \textit{et al.}
+entwickelt \cite{Wang04imagequality}.
+Diese basiert auf der Idee das die Struktur der abgebildeten Objekte von Beleuchtung und
+Kontrast unabhängig ist.
+
+Beleuchtung und Kontrast können im gesamten Bild variieren, aus diesem Grund werden
+beide Parameter lokal in einem Fenster bestimmt.
+
+In ihrem System wird die Aufgabe, die Ähnlichkeit zu messen in drei Teile unterteilt:
+Beleuchtung, Kontrast und Struktur.
+Als Erstes wird die Beleuchtung bestimmt. 
+Wenn die Signale, wie in diesem Fall diskret sind, lässt sich die mittlere Intensität, 
+des Signals $x$ mit dem Term
 
 \begin{equation}
-	SSIM(x, y) = [l(x,y)]^\alpha \times [c(x, y)]^\beta \times [s(x, y)]^\gamma
+	\mu_x = \frac{1}{N} \sum\limits_{i=1}^{N} x_i
 \end{equation}
 
-$\alpha > 0, \beta > 0, \gamma > 0$
+berechnen. Die Vergleichsfunktion für die Beleuchtung zwischen zwei Signalen $x$ und $y$
+wird $l(x, y)$ und setzt die werte $\mu_x$ und $\mu_y$ wie folgt ins Verhältnis:
+
+\begin{equation}
+	l(x, y) = \frac{2\mu_x \mu_y + C_1}{\mu^2_x + \mu^2_y + C_1}.
+\end{equation}
+
+Als Nächstes wird die mittlere Intensität von den Signalen $x$ und $y$ abgezogen,
+so dass $x' = x - \mu_x$ und $y' = y - \mu_y$ entstehen.
+
+Der Kontrast des Signals $x'$ wird mit Hilfe der Standardabweichung $\sigma_{x'}$ approximiert.
+In diskreter Form lässt sich diese mit der folgenden Formel berechnen:
+
+\begin{equation}
+	\sigma_{x'} = \left( \frac{1}{N-1} \sum\limits_{i=1}^{N} (x'_i - \mu_{x'})^{2} \right)^\frac{1}{2}.
+\end{equation}
+
+Die Vergleichsfunktion für den Kontrast wird mit $c(x, y)$ bezeichnet und definiert sich wie folgt:
+
+\begin{equation}
+	c(x, y) = \frac{2\sigma_x \sigma_y + C_2}{\sigma^2_x + \sigma^2_y + C_2}.
+\end{equation}
+
+An dieser Stelle wird das Signal normalisiert, 
+indem es durch seine eigene Standartabweichung geteilt wird,
+so dass die Signale $x'' = x' - \mu_{x'} / \sigma_x'$ und $y'' = y' - \mu_{y'} / \sigma_y'$ entstehen.
+Der Vergleich der strukturellen Eigenschaften $s(x, y)$ wird mit den normalisierten Signalen $x''$
+und $y''$ durchgeführt.
+Für den Vergleich der Struktur sollen folgende Eigenschaften gelten:
+
+Erstens, die Funktion $s(x, y)$ muss Symmetrisch sein $s(x, y) = s(y, x)$.
+
+Zweitens soll die Funktion auf einen Wert kleiner oder gleich $1$ beschränkt werden $s(x, y) \le 1$.
+
+Drittens es soll nur ein Maximum $s(x, y) = 1$, 
+genau dann und nur dann, wenn gilt das $x = y$.
+
+Eine Definition, die diese Forderungen erfüllt ist:
+
+\begin{equation}
+	s(x, y) = \frac{\sigma_{xy} + C_3}{\sigma_x + \sigma_y + C_3}.
+\end{equation}
+
+Die Kovarianz $\sigma_{xy}$ berechnet sich folgendermaßen:
+
+\begin{equation}
+	\sigma_{xy} = \frac{1}{N-1} \sum\limits_{i=1}^{N} (x_i - \mu_x)(y_i - \mu_y).
+\end{equation}
+
+Sie korreliert mit dem Kosinus des Winkels zwischen den beiden Vektoren
+$x - \mu_x$ und $y - \mu_y$.
+Die Konstanten $C_1, C_2$ und $C_3$ in den drei Vergleichsfunktionen
+sorgen dafür, das eine Division durch 0 nicht möglich wird, sollten
+die Werte in den Nennern zu klein werden.
+Letztlich kann die Gesamtqualität gemessen werden, indem Beleuchtung,
+Kontrast und Strukturvergleich kombiniert werden:
+
+\begin{equation}
+	SSIM(x, y) = [l(x,y)]^\alpha \times [c(x, y)]^\beta \times [s(x, y)]^\gamma.
+\end{equation}
+
+Mit den Parametern $\alpha > 0, \beta > 0, \gamma > 0$, kann die
+Gewichtung zwischen den Vergleichsfunktionen variiert werden.
+Im Rahmen dieser Arbeit gilt $\alpha = \beta = \gamma = 1$ und
+es gilt für die Konstanten:
+$C_3 = C_2 / 2$, mit $C_1 = 6.5025$ und $C_2 = 58.5225$.
+Der $SSIM$ wird lokal berechnet, in Fenstern der Größe $11 \times 11$,
+dabei erden die Signalwerte $x_i$ und $y_i$ mit einer Gaussianfunktion
+gewichtet.
+Damit lassen sich die mittlere Intensität, die Standardabweichung
+und die Kovarianz zu folgenden Gleichungen umschreiben, wobei $w_i$
+die Gewichtung an dem Punkt $i$ bezeichnet:
+
+\begin{align}
+	\mu_x &= \sum\limits_{i=1}^{N} w_i x_i \\
+	\sigma_x &= \left( \sum\limits_{i=1}^{N} w_i(x_i - \mu_x)^2 \right)^\frac{1}{2} \\
+	\sigma_{xy} &= \sum\limits_{i=1}^{N} w_i(x_i - \mu_x)(y_i - \mu_y).
+\end{align}
+
+Die Gesamtgleichung für den $SSIM(x, y)$ lässt sich durch die Gleichung
 
 \begin{equation}
 	SSIM(x, y) = \frac{(2 \mu_x \mu_y + C_1)(2\sigma_{xy} + C_2)}{(\mu^2_x + \mu^2_y + C_1)(\sigma^2_x + \sigma^2_y + C_2)}
 \end{equation}
 
-\begin{align}
-	\mu_x &= \sum\limits_{i=1}^{N} w_i x_i \\
-	\sigma_x &= \left( \sum\limits_{i=1}^{N} w_i(x_i - \mu_x)^2 \right)^\frac{1}{2} \\
-	\sigma_xy &= \sum\limits_{i=1}^{N} w_i(x_i - \mu_x)(y_i - \mu_y)
-\end{align}
+ausrechnen. Der $SSIM(x, y)$ misst die Güte jedoch nur lokal, um
+eine Aussage über das gesamte Bild treffen zu können, kann der
+Mittelwert über allen $x \in X$ und $y \in Y$ berechnet werden:
 
 \begin{equation}
-	MSSIM(X, Y) = \frac{1}{M} \sum\limits_{j=1}^{M} SSIM(x_j, y_j)
+	MSSIM(X, Y) = \frac{1}{M} \sum\limits_{j=1}^{M} SSIM(x_j, y_j).
 \end{equation}
 
 \chapter{Methodik und Umsetzung}
 
-Die Aufgabe bestand in der Entwicklung eines Remote-Visualisierungssystems.
-Der Server und der Klient kommunizieren über das WebSocket-Protokoll miteinander.
-Als Grundlage für die Klient-Anwendung dient HTML5, JavaScript und WebGl,
-was den Vorteil hat, das dieser Plattform-unabhängig ist.
+Das Ziel dieser Arbeit ist es, ein Remote-Visualisierungssystem zu entwickeln
+und eine Klient-seitige Bildextrapolation durchzuführen und die Güte der Extrapolation zu untersuchen und zu bewerten.
+Zu diesen Zweck wird aus dem bei der Server-seitigen Bildsynthese entstehende Tiefenbild ein Dreiecksnetz erzeugt. 
+Dieses wird vom Klient aus einer neuen Kameraperspektive gezeichnet, das Farbbild wird dabei als Textur verwendet.
+Mit Hilfe von \textit{Ground-Truth} Szenen wird die Qualität, der extrapolierten Bildern
+in Abhängigkeit der gewählten Parameter, mit dem PSNR und dem MSSIM gemessen.
 
-Die Aufgabe das Servers besteht darin, alle Szenen zu laden.
-In diesem Anwendungsfall entspricht eine Szene einer Liste von Paaren, die jeweils
-aus einem Farb- und einem Tiefenbild bestehen.
+Die Zentrale Aufgabe ist die Optimierung und die Übertragung der Tiefeninformationen,
+vom Server zum Klient.
+Es gibt zwei Möglichkeiten diese Aufgabe zu erfüllen.
+Die erste Möglichkeit besteht darin das Tiefenbild direkt zu komprimieren,
+zum Klient zu senden und die Konstruktion des Dreiecksnetzes auf von dem Klient durchführen zu lassen.
+Die andere Möglichkeit besteht in der Konstruktion des Dreiecksnetzes auf dem Server,
+vor der Kompression und Übertragung zum Klient durchzuführen.
+In dieser Arbeit werden beide Varianten untersucht.
 
-\section{Vollvernetzung}
-\section{Delaunay-Triangulierung}
+Als Grundlage dient das Konzept von Wessels \textit{et al.} \cite{DBLP:conf/itng/WesselsPJR11}.
+Die Klient-Anwendung ist eine Browser basierte Web-Anwendung, die mit dem Server
+über das WebSocket-Protokoll kommuniziert.
+Dabei handelt es sich um ein auf TCP basierendes Netzwerkprotokoll,
+das eine Bidirektionale Verbindung erlaubt.
+Die Arbeit von Wessels \textit{et al.} wird dahingehend erweitert,
+das die Manipulation der Bilddaten mit Hilfe von WebGl durchgeführt wird.
+Bei WebGl handelt es sich um eine Bibliothek die von modernen Browsern zur Verfügung gestellt wird,
+um eine Hardware beschleunigte Bildsynthese zu ermöglichen.
+Der Vorteil dieser Technologie ist die Unabhängigkeit der Anwendung im Bezug,
+zur Plattform und dem Gerät, auf dem sie laufen soll.
+
+Im Folgenden wird die Konstruktion der Dreiecksnetze näher betrachtet.
+
+\section{Erzeugung von Dreiecksnetzen}
+
+Grundlage für die Erzeugung der Dreiecksnetze ist das Tiefenbild $D$.
+Jeder Tiefenwert $d(x, y) \in D$ liegt in dem Intervall $[0, 1]$.
+
+\subsection{Vollvernetzung}
+
+Bei der Vollvernetzung kann das Dreiecksnetz vom Klient vor dem Erhalt des
+ersten Bildes konstruiert werden.
+Eine Neukonstruktion muss nur bei der Veränderung der Auflösung durchgeführt werden.
+Jeder Pixel des Tiefenbildes entspricht dabei einem Eckpunkt im Dreiecksnetz.
+Die z-Komponente jedes Eckpunktes wird initial mit 0 gesetzt.
+Die Abbildungen \ref{fig:FULL_Default}, \ref{fig:FULL_Cookie} und \ref{fig:FULL_Isometric}
+zeigen drei verschiedene Varianten der Vollvernetzung.
+
+\begin{figure}[h]
+	\begin{tikzpicture}
+		\begin{scope}[
+			auto, vertice/.style={align=center, draw, circle, minimum width=2em, inner sep=2pt}]
+			\node[vertice] (V0) at (0,0) {$v_0$};
+			\node[vertice] (V1) at (2,0) {$v_1$};
+			\node[vertice] (V2) at (4,0) {$v_2$};
+			\node[vertice] (V3) at (6,0) {$v_3$};
+			\node[vertice] (V4) at (8,0) {$v_4$};
+			
+			\node[vertice] (V5) at (0,-2) {$v_5$};
+			\node[vertice] (V6) at (2,-2) {$v_6$};
+			\node[vertice] (V7) at (4,-2) {$v_7$};
+			\node[vertice] (V8) at (6,-2) {$v_8$};
+			\node[vertice] (V9) at (8,-2) {$v_9$};
+			
+			\node[vertice] (V10) at (0,-4) {$v_{10}$};
+			\node[vertice] (V11) at (2,-4) {$v_{11}$};
+			\node[vertice] (V12) at (4,-4) {$v_{12}$};
+			\node[vertice] (V13) at (6,-4) {$v_{13}$};
+			\node[vertice] (V14) at (8,-4) {$v_{14}$};
+
+			\node[vertice] (V15) at (0,-6) {$v_{15}$};
+			\node[vertice] (V16) at (2,-6) {$v_{16}$};
+			\node[vertice] (V17) at (4,-6) {$v_{17}$};
+			\node[vertice] (V18) at (6,-6) {$v_{18}$};
+			\node[vertice] (V19) at (8,-6) {$v_{19}$};
+			
+			\node[vertice] (V20) at (0,-8) {$v_{20}$};
+			\node[vertice] (V21) at (2,-8) {$v_{21}$};
+			\node[vertice] (V22) at (4,-8) {$v_{22}$};
+			\node[vertice] (V23) at (6,-8) {$v_{23}$};
+			\node[vertice] (V24) at (8,-8) {$v_{24}$};		
+		\end{scope}
+		
+		\draw[-] (V0) edge (V1); \draw[-] (V1) edge (V5); \draw[-] (V5) edge (V0);
+		\draw[-] (V1) edge (V6); \draw[-] (V6) edge (V5); \draw[-] (V5) edge (V1);
+		\draw[-] (V1) edge (V2); \draw[-] (V2) edge (V6); \draw[-] (V6) edge (V1);
+		\draw[-] (V2) edge (V7); \draw[-] (V7) edge (V6); \draw[-] (V6) edge (V2);
+		\draw[-] (V2) edge (V3); \draw[-] (V3) edge (V7); \draw[-] (V7) edge (V2);
+		\draw[-] (V3) edge (V8); \draw[-] (V8) edge (V7); \draw[-] (V7) edge (V3);
+		\draw[-] (V3) edge (V4); \draw[-] (V4) edge (V8); \draw[-] (V8) edge (V3);
+		\draw[-] (V4) edge (V9); \draw[-] (V9) edge (V8); \draw[-] (V8) edge (V4);
+		
+		\draw[-] (V5) edge (V6);  \draw[-] (V6) edge (V10);  \draw[-] (V10) edge (V5);
+		\draw[-] (V6) edge (V11); \draw[-] (V11) edge (V10); \draw[-] (V10) edge (V6);
+		\draw[-] (V6) edge (V7);  \draw[-] (V7) edge (V11);  \draw[-] (V11) edge (V6);
+		\draw[-] (V7) edge (V12); \draw[-] (V12) edge (V11); \draw[-] (V11) edge (V7);
+		\draw[-] (V7) edge (V8);  \draw[-] (V8) edge (V12);  \draw[-] (V12) edge (V7);
+		\draw[-] (V8) edge (V13); \draw[-] (V13) edge (V12); \draw[-] (V12) edge (V8);
+		\draw[-] (V8) edge (V9);  \draw[-] (V9) edge (V13);  \draw[-] (V13) edge (V8);
+		\draw[-] (V9) edge (V14); \draw[-] (V14) edge (V13); \draw[-] (V13) edge (V9);
+
+		\draw[-] (V10) edge (V11); \draw[-] (V11) edge (V15); \draw[-] (V15) edge (V10);
+		\draw[-] (V11) edge (V16); \draw[-] (V16) edge (V15); \draw[-] (V15) edge (V11);
+		\draw[-] (V11) edge (V12); \draw[-] (V12) edge (V16); \draw[-] (V16) edge (V11);
+		\draw[-] (V12) edge (V17); \draw[-] (V17) edge (V16); \draw[-] (V16) edge (V12);
+		\draw[-] (V12) edge (V13); \draw[-] (V13) edge (V17); \draw[-] (V17) edge (V12);
+		\draw[-] (V13) edge (V18); \draw[-] (V18) edge (V17); \draw[-] (V17) edge (V13);
+		\draw[-] (V13) edge (V14); \draw[-] (V14) edge (V18); \draw[-] (V18) edge (V13);
+		\draw[-] (V14) edge (V19); \draw[-] (V19) edge (V18); \draw[-] (V18) edge (V14);
+		
+		\draw[-] (V15) edge (V16); \draw[-] (V16) edge (V20); \draw[-] (V20) edge (V15);
+		\draw[-] (V16) edge (V21); \draw[-] (V21) edge (V20); \draw[-] (V20) edge (V15);
+		\draw[-] (V16) edge (V17); \draw[-] (V17) edge (V21); \draw[-] (V21) edge (V16);
+		\draw[-] (V17) edge (V22); \draw[-] (V22) edge (V21); \draw[-] (V21) edge (V17);
+		\draw[-] (V17) edge (V18); \draw[-] (V18) edge (V22); \draw[-] (V22) edge (V17);
+		\draw[-] (V18) edge (V23); \draw[-] (V23) edge (V22); \draw[-] (V22) edge (V18);
+		\draw[-] (V18) edge (V19); \draw[-] (V19) edge (V23); \draw[-] (V23) edge (V18);
+		\draw[-] (V19) edge (V24); \draw[-] (V24) edge (V23); \draw[-] (V23) edge (V19);	
+	\end{tikzpicture}
+	\centering
+	\caption{Darstellung der Netzstruktur mit regulärer Vollvernetzung.}
+	\label{fig:FULL_Default}
+\end{figure}
+
+Die Anzahl der Eckpunkte und der Textur-Koordinaten entspricht dabei der Anzahl der Bildpunkte des Tiefenbildes und die Anzahl an Dreiecken lässt sich aus der Auflösung $w \times h$ folgendermaßen berechnen: $2(w-1)(h-1)$.
+
+Die Darstellung der Darstellungspipeline nach dem OpenGL ES 2.0 ist in Abbildung \ref{fig:OpenGl_pipeline} zu sehen. 
+Mit gelb Farblich hervorgehoben sind die programmierbaren
+Elemente, der Vertex- und der Fragment-Shader.
+
+
+\begin{figure}[h]
+	\begin{tikzpicture}
+		\begin{scope}[
+			auto, vertice/.style={align=center, draw, circle, minimum width=2em, inner sep=2pt}]
+			\node[vertice] (V0) at (0,0) {$v_0$};
+			\node[vertice] (V1) at (2,0) {$v_1$};
+			\node[vertice] (V2) at (4,0) {$v_2$};
+			\node[vertice] (V3) at (6,0) {$v_3$};
+			\node[vertice] (V4) at (8,0) {$v_4$};
+			
+			\node[vertice] (V5) at (0,-2) {$v_5$};
+			\node[vertice] (V6) at (2,-2) {$v_6$};
+			\node[vertice] (V7) at (4,-2) {$v_7$};
+			\node[vertice] (V8) at (6,-2) {$v_8$};
+			\node[vertice] (V9) at (8,-2) {$v_9$};
+			
+			\node[vertice] (V10) at (0,-4) {$v_{10}$};
+			\node[vertice] (V11) at (2,-4) {$v_{11}$};
+			\node[vertice] (V12) at (4,-4) {$v_{12}$};
+			\node[vertice] (V13) at (6,-4) {$v_{13}$};
+			\node[vertice] (V14) at (8,-4) {$v_{14}$};
+
+			\node[vertice] (V15) at (0,-6) {$v_{15}$};
+			\node[vertice] (V16) at (2,-6) {$v_{16}$};
+			\node[vertice] (V17) at (4,-6) {$v_{17}$};
+			\node[vertice] (V18) at (6,-6) {$v_{18}$};
+			\node[vertice] (V19) at (8,-6) {$v_{19}$};
+			
+			\node[vertice] (V20) at (0,-8) {$v_{20}$};
+			\node[vertice] (V21) at (2,-8) {$v_{21}$};
+			\node[vertice] (V22) at (4,-8) {$v_{22}$};
+			\node[vertice] (V23) at (6,-8) {$v_{23}$};
+			\node[vertice] (V24) at (8,-8) {$v_{24}$};		
+		\end{scope}
+		
+		\draw[-] (V0) edge (V1); \draw[-] (V1) edge (V6); \draw[-] (V6) edge (V0);
+		\draw[-] (V0) edge (V6); \draw[-] (V6) edge (V5); \draw[-] (V5) edge (V0);
+		\draw[-] (V1) edge (V2); \draw[-] (V2) edge (V6); \draw[-] (V6) edge (V1);
+		\draw[-] (V2) edge (V7); \draw[-] (V7) edge (V6); \draw[-] (V6) edge (V2);
+		\draw[-] (V2) edge (V3); \draw[-] (V3) edge (V8); \draw[-] (V8) edge (V2);
+		\draw[-] (V2) edge (V8); \draw[-] (V8) edge (V7); \draw[-] (V7) edge (V2);
+		\draw[-] (V3) edge (V4); \draw[-] (V4) edge (V8); \draw[-] (V8) edge (V3);
+		\draw[-] (V4) edge (V9); \draw[-] (V9) edge (V8); \draw[-] (V8) edge (V4);
+		
+		\draw[-] (V5) edge (V6);  \draw[-] (V6) edge (V10);  \draw[-] (V10) edge (V5);
+		\draw[-] (V6) edge (V11); \draw[-] (V11) edge (V10); \draw[-] (V10) edge (V6);
+		\draw[-] (V6) edge (V7);  \draw[-] (V7) edge (V12);  \draw[-] (V12) edge (V6);
+		\draw[-] (V6) edge (V12); \draw[-] (V12) edge (V11); \draw[-] (V11) edge (V6);
+		\draw[-] (V7) edge (V8);  \draw[-] (V8) edge (V12);  \draw[-] (V12) edge (V7);
+		\draw[-] (V8) edge (V13); \draw[-] (V13) edge (V12); \draw[-] (V12) edge (V8);
+		\draw[-] (V8) edge (V9);  \draw[-] (V9) edge (V14);  \draw[-] (V14) edge (V8);
+		\draw[-] (V8) edge (V14); \draw[-] (V14) edge (V13); \draw[-] (V13) edge (V8);
+
+		\draw[-] (V10) edge (V11); \draw[-] (V11) edge (V16); \draw[-] (V16) edge (V10);
+		\draw[-] (V10) edge (V16); \draw[-] (V16) edge (V15); \draw[-] (V15) edge (V10);
+		\draw[-] (V11) edge (V12); \draw[-] (V12) edge (V16); \draw[-] (V16) edge (V11);
+		\draw[-] (V12) edge (V17); \draw[-] (V17) edge (V16); \draw[-] (V16) edge (V12);
+		\draw[-] (V12) edge (V13); \draw[-] (V13) edge (V18); \draw[-] (V18) edge (V12);
+		\draw[-] (V12) edge (V18); \draw[-] (V18) edge (V17); \draw[-] (V17) edge (V12);
+		\draw[-] (V13) edge (V14); \draw[-] (V14) edge (V18); \draw[-] (V18) edge (V13);
+		\draw[-] (V14) edge (V19); \draw[-] (V19) edge (V18); \draw[-] (V18) edge (V14);
+		
+		\draw[-] (V15) edge (V16); \draw[-] (V16) edge (V20); \draw[-] (V20) edge (V15);
+		\draw[-] (V16) edge (V21); \draw[-] (V21) edge (V20); \draw[-] (V20) edge (V15);
+		\draw[-] (V16) edge (V17); \draw[-] (V17) edge (V22); \draw[-] (V22) edge (V16);
+		\draw[-] (V16) edge (V22); \draw[-] (V22) edge (V21); \draw[-] (V21) edge (V16);
+		\draw[-] (V17) edge (V18); \draw[-] (V18) edge (V22); \draw[-] (V22) edge (V17);
+		\draw[-] (V18) edge (V23); \draw[-] (V23) edge (V22); \draw[-] (V22) edge (V18);
+		\draw[-] (V18) edge (V19); \draw[-] (V19) edge (V24); \draw[-] (V24) edge (V18);
+		\draw[-] (V18) edge (V24); \draw[-] (V24) edge (V23); \draw[-] (V23) edge (V18);	
+	\end{tikzpicture}
+	\centering
+	\caption{Darstellung der Netzstruktur mit \textit{cookie-cutter} Vollvernetzung.}
+	\label{fig:FULL_Cookie}
+\end{figure}
+
+\begin{figure}[h]
+	\begin{tikzpicture}
+		\begin{scope}[
+			auto, vertice/.style={align=center, draw, circle, minimum width=2em, inner sep=2pt}]
+			\node[vertice] (V0) at (0,0) {$v_0$};
+			\node[vertice] (V1) at (2,0) {$v_1$};
+			\node[vertice] (V2) at (4,0) {$v_2$};
+			\node[vertice] (V3) at (6,0) {$v_3$};
+			\node[vertice] (V4) at (8,0) {$v_4$};
+			
+			\node[vertice] (V5) at (0,-2) {$v_5$};
+			\node[vertice] (V6) at (2,-2) {$v_6$};
+			\node[vertice] (V7) at (4,-2) {$v_7$};
+			\node[vertice] (V8) at (6,-2) {$v_8$};
+			\node[vertice] (V9) at (8,-2) {$v_9$};
+			
+			\node[vertice] (V10) at (0,-4) {$v_{10}$};
+			\node[vertice] (V11) at (2,-4) {$v_{11}$};
+			\node[vertice] (V12) at (4,-4) {$v_{12}$};
+			\node[vertice] (V13) at (6,-4) {$v_{13}$};
+			\node[vertice] (V14) at (8,-4) {$v_{14}$};
+
+			\node[vertice] (V15) at (0,-6) {$v_{15}$};
+			\node[vertice] (V16) at (2,-6) {$v_{16}$};
+			\node[vertice] (V17) at (4,-6) {$v_{17}$};
+			\node[vertice] (V18) at (6,-6) {$v_{18}$};
+			\node[vertice] (V19) at (8,-6) {$v_{19}$};
+			
+			\node[vertice] (V20) at (0,-8) {$v_{20}$};
+			\node[vertice] (V21) at (2,-8) {$v_{21}$};
+			\node[vertice] (V22) at (4,-8) {$v_{22}$};
+			\node[vertice] (V23) at (6,-8) {$v_{23}$};
+			\node[vertice] (V24) at (8,-8) {$v_{24}$};		
+		\end{scope}
+		
+		\draw[-] (V0) edge (V1); \draw[-] (V1) edge (V6); \draw[-] (V6) edge (V0);
+		\draw[-] (V0) edge (V6); \draw[-] (V6) edge (V5); \draw[-] (V5) edge (V0);
+		\draw[-] (V1) edge (V2); \draw[-] (V2) edge (V7); \draw[-] (V7) edge (V1);
+		\draw[-] (V1) edge (V7); \draw[-] (V7) edge (V6); \draw[-] (V6) edge (V1);
+		\draw[-] (V2) edge (V3); \draw[-] (V3) edge (V8); \draw[-] (V8) edge (V2);
+		\draw[-] (V2) edge (V8); \draw[-] (V8) edge (V7); \draw[-] (V7) edge (V2);
+		\draw[-] (V3) edge (V4); \draw[-] (V4) edge (V9); \draw[-] (V9) edge (V3);
+		\draw[-] (V3) edge (V9); \draw[-] (V9) edge (V8); \draw[-] (V8) edge (V3);
+		
+		\draw[-] (V5) edge (V6);  \draw[-] (V6) edge (V10);  \draw[-] (V10) edge (V5);
+		\draw[-] (V6) edge (V11); \draw[-] (V11) edge (V10); \draw[-] (V10) edge (V6);
+		\draw[-] (V6) edge (V7);  \draw[-] (V7) edge (V11);  \draw[-] (V11) edge (V6);
+		\draw[-] (V7) edge (V12); \draw[-] (V12) edge (V11); \draw[-] (V11) edge (V7);
+		\draw[-] (V7) edge (V8);  \draw[-] (V8) edge (V12);  \draw[-] (V12) edge (V7);
+		\draw[-] (V8) edge (V13); \draw[-] (V13) edge (V12); \draw[-] (V12) edge (V8);
+		\draw[-] (V8) edge (V9);  \draw[-] (V9) edge (V13);  \draw[-] (V13) edge (V8);
+		\draw[-] (V9) edge (V14); \draw[-] (V14) edge (V13); \draw[-] (V13) edge (V9);
+
+		\draw[-] (V10) edge (V11); \draw[-] (V11) edge (V16); \draw[-] (V16) edge (V10);
+		\draw[-] (V10) edge (V16); \draw[-] (V16) edge (V15); \draw[-] (V15) edge (V10);
+		\draw[-] (V11) edge (V12); \draw[-] (V12) edge (V17); \draw[-] (V17) edge (V11);
+		\draw[-] (V11) edge (V17); \draw[-] (V17) edge (V16); \draw[-] (V16) edge (V11);
+		\draw[-] (V12) edge (V13); \draw[-] (V13) edge (V18); \draw[-] (V18) edge (V12);
+		\draw[-] (V12) edge (V18); \draw[-] (V18) edge (V17); \draw[-] (V17) edge (V12);
+		\draw[-] (V13) edge (V14); \draw[-] (V14) edge (V19); \draw[-] (V19) edge (V13);
+		\draw[-] (V13) edge (V19); \draw[-] (V19) edge (V18); \draw[-] (V18) edge (V13);
+		
+		\draw[-] (V15) edge (V16); \draw[-] (V16) edge (V20); \draw[-] (V20) edge (V15);
+		\draw[-] (V16) edge (V21); \draw[-] (V21) edge (V20); \draw[-] (V20) edge (V15);
+		\draw[-] (V16) edge (V17); \draw[-] (V17) edge (V21); \draw[-] (V21) edge (V16);
+		\draw[-] (V17) edge (V22); \draw[-] (V22) edge (V21); \draw[-] (V21) edge (V17);
+		\draw[-] (V17) edge (V18); \draw[-] (V18) edge (V22); \draw[-] (V22) edge (V17);
+		\draw[-] (V18) edge (V23); \draw[-] (V23) edge (V22); \draw[-] (V22) edge (V18);
+		\draw[-] (V18) edge (V19); \draw[-] (V19) edge (V23); \draw[-] (V23) edge (V18);
+		\draw[-] (V19) edge (V24); \draw[-] (V24) edge (V23); \draw[-] (V23) edge (V19);	
+	\end{tikzpicture}
+	\centering
+	\caption{Darstellung der Netzstruktur mit isometrischer Vollvernetzung.}
+	\label{fig:FULL_Isometric}
+\end{figure}
+
+\begin{figure}[h]
+	\begin{tikzpicture}
+		\begin{scope}[auto, every node/.style={minimum width=15em}]
+		 
+		\node[draw, fill=lightgray!20] (A) at (0,0) {Vertex Data};
+		
+		\node[draw, fill=yellow]	(B) at (0,-1) {Vertex Shader};
+		
+		\node[draw, fill=lightgray!20] (C) at (0, -2) {Primitive Assembly};
+
+		\node[draw, fill=lightgray!20] (D) at (0,-3) {Rasterization};
+		
+		\node[draw, fill=yellow] 	(E) at (0,-4) {Fragment Shader};
+		
+		\node[draw, fill=lightgray!20] (F) at (0,-5) {Per-Fragment Operations};
+		
+		\node[draw, fill=lightgray!20] (G) at (0,-6) {Framebuffer};	
+
+		\draw[->, line width=1mm] (A) edge (B);
+		\draw[->, line width=1mm] (B) edge (C);
+		\draw[->, line width=1mm] (C) edge (D);
+		\draw[->, line width=1mm] (D) edge (E);
+		\draw[->, line width=1mm] (E) edge (F);
+		\draw[->, line width=1mm] (F) edge (G);
+		
+		\end{scope}
+	\end{tikzpicture}
+	\centering
+	\caption{OpengGl ES 2.0 Darstellungspipeline. 
+			 Grau unterlegt sind statischen und gelb die programmierbaren Elemente.}
+	\label{fig:OpenGl_pipeline}
+\end{figure}
+
+\subsection{Delaunay-Triangulierung}
 
 \chapter{Ergebnisse}
 
@@ -350,33 +761,31 @@ aus einem Farb- und einem Tiefenbild bestehen.
 
 \chapter{Ausblick}
 
-\begin{figure}[htbp]
-	\centering
-		\includegraphics{../results/2/512x512_Delaunay/D8/L1.0/I1.0/delaunay.png}
-		\includegraphics{../results/2/512x512_Delaunay/D8/L0.5/I0.2/delaunay.png}
-	\caption{beschriftung}
-	\label{fig:diplominf}
-\end{figure}
-
 \chapter{Noch mehr Ergebnisse}
 
 \begin{tikzpicture}
-\begin{axis}[axis lines = middle, enlargelimits = true]
-\addplot[blue, only marks, mark=x] table [x=a, y=p, col sep=comma] {div_data_4_512x512D10L0.0I0.0A0.0J0.0pre.csv};
+\begin{axis}[axis lines = middle, enlargelimits = true, ylabel={in dB}, xlabel={in Grad},
+			 every axis y label/.style={at={(ticklabel* cs:1.05)}, anchor=east},
+			 every axis x label/.style={at={(ticklabel* cs:1.05)}, anchor=south}]
+\addplot[blue, only marks, mark=x] table [x=a, y=p, col sep=comma] {div_data_4_512x512D10L0.0I0.0.csv};
 \end{axis}
 \end{tikzpicture}
 
 \begin{tikzpicture}
-\begin{axis}[axis lines = middle, enlargelimits = true]
-\addplot[blue, only marks, mark=x] table [x=a, y=p, col sep=comma] {div_data_mean_4_512x512D10L0.0I0.0A0.0J0.0pre.csv};
+\begin{axis}[axis lines = middle, enlargelimits = true, ylabel={in dB}, xlabel={in Grad},
+			 every axis y label/.style={at={(ticklabel* cs:1.05)}, anchor=east},
+			 every axis x label/.style={at={(ticklabel* cs:1.05)}, anchor=south}]
+\addplot[blue, only marks, mark=x] table [x=a, y=p, col sep=comma] {div_data_mean_4_512x512D10L0.0I0.0.csv};
 \end{axis}
 \end{tikzpicture}
 
 \begin{tikzpicture}
-\begin{axis}[axis lines = middle, enlargelimits = true]
-\addplot[green, mark=x] table [x=a, y=m, col sep=comma] {div_data_mean_4_512x512D10L0.0I0.0A0.0J0.0pre.csv};
-\addplot[red, mark=x] table [x=a, y=m, col sep=comma] {div_data_mean_4_512x512D10L0.0I0.0A0.0J0.0pre.csv};
-\addplot[blue, mark=x] table [x=a, y=m, col sep=comma] {div_data_mean_4_512x512D10L0.0I0.0A0.0J0.0pre.csv};
+\begin{axis}[axis lines = middle, enlargelimits = true, ylabel={in \%}, xlabel={in Grad},
+			 every axis y label/.style={at={(ticklabel* cs:1.05)}, anchor=east},
+			 every axis x label/.style={at={(ticklabel* cs:1.05)}, anchor=south}]
+\addplot[green, mark=x] table [x=a, y=m, col sep=comma] {div_data_mean_4_512x512D10L0.0I0.0.csv};
+\addplot[red, mark=x] table [x=a, y=m, col sep=comma] {div_data_mean_4_512x512D10L0.0I0.0.csv};
+\addplot[blue, mark=x] table [x=a, y=m, col sep=comma] {div_data_mean_4_512x512D10L0.0I0.0.csv};
 \end{axis}
 \end{tikzpicture}
 
@@ -384,20 +793,24 @@ aus einem Farb- und einem Tiefenbild bestehen.
 \vspace*{1cm}
 
 \begin{tikzpicture}
-\begin{axis}[axis lines = middle, enlargelimits = true]
-\addplot[red, only marks, mark=x] table [x=a, y=r, col sep=comma] {div_data_4_512x512D10L0.0I0.0A0.0J0.0pre.csv};
-\addplot[green, only marks, mark=x] table [x=a, y=g, col sep=comma] {div_data_4_512x512D10L0.0I0.0A0.0J0.0pre.csv};
-\addplot[blue, only marks, mark=x] table [x=a, y=b, col sep=comma] {div_data_4_512x512D10L0.0I0.0A0.0J0.0pre.csv};
-\addplot[black, only marks, mark=x] table [x=a, y=m, col sep=comma] {div_data_4_512x512D10L0.0I0.0A0.0J0.0pre.csv};
+\begin{axis}[axis lines = middle, enlargelimits = true, ylabel={in \%}, xlabel={in Grad},
+			 every axis y label/.style={at={(ticklabel* cs:1.05)}, anchor=east},
+			 every axis x label/.style={at={(ticklabel* cs:1.05)}, anchor=south}]
+\addplot[red, only marks, mark=x] table [x=a, y=r, col sep=comma] {div_data_4_512x512D10L0.0I0.0.csv};
+\addplot[green, only marks, mark=x] table [x=a, y=g, col sep=comma] {div_data_4_512x512D10L0.0I0.0.csv};
+\addplot[blue, only marks, mark=x] table [x=a, y=b, col sep=comma] {div_data_4_512x512D10L0.0I0.0.csv};
+\addplot[black, only marks, mark=x] table [x=a, y=m, col sep=comma] {div_data_4_512x512D10L0.0I0.0.csv};
 \end{axis}
 \end{tikzpicture}
 
 \begin{tikzpicture}
-\begin{axis}[axis lines = middle, enlargelimits = true, ylabel=t in ms]
-\addplot[green] table [x=i, y=min, col sep=comma]{div_duration_info_4_512x512D10L0.0I0.0A0.0J0.0pre.csv};
-\addplot[red] table [x=i, y=max, col sep=comma]{div_duration_info_4_512x512D10L0.0I0.0A0.0J0.0pre.csv};
-\addplot[black] table [x=i, y=mean, col sep=comma]{div_duration_info_4_512x512D10L0.0I0.0A0.0J0.0pre.csv};
-\addplot[blue, mark=x] table [x=i, y=d, col sep=comma]{div_duration_info_4_512x512D10L0.0I0.0A0.0J0.0pre.csv};
+\begin{axis}[axis lines = middle, enlargelimits = true, ylabel={$t$ in $ms$}, xlabel={Bild Nr.},
+			 every axis y label/.style={at={(ticklabel* cs:1.05)}, anchor=east},
+			 every axis x label/.style={at={(ticklabel* cs:1.05)}, anchor=south}]
+\addplot[green] table [x=i, y=min, col sep=comma]{div_duration_info_4_512x512D10L0.0I0.0.csv};
+\addplot[red] table [x=i, y=max, col sep=comma]{div_duration_info_4_512x512D10L0.0I0.0.csv};
+\addplot[black] table [x=i, y=mean, col sep=comma]{div_duration_info_4_512x512D10L0.0I0.0.csv};
+\addplot[blue, mark=x] table [x=i, y=d, col sep=comma]{div_duration_info_4_512x512D10L0.0I0.0.csv};
 \end{axis}
 \end{tikzpicture}
 
@@ -428,36 +841,6 @@ aus einem Farb- und einem Tiefenbild bestehen.
 		 		   scatter] file {div.csv};      
 		\end{axis}
 	\end{tikzpicture}
-\end{figure}
-
-\begin{figure}[h]
-	\begin{tikzpicture}
-		\begin{scope}[auto, every node/.style={minimum width=15em}]
-		 
-		\node[draw, fill=lightgray] (A) at (0,0) {Vertex Data};
-		
-		\node[draw, fill=yellow]	(B) at (0,-1) {Vertex Shader};
-		
-		\node[draw, fill=lightgray] (C) at (0, -2) {Primitive Assembly};
-
-		\node[draw, fill=lightgray] (D) at (0,-3) {Rasterization};
-		
-		\node[draw, fill=yellow] 	(E) at (0,-4) {Fragment Shader};
-		
-		\node[draw, fill=lightgray] (F) at (0,-5) {Per-Fragment Operations};
-		
-		\node[draw, fill=lightgray] (G) at (0,-6) {Framebuffer};	
-
-		\draw[->, line width=1mm] (A) edge (B);
-		\draw[->, line width=1mm] (B) edge (C);
-		\draw[->, line width=1mm] (C) edge (D);
-		\draw[->, line width=1mm] (D) edge (E);
-		\draw[->, line width=1mm] (E) edge (F);
-		\draw[->, line width=1mm] (F) edge (G);
-		
-		\end{scope}
-	\end{tikzpicture}
-	\centering
 \end{figure}
 
 \cite*{}

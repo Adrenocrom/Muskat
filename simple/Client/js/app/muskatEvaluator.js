@@ -5,8 +5,8 @@ class MuskatEvaluator {
 		// Full Mesh
 		var gridTypes 		= ["default", "cookie_cutter", "isometric"];
 		var meshPrecision 	= ["16bit", "8bit"];
-		var gradients 		= [1.0, 0.7, 0.5, 0.2, 0.1];
-	/*	for(var m = 1; m <= 4; m += m) {
+		var gradients 		= [1.0, 0.7, 0.5, 0.4, 0.3, 0.2, 0.1];
+		for(var m = 1; m <= 4; m += m) {
 			for(var p = 0; p < meshPrecision.length; p++) {
 				for(var g = 0; g < gradients.length; g++) {
 					var c1 = new MuskatConfig(this.nullFunction);
@@ -27,10 +27,10 @@ class MuskatEvaluator {
 					this.add(c2);
 				}
 			}
-		}*/
-		
+		}
+		/*
 		// Delaunay Mesh
-/*		for(var d = 8; d <= 10; d++) {
+		for(var d = 10; d <= 10; d++) {
 			for(var l = 0.0; l <= 1.0; l += 0.1) {
 				for(var i = 0.0; i <= l; i += 0.1) {
 					var c7 = new MuskatConfig(this.nullFunction);
@@ -75,7 +75,7 @@ class MuskatEvaluator {
 				}
 			}
 		}
-*/		
+/*
 		for(var l = 0.0; l <= 0.5; l += 0.1) {
 			for(var i = 0.0; i <= l; i += 0.1) {
 				for(var a = 0.0; a <= 200.0; a += 20.0) {

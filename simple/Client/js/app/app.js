@@ -223,7 +223,7 @@ $(document).ready(function() {
 	var g_time_start;
 	var g_time_end;
 	var g_evaluator;
-	var g_scene_list 		= [4];//2,4,3,5,0,1];
+	var g_scene_list 		= [0,1,2,3,4,5];
 	var g_scene_list_index 	= 0;
 
 	initConfig();

@@ -38,8 +38,8 @@ void Evaluator::runEvaluation() {
 		entry.angle = m_scene->m_infos[i].offangle;
 		vEntries[i] = entry;
 
-		//QString filename = QString(m_filename.c_str()) + "/frame_"+ QString(insertZeros(5, i).c_str()) +".png";
-		//imwrite(filename.toStdString(), m_results[i]);
+		QString filename = QString(m_filename.c_str()) + "/frame_"+ QString(insertZeros(5, i).c_str()) +".png";
+		imwrite(filename.toStdString(), m_results[i]);
 	}
 
 	list<ResultEntry> entries(vEntries.begin(), vEntries.end());
@@ -51,6 +51,7 @@ void Evaluator::runEvaluation() {
 
 	ResultEntry entry;
 	entry = entries.front();
+	cout<<"a:  "<<entry.angle<<endl;
 	double cnt = 1;
 	for(auto it = entries.begin(); it != entries.end(); ++it) {
 		if(it->angle < entry.angle || next(it) == entries.end()) {

@@ -613,7 +613,6 @@ pair<Point, Point> Compressor::getMaxJoinables(cv::Mat& img, const Point& a, con
 	Edge e_r = l.begin()->second;
 	pair<Point, Point> r;
 	r.first = e_r.a;
-	//r.first.a.setP(img, )
 	r.second = e_r.b;
 	return r;
 }
