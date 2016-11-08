@@ -87,7 +87,7 @@ struct Edge {
 		
 		p.u = (double)p.x / (double) (w-1);
 		p.v = (double)p.y / (double) (h-1);
-		p.dz = (double)p.z / ((double) (USHRT_MAX) + 1.0);
+		p.dz = (double)p.z / (((double) (USHRT_MAX)) + 1.0);
 		return p;
 	}
 };
@@ -145,6 +145,7 @@ private:
 
 	bool isCollinear(const Point& p1, const Point& p2, const Point& p3);
 
+	vector<Point> splitTriangle(cv::Mat& img, const Point& a, const Point& b, const Point& c);
 	vector<Point> splitTriangle(cv::Mat& img, const Point& a, const Point& b, const Point& c, cv::Mat* out = nullptr);
 
 	Point getMaxJoinable(cv::Mat& img, const Point& p, const Point& a);

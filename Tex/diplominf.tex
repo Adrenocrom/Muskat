@@ -1,4 +1,4 @@
-\documentclass[hyperref,german,diplominf]{cgvpub}
+\documentclass[hyperref,german,diplominf,lof,lot,twoside]{cgvpub}
 %weitere Optionen zum Ergänzen (in eckigen Klammern):
 % 
 % bibnum	numerische Literaturschlüssel
@@ -10,6 +10,7 @@
 % twoside		zweiseitig
 
 \usepackage{lmodern}
+\pagenumbering{roman}
 %\usepackage[ngerman]{babel}
 
 \author{Josef Schulz}
@@ -75,48 +76,80 @@ Bild"ubernahmen zitieren.}
 \usepackage{filecontents}
 \usepackage{subfigure}
 
+\setcounter{tocdepth}{2}
+
 \input{../results/4/512x512_Delaunay/D10/L0.0/I0.0/results.tex}
 
 
 
 \input{../results/d_0.tex}
 
+\pagenumbering{arabic}
+
 \begin{document}
 
 \chapter{Einleitung}
 
 Bei der Remote-Visualisierung, wird die Bildsynthese und die eigentliche Darstellung voneinander getrennt.
-Der Server-Prozess erzeugt und kodiert jedes Bild zu einem kompakten Datenpaket, welches im Anschluss
-an den Klient-Prozess gesendet, von diesem dekodiert und auf einem Bildschirm ausgegeben wird.
+Der Server-Prozess erzeugt und kodiert jedes Bild zu einem kompakten Datenpaket, 
+welches an den Klient-Prozess gesendet wird.
+Der Klient dekodiert die Informationen und gibt sie auf einem Bildschirm aus.
+
 Remote-Visualisierung ist ein insbesondere für mobile Endgeräte interessantes Konzept,
 weil es die Visualisierung von komplexen Szenen auch auf Leistungsarmen Geräten ermöglicht.
 Neben Computerspielen, ist die wissenschaftliche Visualisierung ein wichtiges Anwendungsgebiet,
-da Datensätze Größenordnungen erreichen, die den Speicher herkömmlicher Desktops, Laptops,
-Smartphones etc. bei weitem übersteigen. 
-Auch wenn ausreichend Speicher zur Verfügung steht, kann die Übertragung langwierig und teuer werden.
-Mit Hilfe der Remote-Visualisierung kann die Visualisierung vom Server übernommen werden und
-es muss nicht der komplette Datensatz übertragen werden.
-Mit leistungsstarken Serversystemen lassen sich komplexe Beleuchtungsmethoden verwendet,
-die mit normalen Endgeräten nicht zu realisieren sind.
+da Datensätze Größenordnungen erreichen können, 
+die den Speicher herkömmlicher Desktops, Laptops, Smartphones etc. bei weitem übersteigen. 
+Auch wenn ausreichend Speicher zur Verfügung steht, 
+kann die Übertragung dieser Daten viel Zeit in Anspruch nehmen.
+
+Mit Hilfe der Remote-Visualisierung ist es möglich, dass der Server die Bildsynthese
+übernimmt und nicht der komplette Datensatz übertragen werden muss.
+Ein weiterer Vorteil der mit leistungsstarken Serversystemen einhergeht ist der, 
+dass sich komplexe Visualisierungs- und Beleuchtungsmethoden verwenden lassen, die mit normalen Endgeräten nicht zu realisieren sind.
 
 Die Latenz bezeichnet in der Netzwerktechnik die Übertragungszeit von einem zum anderen Gerät.
 Diese ist in modernen Netzwerken gering, für die Interaktive Visualisierung allerdings immer
-noch zu Groß um eine für den Menschen nicht wahrnehmbare flüssige Betrachtung von Szenen
-Bild für Bild zu ermöglichen.
+noch zu Groß um eine für den Menschen nicht wahrnehmbare Verzögerungsfreie interaktive Visualisierung zu gewährleisten.
+Ein möglicher Ausweg besteht darin, dass der Klient-Prozess ein bereits empfangenes Bild extrapoliert. 
+Auf diese Weise, ist es möglich, dass der Klient-Prozess bereits ein neues Bild ausgeben kann, 
+obwohl es noch nicht empfangen wurde.
+Bei der Bildsynthese des Server-Prozesses entsteht neben dem Farbbild zusätzlich ein Tiefenbild.
+Dieses kann genutzt werden, um geometrische Informationen an den Klient-Prozess weiter zureichen.
+Geometrisch entspricht das Tiefenbild einer 2.5D Ansicht der Szene, in Form einer Punktwolke.
+Die Extrapolation eines Bildes wird durchgeführt, indem diese Informationen aus einer
+neuen Kameraperspektive gezeichnet wird.
+Um die Qualität zu verbessern und Informationen einzusparen, wird aus dem Tiefenbild
+ein Dreiecksnetz erzeugt.
+Das Farbbild wird als Textur über das Netz gelegt.
+In dieser Arbeit werden Methoden zur Erzeugung von Dreiecknetzen vorgestellt und mit Hilfe von
+sechs Datensätzen evaluiert.
+Jeder Datensatz entspricht einer Kamerafahrt, durch eine Szene.
+Zur Verfügung standen die zwei Szenen, von denen jeweils ein Bild, eines Datensatzes, in der 
+Abbildung \ref{fig:datasets_frame0} die beiden Szenen exemplarisch vorstellt.
 
-Ein Ausweg besteht darin, dass der Klient-Prozess ein bereits empfangenes Bild extrapoliert, 
-dadurch kann dem Betrachter ein neues Bild präsentiert werden, obwohl es noch nicht empfangen wurde.
-Bei der Bildsynthese des Server-Prozesses entsteht neben dem Farbbild zusätzlich ein Tiefenbild,
-das genutzt werden kann um geometrische Informationen an den Klient-Prozess weiter zu reichen
-und mit Hilfe dieser Extrapolation durchzuführen.
-Aus dem Tiefenbild wir dazu ein Dreiecksnetz erzeugt, das mit dem Farbbild als Textur
-vom Klient aus der neuen Kameraperspektive synthetisiert wird.
+\begin{figure}
+	\subfigure[CoolRandom]{\includegraphics[width=.49\textwidth]{../Scenes/CoolRandom/run_1/coolrandom_00000.png}}
+	\subfigure[TestSpheres]{\includegraphics[width=.49\textwidth]{../Scenes/TestSpheres/run_1/testspheres_00000.png}}
+	\caption{Datensätze}
+	\label{fig:datasets_frame0}
+\end{figure}
+
+Um die Algorithmen zu testen wurde eine Server- und eine Klient-Komponente entwickelt.
+Beide Komponenten tauschen Informationen über das auf TCP basierende Websocket-Protokoll aus.
+Im Gegensatz zum HTTP-Protokoll ist die Kommunikation bidirektional,
+der Vorteil besteht darin, dass sich beide Kommunikationsteilnehmer ohne \textit{long-polling}
+direkt Nachrichten zu schicken können.
+Der Klient ist ein Browser basierter Web-Klient, damit die implementierten Algorithmen
+mit den Einschränkungen durch JavaScript und WebGl evaluiert werden können.
 
 Zu diesem Zweck wurde eine Server- und eine Klient-Komponente entwickelt, die mit
 Hilfe des WebSocket-Protokolls Daten untereinander austauschen.
 Der Klient basiert auf JavaScript und nutzt für die Bildextrapolation WebGl.
 Die Qualität der Darstellungen werden mit Hilfe von Ground-Truth-Daten überprüft.
 Zum Vergleich wird der PSNR und der SSIM \cite{Wang04imagequality} der Bildpaare bestimmt und evaluiert.
+
+
 
 Im Folgenden werden existierende Konzepte und Ideen vorgestellt.
 
@@ -209,9 +242,51 @@ Auch bei einfache Remote-Visualisierungssysteme unterscheiden sich an Hand der D
 
 \chapter{Grundlagen}
 
-In diesem Kapitel soll es um die Grundlagen der Arbeit gehen. Es wird
-vorgestellt wie ein bestehendes Dreiecksnetz aus einer neuen Perspektive
-gezeichnet wird und wie die Methoden zum Bildvergleich im Detail funktionieren.
+In diesem Kapitel werden die Datensätze im Detail vorgestellt und es wird gezeigt,
+wie die Bildextrapolation anhand der zur Verfügung stehenden Informationen 
+durchgeführt wird.
+Am Ende dieses Kapitels werden zwei Metriken zum Vergleich von Bildern vorgestellt
+und diskutiert.
+
+\section{Datensätze}
+
+Zur Analyse der verwendeten Methoden stehen zwei Szenen zur Verfügung.
+Mit beiden Szenen wurden jeweils drei Kamerafahrten aufgenommen.
+
+\begin{figure}[h]
+	\subfigure[CoolRandom]{\includegraphics[width=.49\textwidth]{../Scenes/TestSpheres/run_1/testspheres_00000.png}}
+	\subfigure[TestSpheres]{\includegraphics[width=.49\textwidth]{../Scenes/TestSpheres/run_1/testspheres_00000_depth.png}}
+	\caption{Datensätze}
+	\label{fig:dataset_frame0}
+\end{figure}
+
+\begin{table}[h]
+
+	\begin{tabular}{c|c|c|c|c|c}
+		\# & Szene & Kamerafahrt & Auflösung & Anzahl Bilder & Maximaler Winkel \\
+		\hline
+		1 & CoolRandom 	& 1 & $512 \times 512$ & 241 & 5  \\
+		2 & CoolRandom 	& 2 & $512 \times 512$ & 60  & 10 \\
+		3 & CoolRandom 	& 3 & $512 \times 512$ & 192 & 90 \\
+		\hline
+		4 & TestSpheres & 1 & $512 \times 512$ & 241 & 5  \\
+		5 & TestSpheres & 2 & $512 \times 512$ & 60  & 10 \\
+		6 & TestSpheres & 3 & $512 \times 512$ & 192 & 90 \\
+	\end{tabular}
+	\centering
+	\caption{In der Tabelle sind alle Datensätze, die für die Evaluation zur Verfügung stehen aufgelistet.}
+\end{table}
+
+\begin{figure}
+	\subfigure[CoolRandom]{\includegraphics[width=.49\textwidth]{../Scenes/TestSpheres/run_3/testspheres_00000.png}}
+	\subfigure[TestSpheres]{\includegraphics[width=.49\textwidth]{../Scenes/TestSpheres/run_3/testspheres_00010.png}}
+	
+	\subfigure[CoolRandom]{\includegraphics[width=.49\textwidth]{../Scenes/TestSpheres/run_3/testspheres_00060.png}}
+		\subfigure[TestSpheres]{\includegraphics[width=.49\textwidth]{../Scenes/TestSpheres/run_3/testspheres_00130.png}}
+	\caption{Datensätze}
+	\label{fig:dataset_frames}
+\end{figure}
+
 
 \section{Extrapolation}
 
@@ -223,6 +298,8 @@ und zur Erzeugung neuer Ansichten genutzt wird.
 Um das Verfahren besser zu verständlich zu machen,
 wird zunächst die Vertex-Transformation näher betrachtet, zu Verdeutlichung der
 Zusammenhänge dient die folgende Abbildung:
+
+
 
 \begin{figure}[h]
 	\begin{tikzpicture}
@@ -289,6 +366,11 @@ Jedes Dreieck des zu erzeugenden Netzes muss diese Bedingung erfüllen.
 Das Resultat dieser Forderung ist die maximierte Innenwinkelsumme aller Dreiecke.
 Für eine gegebene Punktmenge, ist die Lösung nicht eindeutig, es kann verschiedene
 Netzkonfigurationen geben, welche die Forderung erfüllen.
+
+Es existieren verschiedene Algorithmen die Delaunay-Triangulierung durchzuführen,
+die besten erreichen eine Laufzeit von $O(n \log n)$ und sind damit tauglich
+für den Einsatz in Echtzeitanwendungen.
+Beispiele sind der Sweep-Algorithmus und die inkrementelle Konstruktion.
 
 \section{PSNR}
 
@@ -438,84 +520,89 @@ Mittelwert über allen $x \in X$ und $y \in Y$ berechnet werden:
 
 \chapter{Methodik und Umsetzung}
 
-Das Ziel dieser Arbeit ist es, ein Remote-Visualisierungssystem zu entwickeln
-und eine Klient-seitige Bildextrapolation durchzuführen und die Güte der Extrapolation zu untersuchen und zu bewerten.
-Zu diesen Zweck wird aus dem bei der Server-seitigen Bildsynthese entstehende Tiefenbild ein Dreiecksnetz erzeugt. 
-Dieses wird vom Klient aus einer neuen Kameraperspektive gezeichnet, das Farbbild wird dabei als Textur verwendet.
-Mit Hilfe von \textit{Ground-Truth} Szenen wird die Qualität, der extrapolierten Bildern
-in Abhängigkeit der gewählten Parameter, mit dem PSNR und dem MSSIM gemessen.
+Das Ziel dieser Arbeit ist es, ein Remote-Visualisierungssystem zu entwickeln,
+und eine Klient-seitige Bildextrapolation durchzuführen.
+Grundlage sind jeweils ein Farbbild, ein Tiefenbild und die entsprechenden Kamerainformationen.
+Die Extrapolation wird durchgeführt, 
+indem aus dem Tiefenbild wird ein Dreiecksnetz erzeugt wird, welches schließlich mit
+dem Farbbild als Textur, aus einer neuen Kameraperspektive gezeichnet wird. 
+Mit Hilfe von Ground-Truth-Datensätzen wird die Qualität, der extrapolierten Bildern
+in Abhängigkeit der gewählten Parameter, mit dem PSNR und dem MSSIM gemessen
+und evaluiert. 
+Die Kommunikation, zwischen den beiden Komponenten erfolgt mit Hilfe des WebSocket-Protokolls.
+Der Klient ist ein Webklient, basierend auf JavaScript, der die Bildextrapolation mit WebGL
+durchführt.
 
 Die Zentrale Aufgabe ist die Optimierung und die Übertragung der Tiefeninformationen,
 vom Server zum Klient.
-Es gibt zwei Möglichkeiten diese Aufgabe zu erfüllen.
-Die erste Möglichkeit besteht darin das Tiefenbild direkt zu komprimieren,
-zum Klient zu senden und die Konstruktion des Dreiecksnetzes auf von dem Klient durchführen zu lassen.
-Die andere Möglichkeit besteht in der Konstruktion des Dreiecksnetzes auf dem Server,
-vor der Kompression und Übertragung zum Klient durchzuführen.
-In dieser Arbeit werden beide Varianten untersucht.
+Es gibt im wesentlichen zwei Möglichkeiten diese Aufgabe zu erfüllen.
+Zum einen, kann das Tiefenbild direkt komprimiert werden 
+und im Anschluss daran wird es an den Klient gesendet,
+welcher das Dreiecksnetz aus dem Tiefenbild erzeugt und die Extrapolation durchführt.
+Die zweite Möglichkeit besteht in der Konstruktion des Dreiecksnetzes durch den Server.
+Beide Varianten werden in dieser Arbeit untersucht.
 
-Als Grundlage dient das Konzept von Wessels \textit{et al.} \cite{DBLP:conf/itng/WesselsPJR11}.
-Die Klient-Anwendung ist eine Browser basierte Web-Anwendung, die mit dem Server
-über das WebSocket-Protokoll kommuniziert.
-Dabei handelt es sich um ein auf TCP basierendes Netzwerkprotokoll,
-das eine Bidirektionale Verbindung erlaubt.
-Die Arbeit von Wessels \textit{et al.} wird dahingehend erweitert,
-das die Manipulation der Bilddaten mit Hilfe von WebGl durchgeführt wird.
-Bei WebGl handelt es sich um eine Bibliothek die von modernen Browsern zur Verfügung gestellt wird,
-um eine Hardware beschleunigte Bildsynthese zu ermöglichen.
-Der Vorteil dieser Technologie ist die Unabhängigkeit der Anwendung im Bezug,
-zur Plattform und dem Gerät, auf dem sie laufen soll.
-
-Im Folgenden wird die Konstruktion der Dreiecksnetze näher betrachtet.
+Im Folgenden werden beide zuerst Varianten konzeptionell vorgestellt.
+Anschließend wird die Architektur des Klient-Server-Systems vorgestellt
+und die Besonderheiten der Implementierung und die dazugehörigen
+Parameter im Detail erklärt.
+Im Anschluss daran werden die Parameterkonfigurationen 
+und die erzeugten Ergebnisse objektiv dargestellt.
+Zum Schluss werden diese diskutiert und es wird auf
+Vor- und Nachteile der umgesetzten Lösungen eingegangen.
 
 \section{Erzeugung von Dreiecksnetzen}
 
 Grundlage für die Erzeugung der Dreiecksnetze ist das Tiefenbild $D$.
 Jeder Tiefenwert $d(x, y) \in D$ liegt in dem Intervall $[0, 1]$.
+Je kleiner der Wert von $d$ ist, umso näher ist dieser an der \textit{near-Plane}.
 
 \subsection{Vollvernetzung}
 
-Bei der Vollvernetzung kann das Dreiecksnetz vom Klient vor dem Erhalt des
-ersten Bildes konstruiert werden.
-Eine Neukonstruktion muss nur bei der Veränderung der Auflösung durchgeführt werden.
-Jeder Pixel des Tiefenbildes entspricht dabei einem Eckpunkt im Dreiecksnetz.
-Die z-Komponente jedes Eckpunktes wird initial mit 0 gesetzt.
-Die Abbildungen \ref{fig:FULL_Default}, \ref{fig:FULL_Cookie} und \ref{fig:FULL_Isometric}
-zeigen drei verschiedene Varianten der Vollvernetzung.
+In dieser Arbeit wird die Vollvernetzung vom Klient durchgeführt.
+Die Vernetzung des Dreiecksnetzes kann vorausberechnet werden und
+muss neu berechnet werden, wenn sich die Auflösung der Tiefenbilder ändert.
 
-\begin{figure}[h]
-	\begin{tikzpicture}
+Bei der Vollvernetzung wird für jeden Pixel $d$ aus dem Tiefenbild $D$ ein Vertex $v$ erzeugt.
+Es existieren verschiedene Möglichkeiten, diese miteinander zu einem Dreiecksnetz zu verknüpfen.
+Die Abbildung \ref{fig:FULL_MESH} zeigt drei unterschiedliche Varianten.
+Aus vier benachbarten Vertices werden jeweils zwei Dreiecke erzeugt.
+Hat das Tiefenbild $D$ die Auflösung $w \times h$, dann entspricht die Anzahl aller Dreiecke $2 (w-1) (h-1)$.
+
+\begin{figure}[ph]
+	\subfigure[regulär]{
+	\begin{tikzpicture}[scale=0.6, every node/.style={scale=0.6}]
 		\begin{scope}[
 			auto, vertice/.style={align=center, draw, circle, minimum width=2em, inner sep=2pt}]
-			\node[vertice] (V0) at (0,0) {$v_0$};
-			\node[vertice] (V1) at (2,0) {$v_1$};
-			\node[vertice] (V2) at (4,0) {$v_2$};
-			\node[vertice] (V3) at (6,0) {$v_3$};
-			\node[vertice] (V4) at (8,0) {$v_4$};
+			\node[vertice] (V0) at (0,0) {$0$};
+			\node[vertice] (V1) at (2,0) {$1$};
+			\node[vertice] (V2) at (4,0) {$2$};
+			\node[vertice] (V3) at (6,0) {$3$};
+			\node[vertice] (V4) at (8,0) {$4$};
 			
-			\node[vertice] (V5) at (0,-2) {$v_5$};
-			\node[vertice] (V6) at (2,-2) {$v_6$};
-			\node[vertice] (V7) at (4,-2) {$v_7$};
-			\node[vertice] (V8) at (6,-2) {$v_8$};
-			\node[vertice] (V9) at (8,-2) {$v_9$};
+			\node[vertice] (V5) at (0,-2) {$5$};
+			\node[vertice] (V6) at (2,-2) {$6$};
+			\node[vertice] (V7) at (4,-2) {$7$};
+			\node[vertice] (V8) at (6,-2) {$8$};
+			\node[vertice] (V9) at (8,-2) {$9$};
 			
-			\node[vertice] (V10) at (0,-4) {$v_{10}$};
-			\node[vertice] (V11) at (2,-4) {$v_{11}$};
-			\node[vertice] (V12) at (4,-4) {$v_{12}$};
-			\node[vertice] (V13) at (6,-4) {$v_{13}$};
-			\node[vertice] (V14) at (8,-4) {$v_{14}$};
+			\node[vertice] (V10) at (0,-4) {$10$};
+			\node[vertice] (V11) at (2,-4) {$11$};
+			\node[vertice] (V12) at (4,-4) {$12$};
+			\node[vertice] (V13) at (6,-4) {$13$};
+			\node[vertice] (V14) at (8,-4) {$14$};
 
-			\node[vertice] (V15) at (0,-6) {$v_{15}$};
-			\node[vertice] (V16) at (2,-6) {$v_{16}$};
-			\node[vertice] (V17) at (4,-6) {$v_{17}$};
-			\node[vertice] (V18) at (6,-6) {$v_{18}$};
-			\node[vertice] (V19) at (8,-6) {$v_{19}$};
+			\node[vertice] (V15) at (0,-6) {$15$};
+			\node[vertice] (V16) at (2,-6) {$16$};
+			\node[vertice] (V17) at (4,-6) {$17$};
+			\node[vertice] (V18) at (6,-6) {$18$};
+			\node[vertice] (V19) at (8,-6) {$19$};
 			
-			\node[vertice] (V20) at (0,-8) {$v_{20}$};
-			\node[vertice] (V21) at (2,-8) {$v_{21}$};
-			\node[vertice] (V22) at (4,-8) {$v_{22}$};
-			\node[vertice] (V23) at (6,-8) {$v_{23}$};
-			\node[vertice] (V24) at (8,-8) {$v_{24}$};		
+			\node[vertice] (V20) at (0,-8) {$20$};
+			\node[vertice] (V21) at (2,-8) {$21$};
+			\node[vertice] (V22) at (4,-8) {$22$};
+			\node[vertice] (V23) at (6,-8) {$23$};
+			\node[vertice] (V24) at (8,-8) {$24$};		
 		\end{scope}
 		
 		\draw[-] (V0) edge (V1); \draw[-] (V1) edge (V5); \draw[-] (V5) edge (V0);
@@ -553,17 +640,442 @@ zeigen drei verschiedene Varianten der Vollvernetzung.
 		\draw[-] (V18) edge (V23); \draw[-] (V23) edge (V22); \draw[-] (V22) edge (V18);
 		\draw[-] (V18) edge (V19); \draw[-] (V19) edge (V23); \draw[-] (V23) edge (V18);
 		\draw[-] (V19) edge (V24); \draw[-] (V24) edge (V23); \draw[-] (V23) edge (V19);	
-	\end{tikzpicture}
+	\end{tikzpicture}}
+	\subfigure[cookie-cutter]{
+	\begin{tikzpicture}[scale=0.6, every node/.style={scale=0.6}]
+			\begin{scope}[
+				auto, vertice/.style={align=center, draw, circle, minimum width=2em, inner sep=2pt}]
+				\node[vertice] (V0) at (0,0) {$0$};
+				\node[vertice] (V1) at (2,0) {$1$};
+				\node[vertice] (V2) at (4,0) {$2$};
+				\node[vertice] (V3) at (6,0) {$3$};
+				\node[vertice] (V4) at (8,0) {$4$};
+				
+				\node[vertice] (V5) at (0,-2) {$5$};
+				\node[vertice] (V6) at (2,-2) {$6$};
+				\node[vertice] (V7) at (4,-2) {$7$};
+				\node[vertice] (V8) at (6,-2) {$8$};
+				\node[vertice] (V9) at (8,-2) {$9$};
+				
+				\node[vertice] (V10) at (0,-4) {$10$};
+				\node[vertice] (V11) at (2,-4) {$11$};
+				\node[vertice] (V12) at (4,-4) {$12$};
+				\node[vertice] (V13) at (6,-4) {$13$};
+				\node[vertice] (V14) at (8,-4) {$14$};
+	
+				\node[vertice] (V15) at (0,-6) {$15$};
+				\node[vertice] (V16) at (2,-6) {$16$};
+				\node[vertice] (V17) at (4,-6) {$17$};
+				\node[vertice] (V18) at (6,-6) {$18$};
+				\node[vertice] (V19) at (8,-6) {$19$};
+				
+				\node[vertice] (V20) at (0,-8) {$20$};
+				\node[vertice] (V21) at (2,-8) {$21$};
+				\node[vertice] (V22) at (4,-8) {$22$};
+				\node[vertice] (V23) at (6,-8) {$23$};
+				\node[vertice] (V24) at (8,-8) {$24$};		
+			\end{scope}
+			
+			\draw[-] (V0) edge (V1); \draw[-] (V1) edge (V6); \draw[-] (V6) edge (V0);
+			\draw[-] (V0) edge (V6); \draw[-] (V6) edge (V5); \draw[-] (V5) edge (V0);
+			\draw[-] (V1) edge (V2); \draw[-] (V2) edge (V6); \draw[-] (V6) edge (V1);
+			\draw[-] (V2) edge (V7); \draw[-] (V7) edge (V6); \draw[-] (V6) edge (V2);
+			\draw[-] (V2) edge (V3); \draw[-] (V3) edge (V8); \draw[-] (V8) edge (V2);
+			\draw[-] (V2) edge (V8); \draw[-] (V8) edge (V7); \draw[-] (V7) edge (V2);
+			\draw[-] (V3) edge (V4); \draw[-] (V4) edge (V8); \draw[-] (V8) edge (V3);
+			\draw[-] (V4) edge (V9); \draw[-] (V9) edge (V8); \draw[-] (V8) edge (V4);
+			
+			\draw[-] (V5) edge (V6);  \draw[-] (V6) edge (V10);  \draw[-] (V10) edge (V5);
+			\draw[-] (V6) edge (V11); \draw[-] (V11) edge (V10); \draw[-] (V10) edge (V6);
+			\draw[-] (V6) edge (V7);  \draw[-] (V7) edge (V12);  \draw[-] (V12) edge (V6);
+			\draw[-] (V6) edge (V12); \draw[-] (V12) edge (V11); \draw[-] (V11) edge (V6);
+			\draw[-] (V7) edge (V8);  \draw[-] (V8) edge (V12);  \draw[-] (V12) edge (V7);
+			\draw[-] (V8) edge (V13); \draw[-] (V13) edge (V12); \draw[-] (V12) edge (V8);
+			\draw[-] (V8) edge (V9);  \draw[-] (V9) edge (V14);  \draw[-] (V14) edge (V8);
+			\draw[-] (V8) edge (V14); \draw[-] (V14) edge (V13); \draw[-] (V13) edge (V8);
+	
+			\draw[-] (V10) edge (V11); \draw[-] (V11) edge (V16); \draw[-] (V16) edge (V10);
+			\draw[-] (V10) edge (V16); \draw[-] (V16) edge (V15); \draw[-] (V15) edge (V10);
+			\draw[-] (V11) edge (V12); \draw[-] (V12) edge (V16); \draw[-] (V16) edge (V11);
+			\draw[-] (V12) edge (V17); \draw[-] (V17) edge (V16); \draw[-] (V16) edge (V12);
+			\draw[-] (V12) edge (V13); \draw[-] (V13) edge (V18); \draw[-] (V18) edge (V12);
+			\draw[-] (V12) edge (V18); \draw[-] (V18) edge (V17); \draw[-] (V17) edge (V12);
+			\draw[-] (V13) edge (V14); \draw[-] (V14) edge (V18); \draw[-] (V18) edge (V13);
+			\draw[-] (V14) edge (V19); \draw[-] (V19) edge (V18); \draw[-] (V18) edge (V14);
+			
+			\draw[-] (V15) edge (V16); \draw[-] (V16) edge (V20); \draw[-] (V20) edge (V15);
+			\draw[-] (V16) edge (V21); \draw[-] (V21) edge (V20); \draw[-] (V20) edge (V15);
+			\draw[-] (V16) edge (V17); \draw[-] (V17) edge (V22); \draw[-] (V22) edge (V16);
+			\draw[-] (V16) edge (V22); \draw[-] (V22) edge (V21); \draw[-] (V21) edge (V16);
+			\draw[-] (V17) edge (V18); \draw[-] (V18) edge (V22); \draw[-] (V22) edge (V17);
+			\draw[-] (V18) edge (V23); \draw[-] (V23) edge (V22); \draw[-] (V22) edge (V18);
+			\draw[-] (V18) edge (V19); \draw[-] (V19) edge (V24); \draw[-] (V24) edge (V18);
+			\draw[-] (V18) edge (V24); \draw[-] (V24) edge (V23); \draw[-] (V23) edge (V18);	
+		\end{tikzpicture}}
+		\subfigure[isometrisch]{
+		\begin{tikzpicture}[scale=0.6, every node/.style={scale=0.6}]
+			\begin{scope}[
+				auto, vertice/.style={align=center, draw, circle, minimum width=2em, inner sep=2pt}]
+				\node[vertice] (V0) at (0,0) {$0$};
+				\node[vertice] (V1) at (2,0) {$1$};
+				\node[vertice] (V2) at (4,0) {$2$};
+				\node[vertice] (V3) at (6,0) {$3$};
+				\node[vertice] (V4) at (8,0) {$4$};
+				
+				\node[vertice] (V5) at (0,-2) {$5$};
+				\node[vertice] (V6) at (2,-2) {$6$};
+				\node[vertice] (V7) at (4,-2) {$7$};
+				\node[vertice] (V8) at (6,-2) {$8$};
+				\node[vertice] (V9) at (8,-2) {$9$};
+				
+				\node[vertice] (V10) at (0,-4) {$10$};
+				\node[vertice] (V11) at (2,-4) {$11$};
+				\node[vertice] (V12) at (4,-4) {$12$};
+				\node[vertice] (V13) at (6,-4) {$13$};
+				\node[vertice] (V14) at (8,-4) {$14$};
+	
+				\node[vertice] (V15) at (0,-6) {$15$};
+				\node[vertice] (V16) at (2,-6) {$16$};
+				\node[vertice] (V17) at (4,-6) {$17$};
+				\node[vertice] (V18) at (6,-6) {$18$};
+				\node[vertice] (V19) at (8,-6) {$19$};
+				
+				\node[vertice] (V20) at (0,-8) {$20$};
+				\node[vertice] (V21) at (2,-8) {$21$};
+				\node[vertice] (V22) at (4,-8) {$22$};
+				\node[vertice] (V23) at (6,-8) {$23$};
+				\node[vertice] (V24) at (8,-8) {$24$};		
+			\end{scope}
+			
+			\draw[-] (V0) edge (V1); \draw[-] (V1) edge (V6); \draw[-] (V6) edge (V0);
+			\draw[-] (V0) edge (V6); \draw[-] (V6) edge (V5); \draw[-] (V5) edge (V0);
+			\draw[-] (V1) edge (V2); \draw[-] (V2) edge (V7); \draw[-] (V7) edge (V1);
+			\draw[-] (V1) edge (V7); \draw[-] (V7) edge (V6); \draw[-] (V6) edge (V1);
+			\draw[-] (V2) edge (V3); \draw[-] (V3) edge (V8); \draw[-] (V8) edge (V2);
+			\draw[-] (V2) edge (V8); \draw[-] (V8) edge (V7); \draw[-] (V7) edge (V2);
+			\draw[-] (V3) edge (V4); \draw[-] (V4) edge (V9); \draw[-] (V9) edge (V3);
+			\draw[-] (V3) edge (V9); \draw[-] (V9) edge (V8); \draw[-] (V8) edge (V3);
+			
+			\draw[-] (V5) edge (V6);  \draw[-] (V6) edge (V10);  \draw[-] (V10) edge (V5);
+			\draw[-] (V6) edge (V11); \draw[-] (V11) edge (V10); \draw[-] (V10) edge (V6);
+			\draw[-] (V6) edge (V7);  \draw[-] (V7) edge (V11);  \draw[-] (V11) edge (V6);
+			\draw[-] (V7) edge (V12); \draw[-] (V12) edge (V11); \draw[-] (V11) edge (V7);
+			\draw[-] (V7) edge (V8);  \draw[-] (V8) edge (V12);  \draw[-] (V12) edge (V7);
+			\draw[-] (V8) edge (V13); \draw[-] (V13) edge (V12); \draw[-] (V12) edge (V8);
+			\draw[-] (V8) edge (V9);  \draw[-] (V9) edge (V13);  \draw[-] (V13) edge (V8);
+			\draw[-] (V9) edge (V14); \draw[-] (V14) edge (V13); \draw[-] (V13) edge (V9);
+	
+			\draw[-] (V10) edge (V11); \draw[-] (V11) edge (V16); \draw[-] (V16) edge (V10);
+			\draw[-] (V10) edge (V16); \draw[-] (V16) edge (V15); \draw[-] (V15) edge (V10);
+			\draw[-] (V11) edge (V12); \draw[-] (V12) edge (V17); \draw[-] (V17) edge (V11);
+			\draw[-] (V11) edge (V17); \draw[-] (V17) edge (V16); \draw[-] (V16) edge (V11);
+			\draw[-] (V12) edge (V13); \draw[-] (V13) edge (V18); \draw[-] (V18) edge (V12);
+			\draw[-] (V12) edge (V18); \draw[-] (V18) edge (V17); \draw[-] (V17) edge (V12);
+			\draw[-] (V13) edge (V14); \draw[-] (V14) edge (V19); \draw[-] (V19) edge (V13);
+			\draw[-] (V13) edge (V19); \draw[-] (V19) edge (V18); \draw[-] (V18) edge (V13);
+			
+			\draw[-] (V15) edge (V16); \draw[-] (V16) edge (V20); \draw[-] (V20) edge (V15);
+			\draw[-] (V16) edge (V21); \draw[-] (V21) edge (V20); \draw[-] (V20) edge (V15);
+			\draw[-] (V16) edge (V17); \draw[-] (V17) edge (V21); \draw[-] (V21) edge (V16);
+			\draw[-] (V17) edge (V22); \draw[-] (V22) edge (V21); \draw[-] (V21) edge (V17);
+			\draw[-] (V17) edge (V18); \draw[-] (V18) edge (V22); \draw[-] (V22) edge (V17);
+			\draw[-] (V18) edge (V23); \draw[-] (V23) edge (V22); \draw[-] (V22) edge (V18);
+			\draw[-] (V18) edge (V19); \draw[-] (V19) edge (V23); \draw[-] (V23) edge (V18);
+			\draw[-] (V19) edge (V24); \draw[-] (V24) edge (V23); \draw[-] (V23) edge (V19);	
+		\end{tikzpicture}}
 	\centering
-	\caption{Darstellung der Netzstruktur mit regulärer Vollvernetzung.}
-	\label{fig:FULL_Default}
+	\caption{Darstellung von drei verschiedene Varianten der Vollvernetzung.}
+	\label{fig:FULL_MESH}
 \end{figure}
 
-Die Anzahl der Eckpunkte und der Textur-Koordinaten entspricht dabei der Anzahl der Bildpunkte des Tiefenbildes und die Anzahl an Dreiecken lässt sich aus der Auflösung $w \times h$ folgendermaßen berechnen: $2(w-1)(h-1)$.
+\subsection{Delaunay-Triangulierung}
 
-Die Darstellung der Darstellungspipeline nach dem OpenGL ES 2.0 ist in Abbildung \ref{fig:OpenGl_pipeline} zu sehen. 
-Mit gelb Farblich hervorgehoben sind die programmierbaren
-Elemente, der Vertex- und der Fragment-Shader.
+Die zweite Variante die in dieser Arbeit untersucht wird,
+ist die eine adaptive Vernetzung des Tiefenbildes.
+Diese wird vom Server durchgeführt und das Dreiecksnetz wird anschließend als solches zum Klient gesendet.
+Dazu wurde der von Banno \textit{et al.} \cite{Banno:2012:RCD:2407516.2407579} entwickelte Algorithmus
+implementiert.
+
+Grundlage des Algorithmus ist die bereits in den Grundlagen erörterte Delaunay-Triangulierung.
+Zu beginn muss eine Menge von Punkten $P \subset D$ gewählt werden.
+Die Punkte $p \in P$ werden anschließend zu einem Dreiecksnetz mit Hilfe der Delaunay-Triangulierung
+vernetzt.
+Bevor das fertige Netz zum Klient gesendet wird, werden in einem Optimierungsschritt, die
+durch die Delaunay-Triangulierung erzeugten Kanten verbessert und gegeben falls neue Dreiecke
+zum Netz hinzugefügt.
+
+Ziel ist es die Menge $P$ so zu wählen, dass sie die Struktur des Tiefenbildes
+möglichst optimal approximiert wird.
+Punkte müssen an Stellen gesetzt werden, an denen Tiefensprünge auftreten oder die Oberfläche nicht planar ist.
+Die Dichte der gesetzten Punkte $P$ ist dabei proportional zur lokalen Komplexität der Szene.
+
+\subsubsection{Besondere Punkte}
+
+Um die besonderen Punkte bestimmen zu können, müssen zuerst die Gradienten des Tiefenbildes $\nabla_x$ und $\nabla_y$ berechnet werden, dies geschieht mit Hilfe des Sobel-Operators. 
+Dieser berechnet die erste Ableitung und glättet gleichzeitig dazu die orthogonale Richtung.
+Mit Hilfe einer Faltungsmatrix der Größe $3 \times 3$ können die Gradienten berechnet werden:
+
+\begin{align}
+\nabla_x &= \begin{bmatrix} 1 & 0 & -1 \\ 2 & 0 & -2 \\ 1 & 0 & -1 \end{bmatrix} \ast D \\
+\nabla_y &= \begin{bmatrix} 1 & 2 & 1 \\ 0 & 0 & 0 \\ -1 & -2 & -1 \end{bmatrix} \ast D.
+\label{eq:SOBEL_GRAD}
+\end{align}
+
+Die Punktemenge $P$ wird mit Hilfe einer Quaternärbaum-Datenstruktur erzeugt.
+Ein Quaternärbaum unterteilt das Tiefenbild sukzessiv in vier rechteckige Regionen.
+Die maximale Tiefe des Quaternärbaums ist invers proportional zur Breite der Blattregionen.
+Mit diesem Parameter kann die Qualität und die Kompression des erzeugten Netzes,
+sowie der Berechnungsaufwand skaliert werden.
+
+Jeder Knoten des Baums entspricht einer rechteckigen Region $R$ des Tiefenbildes,
+welche mit Hilfe der Sobel-Gradienten auf planarität getestet wird.
+Wenn die Region $R$ nicht planar ist, dann werden die Eckpunkte von $R$ zur Menge $P$
+hinzugefügt.
+Wenn die Gradienten in einer Region $R$ nahezu gleich sind, dann wird diese
+Region $R$ als planar bezeichnet.
+Ob eine Region $R$ als planar bezeichnet werden kann, lässt sich
+mit Hilfe der Differenz, zwischen dem maximalen und  dem minimalen Gradienten von $R$ bestimmten:
+
+\begin{align}
+c_x &= \max\limits_{R} \nabla_x - \min\limits_{R} \nabla_x = \nabla_{H_x} - \nabla_{L_x} \\
+c_y &= \max\limits_{R} \nabla_y - \min\limits_{R} \nabla_y = \nabla_{H_y} - \nabla_ {L_y}.
+\end{align}
+
+Wenn entweder $c_x$ oder $c_y$ größer als ein Schwellwert $T_{planar}$ ist, dann
+ist die Region $R$ nicht planar und die Eckpunkte werden der Menge $P$ hinzugefügt.
+
+Der Baum wird beginnend mit dem Blattknoten zum Wurzelkonten traversiert.
+Die Werte für $c_x$ und $c_y$ der inneren Konten lassen sich effizient 
+mit Hilfe von $\nabla_H$ und $\nabla_L$ der vier Kindknoten berechnen.
+
+Der Schwellwert $T_{planar}$ ist entscheidend für die Anzahl der eingefügten
+Punkte in $P$.
+Der Wert von $T_{planar}$ kann adaptiv gewählt werden, um die Komplexität
+des Dreiecksnetzes anzupassen.
+Für den eigentlichen Planaritäts-Test unterscheidet sich der Schwellwert für Blatt oder
+innere Knoten in $T_{leaf}$ und $T_{inner}$.
+Die Idee dahinter ist, dass Blattknoten vorrangig Tiefenuntersprünge detektieren sollen bzw.
+die Kontur, während die inneren Knoten nicht-planare Oberflächen repräsentieren. 
+Weil Tiefensprünge größere Gradienten bedeuten als nicht-planare Oberflächen, 
+sollte $T_{internal}$ kleiner $T_{leaf}$ als gewählt werden.
+
+Durch das Traversieren des Quaternärbaums lässt sich die Menge $P$ bestimmen
+und das Dreiecksnetz kann mit Hilfe der Delaunay-Triangulierung vernetzt werden.
+
+Ähnlich zur Vollvernetzung kann die Datenstruktur des Quaternärbaums im vorausberechnet werden
+und wird nur im Falle einer Auflösungsänderung oder einer Änderung des maximalen Tiefenwertes
+des Quaternärbaums neu berechnet.
+
+\subsubsection{Optimierung des Netzes}
+
+Das auf diese Weise entstandene Netz enthält zwei arten von Artefakten.
+Zum einen können Dreiecke falsche Tiefenregionen approximieren, weil nur
+die Eckpunkte der jeweiligen Regionen $R$ zur Konstruktion der Dreiecke
+genutzt werden.
+Zum anderen können Dreiecke über Tiefensprüngen liegen und dadurch werden Kanten nicht
+korrekt vom Netz abgebildet. 
+Um die Artefakte zu reduzieren, werden nicht valide Dreiecke nochmals unterteilt oder verworfen.
+Die Validität eines Dreiecks wird anhand seiner Kanten bestimmt.
+Eine Kante wird als nicht valide Kante bezeichnet, wenn die Tiefenwerte
+einiger von ihr überspannten Pixel abweicht, oder die 3D Richtung der Kante
+sich dem Lot der Bildebene nährt.
+
+Die Eckpunkte der zu prüfenden Kante, werden im folgenden mit $p_1$ und $p_2$ bezeichnet.
+Der Punkt $p_m$ bezeichnet die Seitenhalbierende, den Median der Kante $p_1 p_2$.
+Ein entscheidender Punkt, ist der das alle Streckenlängen mit Texturkoodinaten berechnet werden,
+damit die Gleichungen unabhängig von der eigentlichen Auflösung sind.
+
+In der Gleichung \ref{eq:EDGE_VALID} approximiert der erste Term das Verhältnis,
+zwischen dem Betrag des Tiefenunterschieds von $p_1$ und $p_2$
+zu der Länge der Kante projiziert auf die $xy$-Ebene.
+
+\begin{equation}
+\frac{\mid d(p_1) - d(p_2) \mid}{\parallel p_1 - p_2 \parallel (d(p_1) + d(p_2)} < T_{angle}
+\label{eq:EDGE_VALID}
+\end{equation}
+
+Ist der Wert des ersten Terms der Gleichung \ref{eq:EDGE_VALID} einer Kannte größer 
+als der Schwellwert $T_{angle}$, dann steht diese Kante nahezu senkrecht auf der
+Bildebene und sie liegt mit hoher Wahrscheinlich über einen Tiefensprung. 
+Eine Kante auf die das zutrifft wird als nicht valide bezeichnet.
+Enthält ein Dreieck mindestens zwei Kanten die valide sind, wird es direkt zum
+endgültigen Dreiecksnetz hinzugefügt.
+Wenn ein Dreieck dagegen mehr als zwei nicht valide Kanten enthält,
+wird es weiter unterteilt.
+
+Zwei Bildpunkte $p_1$ und $p_2$ werden als verbindbar bezeichnet,
+wenn alle Bildpunkte zwischen $p_1$ und $p_2$ valide Tiefenwerte
+besitzen und ihre Tiefe sich zum größten Teil linear ändert.
+Um Rechenzeit zu sparen wird empfohlen nur den Median $p_m$ zwischen
+$p_1$ und $p_2$ zu testen.
+Eine Strecke wird als Verbindbar bezeichnet, wenn sie die folgende Gleichung
+erfüllt:
+
+\begin{equation}
+\mid (d(p_2) - d(p_m)) - (d(p_m) - d(p_1)) \mid < T_{join}
+\label{eq:EDGE_JOIN}
+\end{equation}.
+
+Um ein Dreieck zu unterteilen muss eine Fallunterscheidung durchgeführt werden.
+Hat das Dreieck nur eine valide Kante $p_1 p_2$, dann müssen die anderen beiden
+Kanten wie in der Abbildung \ref{fig:1VALID_EDGES} geteilt werden und es entstehen
+aus dem ursprünglichen Dreieck drei neue Dreiecke.
+
+\begin{figure}[th]
+	\subfigure[]{
+	\begin{tikzpicture}[scale=0.6, every node/.style={scale=0.6}]
+		\draw[fill=gray!50] (0, -5) -- (0, 2) -- (2, 2) -- (2, 1) -- (5, 1) -- (5, 0) --(7, 0) -- (7, -1) -- (8, -1) -- (8, -2) -- (9, -2) -- (9, -5) -- cycle;
+		
+		\begin{scope}[
+			auto, vertex/.style={align=center, draw, fill=white, circle, line width=0.5mm, minimum width=2em, inner sep=2pt}]
+			\node[vertex] (V1) at (1, -2) {$p_1$};
+			\node[vertex] (V2) at (7, -3) {$p_2$};
+			\node[vertex] (V3) at (5, 4) {$p_3$};
+		\end{scope}
+		
+		\draw[-, line width=0.5mm] (V1) edge (V2);
+		\draw[-, line width=0.5mm] (V2) edge (V3);
+		\draw[-, line width=0.5mm] (V1) edge (V3);
+	\end{tikzpicture}}
+	\subfigure[]{
+	\begin{tikzpicture}[scale=0.6, every node/.style={scale=0.6}]
+		\draw[fill=gray!50] (0, -5) -- (0, 2) -- (2, 2) -- (2, 1) -- (5, 1) -- (5, 0) --(7, 0) -- (7, -1) -- (8, -1) -- (8, -2) -- (9, -2) -- (9, -5) -- cycle;
+		
+		\begin{scope}[
+			auto, vertex/.style={align=center, draw, fill=white, circle, line width=0.5mm, minimum width=2em, inner sep=5pt}]
+			\node[vertex] (V1) at (1, -2) {$p_1$};
+			\node[vertex] (V2) at (7, -3) {$p_2$};
+			
+			\node[vertex] (V13) at (2.7, 0.5) {$p_1'$};
+			\node[vertex] (V23) at (6.3, -0.5) {$p_2'$};
+			
+			\node[vertex] (V3) at (5, 4) {$p_3$};
+			
+			\node[vertex] (V31) at (3.4, 1.5) {$p_3'$};
+			\node[vertex] (V32) at (6, 0.5) {$p_3''$};
+		\end{scope}
+		
+		\draw[-, line width=0.5mm] (V1) edge (V2);
+		\draw[-, line width=0.5mm] (V1) edge (V13);
+		\draw[-, line width=0.5mm] (V2) edge (V23);
+		
+		\draw[-, line width=0.5mm] (V13) edge (V23);
+		\draw[-, line width=0.5mm] (V13) edge (V2);
+		
+		\draw[-, line width=0.5mm] (V3) edge (V31);
+		\draw[-, line width=0.5mm] (V3) edge (V32);
+		\draw[-, line width=0.5mm] (V31) edge (V32);
+	\end{tikzpicture}}
+	\centering
+	\caption{Die Bilder a und b zeigen die Unterteilung des Dreiecks $p_1 p_2 p_3$, 
+	wenn die zwei Kanten $p_1 p_3$, $p_2 p_3$ nicht valide sind.}
+	\label{fig:1VALID_EDGES}
+\end{figure}
+
+Dazu werden vier neue Vertices iterativ entlang der alten Strecken eingefügt:
+
+Der Vertex $p_1'$ ist der von Punkt auf der Strecke $p_3 p_1$, der am weitesten von $p_1$
+entfernt liegt und mit dem Punkten $p_1$ und $p_2'$ verbindbar ist.
+
+Der Vertex $p_2'$ ist der von Punkt auf der Strecke $p_3 p_2$, der am weitesten von $p_2$
+entfernt liegt und mit dem Punkten $p_2$ und $p_1'$ verbindbar ist.
+
+Der Vertex $p_3'$ ist der von Punkt auf der Strecke $p_3 p_1$, der am weitesten von $p_3$
+entfernt liegt und mit dem Punkt $p_3$ verbindbar ist.
+
+Der Vertex $p_3''$ ist der von Punkt auf der Strecke $p_3 p_2$, der am weitesten von $p_3$
+entfernt liegt und mit dem Punkt $p_3$ verbindbar ist.
+
+Anschließend wird das Dreieck $p_3 p_3' p_3''$ zum endgültigen Dreiecksnetz hinzugefügt.
+Um die anderen beiden Dreiecke einzufügen muss eine weitere Fallunterscheidung durchgeführt
+werden.
+Wenn die Strecke $p_1 p_2'$ kleiner ist als $p_2 p_1'$, dann werden die Dreiecke $p_1 p_2 p_2'$,
+$p_1 p_2' p_1'$ zu dem finalen Netz hinzugefügt,
+andernfalls die beiden Dreiecke $p_1 p_2 p_1'$ und $p_2 p_2' p_1'$.
+
+In dem Fall, das alle drei Kanten nicht valide sind, werden sechs neue Vertices eingefügt,
+die Abbildung \ref{fig:0VALID_EDGES} verdeutlicht diesen Fall. 
+Die Berechnung aller Vertices geschieht analog zu dem Vertex $p_3'$ aus dem vorhergehenden Betrachtung mit
+einer validen Kante.
+
+
+\begin{figure}[th]
+	\subfigure[]{
+	\begin{tikzpicture}[scale=0.6, every node/.style={scale=0.6}]
+		\draw[fill=gray!30] (0, -5) -- (0, 2) -- (2, 2) -- (2, 1) -- (3, 1) -- (3, -5) -- cycle;
+		
+		\draw[fill=gray!80] (4, -5) -- (4, 1) -- (5, 1) -- (5, 0) -- (7, 0) -- (7, -1) -- (8, -1) -- (8, -2) -- (9, -2) -- (9, -5) -- cycle;
+		
+		\begin{scope}[
+			auto, vertex/.style={align=center, draw, fill=white, circle, line width=0.5mm, minimum width=2em, inner sep=2pt}]
+			\node[vertex] (V1) at (1, -2) {$p_1$};
+			\node[vertex] (V2) at (7, -3) {$p_2$};
+			\node[vertex] (V3) at (5, 4) {$p_3$};
+		\end{scope}
+	
+		\draw[-, line width=0.5mm] (V1) edge (V2);
+		\draw[-, line width=0.5mm] (V2) edge (V3);
+		\draw[-, line width=0.5mm] (V1) edge (V3);	
+	\end{tikzpicture}}
+	\subfigure[]{
+	\begin{tikzpicture}[scale=0.6, every node/.style={scale=0.6}]
+		\draw[fill=gray!30] (0, -5) -- (0, 2) -- (2, 2) -- (2, 1) -- (3, 1) -- (3, -5) -- cycle;
+		
+		\draw[fill=gray!80] (4, -5) -- (4, 1) -- (5, 1) -- (5, 0) -- (7, 0) -- (7, -1) -- (8, -1) -- (8, -2) -- (9, -2) -- (9, -5) -- cycle;
+		
+		\begin{scope}[
+			auto, vertex/.style={align=center, draw, fill=white, circle, line width=0.5mm, minimum width=2em, inner sep=2pt}]
+			\node[vertex] (V1) at (1, -2) {$p_1$};
+			\node[vertex] (V2) at (7, -3) {$p_2$};
+			
+			\node[vertex] (V13) at (2.6, 0.4) {$p_1''$};
+			\node[vertex] (V12) at (2.6, -2.3) {$p_1'$};
+			
+			\node[vertex] (V23) at (6.3, -0.5) {$p_2'$};
+			\node[vertex] (V21) at (4.5, -2.6) {$p_2''$};
+			
+			\node[vertex] (V3) at (5, 4) {$p_3$};
+			
+			\node[vertex] (V31) at (3.4, 1.5) {$p_3'$};
+			\node[vertex] (V32) at (6, 0.5) {$p_3''$};
+		\end{scope}
+		
+		\draw[-, line width=0.5mm] (V1) edge (V12);
+		\draw[-, line width=0.5mm] (V1) edge (V13);
+		\draw[-, line width=0.5mm] (V12) edge (V13);
+		\draw[-, line width=0.5mm] (V2) edge (V23);
+		\draw[-, line width=0.5mm] (V2) edge (V21);
+		\draw[-, line width=0.5mm] (V21) edge (V23);
+		
+		\draw[-, line width=0.5mm] (V3) edge (V31);
+		\draw[-, line width=0.5mm] (V3) edge (V32);
+		\draw[-, line width=0.5mm] (V31) edge (V32);
+	\end{tikzpicture}}
+	\centering
+	\caption{Die Bilder a und b zeigen die Unterteilung des Dreiecks $p_1 p_2 p_3$, 
+			 wenn keine Kante valide ist.}
+	\label{fig:0VALID_EDGES}
+\end{figure}
+
+Zu beachten ist, dass jedes neu erzeugte Dreieck auf Kollinearität zu überprüfen
+und gegebenenfalls zu verwerfen.
+
+\section{Implementierung}
+
+Als Grundlage dient das Konzept von Wessels \textit{et al.} \cite{DBLP:conf/itng/WesselsPJR11}.
+Die Klient-Anwendung ist eine Browser basierte Web-Anwendung, die mit dem Server
+über das WebSocket-Protokoll kommuniziert.
+Dabei handelt es sich um ein auf TCP basierendes Netzwerkprotokoll,
+das eine Bidirektionale Verbindung erlaubt.
+Die Arbeit von Wessels \textit{et al.} wird dahingehend erweitert,
+das die Manipulation der Bilddaten mit Hilfe von WebGl durchgeführt wird.
+Bei WebGl handelt es sich um eine Bibliothek die von modernen Browsern zur Verfügung gestellt wird,
+um eine Hardware beschleunigte Bildsynthese zu ermöglichen.
+Der Vorteil dieser Technologie ist die Unabhängigkeit der Anwendung im Bezug,
+zur Plattform und dem Gerät, auf dem sie laufen soll.
+
+Beide Komponenten tauschen Informationen mit Hilfe des kompakten vom Menschen
+lesbaren Java 
 
 \subsection{16 Bit}
 
@@ -577,7 +1089,7 @@ In den roten-Farbkanal werden die ersten 8 Bit und in den
 grünen-Farbkanal die restlichen 8 Bit aufgeteilt.
 Die Aufteilung der 16 Bit auf die Farbkanäle erfolgt Server-seitig.
 
-\begin{figure}
+\begin{figure}[h]
 	\begin{tikzpicture}
 		\node[draw=none] (A) at (0,0) {$2^{16}$};
 		\node[draw=none, fill=red!20, minimum width=6cm, minimum height=1cm] (B) at (-3,-1) {$2^{8}$};
@@ -608,158 +1120,6 @@ Die Gleichung \ref{eq:reconstruct1} zeigt genau diesen Zusammenhang:
 Beim Laden einer Textur auf die Grafikkarte, werden alle Farbkanäle normiert, im Fall
 eines 8 Bit Bildes, wird jeder Wert durch den Maximalwert 255 geteilt, so dass
 der Wert im Intervall von $[0, 1]$ liegt.
-
-\begin{figure}[h]
-	\begin{tikzpicture}
-		\begin{scope}[
-			auto, vertice/.style={align=center, draw, circle, minimum width=2em, inner sep=2pt}]
-			\node[vertice] (V0) at (0,0) {$v_0$};
-			\node[vertice] (V1) at (2,0) {$v_1$};
-			\node[vertice] (V2) at (4,0) {$v_2$};
-			\node[vertice] (V3) at (6,0) {$v_3$};
-			\node[vertice] (V4) at (8,0) {$v_4$};
-			
-			\node[vertice] (V5) at (0,-2) {$v_5$};
-			\node[vertice] (V6) at (2,-2) {$v_6$};
-			\node[vertice] (V7) at (4,-2) {$v_7$};
-			\node[vertice] (V8) at (6,-2) {$v_8$};
-			\node[vertice] (V9) at (8,-2) {$v_9$};
-			
-			\node[vertice] (V10) at (0,-4) {$v_{10}$};
-			\node[vertice] (V11) at (2,-4) {$v_{11}$};
-			\node[vertice] (V12) at (4,-4) {$v_{12}$};
-			\node[vertice] (V13) at (6,-4) {$v_{13}$};
-			\node[vertice] (V14) at (8,-4) {$v_{14}$};
-
-			\node[vertice] (V15) at (0,-6) {$v_{15}$};
-			\node[vertice] (V16) at (2,-6) {$v_{16}$};
-			\node[vertice] (V17) at (4,-6) {$v_{17}$};
-			\node[vertice] (V18) at (6,-6) {$v_{18}$};
-			\node[vertice] (V19) at (8,-6) {$v_{19}$};
-			
-			\node[vertice] (V20) at (0,-8) {$v_{20}$};
-			\node[vertice] (V21) at (2,-8) {$v_{21}$};
-			\node[vertice] (V22) at (4,-8) {$v_{22}$};
-			\node[vertice] (V23) at (6,-8) {$v_{23}$};
-			\node[vertice] (V24) at (8,-8) {$v_{24}$};		
-		\end{scope}
-		
-		\draw[-] (V0) edge (V1); \draw[-] (V1) edge (V6); \draw[-] (V6) edge (V0);
-		\draw[-] (V0) edge (V6); \draw[-] (V6) edge (V5); \draw[-] (V5) edge (V0);
-		\draw[-] (V1) edge (V2); \draw[-] (V2) edge (V6); \draw[-] (V6) edge (V1);
-		\draw[-] (V2) edge (V7); \draw[-] (V7) edge (V6); \draw[-] (V6) edge (V2);
-		\draw[-] (V2) edge (V3); \draw[-] (V3) edge (V8); \draw[-] (V8) edge (V2);
-		\draw[-] (V2) edge (V8); \draw[-] (V8) edge (V7); \draw[-] (V7) edge (V2);
-		\draw[-] (V3) edge (V4); \draw[-] (V4) edge (V8); \draw[-] (V8) edge (V3);
-		\draw[-] (V4) edge (V9); \draw[-] (V9) edge (V8); \draw[-] (V8) edge (V4);
-		
-		\draw[-] (V5) edge (V6);  \draw[-] (V6) edge (V10);  \draw[-] (V10) edge (V5);
-		\draw[-] (V6) edge (V11); \draw[-] (V11) edge (V10); \draw[-] (V10) edge (V6);
-		\draw[-] (V6) edge (V7);  \draw[-] (V7) edge (V12);  \draw[-] (V12) edge (V6);
-		\draw[-] (V6) edge (V12); \draw[-] (V12) edge (V11); \draw[-] (V11) edge (V6);
-		\draw[-] (V7) edge (V8);  \draw[-] (V8) edge (V12);  \draw[-] (V12) edge (V7);
-		\draw[-] (V8) edge (V13); \draw[-] (V13) edge (V12); \draw[-] (V12) edge (V8);
-		\draw[-] (V8) edge (V9);  \draw[-] (V9) edge (V14);  \draw[-] (V14) edge (V8);
-		\draw[-] (V8) edge (V14); \draw[-] (V14) edge (V13); \draw[-] (V13) edge (V8);
-
-		\draw[-] (V10) edge (V11); \draw[-] (V11) edge (V16); \draw[-] (V16) edge (V10);
-		\draw[-] (V10) edge (V16); \draw[-] (V16) edge (V15); \draw[-] (V15) edge (V10);
-		\draw[-] (V11) edge (V12); \draw[-] (V12) edge (V16); \draw[-] (V16) edge (V11);
-		\draw[-] (V12) edge (V17); \draw[-] (V17) edge (V16); \draw[-] (V16) edge (V12);
-		\draw[-] (V12) edge (V13); \draw[-] (V13) edge (V18); \draw[-] (V18) edge (V12);
-		\draw[-] (V12) edge (V18); \draw[-] (V18) edge (V17); \draw[-] (V17) edge (V12);
-		\draw[-] (V13) edge (V14); \draw[-] (V14) edge (V18); \draw[-] (V18) edge (V13);
-		\draw[-] (V14) edge (V19); \draw[-] (V19) edge (V18); \draw[-] (V18) edge (V14);
-		
-		\draw[-] (V15) edge (V16); \draw[-] (V16) edge (V20); \draw[-] (V20) edge (V15);
-		\draw[-] (V16) edge (V21); \draw[-] (V21) edge (V20); \draw[-] (V20) edge (V15);
-		\draw[-] (V16) edge (V17); \draw[-] (V17) edge (V22); \draw[-] (V22) edge (V16);
-		\draw[-] (V16) edge (V22); \draw[-] (V22) edge (V21); \draw[-] (V21) edge (V16);
-		\draw[-] (V17) edge (V18); \draw[-] (V18) edge (V22); \draw[-] (V22) edge (V17);
-		\draw[-] (V18) edge (V23); \draw[-] (V23) edge (V22); \draw[-] (V22) edge (V18);
-		\draw[-] (V18) edge (V19); \draw[-] (V19) edge (V24); \draw[-] (V24) edge (V18);
-		\draw[-] (V18) edge (V24); \draw[-] (V24) edge (V23); \draw[-] (V23) edge (V18);	
-	\end{tikzpicture}
-	\centering
-	\caption{Darstellung der Netzstruktur mit \textit{cookie-cutter} Vollvernetzung.}
-	\label{fig:FULL_Cookie}
-\end{figure}
-
-\begin{figure}[h]
-	\begin{tikzpicture}
-		\begin{scope}[
-			auto, vertice/.style={align=center, draw, circle, minimum width=2em, inner sep=2pt}]
-			\node[vertice] (V0) at (0,0) {$v_0$};
-			\node[vertice] (V1) at (2,0) {$v_1$};
-			\node[vertice] (V2) at (4,0) {$v_2$};
-			\node[vertice] (V3) at (6,0) {$v_3$};
-			\node[vertice] (V4) at (8,0) {$v_4$};
-			
-			\node[vertice] (V5) at (0,-2) {$v_5$};
-			\node[vertice] (V6) at (2,-2) {$v_6$};
-			\node[vertice] (V7) at (4,-2) {$v_7$};
-			\node[vertice] (V8) at (6,-2) {$v_8$};
-			\node[vertice] (V9) at (8,-2) {$v_9$};
-			
-			\node[vertice] (V10) at (0,-4) {$v_{10}$};
-			\node[vertice] (V11) at (2,-4) {$v_{11}$};
-			\node[vertice] (V12) at (4,-4) {$v_{12}$};
-			\node[vertice] (V13) at (6,-4) {$v_{13}$};
-			\node[vertice] (V14) at (8,-4) {$v_{14}$};
-
-			\node[vertice] (V15) at (0,-6) {$v_{15}$};
-			\node[vertice] (V16) at (2,-6) {$v_{16}$};
-			\node[vertice] (V17) at (4,-6) {$v_{17}$};
-			\node[vertice] (V18) at (6,-6) {$v_{18}$};
-			\node[vertice] (V19) at (8,-6) {$v_{19}$};
-			
-			\node[vertice] (V20) at (0,-8) {$v_{20}$};
-			\node[vertice] (V21) at (2,-8) {$v_{21}$};
-			\node[vertice] (V22) at (4,-8) {$v_{22}$};
-			\node[vertice] (V23) at (6,-8) {$v_{23}$};
-			\node[vertice] (V24) at (8,-8) {$v_{24}$};		
-		\end{scope}
-		
-		\draw[-] (V0) edge (V1); \draw[-] (V1) edge (V6); \draw[-] (V6) edge (V0);
-		\draw[-] (V0) edge (V6); \draw[-] (V6) edge (V5); \draw[-] (V5) edge (V0);
-		\draw[-] (V1) edge (V2); \draw[-] (V2) edge (V7); \draw[-] (V7) edge (V1);
-		\draw[-] (V1) edge (V7); \draw[-] (V7) edge (V6); \draw[-] (V6) edge (V1);
-		\draw[-] (V2) edge (V3); \draw[-] (V3) edge (V8); \draw[-] (V8) edge (V2);
-		\draw[-] (V2) edge (V8); \draw[-] (V8) edge (V7); \draw[-] (V7) edge (V2);
-		\draw[-] (V3) edge (V4); \draw[-] (V4) edge (V9); \draw[-] (V9) edge (V3);
-		\draw[-] (V3) edge (V9); \draw[-] (V9) edge (V8); \draw[-] (V8) edge (V3);
-		
-		\draw[-] (V5) edge (V6);  \draw[-] (V6) edge (V10);  \draw[-] (V10) edge (V5);
-		\draw[-] (V6) edge (V11); \draw[-] (V11) edge (V10); \draw[-] (V10) edge (V6);
-		\draw[-] (V6) edge (V7);  \draw[-] (V7) edge (V11);  \draw[-] (V11) edge (V6);
-		\draw[-] (V7) edge (V12); \draw[-] (V12) edge (V11); \draw[-] (V11) edge (V7);
-		\draw[-] (V7) edge (V8);  \draw[-] (V8) edge (V12);  \draw[-] (V12) edge (V7);
-		\draw[-] (V8) edge (V13); \draw[-] (V13) edge (V12); \draw[-] (V12) edge (V8);
-		\draw[-] (V8) edge (V9);  \draw[-] (V9) edge (V13);  \draw[-] (V13) edge (V8);
-		\draw[-] (V9) edge (V14); \draw[-] (V14) edge (V13); \draw[-] (V13) edge (V9);
-
-		\draw[-] (V10) edge (V11); \draw[-] (V11) edge (V16); \draw[-] (V16) edge (V10);
-		\draw[-] (V10) edge (V16); \draw[-] (V16) edge (V15); \draw[-] (V15) edge (V10);
-		\draw[-] (V11) edge (V12); \draw[-] (V12) edge (V17); \draw[-] (V17) edge (V11);
-		\draw[-] (V11) edge (V17); \draw[-] (V17) edge (V16); \draw[-] (V16) edge (V11);
-		\draw[-] (V12) edge (V13); \draw[-] (V13) edge (V18); \draw[-] (V18) edge (V12);
-		\draw[-] (V12) edge (V18); \draw[-] (V18) edge (V17); \draw[-] (V17) edge (V12);
-		\draw[-] (V13) edge (V14); \draw[-] (V14) edge (V19); \draw[-] (V19) edge (V13);
-		\draw[-] (V13) edge (V19); \draw[-] (V19) edge (V18); \draw[-] (V18) edge (V13);
-		
-		\draw[-] (V15) edge (V16); \draw[-] (V16) edge (V20); \draw[-] (V20) edge (V15);
-		\draw[-] (V16) edge (V21); \draw[-] (V21) edge (V20); \draw[-] (V20) edge (V15);
-		\draw[-] (V16) edge (V17); \draw[-] (V17) edge (V21); \draw[-] (V21) edge (V16);
-		\draw[-] (V17) edge (V22); \draw[-] (V22) edge (V21); \draw[-] (V21) edge (V17);
-		\draw[-] (V17) edge (V18); \draw[-] (V18) edge (V22); \draw[-] (V22) edge (V17);
-		\draw[-] (V18) edge (V23); \draw[-] (V23) edge (V22); \draw[-] (V22) edge (V18);
-		\draw[-] (V18) edge (V19); \draw[-] (V19) edge (V23); \draw[-] (V23) edge (V18);
-		\draw[-] (V19) edge (V24); \draw[-] (V24) edge (V23); \draw[-] (V23) edge (V19);	
-	\end{tikzpicture}
-	\centering
-	\caption{Darstellung der Netzstruktur mit isometrischer Vollvernetzung.}
-	\label{fig:FULL_Isometric}
-\end{figure}
 
 \begin{figure}[h]
 	\begin{tikzpicture}
@@ -794,7 +1154,7 @@ der Wert im Intervall von $[0, 1]$ liegt.
 	\label{fig:OpenGl_pipeline}
 \end{figure}
 
-\subsection{Delaunay-Triangulierung}
+
 
 \chapter{Ergebnisse}
 
