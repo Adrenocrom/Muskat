@@ -1,4 +1,4 @@
-\documentclass[hyperref,german,diplominf,lof,lot,twoside]{cgvpub}
+\documentclass[hyperref,german,diplominf]{cgvpub}
 %weitere Optionen zum Ergänzen (in eckigen Klammern):
 % 
 % bibnum	numerische Literaturschlüssel
@@ -93,27 +93,30 @@ Bild"ubernahmen zitieren.}
 Bei der Remote-Visualisierung, wird die Bildsynthese und die eigentliche Darstellung voneinander getrennt.
 Der Server-Prozess erzeugt und kodiert jedes Bild zu einem kompakten Datenpaket, 
 welches an den Klient-Prozess gesendet wird.
-Der Klient dekodiert die Informationen und gibt sie auf einem Bildschirm aus.
+Der Klient empfängt und dekodiert das Datenpaket und gibt das Bild auf einem Bildschirm aus.
 
-Remote-Visualisierung ist ein insbesondere für mobile Endgeräte interessantes Konzept,
+Remote-Visualisierung, ist ein insbesondere für mobile Endgeräte interessantes Konzept,
 weil es die Visualisierung von komplexen Szenen auch auf Leistungsarmen Geräten ermöglicht.
 Neben Computerspielen, ist die wissenschaftliche Visualisierung ein wichtiges Anwendungsgebiet,
 da Datensätze Größenordnungen erreichen können, 
 die den Speicher herkömmlicher Desktops, Laptops, Smartphones etc. bei weitem übersteigen. 
 Auch wenn ausreichend Speicher zur Verfügung steht, 
 kann die Übertragung dieser Daten viel Zeit in Anspruch nehmen.
-
+\textcolor{gray}{
 Mit Hilfe der Remote-Visualisierung ist es möglich, dass der Server die Bildsynthese
 übernimmt und nicht der komplette Datensatz übertragen werden muss.
 Ein weiterer Vorteil der mit leistungsstarken Serversystemen einhergeht ist der, 
 dass sich komplexe Visualisierungs- und Beleuchtungsmethoden verwenden lassen, die mit normalen Endgeräten nicht zu realisieren sind.
+}
 
 Die Latenz bezeichnet in der Netzwerktechnik die Übertragungszeit von einem zum anderen Gerät.
 Diese ist in modernen Netzwerken gering, für die Interaktive Visualisierung allerdings immer
-noch zu Groß um eine für den Menschen nicht wahrnehmbare Verzögerungsfreie interaktive Visualisierung zu gewährleisten.
+noch zu groß um eine für den Menschen nicht wahrnehmbare Verzögerungszeit und 
+damit eine interaktive Visualisierung zu gewährleisten.
 Ein möglicher Ausweg besteht darin, dass der Klient-Prozess ein bereits empfangenes Bild extrapoliert. 
 Auf diese Weise, ist es möglich, dass der Klient-Prozess bereits ein neues Bild ausgeben kann, 
 obwohl es noch nicht empfangen wurde.
+
 Bei der Bildsynthese des Server-Prozesses entsteht neben dem Farbbild zusätzlich ein Tiefenbild.
 Dieses kann genutzt werden, um geometrische Informationen an den Klient-Prozess weiter zureichen.
 Geometrisch entspricht das Tiefenbild einer 2.5D Ansicht der Szene, in Form einer Punktwolke.
@@ -121,71 +124,88 @@ Die Extrapolation eines Bildes wird durchgeführt, indem diese Informationen aus 
 neuen Kameraperspektive gezeichnet wird.
 Um die Qualität zu verbessern und Informationen einzusparen, wird aus dem Tiefenbild
 ein Dreiecksnetz erzeugt.
-Das Farbbild wird als Textur über das Netz gelegt.
-In dieser Arbeit werden Methoden zur Erzeugung von Dreiecknetzen vorgestellt und mit Hilfe von
-sechs Datensätzen evaluiert.
-Jeder Datensatz entspricht einer Kamerafahrt, durch eine Szene.
-Zur Verfügung standen die zwei Szenen, von denen jeweils ein Bild, eines Datensatzes, in der 
-Abbildung \ref{fig:datasets_frame0} die beiden Szenen exemplarisch vorstellt.
+Das Farbbild wird dabei als Textur über das Netz gelegt.
 
-\begin{figure}
-	\subfigure[CoolRandom]{\includegraphics[width=.49\textwidth]{../Scenes/CoolRandom/run_1/coolrandom_00000.png}}
-	\subfigure[TestSpheres]{\includegraphics[width=.49\textwidth]{../Scenes/TestSpheres/run_1/testspheres_00000.png}}
-	\caption{Datensätze}
-	\label{fig:datasets_frame0}
-\end{figure}
-
+Die Zentrale Aufgabe ist die Optimierung und die Übertragung der Tiefeninformationen,
+vom Server zum Klient.
+Es gibt im wesentlichen zwei Möglichkeiten diese Aufgabe zu erfüllen.
+Zum einen, kann das Tiefenbild direkt komprimiert werden 
+und im Anschluss daran wird es an den Klient gesendet,
+welcher das Dreiecksnetz aus dem Tiefenbild erzeugt und die Extrapolation durchführt.
+Die zweite Möglichkeit besteht in der Konstruktion des Dreiecksnetzes durch den Server.
+Beide Varianten werden in dieser Arbeit untersucht und mit Ground-Truth Datensätzen, hinsichtlich ihrer Güte in Abhängigkeit des Kamerawinkels evaluiert. 
+Die Abbildung \ref{fig:datasets_frame0} zeigt zwei Bilder aus den Datensätzen.
 Um die Algorithmen zu testen wurde eine Server- und eine Klient-Komponente entwickelt.
 Beide Komponenten tauschen Informationen über das auf TCP basierende Websocket-Protokoll aus.
-Im Gegensatz zum HTTP-Protokoll ist die Kommunikation bidirektional,
-der Vorteil besteht darin, dass sich beide Kommunikationsteilnehmer ohne \textit{long-polling}
-direkt Nachrichten zu schicken können.
 Der Klient ist ein Browser basierter Web-Klient, damit die implementierten Algorithmen
 mit den Einschränkungen durch JavaScript und WebGl evaluiert werden können.
 
-Zu diesem Zweck wurde eine Server- und eine Klient-Komponente entwickelt, die mit
-Hilfe des WebSocket-Protokolls Daten untereinander austauschen.
-Der Klient basiert auf JavaScript und nutzt für die Bildextrapolation WebGl.
-Die Qualität der Darstellungen werden mit Hilfe von Ground-Truth-Daten überprüft.
-Zum Vergleich wird der PSNR und der SSIM \cite{Wang04imagequality} der Bildpaare bestimmt und evaluiert.
+Im Folgenden werden bereits existierender Arbeiten diskutiert.
 
+\begin{figure}
+	\subfigure[]{\includegraphics[width=.49\textwidth]{../Scenes/CoolRandom/run_1/coolrandom_00000.png}}
+	\subfigure[]{\includegraphics[width=.49\textwidth]{../Scenes/TestSpheres/run_1/testspheres_00000.png}}
+	\caption{Bilder aus den Datensätzen, a \textit{CoolRandom} und b \textit{TestSpheres}}
+	\label{fig:datasets_frame0}
+\end{figure}
 
-
-Im Folgenden werden existierende Konzepte und Ideen vorgestellt.
-
+Das Ziel dieser Arbeit ist es, ein Remote-Visualisierungssystem zu entwickeln,
+und eine Klient-seitige Bildextrapolation durchzuführen.
+Grundlage sind jeweils ein Farbbild, ein Tiefenbild und die entsprechenden Kamerainformationen.
 
 \chapter{Verwandte Arbeiten}
 
-Einen Überblick über Architekturen und Methoden der interaktiven Remote-Visualisierung geben Shu Shi et al. \cite{Shi:2015:SIR:2775083.2719921}.
+Einen Überblick über Architekturen und Methoden der interaktiven Remote-Visualisierung geben Shu Shi \textit{et al.} \cite{Shi:2015:SIR:2775083.2719921}.
 Zum zentralen Problem ihrer Arbeit, wird die Latenz und die effiziente Übertragung der Daten vom Server zum Klient.
-Lösungen hängen vom Anwendungsfall ab, in \textit{THIN}-Systemen besteht die Aufgabe in der Übertragung von
+Lösungen hängen vom Anwendungsfall ab.
+In \textit{THIN}-Systemen besteht die Aufgabe in der Übertragung von
 2D Informationen, mit denen sich zum Beispiel Desktop-Anwendungen Fernsteuern lassen.
-Als Beispiele dienen SLIM \cite{Schmidt:1999:IPS:319344.319154} und THiNC \cite{Baratto:2005:TVD:1095809.1095837}.
-Die Übertragung der Daten wurde in beiden Systemen für den Einsatz von 2D Grafiken optimiert.
-Ein Vorteil bei diesen Anwendungen besteht darin, dass nur relativ kleine Änderungen
-tatsächlich übertragen werden müssen, wenn sich zum Beispiel ein Fenster ändert muss auch
-nur diese Änderung zum Klient übertragen werden.
-Zur Verbesserung der Latenz wird von Shu Shi et al. die Bildextrapolation vorgeschlagen.
-Diese kann durch die zusätzliche Übertragung von Tiefenbildern oder Dreiecksnetzen erreicht werden.
-Bei der Bildsynthese auf dem Klient-System, entsteht eine Menge von Artefakten, diese kann durch Verzerrung und Verformung der Geometrieinformationen verkleinert werden, durch sogenanntes \textit{Warping} \cite{1331221}, \cite{4810995}.
-Wenn eine Extrapolation der Bilder, durch den Klient, aus Hardware-Gründen nicht möglich ist,
-können auch die nächst möglichen Bewegungen geschätzt werden und deren Ergebnisse werden mit übertragen.
-Zur Verbesserung der Qualität werden deshalb in vielen Anwendungen die Bewegungsmöglichkeiten
-des Nutzers auf Pfade oder Aussichtspunkte beschränkt.
+Beispiele sind \textit{SLIM} \cite{Schmidt:1999:IPS:319344.319154} und \textit{THiNC} \cite{Baratto:2005:TVD:1095809.1095837}. Sie sind für die Übertragung von 2D-Daten optimiert und profitieren davon, dass die meisten Änderungen nur Teilbereiche der eigentlichen Oberfläche betreffen.
+Ein anderes extrem der Remote-Visualisierung ist die Aufteilung der Bildsynthese,
+auf verschiedene Host-Systeme wie bei WireGL \cite{Humphreys:2001:WSG:383259.383272}.
+Jin Zhefan stellt in diesem Kontext Kompressionsmethoden für Zeicheninstruktionen, Vektoren, Normalen und Texturinformationen vor \cite{Jin:2006:RRI:1128923.1128927}.
+Peter Eisert und Philipp Fechteler haben ein Remote-Visualisierungssystem für Computerspiele entwickelt \cite{Eisert07remoterendering}.
+Ihr System überträgt bei kleinen Auflösungen, für Endgeräte ohne GPU die Bilder
+kodiert mit h264 oder wahlweise mpeg4.
+Bei größeren Auflösungen werden Zeicheninstruktionen gesendet und die Bilder werden
+vom Klienten synthetisiert.
+Auch wenn ihr System ausschließlich für den Einsatz in lokalen Netzwerken konzipiert wurde,
+ist die Latenz zu hoch um vom Benutzer nicht registriert zu werden.
+Mit Hilfe einer Bildextrapolation durch den Klienten kann die Latenz reduziert werden. 
+Zu diesen Zweck schätzen Shu \textit{et al.} in ihrer Arbeit \cite{1331221}, 
+zusätzliche Referenz-Kamerapositionen und erzeugen zusätzlich zum Farbbild der Originalen
+Kameraposition weitere Tiefenbilder. 
+Das Farbbild wird mit JPEG komprimiert und die Tiefenbilder mit ZLIB.
+Mit Hilfe der zusätzlichen Tiefeninformationen können durch Verdeckung bedingte Lücken
+bei der Extrapolation durch den Klienten geschlossen werden.
+Ein ähnlicher Ansatz wurde im VR-Bereich von Smit \textit{et al.} erprobt \cite{4810995}.
+Auch in diesem System werden Lücken mit Hilfe von Tiefenbildern aus Referenz-Kamerapositionen
+geschlossen.
+Die Wahl des Warping-Algorithmus ist entscheidend für die Performance der Klient-Komponente,
+neben der im VR-System zum Einsatz kommenden Variante \cite{Mark:1997:PW:253284.253292},
+bieten Mark \textit{et al.} eine Übersicht über verschiedene mögliche Verfahren \cite{Mark99post-rendering3d}.
 
-\section{Architektur}
+Die Übertragung und Visualisierung von Tiefenbildern spielt auch in der Visualisierung 
+von Sensordaten eine wichtige Rolle.
+Debevec1998
+Palomo \textit{et al.} beschäftigen sich mit der Visualisierung von Tiefenbildern \cite{Palomo:2010:EAD:1900179.1900236}, in ihrem Fall wurden diese mit Tiefensensoren erhoben.
+Sie kombinieren mehrerer aus verschiedenen Blickwinkeln aufgenommenen Bilder mit Hilfe
+eines Tiefenpuffers zu einem Gesamtbild und vermindern auf diese Weise
+entstehende Artefakte im Zusammenhang von Verdeckung bei der Visualisierung der Daten aus einer
+anderen Perspektive.
 
-Ein spezielles Remote-Visualisierungssystem haben Peter Eisert und Philipp Fechteler 
-für Computerspiele entwickelt \cite{Eisert07remoterendering}.
-Ihr System kommt ohne Beschränkung der Bewegungsfreiheit aus.
-Sie haben sich dafür zwei Ansätze zunutze gemacht. 
-Im ersten Ansatz erzeugt der Server die fertigen Bilder,
-welche mit Video-Codecs codiert und an den Klient gestreamt werden.
-Im zweiten Ansatz, werden Zeicheninstruktionen an den Klient gestreamt, welcher mit diesen
-das Ergebnissbild produziert.
-Ihr System ist für den Einsatz im lokalen Netzwerk konstruiert.
+Um die Latenz bei der Übertragung von Tiefeninformation zu verbessern,
+können die Daten auch progressiv zum Klient gesendet werden.
+Evans \textit{et al.} haben für diesen Zweck ein Datenformat für Punktwolken entwickelt und für den Einsatz mit WebGL optimiert \cite{Evans:2014:WVO:2668904.2668937}.
+ 
+Banno \textit{et al.} erzeugen mit Hilfe der Delaunay-Triangulierung adaptive
+Dreiecksnetze aus Tiefenbildern, um die Qualität der Darstellung zu verbessern \cite{Banno:2012:RCD:2407516.2407579}.
 
-Wessels et al. stellen eine Konzeption für den Programmaufbau eines interaktiven Remote-Visualisierungssystem basierend auf dem WebSocket-Protokoll vor \cite{DBLP:conf/itng/WesselsPJR11}.
+Eine Vergleichbaren Ansatz wird von untersucht.
+
+
+
+Wessels \textit{et al.} stellen eine Konzeption für den Programmaufbau eines interaktiven Remote-Visualisierungssystem basierend auf dem WebSocket-Protokoll vor \cite{DBLP:conf/itng/WesselsPJR11}.
 In ihrem System besteht der Server-Prozess aus zwei Hauptkomponenten,
 der Visualisierungs-Engine und dem Deamon. 
 Während die Visualisierungs-Engine für die Bildsynthese zuständig ist, 
@@ -195,17 +215,13 @@ Dieser wertet die Daten aus und erzeugt darauf hin ein mit JPEG komprimiertes Bi
 Dieser kann das Bild nativ mit Hilfe eines HTML5 Canvas dekodieren und darstellen.
 Ihr System wird zur Grundlage dieser Arbeit.
 
-\section{Extrapolation}
 
-Die Grundidee das Problem der Latenz mit Bildexploration in den Griff zu bekommen wurde in der Arbeit von Palomo et al. betrachtet \cite{Palomo:2010:EAD:1900179.1900236}.
 
 Das erzeugte Tiefenbild lässt sich 
 Pauly et al. \cite{Pauly:2002:ESP:602099.602123}
 
 Simon Stegmaier \cite{Stegmaier02ageneric} 
 A Generic Solution for Hardware-Accelerated Remote Visualization
-
-\section{Kompression}
 
 Gabriel Taubin und Jarek Rossignac haben ein Algorithmus zur Erzeugung und effizienten Kodierung von Dreiecksstreifen aus Dreiecksnetzen entwickelt \cite{Taubin:1998:GCT:274363.274365}.
 Dazu konstruiert ihr Algorithmus Spannbäume über dem Netz, die zur Erzeugung möglichst großer
@@ -234,48 +250,56 @@ DATA Alun Evans et al \cite{Evans:2014:WVO:2668904.2668937}
 
 planarer scheiß \cite{Ma13ecmr}
 
-Ein Remote-Visualisierungssystem als ein verteiltes System betrachtet werden.
-Zhefan Jin stellt drei Klassen solcher Systeme vor \cite{Jin:2006:RRI:1128923.1128927}.
-Diese unterscheiden sich anhand der Verteilung ihrer Daten auf unterschiedliche Host-Systeme.
-Dabei können Zeicheninstruktionen, Attribute, oder Bilder von einem Knoten zum anderen weiter gereicht werden.
-Auch bei einfache Remote-Visualisierungssysteme unterscheiden sich an Hand der Daten die übertragen werden.
+
 
 \chapter{Grundlagen}
 
 In diesem Kapitel werden die Datensätze im Detail vorgestellt und es wird gezeigt,
 wie die Bildextrapolation anhand der zur Verfügung stehenden Informationen 
-durchgeführt wird.
-Am Ende dieses Kapitels werden zwei Metriken zum Vergleich von Bildern vorgestellt
-und diskutiert.
+durchgeführt wird und es werden die zwei Metriken zum Vergleich von Bildern vorgestellt,
+die für die Evaluation verwendet werden.
 
 \section{Datensätze}
 
 Zur Analyse der verwendeten Methoden stehen zwei Szenen zur Verfügung.
-Mit beiden Szenen wurden jeweils drei Kamerafahrten aufgenommen.
+Mit beiden wurden jeweils drei Kamerafahrten aufgenommen und auf diese Weise sechs Datensätze erzeugt.
+Jeder Datensatz besteht aus einer Sequenz von Tripeln.
+Dabei setzt sich jedes Tripel aus einem Farbbild $I$, einem Tiefenbild $D$ 
+sowie einem Satz von Kameraparametern zusammen.
+Die Auflösung der Farb- und Tiefenbilder ist für alle Datensätze $w \times h = 512 \times 512$.
+Die Tiefenbilder wurden mit einer Farbtiefe von 16 Bit erzeugt und die Farbbilder mit 8 Bit für
+jeden Farbkanal.
+Eine Auflistung der Datensätze zeigt die Tabelle \ref{tab:datasets}.
+
+\begin{table}[h]
+
+	\begin{tabular}{c|c|c|c|c|c|c}
+		\# & Szene & Kamerafahrt & Anzahl Bilder & min Winkel &  max Winkel & Winkel Schritt \\
+		\hline
+		1 & CoolRandom 	& 1 & 241 & 0  & 5  & 0.25 	\\
+		2 & CoolRandom 	& 2 & 60  & 6  & 10 & 1 	\\
+		3 & CoolRandom 	& 3 & 192 & 15 & 90 & 5  	\\
+		\hline
+		4 & TestSpheres & 1 & 241 & 0  & 5  & 0.25 	\\
+		5 & TestSpheres & 2 & 60  & 6  & 10 & 1		\\
+		6 & TestSpheres & 3 & 192 & 15 & 90 & 5		\\
+	\end{tabular}
+	\centering
+	\caption{In der Tabelle sind alle Datensätze, die für die Evaluation zur Verfügung stehen aufgelistet.}
+	\label{tab:datasets}
+\end{table}
+
+Die Abbildung \ref{fig:testspheres_run1_t_0} zeigt das Farb- und Tiefenbild des ersten Tripels aus dem vierten Datensatz.
+Die Kameraparameter setzten sich zusammen aus einem Vektor für die Kameraposition, einem lookAt-Vektor, der Punkt auf dem die Kamera schaut und dem up-Vektor.
+Und schließlich für die Projektion die Werte $z_{near}$ und $z_{far}$, welche die Lage der
+clipping-Ebenen beschreiben.
 
 \begin{figure}[h]
 	\subfigure[CoolRandom]{\includegraphics[width=.49\textwidth]{../Scenes/TestSpheres/run_1/testspheres_00000.png}}
 	\subfigure[TestSpheres]{\includegraphics[width=.49\textwidth]{../Scenes/TestSpheres/run_1/testspheres_00000_depth.png}}
 	\caption{Datensätze}
-	\label{fig:dataset_frame0}
+	\label{fig:testspheres_run1_t_0}
 \end{figure}
-
-\begin{table}[h]
-
-	\begin{tabular}{c|c|c|c|c|c}
-		\# & Szene & Kamerafahrt & Auflösung & Anzahl Bilder & Maximaler Winkel \\
-		\hline
-		1 & CoolRandom 	& 1 & $512 \times 512$ & 241 & 5  \\
-		2 & CoolRandom 	& 2 & $512 \times 512$ & 60  & 10 \\
-		3 & CoolRandom 	& 3 & $512 \times 512$ & 192 & 90 \\
-		\hline
-		4 & TestSpheres & 1 & $512 \times 512$ & 241 & 5  \\
-		5 & TestSpheres & 2 & $512 \times 512$ & 60  & 10 \\
-		6 & TestSpheres & 3 & $512 \times 512$ & 192 & 90 \\
-	\end{tabular}
-	\centering
-	\caption{In der Tabelle sind alle Datensätze, die für die Evaluation zur Verfügung stehen aufgelistet.}
-\end{table}
 
 \begin{figure}
 	\subfigure[CoolRandom]{\includegraphics[width=.49\textwidth]{../Scenes/TestSpheres/run_3/testspheres_00000.png}}
@@ -306,23 +330,16 @@ Zusammenhänge dient die folgende Abbildung:
 		\begin{scope}[auto, every node/.style={minimum size=5em, align=center}]
 			\node[draw] (A) at (0,0) {Vertex};
 			\node[draw] (B) at (4,0) {ModellKamera-\\Matrix};
-			
 			\node[draw] (C) at (8,0) {Projektion-\\Matrix};
 			\node[draw] (D) at (12,0) {Viewport-\\Matrix};
 		\end{scope}
-		
-			\node (B1) at (6,0) {};
-			\node (B2) at (6,-2) {Kamera-Koordinaten};
-			
-			\node (C1) at (10,0) {};
-			\node (C2) at (10,-2) {NDC};
-			
-			\draw[->, line width=1mm] (A) edge (B);
-			\draw[->, line width=1mm] (B) edge (C);
-			\draw[->, line width=1mm] (C) edge (D);
-			
-			\draw[->] (B1) edge (B2);
-			\draw[->] (C1) edge (C2);
+		\node (B2) at (6,-2) {Kamera-Koordinaten};
+		\node (C2) at (10,-2) {NDC};
+		\draw[->, thick] (A) -- (B);
+		\draw[->, thick] (B) -- (C);
+		\draw[->, thick] (C) -- (D);
+		\draw[->, thick] (6,0) -- (B2);
+		\draw[->, thick] (10,0) -- (C2);
 	\end{tikzpicture}
 	\centering
 	\label{fig:Transformationspipeline}
@@ -435,11 +452,11 @@ wird $l(x, y)$ und setzt die werte $\mu_x$ und $\mu_y$ wie folgt ins Verhältnis:
 Als Nächstes wird die mittlere Intensität von den Signalen $x$ und $y$ abgezogen,
 so dass $x' = x - \mu_x$ und $y' = y - \mu_y$ entstehen.
 
-Der Kontrast des Signals $x'$ wird mit Hilfe der Standardabweichung $\sigma_{x'}$ approximiert.
+Der Kontrast des Signals $x$ wird mit Hilfe der Standardabweichung $\sigma_{x}$ approximiert.
 In diskreter Form lässt sich diese mit der folgenden Formel berechnen:
 
 \begin{equation}
-	\sigma_{x'} = \left( \frac{1}{N-1} \sum\limits_{i=1}^{N} (x'_i - \mu_{x'})^{2} \right)^\frac{1}{2}.
+	\sigma_{x} = \left( \frac{1}{N-1} \sum\limits_{i=1}^{N} (x_i - \mu_{x})^{2} \right)^\frac{1}{2}.
 \end{equation}
 
 Die Vergleichsfunktion für den Kontrast wird mit $c(x, y)$ bezeichnet und definiert sich wie folgt:
@@ -454,6 +471,54 @@ so dass die Signale $x'' = x' - \mu_{x'} / \sigma_x'$ und $y'' = y' - \mu_{y'} /
 Der Vergleich der strukturellen Eigenschaften $s(x, y)$ wird mit den normalisierten Signalen $x''$
 und $y''$ durchgeführt.
 Für den Vergleich der Struktur sollen folgende Eigenschaften gelten:
+
+\begin{figure}
+	\begin{tikzpicture}[scale=0.7]
+			\begin{scope}[auto, every node/.style={}]
+				\node[] 										(A) at (0,0) 		{\small Signal $x$};
+				\node[draw, circle] 							(B) at (5,-1.5) 	{\small $+$};
+				\node[draw, circle] 							(C) at (10,-3) 		{\small $\div$};
+				\node[draw, align=center, minimum width=2cm] 	(D) at (3,0) 		{\small Luminanz \\ Messung};
+				\node[draw, align=center, minimum width=2cm] 	(E) at (7.5,-1.5) 	{\small Kontrast \\ Messung};
+				\node[draw, align=center, minimum width=2cm] 	(F) at (13,-1.5) 	{\small Luminanz \\ Messung};
+				\node[draw, align=center, minimum width=2cm] 	(G) at (13,-4) 		{\small Kontrast \\ Messung};
+				\node[draw, align=center, minimum width=2cm] 	(H) at (13,-6.5) 	{\small Struktur \\ Messung};
+				\node[draw, align=center, minimum height=1.3cm] (I) at (16.5,-4) 	{\small Kombination};
+				\node[align=center] 							(J) at (20,-4) 		{\small Ähnlichkeits \\ Messung};
+				\node[] 										(K) at (0,-5) 		{\small Signal $y$};
+				\node[draw, circle] 							(L) at (5,-6.5) 	{\small $+$};
+				\node[draw, circle] 							(M) at (10,-8) 		{\small $\div$};
+				\node[draw, align=center, minimum width=2cm] 	(N) at (3,-5) 		{\small Luminanz \\ Messung};
+				\node[draw, align=center, minimum width=2cm] 	(O) at (7.5,-6.5) 	{\small Kontrast \\ Messung};
+			\end{scope}
+			
+			\draw[->, thick] (A) -- (D);
+			\draw[->, thick] (D) -- (11, 0) -- (F.west);
+			\draw[->, thick] (1.2, 0) |- (B) 	node[inner sep=8pt, anchor=north east] {+};
+			\draw[->, thick] (5, 0) -- (B) 		node[inner sep=8pt, anchor=south west] {-};
+			\draw[->, thick] (B) -- (E);
+			\draw[->, thick] (E) -- (11, -1.5) -- (G.west);
+			\draw[->, thick] (5.7, -1.5) |- (C);
+			\draw[->, thick] (10, -1.5) -- (C);
+			\draw[->, thick] (C) -- (11, -3) -- (H.west);
+			\draw[->, thick] (K) -- (N);
+			\draw[->, thick] (N) -- (11, -5) -- (F.west);
+			\draw[->, thick] (1.2, -5) |- (L) 	node[inner sep=8pt, anchor=north east] {+};
+			\draw[->, thick] (5, -5) -- (L) 	node[inner sep=8pt, anchor=south west] {-};
+			\draw[->, thick] (L) -- (O);
+			\draw[->, thick] (O) -- (11, -6.5) -- (G.west);
+			\draw[->, thick] (5.7, -6.5) |- (M);
+			\draw[->, thick] (10, -6.5) -- (M);
+			\draw[->, thick] (M) -- (11, -8) -- (H.west);			
+			\draw[->, thick] (G) -- (I);
+			\draw[->, thick] (F) -| (I.north);
+			\draw[->, thick] (H) -| (I.south);
+			\draw[->, thick] (I) -- (J);
+	\end{tikzpicture}
+	\centering
+	\caption{Das Modell zeigt das Vorgehen von dem SSIM-Algorithmus}
+	\label{fig:SSIM_DIAGRAM}
+\end{figure}
 
 Erstens, die Funktion $s(x, y)$ muss Symmetrisch sein $s(x, y) = s(y, x)$.
 
@@ -518,41 +583,9 @@ Mittelwert über allen $x \in X$ und $y \in Y$ berechnet werden:
 	MSSIM(X, Y) = \frac{1}{M} \sum\limits_{j=1}^{M} SSIM(x_j, y_j).
 \end{equation}
 
-\chapter{Methodik und Umsetzung}
+\chapter{Methodik}
 
-Das Ziel dieser Arbeit ist es, ein Remote-Visualisierungssystem zu entwickeln,
-und eine Klient-seitige Bildextrapolation durchzuführen.
-Grundlage sind jeweils ein Farbbild, ein Tiefenbild und die entsprechenden Kamerainformationen.
-Die Extrapolation wird durchgeführt, 
-indem aus dem Tiefenbild wird ein Dreiecksnetz erzeugt wird, welches schließlich mit
-dem Farbbild als Textur, aus einer neuen Kameraperspektive gezeichnet wird. 
-Mit Hilfe von Ground-Truth-Datensätzen wird die Qualität, der extrapolierten Bildern
-in Abhängigkeit der gewählten Parameter, mit dem PSNR und dem MSSIM gemessen
-und evaluiert. 
-Die Kommunikation, zwischen den beiden Komponenten erfolgt mit Hilfe des WebSocket-Protokolls.
-Der Klient ist ein Webklient, basierend auf JavaScript, der die Bildextrapolation mit WebGL
-durchführt.
-
-Die Zentrale Aufgabe ist die Optimierung und die Übertragung der Tiefeninformationen,
-vom Server zum Klient.
-Es gibt im wesentlichen zwei Möglichkeiten diese Aufgabe zu erfüllen.
-Zum einen, kann das Tiefenbild direkt komprimiert werden 
-und im Anschluss daran wird es an den Klient gesendet,
-welcher das Dreiecksnetz aus dem Tiefenbild erzeugt und die Extrapolation durchführt.
-Die zweite Möglichkeit besteht in der Konstruktion des Dreiecksnetzes durch den Server.
-Beide Varianten werden in dieser Arbeit untersucht.
-
-Im Folgenden werden beide zuerst Varianten konzeptionell vorgestellt.
-Anschließend wird die Architektur des Klient-Server-Systems vorgestellt
-und die Besonderheiten der Implementierung und die dazugehörigen
-Parameter im Detail erklärt.
-Im Anschluss daran werden die Parameterkonfigurationen 
-und die erzeugten Ergebnisse objektiv dargestellt.
-Zum Schluss werden diese diskutiert und es wird auf
-Vor- und Nachteile der umgesetzten Lösungen eingegangen.
-
-\section{Erzeugung von Dreiecksnetzen}
-
+Um aus einem Tiefenbild $D$ ein Dreiecksnetz zu erzeugen und zu Übertragen gibt es , gibt es 
 Grundlage für die Erzeugung der Dreiecksnetze ist das Tiefenbild $D$.
 Jeder Tiefenwert $d(x, y) \in D$ liegt in dem Intervall $[0, 1]$.
 Je kleiner der Wert von $d$ ist, umso näher ist dieser an der \textit{near-Plane}.
@@ -1060,7 +1093,7 @@ einer validen Kante.
 Zu beachten ist, dass jedes neu erzeugte Dreieck auf Kollinearität zu überprüfen
 und gegebenenfalls zu verwerfen.
 
-\section{Implementierung}
+\chapter{Implementierung}
 
 Als Grundlage dient das Konzept von Wessels \textit{et al.} \cite{DBLP:conf/itng/WesselsPJR11}.
 Die Klient-Anwendung ist eine Browser basierte Web-Anwendung, die mit dem Server
