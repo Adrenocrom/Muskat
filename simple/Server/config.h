@@ -40,6 +40,7 @@ public:
 
 	int		getMeshCompression();
 	bool	useDelaunay();
+	bool	useQuadtree();
 
 	// quadtree getter
 	uint	getMaxDepth();

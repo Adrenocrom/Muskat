@@ -51,7 +51,6 @@ void Evaluator::runEvaluation() {
 
 	ResultEntry entry;
 	entry = entries.front();
-	cout<<"a:  "<<entry.angle<<endl;
 	double cnt = 1;
 	for(auto it = entries.begin(); it != entries.end(); ++it) {
 		if(it->angle < entry.angle || next(it) == entries.end()) {
@@ -116,7 +115,13 @@ void Evaluator::runEvaluation() {
 	file<< "\\end{filecontents}\n\n";
 
 	file<< "\\begin{filecontents}{div_c_duration_info_"<<m_scene_id<<"_"<<m_short_name<<".csv}\n";
-	file<< "c\n" << m_compressor->getCompressionTime() << "\n";
+	file<< "t,f,s,d,m,g\n";
+	file<<	m_compressor->getCTimeTexture()		<<","
+		<<	m_compressor->getCTimeFull()		<<","
+		<<	m_compressor->getCTimeSeeds()		<<","
+		<<	m_compressor->getCTimeDelaunay()	<<","
+		<<	m_compressor->getCTimeTranform()	<<","
+		<<	m_compressor->getCTimeSeeds() + m_compressor->getCTimeDelaunay() + m_compressor->getCTimeTranform() <<"\n";
 	file<< "\\end{filecontents}\n\n";
 	
 	file<< "\\begin{filecontents}{div_duration_info_"<<m_scene_id<<"_"<<m_short_name<<".csv}\n";
@@ -134,8 +139,17 @@ void Evaluator::runEvaluation() {
 	file.close();
 
 	// if delaunay save image
-	if(m_config->useDelaunay())
+	if(m_config->useDelaunay()) {
 		cv::imwrite(m_filename + "/delaunay.png" , *m_compressor->getDelaunayImage());
+		cv::imwrite(m_filename + "/gx.png", *m_compressor->getSobelXImage());
+		cv::imwrite(m_filename + "/gy.png", *m_compressor->getSobelYImage());
+	}
+
+	if(!m_config->useQuadtree()) {
+		cv::Mat draw;
+		m_compressor->getFeatureImage()->convertTo(draw, CV_8U, 255);
+		cv::imwrite(m_filename + "/featuremap.png", draw);
+	}	
 	
 	cout<<"end evaluation"<<endl;
 

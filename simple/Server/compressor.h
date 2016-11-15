@@ -69,6 +69,12 @@ inline double length(const Point& a, const Point& b) {
 	return sqrt(x*x + y*y);
 }
 
+inline double squareLength(const Point& a, const Point& b) {
+	double x = a.x - b.x;
+	double y = a.y - b.y;
+	return x*x + y*y;
+}
+
 inline Point operator * (const Point& p, const double d) {return Point((int)((double)p.x * d), (int)((double)p.y * d));}
 inline Point operator + (const Point& a, const Point& b) {return Point(a.x + b.x, a.y + b.y);}
 inline Point operator - (const Point& a, const Point& b) {return Point(a.x - b.x, a.y - b.y);}
@@ -106,7 +112,12 @@ public:
 	cv::Mat*	getDelaunayImage();
 	cv::Mat*	getSobelXImage();
 	cv::Mat*	getSobelYImage();
-	clock_t		getCompressionTime();
+	cv::Mat*	getFeatureImage();
+	clock_t		getCTimeTexture();
+	clock_t		getCTimeFull();
+	clock_t		getCTimeSeeds();
+	clock_t		getCTimeDelaunay();
+	clock_t		getCTimeTranform();
 
 	// resize quadtree
 	void resizeQuadtree();
@@ -128,7 +139,11 @@ private:
 	cv::Mat		m_sobel_x_image;
 	cv::Mat		m_sobel_y_image;
 	cv::Mat		m_feature_image;
-	clock_t		m_time_comression;
+	clock_t		m_ctime_texture;
+	clock_t		m_ctime_full;
+	clock_t		m_ctime_seeds;
+	clock_t		m_ctime_delaunay;
+	clock_t		m_ctime_transform;
 
 	// stores quadtree for delaunay triangulation
 	QuadTree* 	m_quadtree;
@@ -160,7 +175,7 @@ private:
 	bool isCollinear(const Point& p1, const Point& p2, const Point& p3);
 
 	vector<Point> splitTriangle(cv::Mat& img, const Point& a, const Point& b, const Point& c);
-	vector<Point> splitTriangle(cv::Mat& img, const Point& a, const Point& b, const Point& c, cv::Mat* out = nullptr);
+	vector<Point> splitTriangleDraw(cv::Mat& img, const Point& a, const Point& b, const Point& c, cv::Mat* out = nullptr);
 
 	Point getMaxJoinable(cv::Mat& img, const Point& p, const Point& a);
 	

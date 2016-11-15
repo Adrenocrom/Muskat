@@ -368,8 +368,11 @@ $(document).ready(function() {
 	function drawFrame(to) {
 		var gl = muGl.gl;
 		var scene = g_playlist.scenes[g_scene_index];
-		var frame = scene.frames[0];
+		var frame;
 		var frameTo = scene.frames[to];
+
+		if(g_scene_index < 3) frame = g_playlist.scenes[0].frames[0];
+		else 				  frame = g_playlist.scenes[3].frames[0];
 		
 		mat4.perspective(pMatrix, muGl.degToRad(scene.aperture), gl.viewportWidth / gl.viewportHeight, frame.near, frame.far);
 		mat4.lookAt(mvMatrix, frame.pos, frame.lookat, frame.up);
@@ -377,7 +380,7 @@ $(document).ready(function() {
 		mat4.multiply(invMvpMatrix, pMatrix, mvMatrix);
 		mat4.invert(invMvpMatrix, invMvpMatrix);
 
-		mat4.perspective(pMatrix, muGl.degToRad(scene.aperture+2), gl.viewportWidth / gl.viewportHeight, frameTo.near, frameTo.far);
+		mat4.perspective(pMatrix, muGl.degToRad(scene.aperture), gl.viewportWidth / gl.viewportHeight, frameTo.near, frameTo.far);
 		mat4.lookAt(mvMatrix, frameTo.pos, frameTo.lookat, frameTo.up);
 		mat4.translate(mvMatrix, mvMatrix, frameTo.lookat);
 		mat4.multiply(mvpMatrix, pMatrix, mvMatrix);

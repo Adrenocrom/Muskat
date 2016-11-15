@@ -17,11 +17,13 @@ Compressor::Compressor(Config* config) {
 	m_color_triangle	= cv::Scalar(0, 120, 0);
 	
 	m_delaunay_image = cv::Mat(m_config->getMeshWidth(), m_config->getMeshHeight(), CV_8UC3, cv::Scalar(255,255,255));
-	m_sobel_x_image = cv::Mat(m_config->getMeshWidth(), m_config->getMeshHeight(), CV_8UC3, cv::Scalar(255,255,255));
-	m_sobel_y_image = cv::Mat(m_config->getMeshWidth(), m_config->getMeshHeight(), CV_8UC3, cv::Scalar(255,255,255));
 	m_feature_image = cv::Mat(m_config->getMeshWidth(), m_config->getMeshHeight(), CV_64FC1, 0.0);
 	
-	m_time_comression = 0.0;
+	m_ctime_texture 	= 0;
+	m_ctime_full		= 0;
+	m_ctime_seeds		= 0;
+	m_ctime_delaunay	= 0;
+	m_ctime_transform	= 0;
 }
 
 Compressor::~Compressor() {
@@ -30,14 +32,22 @@ Compressor::~Compressor() {
 
 QJsonObject Compressor::compressFrame(FrameInfo& info, FrameBuffer& fb) {
 	QJsonObject jo;
+
+	m_ctime_texture 	= 0;
+	m_ctime_full		= 0;
+	m_ctime_seeds		= 0;
+	m_ctime_delaunay	= 0;
+	m_ctime_transform	= 0;
 	
 	clock_t c_begin = clock();
-	
+
 	compressTexture(jo, fb);
-	compressMesh(jo, fb);
 	
 	clock_t c_end	= clock();
-	m_time_comression = ((c_end - c_begin) * 1000.0) / CLOCKS_PER_SEC;
+	m_ctime_texture = ((c_end - c_begin) * 1000.0) / CLOCKS_PER_SEC;
+	
+	compressMesh(jo, fb);
+	
 	
 	return jo;
 }
@@ -80,9 +90,15 @@ void Compressor::compressMesh(QJsonObject& jo, FrameBuffer& fb) {
 
 	if(m_config->getMeshMode() == "full") {
 		if(m_config->getMeshPrecision() == "8bit") {
+			clock_t c_begin = clock();
 			compressMesh8Bit(jo, img);
+			clock_t c_end = clock();
+			m_ctime_full = ((c_end - c_begin) * 1000.0) / CLOCKS_PER_SEC;
 		} else {
+			clock_t c_begin = clock();
 			compressMesh16Bit(jo, img);
+			clock_t c_end = clock();
+			m_ctime_full = ((c_end - c_begin) * 1000.0) / CLOCKS_PER_SEC;
 		}
 	} else {
 		compressMeshDelaunay(jo, img);
@@ -134,24 +150,31 @@ void Compressor::compressMesh16Bit(QJsonObject& jo, cv::Mat& img) {
 }
 
 void Compressor::compressMeshDelaunay(QJsonObject& jo, cv::Mat& img) {
-	cv::Mat gx; 
-	cv::Mat gy;
+	clock_t c_begin = clock();
+	// Messure generating seeds
 
-	double invMax		= 1.0 / (double)(USHRT_MAX);
+	cv::Mat sx, ax; 
+	cv::Mat sy, ay;
+
+	double invMax		= 1.0 / ((double)(USHRT_MAX) + 2.0);
 	double invWidth 	= 1.0 / (double)(m_config->getMeshWidth() - 1);
 	double invHeight 	= 1.0 / (double)(m_config->getMeshHeight()- 1);
 
 	// calc sobel gradients for 2 dimensions and store them
-	Sobel( img, gx, -1, 1, 0, 3, 1, 0, cv::BORDER_DEFAULT );
-	Sobel( img, gy, -1, 0, 1, 3, 1, 0, cv::BORDER_DEFAULT );
+	Sobel( img, sx, CV_16S, 1, 0, 3, 1, 0, cv::BORDER_DEFAULT );
+	Sobel( img, sy, CV_32F, 0, 1, 3, 1, 0, cv::BORDER_DEFAULT );
+	cv::absdiff(sx, cv::Scalar::all(0), ax);
+	cv::absdiff(sy, cv::Scalar::all(0), ay);
+	ax.convertTo(m_sobel_x_image, CV_16U);
+	ay.convertTo(m_sobel_y_image, CV_16U);
 
 	m_quadtree->setTleaf(m_config->getTleaf());
 	m_quadtree->setTinternal(m_config->getTinternal());
 
 	// calc seeds from quadtree
 	list<cv::Point2f>	seeds;
-	if(m_config->getSeedMode() == "quadtree") seeds = m_quadtree->generateSeeds(gx, gy);
-	else									  seeds = floydSteinberg(gx, gy, m_config->getTthreshold(), m_config->getGamma());
+	if(m_config->getSeedMode() == "quadtree") seeds = m_quadtree->generateSeeds(m_sobel_x_image, m_sobel_y_image);
+	else									  seeds = floydSteinberg(m_sobel_x_image, m_sobel_y_image, m_config->getTthreshold(), m_config->getGamma());
 
 	if(m_config->preBackgroundSubtraction()) {
 		seeds.remove_if([&](const cv::Point2f& p) {
@@ -161,17 +184,24 @@ void Compressor::compressMeshDelaunay(QJsonObject& jo, cv::Mat& img) {
 		});
 	}
 
+	clock_t c_end = clock();
+	m_ctime_seeds = ((c_end - c_begin) * 1000.0) / CLOCKS_PER_SEC;
+
+	c_begin = clock();
+	// messure delaunay
 	vector<cv::Vec6f> triangles = delaunay(img, seeds);
 
+	c_end = clock();
+	m_ctime_delaunay = ((c_end - c_begin) * 1000.0) / CLOCKS_PER_SEC;
 	
+	
+	c_begin = clock();
 	vector<cv::Point> pt(3);
 	vector<Point> points(3);
 	map<Point, int>	map_vertices;
 	
 	cv::Size size = img.size();
 	cv::Rect rect(0,0, size.width, size.height);
-
-	m_delaunay_image = cv::Mat(m_config->getMeshWidth(), m_config->getMeshHeight(), CV_8UC3, cv::Scalar(255,255,255));
 
 	bool first_index = true;
 	ostringstream osstream_i;
@@ -207,7 +237,7 @@ void Compressor::compressMeshDelaunay(QJsonObject& jo, cv::Mat& img) {
 			points[2].v  = (double) points[2].y * invHeight;
 			points[2].dz = (double) points[2].z * invMax;
 
-			vector<Point> n_points = splitTriangle(img, points[0], points[1], points[2], &m_delaunay_image);
+			vector<Point> n_points = splitTriangle(img, points[0], points[1], points[2]);
 
 			uint n_size = n_points.size();
 			for(uint i = 0; i < n_size; ++i) {
@@ -249,6 +279,45 @@ void Compressor::compressMeshDelaunay(QJsonObject& jo, cv::Mat& img) {
 		jo["vertices"] 	= QString(osstream_v.str().c_str());
 	}
 	jo["numTexCoord"] = num_texCoord;
+
+	c_end = clock();
+	m_ctime_transform = ((c_end - c_begin) * 1000.0) / CLOCKS_PER_SEC;
+	
+	// Draw delaunay
+	m_delaunay_image = cv::Mat(m_config->getMeshWidth(), m_config->getMeshHeight(), CV_8UC3, cv::Scalar(255,255,255));
+	for(uint i = 0; i < t_size; ++i ) {
+		cv::Vec6f t = triangles[i];
+        pt[0] = cv::Point(cvRound(t[0]), cvRound(t[1]));
+        pt[1] = cv::Point(cvRound(t[2]), cvRound(t[3]));
+        pt[2] = cv::Point(cvRound(t[4]), cvRound(t[5]));
+		
+		if ( rect.contains(pt[0]) && rect.contains(pt[1]) && rect.contains(pt[2]) ) {
+			points[0] = pt[0];
+			points[1] = pt[1];
+			points[2] = pt[2];
+			points[0].z = img.at<ushort>(points[0].y, points[0].x);
+			points[1].z = img.at<ushort>(points[1].y, points[1].x);
+			points[2].z = img.at<ushort>(points[2].y, points[2].x);
+
+			if(m_config->praBackgroundSubtraction() && (points[0].z == USHRT_MAX || points[1].z == USHRT_MAX || points[2].z == USHRT_MAX)) {
+				continue;
+			}
+
+			points[0].u  = (double) points[0].x * invWidth;
+			points[0].v  = (double) points[0].y * invHeight;
+			points[0].dz = (double) points[0].z * invMax;
+
+			points[1].u  = (double) points[1].x * invWidth;
+			points[1].v  = (double) points[1].y * invHeight;
+			points[1].dz = (double) points[1].z * invMax;
+
+			points[2].u  = (double) points[2].x * invWidth;
+			points[2].v  = (double) points[2].y * invHeight;
+			points[2].dz = (double) points[2].z * invMax;
+
+			splitTriangleDraw(img, points[0], points[1], points[2], &m_delaunay_image);
+		}
+	}
 }
 
 int Compressor::getIndex(vector<cv::Point>& vertices, cv::Point p) {
@@ -286,25 +355,26 @@ vector<cv::Vec6f> Compressor::delaunay(cv::Mat& img, list<cv::Point2f>& seeds) {
 list<cv::Point2f> Compressor::floydSteinberg(cv::Mat& gx, cv::Mat& gy, double T, double gamma) {
 	list<cv::Point2f> seeds;
 	double M = (double)(USHRT_MAX);
-	double A = sqrt(M*M + M*M);
+	double A = sqrt(2 *(M*M));
 
 	// sigma(x) = (|| \nabla f(x) || / A )^gamma
 	double g_x;
 	double g_y;
 	for(int y = 0; y < gx.cols; ++y) {
 		for(int x = 0; x < gx.rows; ++x) {
-			g_x = (double) gx.at<ushort>(y, x);
-			g_y = (double) gy.at<ushort>(y, x);
-
+			g_x =(double) gx.at<ushort>(y, x);
+			g_y =(double) gy.at<ushort>(y, x);
+		
 			m_feature_image.at<double>(y, x) = pow( (sqrt((g_x*g_x) + (g_y*g_y)) / A), gamma);
 		}
 	}
 
-	int sh = gx.cols-1;
-	int sw = gx.rows-1;
+	int ws = gx.cols-1;
+	int hs = gx.rows-1;
+	int xi, x_i, yi;
 	double o, n, e;
-	for(int y = 0; y < sh; ++y) {
-		for(int x = 0; x < sw; ++x) {
+	for(int y = 1; y < ws; ++y) {
+		for(int x = 1; x < hs; ++x) {
 			o = m_feature_image.at<double>(y, x);
 			if(o > T) {
 				n = T;
@@ -317,10 +387,14 @@ list<cv::Point2f> Compressor::floydSteinberg(cv::Mat& gx, cv::Mat& gy, double T,
 	  		m_feature_image.at<double>(y, x) = n;
 	  		e = o - n;
 
-			m_feature_image.at<double>(y  , x+1) = m_feature_image.at<double>(y  , x+1) + e * 7 / 16;
-			m_feature_image.at<double>(y+1, x-1) = m_feature_image.at<double>(y+1, x-1) + e * 3 / 16;
-			m_feature_image.at<double>(y+1,   x) = m_feature_image.at<double>(y+1,   x) + e * 5 / 16;
-			m_feature_image.at<double>(y+1, x+1) = m_feature_image.at<double>(y+1, x+1) + e * 1 / 16;
+			xi  = x+1;
+			x_i = x-1;
+			yi	= y+1;
+		
+			m_feature_image.at<double>(y  , xi) = m_feature_image.at<double>(y  , xi) + e * 7 / 16;
+			m_feature_image.at<double>(yi, x_i) = m_feature_image.at<double>(yi, x_i) + e * 3 / 16;
+			m_feature_image.at<double>(yi,   x) = m_feature_image.at<double>(yi,   x) + e * 5 / 16;
+			m_feature_image.at<double>(yi, xi) = m_feature_image.at<double>(yi, xi) + e * 1 / 16;
 		}
 	}
 	
@@ -365,7 +439,6 @@ vector<Point> Compressor::splitTriangle(cv::Mat& img, const Point& a, const Poin
 	if(m_config->getRefine()) {
 		vector<Edge*> invalid_edges;
 		int			  valid_edge = -1;
-
 		
 		if(isValid(ab)) valid_edge = 0;
 		else invalid_edges.push_back(&ab);
@@ -407,6 +480,7 @@ vector<Point> Compressor::splitTriangle(cv::Mat& img, const Point& a, const Poin
 		}
 		if(i_size == 2) {
 			vector<Point> triangles(9);
+			double la, lb;
 			
 			if(valid_edge == 0) {
 				triangles[0] = c;
@@ -414,13 +488,25 @@ vector<Point> Compressor::splitTriangle(cv::Mat& img, const Point& a, const Poin
 				triangles[2] = getMaxJoinable(img, c, b);
 
 				pair<Point, Point> p = getMaxJoinables(img, b, a, c);
-				triangles[3] = a;
-				triangles[4] = p.first;
-				triangles[5] = p.second;
+				la = squareLength(a, p.first);
+				lb = squareLength(b, p.second);
+				if(la < lb) {
+					triangles[3] = a;
+					triangles[4] = p.first;
+					triangles[5] = p.second;
 
-				triangles[6] = b;
-				triangles[7] = p.first;
-				triangles[8] = a;
+					triangles[6] = b;
+					triangles[7] = p.first;
+					triangles[8] = a;
+				} else {
+					triangles[3] = a;
+					triangles[4] = b;
+					triangles[5] = p.second;
+
+					triangles[6] = b;
+					triangles[7] = p.first;
+					triangles[8] = p.second;
+				}
 			}
 			else if(valid_edge == 1) {
 				triangles[0] = a;
@@ -428,13 +514,25 @@ vector<Point> Compressor::splitTriangle(cv::Mat& img, const Point& a, const Poin
 				triangles[2] = getMaxJoinable(img, a, c);
 
 				pair<Point, Point> p = getMaxJoinables(img, c, b, a);
-				triangles[3] = b;
-				triangles[4] = p.first;
-				triangles[5] = p.second;
+				la = squareLength(b, p.first);
+				lb = squareLength(c, p.second);
+				if(la < lb) {
+					triangles[3] = b;
+					triangles[4] = p.first;
+					triangles[5] = p.second;
 
-				triangles[6] = c;
-				triangles[7] = p.first;
-				triangles[8] = b;
+					triangles[6] = c;
+					triangles[7] = p.first;
+					triangles[8] = b;
+				} else {
+					triangles[3] = b;
+					triangles[4] = c;
+					triangles[5] = p.second;
+
+					triangles[6] = c;
+					triangles[7] = p.first;
+					triangles[8] = p.second;
+				}
 			}
 			else if(valid_edge == 2) {
 				triangles[0] = b;
@@ -442,13 +540,25 @@ vector<Point> Compressor::splitTriangle(cv::Mat& img, const Point& a, const Poin
 				triangles[2] = getMaxJoinable(img, b, a);
 
 				pair<Point, Point> p = getMaxJoinables(img, a, c, b);
-				triangles[3] = c;
-				triangles[4] = p.first;
-				triangles[5] = p.second;
+				la = squareLength(c, p.first);
+				lb = squareLength(a, p.second);
+				if(la < lb) {
+					triangles[3] = c;
+					triangles[4] = p.first;
+					triangles[5] = p.second;
 
-				triangles[6] = a;
-				triangles[7] = p.first;
-				triangles[8] = c;
+					triangles[6] = a;
+					triangles[7] = p.first;
+					triangles[8] = c;
+				} else {
+					triangles[3] = c;
+					triangles[4] = a;
+					triangles[5] = p.second;
+
+					triangles[6] = a;
+					triangles[7] = p.first;
+					triangles[8] = p.second;
+				}
 			}
 
 			if(!isCollinear(triangles[0], triangles[1], triangles[2])) {
@@ -482,7 +592,7 @@ vector<Point> Compressor::splitTriangle(cv::Mat& img, const Point& a, const Poin
 	return result;
 }
 
-vector<Point> Compressor::splitTriangle(cv::Mat& img, const Point& a, const Point& b, const Point& c, cv::Mat* out) {
+vector<Point> Compressor::splitTriangleDraw(cv::Mat& img, const Point& a, const Point& b, const Point& c, cv::Mat* out) {
 	vector<Point> result;
 
 	Edge ab(a, b);
@@ -495,7 +605,6 @@ vector<Point> Compressor::splitTriangle(cv::Mat& img, const Point& a, const Poin
 	if(m_config->getRefine()) {
 		vector<Edge*> invalid_edges;
 		int			  valid_edge = -1;
-
 		
 		if(isValid(ab)) {
 			valid_edge = 0;
@@ -576,6 +685,7 @@ vector<Point> Compressor::splitTriangle(cv::Mat& img, const Point& a, const Poin
 		}
 		if(i_size == 2) {
 			vector<Point> triangles(9);
+			double la, lb;
 			
 			if(valid_edge == 0) {
 				triangles[0] = c;
@@ -583,13 +693,25 @@ vector<Point> Compressor::splitTriangle(cv::Mat& img, const Point& a, const Poin
 				triangles[2] = getMaxJoinable(img, c, b);
 
 				pair<Point, Point> p = getMaxJoinables(img, b, a, c);
-				triangles[3] = a;
-				triangles[4] = p.first;
-				triangles[5] = p.second;
+				la = squareLength(a, p.first);
+				lb = squareLength(b, p.second);
+				if(la < lb) {
+					triangles[3] = a;
+					triangles[4] = p.first;
+					triangles[5] = p.second;
 
-				triangles[6] = b;
-				triangles[7] = p.first;
-				triangles[8] = a;
+					triangles[6] = b;
+					triangles[7] = p.first;
+					triangles[8] = a;
+				} else {
+					triangles[3] = a;
+					triangles[4] = b;
+					triangles[5] = p.second;
+
+					triangles[6] = b;
+					triangles[7] = p.first;
+					triangles[8] = p.second;
+				}
 			}
 			else if(valid_edge == 1) {
 				triangles[0] = a;
@@ -597,13 +719,25 @@ vector<Point> Compressor::splitTriangle(cv::Mat& img, const Point& a, const Poin
 				triangles[2] = getMaxJoinable(img, a, c);
 
 				pair<Point, Point> p = getMaxJoinables(img, c, b, a);
-				triangles[3] = b;
-				triangles[4] = p.first;
-				triangles[5] = p.second;
+				la = squareLength(b, p.first);
+				lb = squareLength(c, p.second);
+				if(la < lb) {
+					triangles[3] = b;
+					triangles[4] = p.first;
+					triangles[5] = p.second;
 
-				triangles[6] = c;
-				triangles[7] = p.first;
-				triangles[8] = b;
+					triangles[6] = c;
+					triangles[7] = p.first;
+					triangles[8] = b;
+				} else {
+					triangles[3] = b;
+					triangles[4] = c;
+					triangles[5] = p.second;
+
+					triangles[6] = c;
+					triangles[7] = p.first;
+					triangles[8] = p.second;
+				}
 			}
 			else if(valid_edge == 2) {
 				triangles[0] = b;
@@ -611,13 +745,25 @@ vector<Point> Compressor::splitTriangle(cv::Mat& img, const Point& a, const Poin
 				triangles[2] = getMaxJoinable(img, b, a);
 
 				pair<Point, Point> p = getMaxJoinables(img, a, c, b);
-				triangles[3] = c;
-				triangles[4] = p.first;
-				triangles[5] = p.second;
+				la = squareLength(c, p.first);
+				lb = squareLength(a, p.second);
+				if(la < lb) {
+					triangles[3] = c;
+					triangles[4] = p.first;
+					triangles[5] = p.second;
 
-				triangles[6] = a;
-				triangles[7] = p.first;
-				triangles[8] = c;
+					triangles[6] = a;
+					triangles[7] = p.first;
+					triangles[8] = c;
+				} else {
+					triangles[3] = c;
+					triangles[4] = a;
+					triangles[5] = p.second;
+
+					triangles[6] = a;
+					triangles[7] = p.first;
+					triangles[8] = p.second;
+				}
 			}
 
 			if(!isCollinear(triangles[0], triangles[1], triangles[2])) {
@@ -765,6 +911,34 @@ cv::Mat* Compressor::getDelaunayImage() {
 	return &m_delaunay_image;
 }
 
-clock_t Compressor::getCompressionTime() {
-	return m_time_comression;
+cv::Mat* Compressor::getSobelXImage() {
+	return &m_sobel_x_image;
+}
+
+cv::Mat* Compressor::getSobelYImage() {
+	return &m_sobel_y_image;
+}
+
+cv::Mat* Compressor::getFeatureImage() {
+	return &m_feature_image;
+}
+
+clock_t	Compressor::getCTimeTexture() {
+	return m_ctime_texture;
+}
+
+clock_t	Compressor::getCTimeFull() {
+	return m_ctime_full;
+}
+
+clock_t	Compressor::getCTimeSeeds() {
+	return m_ctime_seeds;
+}
+
+clock_t	Compressor::getCTimeDelaunay() {
+	return m_ctime_delaunay;
+}
+
+clock_t	Compressor::getCTimeTranform() {
+	return m_ctime_transform;
 }

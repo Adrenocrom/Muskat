@@ -328,6 +328,9 @@
 					vTextureCoord.s = aVertexPosition.x;
 					vTextureCoord.t = aVertexPosition.y;
 
+					if(aVertexPosition.z == 1.0)
+						vState = 1.0;
+
 					position.x = (2.0 * aVertexPosition.x) - 1.0;
 					position.y = (-2.0 * aVertexPosition.y) + 1.0;
 					position.z = (2.0 * aVertexPosition.z) - 1.0;

@@ -54,8 +54,8 @@ void Config::setConfig(QJsonObject& jo) {
 	m_grid_type 		= jo["gridType"].toString();
 	m_mesh_precision 	= jo["meshPrecision"].toString();
 	m_mesh_compression 	= jo["meshCompression"].toInt();
-	m_T_leaf 			= (ushort)(jo["Tleaf"].toDouble()     * (double)(USHRT_MAX));
-	m_T_internal 		= (ushort)(jo["Tinternal"].toDouble() * (double)(USHRT_MAX));
+	m_T_leaf 			= (ushort)(jo["Tleaf"].toDouble()     * (double)(SHRT_MAX));
+	m_T_internal 		= (ushort)(jo["Tinternal"].toDouble() * (double)(SHRT_MAX));
 	m_T_angle			= jo["Tangle"].toDouble();
 	m_T_join			= jo["Tjoin"].toDouble();
 	m_T_threshold		= jo["Tthreshold"].toDouble();
@@ -88,8 +88,8 @@ QJsonObject Config::getConfig() {
 	jo["meshPrecision"] 	= m_mesh_precision;
 	jo["meshCompression"] 	= m_mesh_compression;
 	jo["maxDepth"]	= (int) m_max_depth;
-	jo["Tleaf"]		= (double) m_T_leaf 	/ (double) (USHRT_MAX);
-	jo["Tinternal"] = (double) m_T_internal / (double) (USHRT_MAX);
+	jo["Tleaf"]		= (double) m_T_leaf 	/ (double) (SHRT_MAX);
+	jo["Tinternal"] = (double) m_T_internal / (double) (SHRT_MAX);
 	jo["Tangle"]	= m_T_angle;
 	jo["Tjoin"]		= m_T_join;
 	jo["Tthreshold"]= m_T_threshold;
@@ -203,6 +203,12 @@ bool Config::getRefine() {
 
 bool Config::useDelaunay() {
 	if(m_mesh_mode == QString("delaunay"))
+		return true;
+	return false;
+}
+
+bool Config::useQuadtree() {
+	if(m_seed_mode == QString("quadtree"))
 		return true;
 	return false;
 }
