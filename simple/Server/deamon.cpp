@@ -2,10 +2,9 @@
 
 QT_USE_NAMESPACE
 
-ServerDeamon::ServerDeamon(MainWindow* mainWindow, quint16 port, bool debug, QObject *parent) : QObject(parent) {
+ServerDeamon::ServerDeamon(MainWindow* mainWindow, quint16 port, QObject *parent) : QObject(parent) {
 	m_pMainWindow = mainWindow;
 	m_pWebSocketServer = new QWebSocketServer(QStringLiteral("Server"), QWebSocketServer::NonSecureMode, this);
-	m_debug = debug;
 
 	if (m_pWebSocketServer->listen(QHostAddress::Any, port)) {
         connect(m_pWebSocketServer, &QWebSocketServer::newConnection, this, &ServerDeamon::onNewConnection);
@@ -35,8 +34,6 @@ void ServerDeamon::onNewConnection() {
 
 void ServerDeamon::processTextMessage(QString message) {
     QWebSocket *pClient = qobject_cast<QWebSocket *>(sender());
-    if (m_debug)
-        qDebug() << "Message received:" << message;
     if(pClient) {
         m_pJsonRPC->parseMessage(pClient, message);
     }
@@ -44,8 +41,6 @@ void ServerDeamon::processTextMessage(QString message) {
 
 void ServerDeamon::processBinaryMessage(QByteArray message) {
     QWebSocket *pClient = qobject_cast<QWebSocket *>(sender());
-    if (m_debug)
-        qDebug() << "Binary Message received:" << message;
     if (pClient) {
         pClient->sendBinaryMessage(message);
     }
@@ -53,9 +48,7 @@ void ServerDeamon::processBinaryMessage(QByteArray message) {
 
 void ServerDeamon::socketDisconnected() {
     QWebSocket *pClient = qobject_cast<QWebSocket *>(sender());
-    if (m_debug)
-        qDebug() << "socketDisconnected:" << pClient;
-    if (pClient) {
+	if (pClient) {
         m_clients.removeAll(pClient);
         pClient->deleteLater();
     }

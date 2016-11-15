@@ -27,7 +27,7 @@ class QuadTree {
 public:
 	QuadTree(uint w, uint h, uint max_depth);
 
-	std::list<cv::Point2f> generateSeeds(cv::Mat* Gx, cv::Mat* Gy);
+	std::list<cv::Point2f> generateSeeds(cv::Mat& gx, cv::Mat& gy);
 
 
 	void setTleaf( ushort T_leaf );
@@ -42,10 +42,6 @@ private:
 	uint m_max_depth;
 
 	uint m_num_nodes;	// like nodes.size();
-
-	// sobel gradients
-	cv::Mat* m_Gx;
-	cv::Mat* m_Gy;
 
 	// thresholds
 	ushort m_T_leaf;

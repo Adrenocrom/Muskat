@@ -2,9 +2,6 @@
 
 // creates Quadtree
 QuadTree::QuadTree(uint w, uint h, uint max_depth) {
-	m_Gx = nullptr;
-	m_Gy = nullptr;
-
 	m_T_leaf 	 = 0;
 	m_T_internal = 0;
 
@@ -32,22 +29,9 @@ QuadTree::QuadTree(uint w, uint h, uint max_depth) {
 	subdivide(0, 1);
 }
 
-list<cv::Point2f> QuadTree::generateSeeds(cv::Mat* Gx, cv::Mat* Gy) {
+list<cv::Point2f> QuadTree::generateSeeds(cv::Mat& gx, cv::Mat& gy) {
 	list<cv::Point2f> seeds;
 
-	m_Gx = Gx;
-	m_Gy = Gy;
-
-	// calc c_x and c_y
-	// c_x = max_R V_x - min_R V_x = V_H_x - V_L_x
-	// c_y = max_R V_y - min_R V_y = V_H_y - V_L_y
-	
-	calcCxy(seeds);
-
-	return seeds;
-}
-
-void QuadTree::calcCxy(list<cv::Point2f>& seeds) {
 	uint r_size = m_max_depth-1;
 	uint size = hnodes[r_size].size();
 
@@ -59,15 +43,15 @@ void QuadTree::calcCxy(list<cv::Point2f>& seeds) {
 		QtreeRect& rect = leaf.rect;
 
 		// init with the first values
-		leaf.H_x = m_Gx->at<ushort>(rect.min_y, rect.min_x);
-		leaf.H_y = m_Gy->at<ushort>(rect.min_y, rect.min_x);
+		leaf.H_x = gx.at<ushort>(rect.min_y, rect.min_x);
+		leaf.H_y = gy.at<ushort>(rect.min_y, rect.min_x);
 		leaf.L_x = leaf.H_x;
 		leaf.L_y = leaf.H_y;
 
 		for(int y = rect.min_y; y <= rect.max_y; ++y) {
 			for(int x = rect.min_x; x <= rect.max_x; ++x) {
-				g_x = m_Gx->at<ushort>(x, y);
-				g_y = m_Gy->at<ushort>(x, y);
+				g_x = gx.at<ushort>(x, y);
+				g_y = gy.at<ushort>(x, y);
 				
 				leaf.H_x = MU_MAX( leaf.H_x, g_x );
 				leaf.H_y = MU_MAX( leaf.H_y, g_y );
@@ -131,7 +115,9 @@ void QuadTree::calcCxy(list<cv::Point2f>& seeds) {
 			} 
 		}
 	}
+	return seeds;
 }
+
 
 void QuadTree::setTleaf( ushort T_leaf ) {
 	m_T_leaf = T_leaf;

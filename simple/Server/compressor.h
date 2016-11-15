@@ -3,6 +3,9 @@
 
 #pragma once
 
+#define USE_QUADTREE 		1
+#define USE_FLOYDSTEINBERG 	2 //Floyd-Steinberg
+
 class Config;
 
 struct Point {
@@ -101,6 +104,8 @@ public:
 	QJsonObject compressFrame(FrameInfo& info, FrameBuffer& fb);	
 	
 	cv::Mat*	getDelaunayImage();
+	cv::Mat*	getSobelXImage();
+	cv::Mat*	getSobelYImage();
 	clock_t		getCompressionTime();
 
 	// resize quadtree
@@ -120,6 +125,9 @@ private:
 	cv::Scalar 	m_color_triangle;
 
 	cv::Mat		m_delaunay_image;
+	cv::Mat		m_sobel_x_image;
+	cv::Mat		m_sobel_y_image;
+	cv::Mat		m_feature_image;
 	clock_t		m_time_comression;
 
 	// stores quadtree for delaunay triangulation
@@ -135,9 +143,15 @@ private:
 	// compression Methods
 	void compressMesh8Bit(QJsonObject& jo, cv::Mat& img);
 	void compressMesh16Bit(QJsonObject& jo, cv::Mat& img);
+
+	// create seeds with quadtree or with Floyd-Steinberg
 	void compressMeshDelaunay(QJsonObject& jo, cv::Mat& img);
 
+	// performs delaunay triangulation, input are the depth image and seed points,
+	// the result is list of triangles in an 2D space
 	vector<cv::Vec6f> delaunay(cv::Mat& img, std::list<cv::Point2f>& seeds);
+
+	std::list<cv::Point2f> floydSteinberg(cv::Mat& gx, cv::Mat& gy, double T = 0.5, double gamma = 0.5);
 
 	bool isValid(const Edge& e);
 

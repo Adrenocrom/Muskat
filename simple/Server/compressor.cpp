@@ -17,6 +17,9 @@ Compressor::Compressor(Config* config) {
 	m_color_triangle	= cv::Scalar(0, 120, 0);
 	
 	m_delaunay_image = cv::Mat(m_config->getMeshWidth(), m_config->getMeshHeight(), CV_8UC3, cv::Scalar(255,255,255));
+	m_sobel_x_image = cv::Mat(m_config->getMeshWidth(), m_config->getMeshHeight(), CV_8UC3, cv::Scalar(255,255,255));
+	m_sobel_y_image = cv::Mat(m_config->getMeshWidth(), m_config->getMeshHeight(), CV_8UC3, cv::Scalar(255,255,255));
+	m_feature_image = cv::Mat(m_config->getMeshWidth(), m_config->getMeshHeight(), CV_64FC1, 0.0);
 	
 	m_time_comression = 0.0;
 }
@@ -131,22 +134,24 @@ void Compressor::compressMesh16Bit(QJsonObject& jo, cv::Mat& img) {
 }
 
 void Compressor::compressMeshDelaunay(QJsonObject& jo, cv::Mat& img) {
-	cv::Mat grad_x; 
-	cv::Mat grad_y;
+	cv::Mat gx; 
+	cv::Mat gy;
 
-	double invMax		= 1.0 / ((double)(USHRT_MAX) + 1.0);
+	double invMax		= 1.0 / (double)(USHRT_MAX);
 	double invWidth 	= 1.0 / (double)(m_config->getMeshWidth() - 1);
 	double invHeight 	= 1.0 / (double)(m_config->getMeshHeight()- 1);
 
 	// calc sobel gradients for 2 dimensions and store them
-	Sobel( img, grad_x, -1, 1, 0, 3, 1, 0, cv::BORDER_DEFAULT );
-	Sobel( img, grad_y, -1, 0, 1, 3, 1, 0, cv::BORDER_DEFAULT );
+	Sobel( img, gx, -1, 1, 0, 3, 1, 0, cv::BORDER_DEFAULT );
+	Sobel( img, gy, -1, 0, 1, 3, 1, 0, cv::BORDER_DEFAULT );
 
 	m_quadtree->setTleaf(m_config->getTleaf());
 	m_quadtree->setTinternal(m_config->getTinternal());
 
 	// calc seeds from quadtree
-	list<cv::Point2f>	seeds = m_quadtree->generateSeeds(&grad_x, &grad_y);
+	list<cv::Point2f>	seeds;
+	if(m_config->getSeedMode() == "quadtree") seeds = m_quadtree->generateSeeds(gx, gy);
+	else									  seeds = floydSteinberg(gx, gy, m_config->getTthreshold(), m_config->getGamma());
 
 	if(m_config->preBackgroundSubtraction()) {
 		seeds.remove_if([&](const cv::Point2f& p) {
@@ -203,7 +208,6 @@ void Compressor::compressMeshDelaunay(QJsonObject& jo, cv::Mat& img) {
 			points[2].dz = (double) points[2].z * invMax;
 
 			vector<Point> n_points = splitTriangle(img, points[0], points[1], points[2], &m_delaunay_image);
-
 
 			uint n_size = n_points.size();
 			for(uint i = 0; i < n_size; ++i) {
@@ -277,6 +281,50 @@ vector<cv::Vec6f> Compressor::delaunay(cv::Mat& img, list<cv::Point2f>& seeds) {
     subdiv.getTriangleList(triangleList);
 
 	return triangleList;
+}
+
+list<cv::Point2f> Compressor::floydSteinberg(cv::Mat& gx, cv::Mat& gy, double T, double gamma) {
+	list<cv::Point2f> seeds;
+	double M = (double)(USHRT_MAX);
+	double A = sqrt(M*M + M*M);
+
+	// sigma(x) = (|| \nabla f(x) || / A )^gamma
+	double g_x;
+	double g_y;
+	for(int y = 0; y < gx.cols; ++y) {
+		for(int x = 0; x < gx.rows; ++x) {
+			g_x = (double) gx.at<ushort>(y, x);
+			g_y = (double) gy.at<ushort>(y, x);
+
+			m_feature_image.at<double>(y, x) = pow( (sqrt((g_x*g_x) + (g_y*g_y)) / A), gamma);
+		}
+	}
+
+	int sh = gx.cols-1;
+	int sw = gx.rows-1;
+	double o, n, e;
+	for(int y = 0; y < sh; ++y) {
+		for(int x = 0; x < sw; ++x) {
+			o = m_feature_image.at<double>(y, x);
+			if(o > T) {
+				n = T;
+
+				cv::Point2f p(x, y);
+				seeds.push_back(p);
+			}
+			else n = 0.0;
+      
+	  		m_feature_image.at<double>(y, x) = n;
+	  		e = o - n;
+
+			m_feature_image.at<double>(y  , x+1) = m_feature_image.at<double>(y  , x+1) + e * 7 / 16;
+			m_feature_image.at<double>(y+1, x-1) = m_feature_image.at<double>(y+1, x-1) + e * 3 / 16;
+			m_feature_image.at<double>(y+1,   x) = m_feature_image.at<double>(y+1,   x) + e * 5 / 16;
+			m_feature_image.at<double>(y+1, x+1) = m_feature_image.at<double>(y+1, x+1) + e * 1 / 16;
+		}
+	}
+	
+	return seeds;
 }
 
 void Compressor::resizeQuadtree() {

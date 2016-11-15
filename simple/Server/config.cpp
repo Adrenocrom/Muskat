@@ -16,6 +16,7 @@ Config::Config(MainWindow* mw) {
 	m_textureCompressionQuality = 0;
 
 	m_mesh_mode = "full";
+	m_seed_mode	= "quadtree";
 	m_grid_type = "default";
 	m_mesh_precision = "8bit";
 
@@ -28,6 +29,9 @@ Config::Config(MainWindow* mw) {
 
 	// default creates just a plane
 	m_max_depth	 = 8;
+
+	m_T_threshold = 0.5;
+	m_gamma		  = 0.5;
 
 	m_refine	 = true;
 
@@ -46,6 +50,7 @@ void Config::setConfig(QJsonObject& jo) {
 	m_textureCompressionMethod 	= jo["textureCompressionMethod"].toString();
 	m_textureCompressionQuality	= jo["textureCompressionQuality"].toInt();
 	m_mesh_mode 		= jo["meshMode"].toString();
+	m_seed_mode			= jo["seedMode"].toString();
 	m_grid_type 		= jo["gridType"].toString();
 	m_mesh_precision 	= jo["meshPrecision"].toString();
 	m_mesh_compression 	= jo["meshCompression"].toInt();
@@ -53,6 +58,8 @@ void Config::setConfig(QJsonObject& jo) {
 	m_T_internal 		= (ushort)(jo["Tinternal"].toDouble() * (double)(USHRT_MAX));
 	m_T_angle			= jo["Tangle"].toDouble();
 	m_T_join			= jo["Tjoin"].toDouble();
+	m_T_threshold		= jo["Tthreshold"].toDouble();
+	m_gamma				= jo["gamma"].toDouble();
 	m_refine			= jo["refine"].toBool();
 	m_pre_background_subtraction = jo["preBackgroundSubtraction"].toBool();
 	m_pra_background_subtraction = jo["praBackgroundSubtraction"].toBool();
@@ -76,6 +83,7 @@ QJsonObject Config::getConfig() {
 	jo["textureCompressionMethod"] 	= m_textureCompressionMethod;
 	jo["textureCompressionQuality"]	= m_textureCompressionQuality;
 	jo["meshMode"]	= m_mesh_mode;
+	jo["seedMode"]  = m_seed_mode;
 	jo["gridType"]	= m_grid_type;
 	jo["meshPrecision"] 	= m_mesh_precision;
 	jo["meshCompression"] 	= m_mesh_compression;
@@ -84,6 +92,8 @@ QJsonObject Config::getConfig() {
 	jo["Tinternal"] = (double) m_T_internal / (double) (USHRT_MAX);
 	jo["Tangle"]	= m_T_angle;
 	jo["Tjoin"]		= m_T_join;
+	jo["Tthreshold"]= m_T_threshold;
+	jo["gamma"]		= m_gamma;
 	jo["refine"]	= m_refine;
 	jo["preBackgroundSubtraction"] = m_pre_background_subtraction;
 	jo["praBackgroundSubtraction"] = m_pra_background_subtraction;
@@ -135,6 +145,10 @@ QString Config::getMeshMode() {
 	return m_mesh_mode;
 }
 
+QString Config::getSeedMode() {
+	return m_seed_mode;
+}
+
 QString Config::getGridType() {
 	return m_grid_type;
 }
@@ -173,6 +187,14 @@ double Config::getTangle() {
 
 double Config::getTjoin() {
 	return m_T_join;
+}
+
+double Config::getTthreshold() {
+	return m_T_threshold;
+}
+
+double Config::getGamma() {
+	return m_gamma;
 }
 
 bool Config::getRefine() {

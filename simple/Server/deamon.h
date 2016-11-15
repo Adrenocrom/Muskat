@@ -14,7 +14,7 @@ class ServerDeamon : public QObject
 {
     Q_OBJECT
 public:
-    explicit ServerDeamon(MainWindow* mainWindow, quint16 port, bool debug = false, QObject *parent = Q_NULLPTR);
+    explicit ServerDeamon(MainWindow* mainWindow, quint16 port, QObject *parent = Q_NULLPTR);
     ~ServerDeamon();
 
 Q_SIGNALS:
@@ -31,7 +31,6 @@ private:
     QList<QWebSocket*> 	m_clients;
     MainWindow*       	m_pMainWindow;
     JsonRPC*          	m_pJsonRPC;
-    bool m_debug;
 };
 
 #endif //ECHOSERVER_H

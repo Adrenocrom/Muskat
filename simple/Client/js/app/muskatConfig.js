@@ -18,6 +18,8 @@ class MuskatConfig {
 		// delaunay for a delaunay constructed mesh
 		this._mesh_mode	= "full";
 
+		this._seed_mode = "quadtree";
+
 		// grid type is a parameter for full connected meshs
 		this._grid_type = "default";
 
@@ -34,9 +36,12 @@ class MuskatConfig {
 		this._T_join		= 0.5;
 		this._T_grad		= 1.0;
 
+		this._T_threshold	= 0.5;
+		this._gamma			= 0.5;
+
 		this._five_pass		= true;
 
-		this._refine		= true;
+		this._refine		= false;
 		
 		this._pre_background_subtraction = false;
 		this._pra_background_subtraction = false;
@@ -63,6 +68,8 @@ class MuskatConfig {
 		// delaunay for a delaunay constructed mesh
 		this._mesh_mode	= "full";
 
+		this._seed_mode = "quadtree";
+
 		// grid type is a parameter for full connected meshs
 		this._grid_type = "default";
 
@@ -78,6 +85,9 @@ class MuskatConfig {
 		this._T_angle		= 0.2;
 		this._T_join		= 0.5;
 		this._T_grad		= 1.0;
+
+		this._T_threshold	= 0.5;
+		this._gamma			= 0.5;
 
 		this._five_pass		= true;
 		
@@ -105,8 +115,11 @@ class MuskatConfig {
 
 			name += "/G"+ this.Tgrad.toFixed(1);
 		} else {
-			name += "Delaunay/D"+this.maxDepth+"/L"+this.Tleaf.toFixed(1)+"/I"+this.Tinternal.toFixed(1);
+			name += "Delaunay/";
 	
+			if(this.seedMode == "quadtree") name += "D"+this.maxDepth+"/L"+this.Tleaf.toFixed(1)+"/I"+this.Tinternal.toFixed(1);
+			else							name += "T"+this.Tthreshold.toFixed(1)+"/G"+this.gamma.toFixed(1);
+
 			if(this.refine) name += "/A"+ this.Tangle.toFixed(1) +"/J"+ this.Tjoin.toFixed(1);
 
 			if(this.preBackgroundSubtraction || this.praBackgroundSubtraction) name += "/";
@@ -136,7 +149,8 @@ class MuskatConfig {
 			
 			if(this.smoothDepth) name += "s";
 		} else {
-			name += "D"+this.maxDepth+"L"+this.Tleaf.toFixed(1)+"I"+this.Tinternal.toFixed(1);
+			if(this.seedMode == "quadtree") name += "D"+this.maxDepth+"L"+this.Tleaf.toFixed(1)+"I"+this.Tinternal.toFixed(1);
+			else							name += "T"+this.Tthreshold.toFixed(1)+"G"+this.gamma.toFixed(1);
 	
 			if(this.refine) name += "A"+ this.Tangle.toFixed(1) +"J"+ this.Tjoin.toFixed(1);
 
@@ -179,6 +193,10 @@ class MuskatConfig {
 		return this._mesh_mode;
 	}
 
+	get seedMode() {
+		return this._seed_mode;
+	}
+
 	get gridType() {
 		return this._grid_type;
 	}
@@ -205,6 +223,14 @@ class MuskatConfig {
 
 	get Tinternal() {
 		return this._T_internal;
+	}
+
+	get Tthreshold() {
+		return this._T_threshold;
+	}
+
+	get gamma() {
+		return this._gamma;
 	}
 
 	get Tangle() {
@@ -254,8 +280,8 @@ class MuskatConfig {
 	}
 
 	set width(w) {
-	//	this._width = w;
-		this._callback();
+		this._width = w;
+	//	this._callback();
 	}
 
 	set height(h) {
@@ -280,6 +306,11 @@ class MuskatConfig {
 
 	set meshMode(mode) {
 		this._mesh_mode = mode;
+		this._callback();
+	}
+
+	set seedMode(mode) {
+		this._seed_mode = mode;
 		this._callback();
 	}
 
@@ -333,6 +364,16 @@ class MuskatConfig {
 		this._callback();
 	}
 
+	set Tthreshold(T) {
+		this._T_threshold = T;
+		this._callback();
+	}
+
+	set gamma(g) {
+		this._gamma = g;
+		this._callback();
+	}
+ 
 	set refine(value) {
 		this._refine = value;
 		this._callback();

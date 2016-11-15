@@ -102,12 +102,11 @@ da Datensätze Größenordnungen erreichen können,
 die den Speicher herkömmlicher Desktops, Laptops, Smartphones etc. bei weitem übersteigen. 
 Auch wenn ausreichend Speicher zur Verfügung steht, 
 kann die Übertragung dieser Daten viel Zeit in Anspruch nehmen.
-\textcolor{gray}{
+
 Mit Hilfe der Remote-Visualisierung ist es möglich, dass der Server die Bildsynthese
 übernimmt und nicht der komplette Datensatz übertragen werden muss.
 Ein weiterer Vorteil der mit leistungsstarken Serversystemen einhergeht ist der, 
 dass sich komplexe Visualisierungs- und Beleuchtungsmethoden verwenden lassen, die mit normalen Endgeräten nicht zu realisieren sind.
-}
 
 Die Latenz bezeichnet in der Netzwerktechnik die Übertragungszeit von einem zum anderen Gerät.
 Diese ist in modernen Netzwerken gering, für die Interaktive Visualisierung allerdings immer
@@ -201,6 +200,8 @@ Evans \textit{et al.} haben für diesen Zweck ein Datenformat für Punktwolken ent
 Banno \textit{et al.} erzeugen mit Hilfe der Delaunay-Triangulierung adaptive
 Dreiecksnetze aus Tiefenbildern, um die Qualität der Darstellung zu verbessern \cite{Banno:2012:RCD:2407516.2407579}.
 
+Lee \textit{et al.} 
+
 Eine Vergleichbaren Ansatz wird von untersucht.
 
 
@@ -291,7 +292,7 @@ Eine Auflistung der Datensätze zeigt die Tabelle \ref{tab:datasets}.
 
 Die Abbildung \ref{fig:testspheres_run1_t_0} zeigt das Farb- und Tiefenbild des ersten Tripels aus dem vierten Datensatz.
 Die Kameraparameter setzten sich zusammen aus einem Vektor für die Kameraposition, einem lookAt-Vektor, der Punkt auf dem die Kamera schaut und dem up-Vektor.
-Und schließlich für die Projektion die Werte $z_{near}$ und $z_{far}$, welche die Lage der
+Und schließlich für die Projektion benötigten Werte $z_{near}$ und $z_{far}$, welche die Lage der
 clipping-Ebenen beschreiben.
 
 \begin{figure}[h]
@@ -585,22 +586,29 @@ Mittelwert über allen $x \in X$ und $y \in Y$ berechnet werden:
 
 \chapter{Methodik}
 
-Um aus einem Tiefenbild $D$ ein Dreiecksnetz zu erzeugen und zu Übertragen gibt es , gibt es 
-Grundlage für die Erzeugung der Dreiecksnetze ist das Tiefenbild $D$.
-Jeder Tiefenwert $d(x, y) \in D$ liegt in dem Intervall $[0, 1]$.
-Je kleiner der Wert von $d$ ist, umso näher ist dieser an der \textit{near-Plane}.
+In dieser Arbeit werden zwei Verfahren untersucht um aus einem Tiefenbild $D$ ein Dreiecksnetz zu erzeugen
+und die Daten zu Übertragen.
+Dazu wird im ersten Ansatz das Tiefenbild als solches komprimiert und übertragen. 
+Der Klient erzeugt aus dem empfangenen Tiefenbild ein voll vernetztes Dreiecksnetz.
+Der zweite Ansatz besteht darin ein Netz adaptiv mit Hilfe der Delaunay-Triangulierung auf dem
+Server zu konstruieren und das Dreiecksnetz an den Klienten zu übertragen.
 
-\subsection{Vollvernetzung}
-
-In dieser Arbeit wird die Vollvernetzung vom Klient durchgeführt.
-Die Vernetzung des Dreiecksnetzes kann vorausberechnet werden und
-muss neu berechnet werden, wenn sich die Auflösung der Tiefenbilder ändert.
+\section{Vollvernetzung}
 
 Bei der Vollvernetzung wird für jeden Pixel $d$ aus dem Tiefenbild $D$ ein Vertex $v$ erzeugt.
-Es existieren verschiedene Möglichkeiten, diese miteinander zu einem Dreiecksnetz zu verknüpfen.
-Die Abbildung \ref{fig:FULL_MESH} zeigt drei unterschiedliche Varianten.
-Aus vier benachbarten Vertices werden jeweils zwei Dreiecke erzeugt.
-Hat das Tiefenbild $D$ die Auflösung $w \times h$, dann entspricht die Anzahl aller Dreiecke $2 (w-1) (h-1)$.
+Anschließend werden diese Vertices über Kanten zu Dreiecken miteinander verbunden.
+Die Abbildung \ref{fig:FULL_MESH} zeigt drei unterschiedliche Varianten, 
+wie sie Vertices zu einem Dreiecksnetz verbinden lassen.
+In dieser Arbeit wurden alle drei Varianten implementiert.
+Die Anzahl der Dreiecke lässt sich aus der Auflösung $w \times h$ wie folgt berechnen $2 (w-1) (h-1)$.
+Wird die Auflösung verdoppelt, verdoppelt sich auch die Anzahl der Vertices und 
+der Rechenaufwand vervierfacht sich.
+
+Die x- und y-Komponenten, sowie deren Verknüpfungen können vorausberechnet werden und müssen aktualisiert werden, 
+wenn sich die Auflösung ändert.
+Die z-Komponente wird für jeden Vertex mit Hilfe der Pixelwerte aus dem Tiefenbild während der Bildsynthese
+gesetzt.
+ 
 
 \begin{figure}[ph]
 	\subfigure[regulär]{
@@ -821,7 +829,7 @@ Hat das Tiefenbild $D$ die Auflösung $w \times h$, dann entspricht die Anzahl al
 	\label{fig:FULL_MESH}
 \end{figure}
 
-\subsection{Delaunay-Triangulierung}
+\section{Delaunay-Triangulierung}
 
 Die zweite Variante die in dieser Arbeit untersucht wird,
 ist die eine adaptive Vernetzung des Tiefenbildes.
@@ -892,12 +900,12 @@ die Kontur, während die inneren Knoten nicht-planare Oberflächen repräsentieren.
 Weil Tiefensprünge größere Gradienten bedeuten als nicht-planare Oberflächen, 
 sollte $T_{internal}$ kleiner $T_{leaf}$ als gewählt werden.
 
-Durch das Traversieren des Quaternärbaums lässt sich die Menge $P$ bestimmen
+Durch das Traversieren des Quadtree lässt sich die Menge $P$ bestimmen
 und das Dreiecksnetz kann mit Hilfe der Delaunay-Triangulierung vernetzt werden.
 
-Ähnlich zur Vollvernetzung kann die Datenstruktur des Quaternärbaums im vorausberechnet werden
+Ähnlich zur Vollvernetzung kann die Datenstruktur des Quadtree im vorausberechnet werden
 und wird nur im Falle einer Auflösungsänderung oder einer Änderung des maximalen Tiefenwertes
-des Quaternärbaums neu berechnet.
+des Quadtree neu berechnet.
 
 \subsubsection{Optimierung des Netzes}
 
@@ -1095,17 +1103,15 @@ und gegebenenfalls zu verwerfen.
 
 \chapter{Implementierung}
 
-Als Grundlage dient das Konzept von Wessels \textit{et al.} \cite{DBLP:conf/itng/WesselsPJR11}.
 Die Klient-Anwendung ist eine Browser basierte Web-Anwendung, die mit dem Server
 über das WebSocket-Protokoll kommuniziert.
 Dabei handelt es sich um ein auf TCP basierendes Netzwerkprotokoll,
-das eine Bidirektionale Verbindung erlaubt.
-Die Arbeit von Wessels \textit{et al.} wird dahingehend erweitert,
-das die Manipulation der Bilddaten mit Hilfe von WebGl durchgeführt wird.
-Bei WebGl handelt es sich um eine Bibliothek die von modernen Browsern zur Verfügung gestellt wird,
+das eine Bidirektionale Verbindung zwischen den Verbindungsteilnehmern erlaubt.
+Die Extrapolation der Bilddaten wird mit Hilfe von WebGL durchgeführt wird.
+Bei WebGL handelt es sich um eine Bibliothek die von modernen Browsern zur Verfügung gestellt wird,
 um eine Hardware beschleunigte Bildsynthese zu ermöglichen.
 Der Vorteil dieser Technologie ist die Unabhängigkeit der Anwendung im Bezug,
-zur Plattform und dem Gerät, auf dem sie laufen soll.
+zur Plattform und dem Gerät, in Kombination mit einer hohen Rechengeschwindigkeit.
 
 Beide Komponenten tauschen Informationen mit Hilfe des kompakten vom Menschen
 lesbaren Java 

@@ -34,6 +34,7 @@ public:
 	int		getTextureCompressionQuality();
 
 	QString	getMeshMode();
+	QString	getSeedMode();
 	QString getGridType();
 	QString getMeshPrecision();
 
@@ -49,6 +50,9 @@ public:
 
 	double	getTangle();
 	double	getTjoin();
+
+	double  getTthreshold();
+	double  getGamma();
 
 	bool	getRefine();
 
@@ -73,6 +77,7 @@ private:
 	int			m_textureCompressionQuality;
 
 	QString		m_mesh_mode;
+	QString		m_seed_mode;
 	QString		m_grid_type;
 	QString		m_mesh_precision;
 
@@ -87,6 +92,9 @@ private:
 
 	// quadtree config
 	uint 	m_max_depth;	// max depth
+
+	double	m_T_threshold;
+	double	m_gamma;
 
 	// do refinement step
 	bool	m_refine;

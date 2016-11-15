@@ -174,6 +174,10 @@ $(document).ready(function() {
 		resize(g_config.meshWidth, g_config.meshHeight);
 	});
 
+	$('input[name=seed_mode]').on('change', function() {
+		g_config.seedMode = $('input[name=seed_mode]:checked').val();
+	});
+
 	$('#text_max_depth').on('change', function() {
 		g_config.maxDepth = parseInt($('#text_max_depth').val());
 	});
@@ -196,6 +200,18 @@ $(document).ready(function() {
 
 	$('#text_T_grad').on('change', function() {
 		g_config.Tgrad = parseFloat($('#text_T_grad').val());
+	});
+
+	$('#text_T_threshold').on('change', function() {
+		g_config.Tthreshold = parseFloat($('#text_T_threshold').val());
+	});
+
+	$('#text_gamma').on('change', function() {
+		g_config.gamma = parseFloat($('#text_gamma').val());
+	});
+
+	$('#check_refine').change(function() {
+		g_config.refine = $('#check_refine').prop('checked');
 	});
 
 	$('#check_pre_background').change(function() {
@@ -361,7 +377,7 @@ $(document).ready(function() {
 		mat4.multiply(invMvpMatrix, pMatrix, mvMatrix);
 		mat4.invert(invMvpMatrix, invMvpMatrix);
 
-		mat4.perspective(pMatrix, muGl.degToRad(scene.aperture), gl.viewportWidth / gl.viewportHeight, frameTo.near, frameTo.far);
+		mat4.perspective(pMatrix, muGl.degToRad(scene.aperture+2), gl.viewportWidth / gl.viewportHeight, frameTo.near, frameTo.far);
 		mat4.lookAt(mvMatrix, frameTo.pos, frameTo.lookat, frameTo.up);
 		mat4.translate(mvMatrix, mvMatrix, frameTo.lookat);
 		mat4.multiply(mvpMatrix, pMatrix, mvMatrix);
@@ -516,7 +532,11 @@ $(document).ready(function() {
 		var frame_min = 0;
 		var frame_max = scene.frames.length-1;
 
-		var frame = scene.frames[0];
+		var frame;
+		var frameTo;
+
+		if(g_scene_index < 3) frame = g_playlist.scenes[0].frames[0];
+		else 				  frame = g_playlist.scenes[3].frames[0];
 		
 		mat4.perspective(pMatrix, muGl.degToRad(scene.aperture), gl.viewportWidth / gl.viewportHeight, frame.near, frame.far);
 		mat4.lookAt(mvMatrix, frame.pos, frame.lookat, frame.up);
@@ -529,11 +549,11 @@ $(document).ready(function() {
 			// messure time
 			g_time_start = performance.now();
 
-			frame = scene.frames[i];
+			frameTo = scene.frames[i];
 
-			mat4.perspective(pMatrix, muGl.degToRad(scene.aperture), gl.viewportWidth / gl.viewportHeight, frame.near, frame.far);
-			mat4.lookAt(mvMatrix, frame.pos, frame.lookat, frame.up);
-			mat4.translate(mvMatrix, mvMatrix, frame.lookat);
+			mat4.perspective(pMatrix, muGl.degToRad(scene.aperture), gl.viewportWidth / gl.viewportHeight, frameTo.near, frameTo.far);
+			mat4.lookAt(mvMatrix, frameTo.pos, frameTo.lookat, frameTo.up);
+			mat4.translate(mvMatrix, mvMatrix, frameTo.lookat);
 			mat4.multiply(mvpMatrix, pMatrix, mvMatrix);
 			mat4.multiply(resMvpMatrix, mvpMatrix, invMvpMatrix);
 			
@@ -720,6 +740,7 @@ $(document).ready(function() {
 			"textureCompressionMethod" 	: g_config.textureCompressionMethod,
 			"textureCompressionQuality"	: g_config.textureCompressionQuality,
 			"meshMode"					: g_config.meshMode,
+			"seedMode"					: g_config.seedMode,
 			"gridType"					: g_config.gridType,
 			"meshPrecision"				: g_config.meshPrecision,
 			"meshCompression"			: g_config.meshCompression,
@@ -728,6 +749,8 @@ $(document).ready(function() {
 			"Tinternal"					: g_config.Tinternal,
 			"Tangle"					: g_config.Tangle,
 			"Tjoin"						: g_config.Tjoin,
+			"Tthreshold"				: g_config.Tthreshold,
+			"gamma"						: g_config.gamma,
 			"refine"					: g_config.refine,
 			"preBackgroundSubtraction"	: g_config.preBackgroundSubtraction,
 			"praBackgroundSubtraction"	: g_config.praBackgroundSubtraction
