@@ -239,7 +239,7 @@ $(document).ready(function() {
 	var g_time_start;
 	var g_time_end;
 	var g_evaluator;
-	var g_scene_list 		= [0,1,2,3,4,5];
+	var g_scene_list 		= [6,7];
 	var g_scene_list_index 	= 0;
 
 	initConfig();
@@ -368,11 +368,8 @@ $(document).ready(function() {
 	function drawFrame(to) {
 		var gl = muGl.gl;
 		var scene = g_playlist.scenes[g_scene_index];
-		var frame;
+		var frame	= scene.frames[0];
 		var frameTo = scene.frames[to];
-
-		if(g_scene_index < 3) frame = g_playlist.scenes[0].frames[0];
-		else 				  frame = g_playlist.scenes[3].frames[0];
 		
 		mat4.perspective(pMatrix, muGl.degToRad(scene.aperture), gl.viewportWidth / gl.viewportHeight, frame.near, frame.far);
 		mat4.lookAt(mvMatrix, frame.pos, frame.lookat, frame.up);
@@ -535,11 +532,8 @@ $(document).ready(function() {
 		var frame_min = 0;
 		var frame_max = scene.frames.length-1;
 
-		var frame;
+		var frame = scene.frames[0];
 		var frameTo;
-
-		if(g_scene_index < 3) frame = g_playlist.scenes[0].frames[0];
-		else 				  frame = g_playlist.scenes[3].frames[0];
 		
 		mat4.perspective(pMatrix, muGl.degToRad(scene.aperture), gl.viewportWidth / gl.viewportHeight, frame.near, frame.far);
 		mat4.lookAt(mvMatrix, frame.pos, frame.lookat, frame.up);

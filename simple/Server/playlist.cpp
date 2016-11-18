@@ -21,6 +21,18 @@ Playlist::Playlist(MainWindow* mw, string dir, string suffix) {
 		Scene scene(m_file_names[i], m_suffix);
 		m_scenes.push_back(scene);
 	}
+
+	Scene CoolRandom("CoolRandom");
+	CoolRandom.addScene(m_scenes[0]);
+	CoolRandom.addScene(m_scenes[1]);
+	CoolRandom.addScene(m_scenes[2]);
+	Scene TestSpheres("TestSpheres");
+	TestSpheres.addScene(m_scenes[3]);
+	TestSpheres.addScene(m_scenes[4]);
+	TestSpheres.addScene(m_scenes[5]);
+	
+	m_scenes.push_back(CoolRandom);
+	m_scenes.push_back(TestSpheres);
 }
 
 void Playlist::addScenes(path& p, string s) {

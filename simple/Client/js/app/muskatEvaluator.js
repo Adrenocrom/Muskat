@@ -3,9 +3,9 @@ class MuskatEvaluator {
 		this._evaluation = [];
 	
 		// Full Mesh
-		var gridTypes 		= ["default", "cookie_cutter", "isometric"];
+/*		var gridTypes 		= ["default", "cookie_cutter", "isometric"];
 		var meshPrecision 	= ["16bit", "8bit"];
-		var gradients 		= [1.0, 0.9, 0.8, 0.7, 0.6, 0.5, 0.4, 0.3, 0.2, 0.1];
+		var gradients 		= [1.0, 0.9, 0.8, 0.7];
 		for(var m = 1; m <= 4; m += m) {
 			for(var p = 0; p < meshPrecision.length; p++) {
 				for(var g = 0; g < gradients.length; g++) {
@@ -28,7 +28,7 @@ class MuskatEvaluator {
 				}
 			}
 		}
-		
+*/		
 		// Delaunay Mesh floyd-steinberg
 		var yyy = new MuskatConfig(this.nullFunction);
 		yyy.meshMode = "delaunay";
@@ -38,8 +38,8 @@ class MuskatEvaluator {
 		yyy.praBackgroundSubtraction = false;
 		this.add(yyy);
 
-		for(var t = 0.0; t <= 1.0; t+=1.0) {
-			for(var g = 0.0; g <= 1.0; g+=1.0) {
+		for(var t = 0.0; t <= 1.0; t+= 0.1) {
+			for(var g = 0.0; g <= 1.0; g+= 0.1) {
 				var f7 = new MuskatConfig(this.nullFunction);
 				f7.meshMode = "delaunay";
 				f7.seedMode = "floyd_steinberg";
@@ -50,39 +50,9 @@ class MuskatEvaluator {
 				f7.praBackgroundSubtraction = false;
 				this.add(f7);
 
-				var f8 = new MuskatConfig(this.nullFunction);
-				f8.meshMode = "delaunay";
-				f8.seedMode = "floyd_steinberg";
-				f8.Tthreshold = t;
-				f8.gamma	 = g;
-				f8.refine	 = false;
-				f8.preBackgroundSubtraction = false;
-				f8.praBackgroundSubtraction = true;
-				this.add(f8);
-						
-				var f9 = new MuskatConfig(this.nullFunction);
-				f9.meshMode = "delaunay";
-				f9.seedMode = "floyd_steinberg";
-				f9.Tthreshold = t;
-				f9.gamma	 = g;
-				f9.refine	 = false;
-				f9.preBackgroundSubtraction = true;
-				f9.praBackgroundSubtraction = false;
-				this.add(f9);
-
-				var f10 = new MuskatConfig(this.nullFunction);
-				f10.meshMode = "delaunay";
-				f10.seedMode = "floyd_steinberg";
-				f10.Tthreshold = t;
-				f10.gamma	 = g;
-				f10.refine	 = false;
-				f10.preBackgroundSubtraction = true;
-				f10.praBackgroundSubtraction = true;
-				this.add(f10);
-
-				for(var a = 0.0; a <= 160.0; a += 20.0) {
-					for(var j = 2.0; j <= 2.0; j += 0.1) {
-						var f11 = new MuskatConfig(this.nullFunction);
+/*				for(var a = 0.0; a <= 100.0; a += 50.0) {
+					for(var j = 0.0; j <= 2.0; j += 0.5) {
+/*						var f11 = new MuskatConfig(this.nullFunction);
 						f11.meshMode = "delaunay";
 						f11.seedMode = "floyd_steinberg";
 						f11.Tthreshold = t;
@@ -93,8 +63,8 @@ class MuskatEvaluator {
 						f11.preBackgroundSubtraction = false;
 						f11.praBackgroundSubtraction = true;
 						this.add(f11);
-
-						var f12 = new MuskatConfig(this.nullFunction);
+*/
+/*						var f12 = new MuskatConfig(this.nullFunction);
 						f12.meshMode = "delaunay";
 						f12.seedMode = "floyd_steinberg";
 						f12.Tthreshold = t;
@@ -105,13 +75,25 @@ class MuskatEvaluator {
 						f12.preBackgroundSubtraction = true;
 						f12.praBackgroundSubtraction = false;
 						this.add(f12);
+
+						var f13 = new MuskatConfig(this.nullFunction);
+						f13.meshMode = "delaunay";
+						f13.seedMode = "floyd_steinberg";
+						f13.Tthreshold = t;
+						f13.gamma	 = g;
+						f13.refine	 = true;
+						f13.Tangle	 = a;
+						f13.Tjoin	 = j;
+						f13.preBackgroundSubtraction = false;
+						f13.praBackgroundSubtraction = false;
+						this.add(f13);
 					}
-				}	
+				}	*/
 			}
 		}
 
 		// Delaunay Mesh QTree
-		var zzz = new MuskatConfig(this.nullFunction);
+/*		var zzz = new MuskatConfig(this.nullFunction);
 		zzz.meshMode = "delaunay";
 		zzz.maxDepth = 10;
 		zzz.Tleaf	 = 0.0;
@@ -153,7 +135,7 @@ class MuskatEvaluator {
 					c9.preBackgroundSubtraction = true;
 					c9.praBackgroundSubtraction = false;
 					this.add(c9);
-
+	/*
 					var c10 = new MuskatConfig(this.nullFunction);
 					c10.meshMode = "delaunay";
 					c10.maxDepth = d;
@@ -164,8 +146,8 @@ class MuskatEvaluator {
 					c10.praBackgroundSubtraction = true;
 					this.add(c10);
 
-					for(var a = 0.0; a <= 160.0; a += 20.0) {
-						for(var j = 2.0; j <= 2.0; j += 0.1) {
+					for(var a = 0.0; a <= 100; a += 50.0) {
+						for(var j = 0.0; j <= 2.0; j += 0.5) {
 							var c11 = new MuskatConfig(this.nullFunction);
 							c11.meshMode = "delaunay";
 							c11.maxDepth = 10;
@@ -189,11 +171,23 @@ class MuskatEvaluator {
 							c12.preBackgroundSubtraction = true;
 							c12.praBackgroundSubtraction = false;
 							this.add(c12);
+
+							var c13 = new MuskatConfig(this.nullFunction);
+							c13.meshMode = "delaunay";
+							c13.maxDepth = 10;
+							c13.Tleaf	 = l;
+							c13.Tinternal= i;
+							c13.refine	 = true;
+							c13.Tangle	 = a;
+							c13.Tjoin	 = j;
+							c13.preBackgroundSubtraction = false;
+							c13.praBackgroundSubtraction = false;
+							this.add(c13);
 						}
-					}
-				}
-			}
-		}
+					}*/
+		//		}
+		//	}
+		//}
 	}
 
 	add(config) {

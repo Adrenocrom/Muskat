@@ -20,8 +20,11 @@ public:
 	vector<FrameBuffer> 	m_fbs;
 
 	Scene(string filename, string suffix);
+	Scene(string name);
 
 	QJsonObject	getSceneInfo();
+
+	void addScene(Scene scene);
 
 private:
 	QJsonObject getFrameInfo(uint frame_id);

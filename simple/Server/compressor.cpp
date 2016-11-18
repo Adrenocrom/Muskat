@@ -420,6 +420,7 @@ bool Compressor::isJoinable(cv::Mat& img, const Edge& e) {
 	Point pm = e.getPM(img, m_config->getMeshWidth(), m_config->getMeshHeight());	
 	double a = e.b.dz - pm.dz;
 	double b = pm.dz  - e.a.dz;
+	cout<<fabs(a - b)<<endl;
 	return fabs(a - b) < m_config->getTjoin();
 }
 

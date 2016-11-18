@@ -75,14 +75,16 @@ Bild"ubernahmen zitieren.}
 %\usepackage{pgf-umlsd}
 \usepackage{filecontents}
 \usepackage{subfigure}
+\usepackage{xcolor}
+%\usepackage{setspace}
 
 \setcounter{tocdepth}{2}
 
-\input{../results/4/512x512_Delaunay/D10/L0.0/I0.0/results.tex}
+\input{../results/7/512x512_Full/default/16bit/5Pass/G1.0/results.tex}
 
+\input{../results/6/512x512_Delaunay/D10/L0.1/I0.1/results.tex}
+\input{../results/7/512x512_Delaunay/D10/L0.1/I0.1/results.tex}
 
-
-\input{../results/d_0.tex}
 
 \pagenumbering{arabic}
 
@@ -141,11 +143,11 @@ mit den Einschränkungen durch JavaScript und WebGl evaluiert werden können.
 
 Im Folgenden werden bereits existierender Arbeiten diskutiert.
 
-\begin{figure}
-	\subfigure[]{\includegraphics[width=.49\textwidth]{../Scenes/CoolRandom/run_1/coolrandom_00000.png}}
-	\subfigure[]{\includegraphics[width=.49\textwidth]{../Scenes/TestSpheres/run_1/testspheres_00000.png}}
-	\caption{Bilder aus den Datensätzen, a \textit{CoolRandom} und b \textit{TestSpheres}}
-	\label{fig:datasets_frame0}
+\begin{figure}[h]
+	\subfigure[CoolRandom]{\includegraphics[width=.49\textwidth]{../Scenes/CoolRandom/run_1/coolrandom_00000.png}}
+	\subfigure[TestSpheres]{\includegraphics[width=.49\textwidth]{../Scenes/TestSpheres/run_1/testspheres_00000.png}}
+\caption{Die Abbildungen a und b zeigen Bilder aus den Datensätzen.}
+\label{fig:firstframes}
 \end{figure}
 
 Das Ziel dieser Arbeit ist es, ein Remote-Visualisierungssystem zu entwickeln,
@@ -257,122 +259,130 @@ planarer scheiß \cite{Ma13ecmr}
 
 In diesem Kapitel werden die Datensätze im Detail vorgestellt und es wird gezeigt,
 wie die Bildextrapolation anhand der zur Verfügung stehenden Informationen 
-durchgeführt wird und es werden die zwei Metriken zum Vergleich von Bildern vorgestellt,
+durchgeführt wird.
+Anschließend werden zwei Metriken, PSNR und SSIM zum Vergleich von Bildern vorgestellt,
 die für die Evaluation verwendet werden.
 
 \section{Datensätze}
 
-Zur Analyse der verwendeten Methoden stehen zwei Szenen zur Verfügung.
-Mit beiden wurden jeweils drei Kamerafahrten aufgenommen und auf diese Weise sechs Datensätze erzeugt.
+Zur Analyse der verwendeten Methoden stehen zwei Datensätze zur Verfügung.
 Jeder Datensatz besteht aus einer Sequenz von Tripeln.
 Dabei setzt sich jedes Tripel aus einem Farbbild $I$, einem Tiefenbild $D$ 
 sowie einem Satz von Kameraparametern zusammen.
 Die Auflösung der Farb- und Tiefenbilder ist für alle Datensätze $w \times h = 512 \times 512$.
-Die Tiefenbilder wurden mit einer Farbtiefe von 16 Bit erzeugt und die Farbbilder mit 8 Bit für
-jeden Farbkanal.
-Eine Auflistung der Datensätze zeigt die Tabelle \ref{tab:datasets}.
+Die Tiefenbilder wurden mit 16 Bit quantisiert und die Farbbilder mit 24 Bit, dabei entfallen jeweils
+8 Bit auf die einzelnen Farbkanäle.
+In der Abbildung \ref{fig:testspheres_40_id} werden Farb- und Tiefenbild des ersten Tripels aus dem Datensatz \textit{TestSpheres} dargestellt.
+
+\begin{figure}[h]
+	\subfigure[]{\includegraphics[width=.49\textwidth]{../Scenes/TestSpheres/run_2/testspheres_00000.png}}
+	\subfigure[]{\includegraphics[width=.49\textwidth]{../Scenes/TestSpheres/run_2/testspheres_00000_depth.png}}
+	\caption{Farb und Tiefenbild, aus dem Datensatz \textit{TestSpheres}}
+	\label{fig:testspheres_40_id}
+\end{figure}
+
+Die Kameraparameter setzten sich zusammen aus einem Vektor für die Kameraposition, einem lookAt-Vektor, der Punkt auf dem die Kamera schaut und dem up-Vektor.
+Für die Projektion werden die Position der Clippingebenen durch die Werte $z_{near}$ und $z_{far}$ beschrieben
+und es wird der Öffnungswinkel der Kamera benötigt.
+
+Von beiden Szenen wurden 493 Bilder erzeugt.
+Beide Datensätze lassen sich in Abhängigkeit der Winkelschrittweite in 3 Sequenzen unterteilen.
+Eine Auflistung zeigt die Tabelle \ref{tab:datasets}.
 
 \begin{table}[h]
-
-	\begin{tabular}{c|c|c|c|c|c|c}
-		\# & Szene & Kamerafahrt & Anzahl Bilder & min Winkel &  max Winkel & Winkel Schritt \\
+	\begin{tabular}{c|c|c|c|c}
+		\# & Anzahl Bilder & min Winkel &  max Winkel & Winkel Schritt \\
 		\hline
-		1 & CoolRandom 	& 1 & 241 & 0  & 5  & 0.25 	\\
-		2 & CoolRandom 	& 2 & 60  & 6  & 10 & 1 	\\
-		3 & CoolRandom 	& 3 & 192 & 15 & 90 & 5  	\\
-		\hline
-		4 & TestSpheres & 1 & 241 & 0  & 5  & 0.25 	\\
-		5 & TestSpheres & 2 & 60  & 6  & 10 & 1		\\
-		6 & TestSpheres & 3 & 192 & 15 & 90 & 5		\\
+		1 & 241 & 0  & 5  & 0.25 \\
+		2 & 60  & 6  & 10 & 1 	 \\
+		3 & 192 & 15 & 90 & 5  	 \\
 	\end{tabular}
 	\centering
-	\caption{In der Tabelle sind alle Datensätze, die für die Evaluation zur Verfügung stehen aufgelistet.}
+	\caption{Die Tabelle zeigt eine Übersicht über die Winkel der aufgenommenen Sequenzen.}
 	\label{tab:datasets}
 \end{table}
 
-Die Abbildung \ref{fig:testspheres_run1_t_0} zeigt das Farb- und Tiefenbild des ersten Tripels aus dem vierten Datensatz.
-Die Kameraparameter setzten sich zusammen aus einem Vektor für die Kameraposition, einem lookAt-Vektor, der Punkt auf dem die Kamera schaut und dem up-Vektor.
-Und schließlich für die Projektion benötigten Werte $z_{near}$ und $z_{far}$, welche die Lage der
-clipping-Ebenen beschreiben.
-
-\begin{figure}[h]
-	\subfigure[CoolRandom]{\includegraphics[width=.49\textwidth]{../Scenes/TestSpheres/run_1/testspheres_00000.png}}
-	\subfigure[TestSpheres]{\includegraphics[width=.49\textwidth]{../Scenes/TestSpheres/run_1/testspheres_00000_depth.png}}
-	\caption{Datensätze}
-	\label{fig:testspheres_run1_t_0}
-\end{figure}
-
-\begin{figure}
-	\subfigure[CoolRandom]{\includegraphics[width=.49\textwidth]{../Scenes/TestSpheres/run_3/testspheres_00000.png}}
-	\subfigure[TestSpheres]{\includegraphics[width=.49\textwidth]{../Scenes/TestSpheres/run_3/testspheres_00010.png}}
-	
-	\subfigure[CoolRandom]{\includegraphics[width=.49\textwidth]{../Scenes/TestSpheres/run_3/testspheres_00060.png}}
-		\subfigure[TestSpheres]{\includegraphics[width=.49\textwidth]{../Scenes/TestSpheres/run_3/testspheres_00130.png}}
-	\caption{Datensätze}
-	\label{fig:dataset_frames}
-\end{figure}
-
+Die Datensätze \textit{CoolRandom} und \textit{TestSpheres} wurden aus Partikeldatensätzen erzeugt.
+Wobei \textit{TestSpheres} ein synthetisch erzeugter Satz ist, der aus wenigen Partikeln geniert wurde.
+Bei dem Datensatz \textit{CoolRandom} handelt es sich dagegen um einen komplexen Datensatz,
+der mit Molekül-Datensätzen vergleichbar ist, welche in existierenden Anwendungen visualisiert werden.
 
 \section{Extrapolation}
 
-Bei dem Zeichenvorgang auf dem Server entsteht ein Farbbild und ein Tiefenbild.
-Das Tiefenbild wurde mit einer Farbtiefe von 16bit erzeugt und ist die Ausgangsbasis
-für die Bildextrapolation. 
-Da aus diesem ein Dreiecksnetz erzeugt wird, welche das Farbbild als Textur verwendet,
-und zur Erzeugung neuer Ansichten genutzt wird.
-Um das Verfahren besser zu verständlich zu machen,
-wird zunächst die Vertex-Transformation näher betrachtet, zu Verdeutlichung der
-Zusammenhänge dient die folgende Abbildung:
+Eine einfache Möglichkeit um die Extrapolation durchzuführen besteht darin, das Tiefenbild als Punktwolke
+zu interpretieren und diese aus einer neuen Kameraperspektive zu zeichnen.
+Dazu wird aus jedem Pixel $d \in D$ ein Vertex erzeugt und mit Hilfe der Rückprojektion,
+lassen sich die Vertices in die gewünschten Positionen transformieren.
 
-
+Um das Prinzip der Rücktransformation zu erläutern soll zunächst betrachtet werden, wie ein Vertex $v$
+aus dem Modellkoordinatensystem in normalisierte Gerätekoordinaten transformiert wird.
+Die Abbildung \ref{fig:Transformation} verdeutlicht diesen Vorgang. 
 
 \begin{figure}[h]
 	\begin{tikzpicture}
-		\begin{scope}[auto, every node/.style={minimum size=5em, align=center}]
-			\node[draw] (A) at (0,0) {Vertex};
-			\node[draw] (B) at (4,0) {ModellKamera-\\Matrix};
-			\node[draw] (C) at (8,0) {Projektion-\\Matrix};
-			\node[draw] (D) at (12,0) {Viewport-\\Matrix};
+		\begin{scope}[auto, every node/.style={minimum size=7em, align=center}]
+			\node[draw] (A) at (0,0) {Modell-\\koordinaten};
+			\node[draw] (B) at (4,0) {Welt-\\koordinaten};
+			\node[draw] (C) at (8,0) {Kamera-\\koordinaten};
+			\node[draw] (D) at (12,0) {normalisierte \\Geräte- \\koordinaten};
 		\end{scope}
-		\node (B2) at (6,-2) {Kamera-Koordinaten};
-		\node (C2) at (10,-2) {NDC};
-		\draw[->, thick] (A) -- (B);
-		\draw[->, thick] (B) -- (C);
-		\draw[->, thick] (C) -- (D);
-		\draw[->, thick] (6,0) -- (B2);
-		\draw[->, thick] (10,0) -- (C2);
+		\draw[->, gray, line width=1mm] (A) -- (B);
+		\draw[->, gray, line width=1mm] (B) -- (C);
+		\draw[->, gray, line width=1mm] (C) -- (D);
 	\end{tikzpicture}
 	\centering
-	\label{fig:Transformationspipeline}
-	\caption{Die Abbildung zeigt die Transformationspipeline, mit deren Hilfe die Vertices
-			 auf den Bildschirm abgebildet werden.}
+	\caption{Die Abbildung zeigt die Teilschritte der Transformation eines Vertices aus den Modellkoordinaten in Bildschirmkoordinaten.}
+	\label{fig:Transformation}
 \end{figure}
 
-Die Eingabe der Transformationspipeline ist ein Vertex. Jeder Vertex besteht aus einer x-, y- und einer z-Komponente. 
-Die Vertices sind im Modell-Koordinatensystem definiert, das bedeutet, dass der Ursprung
-dieses Koordinatensystems das Zentrum des Modells ist.
-Durch die Multiplikation mit der Modell-Matrix werden die Vertices in das Weltkoordinatensystem
-projiziert.
-Um die Koordinaten aus dem Weltkoordinatensystem in das Kamera-Koordinatensystem abzubilden genügt die Multiplikation mit der Kameramatrix.
-In der Abbildung \ref{fig:Transformationspipeline} wurde die Modell- und die Kamera-Matrix
-zur ModellKamera-Matrix zusammengefasst.
-Werden die Vertices, die sich im Kamerakoordinatensystem befinden mit der Projektionsmatrix
-multipliziert, dann werden diese in \textit{normalized-device-coordinates}, 
-kurz NDC umgewandelt.
+Der Vertex $v = (x, y, z, 1)^T$ liegt zunächst in homogenen Modellkoordinaten vor.
+Mit Hilfe der Modellmatrix $M = RT$, die aus einer Rotation und einer Translationsmatrix besteht, 
+lässt sich der Vektor in das Weltkoordinatensystem überführen.
+Die Transformation in das Kamerakoordinatensystem wird durch die Multiplikation der Kameramatrix $V$ mit dem Vekotr $v$ berechnet.
+Schließlich kann die Projektion aus dem Kamerakoordinatensystem in normalisierte Gerätekoordinaten wird mit Hilfe
+der Projektionsmatrix $P$ berechnet werden.
+In der Gleichung \ref{eq:ModelViewProjektion} wird die Transformation von dem Vertex $v$ aus
+den Modellkoordinaten in die normalisierten Gerätekoordinaten $v'$ zusammengefasst:
+
+\begin{equation}
+	v' = M \cdot V \cdot P \cdot v.
+	\label{eq:ModelViewProjektion}
+\end{equation}
+
 Normalisierte-Geräte-Koordinaten haben für die x-,y- und z-Komponente den Wertebereich von
-$-1.0$ bis $1.0$. Durch die Multiplikation mit der Viewport-Matrix werden die x- und
- y-Komponente auf die Bildschirmkoordinaten abgebildet.
+$-1$ bis $1$. 
+Diese lassen sich in Bildschirmkoodrinaten umrechnen, indem die drei Komponenten in das
+Intervall $[0, 1]$ übersetzt werden und anschließend werden die x- und die y-Komponenten
+auf den Bildbereich gestreckt, indem sie mit $w-1$ und $h-1$ der gewünschten Auflösung
+$w \times h$ multipliziert werden. 
 
-Um aus dem Tiefenbild normalisierte Gerätekoordinaten zu erhalten, müssen die x- und y-Koordinaten der Pixel durch die Auflösung geteilt werden.
-Die Farbwerte des Tiefenbildes liegen im Bereich von $0.0$ bis $1.0$. Je größer der
-Wert ist, umso weiter ist ein Pixel von der Bildschirmebene entfernt.
-Die Farbwerte müssen ebenfalls in den Wertebereich von $-1.0$ bis $1.0$ überführt werden.
+Im Folgenden wird die Menge der Tiefenbilder $D_i$ und den dazugehörigen Transformationsmatrizen $T_i$, mit $i \in \{0,1, ..., N \}$ betrachtet.
+Jede Transformatiosmatrix $T_i$ setzt dabei aus einer Modellmatrix $M_i$, einer Kameramatrix $V_i$ und einer
+Projektionsmatrix $P_i$ zusammen:
 
-Damit aus den normalisierten Gerätekoordinaten wieder Modellkoordinaten werden,
-reicht es aus diese mit der invertierten ModellKameraProjektionsmatrix zu multiplizieren.
-Die daraus resultierenden Vertices, lassen sich erneut mit der Transformationspipeline
-abbilden, auf diese Weise lassen sich die Koordinaten des einen Bildes in die eines
-anderen überführen.
+\begin{equation}
+	T_i = M_i \cdot V_i \cdot P_i.
+\end{equation}
+
+Um die Punktwolke des Tiefenbildes $D_i$ mit der Transformationsmatrix $T_j$ auf das Tiefenbild $D_j$
+abzubilden, muss zunächst für jeden Pixel $d_i \in D_i$ ein Vertex $v_i$ erzeugt werden, mit $i,j \in \{0,1, ..., N \}$.
+Zunächst $v_i$ liegt in Bildschirmkoordinaten des Pixels $d_i$ vor und muss in normalisierte Gerätekoordinaten übersetzt werden. 
+Zu diesem Zweck werden zuerst die x- und y-Kompontenten durch $w-1$, beziehungsweise $h-1$ geteilt.
+Anschließend müssen alle drei Komponenten des Vektors $v_i$ aus dem Werteintervall $[0, 1]$
+in das Intervall $[-1, 1]$ transformieren werden.
+Jetzt liegt $v_i$ in normalisierten Gerätekoordinaten vor.
+Durch die Multiplikation von der inversen Transformationsmatrix $T_i^{-1}$ mit $v_i$, kann der Vertex in
+seine Modellkoordinaten überführt werden und im Anschluss kann dieser mit Hilfe von $T_j$, 
+aus einer neuen Kameraperspektive gezeichnet werden:
+
+\begin{equation}
+	v_i' = T_j \cdot T_i^{-1} v_i.
+\end{equation}
+
+Die Interpretation der Tiefenbilder als Punktwolke ist keine optimale Lösung,
+da bei der Bildsynthese Lücken im Bild entstehen.
+Eine bessere Lösung ist es, aus dem Tiefenbild ein Dreiecksnetz zu erzeugen
+und dieses zu Bildsynthese zu verwenden.
 
 \section{Delaunay-Triangulierung}
 
@@ -586,33 +596,34 @@ Mittelwert über allen $x \in X$ und $y \in Y$ berechnet werden:
 
 \chapter{Methodik}
 
-In dieser Arbeit werden zwei Verfahren untersucht um aus einem Tiefenbild $D$ ein Dreiecksnetz zu erzeugen
-und die Daten zu Übertragen.
-Dazu wird im ersten Ansatz das Tiefenbild als solches komprimiert und übertragen. 
-Der Klient erzeugt aus dem empfangenen Tiefenbild ein voll vernetztes Dreiecksnetz.
-Der zweite Ansatz besteht darin ein Netz adaptiv mit Hilfe der Delaunay-Triangulierung auf dem
-Server zu konstruieren und das Dreiecksnetz an den Klienten zu übertragen.
+In dieser Arbeit werden zwei grundsätzliche Verfahren untersucht um die Tiefeninformationen zu übertragen
+und als Dreiecksnetz darzustellen.
+Der erste Ansatz besteht darin, das Tiefenbild als solches zu komprimieren und zu übertragen.
+Der Klient empfängt und dekodiert das Tiefenbild und erzeugt daraus ein voll vernetztes Dreiecksnetz.
+Im zweiten Ansatz wird aus dem Tiefenbild ein adaptives Dreiecksnetz mit Hilfe
+der Delaunay-Triangulierung vom Server konstruiert und an den Klienten übertragen.
+
+Die Erzeugung von adaptiven Dreiecksnetzen lässt sich als eine Form der geometrischen Kompression
+bezeichnen.
+Um die Anzahl der zu übertragenden Informationen weiter zu reduzieren, kann das erzeugte
+Dreiecksnetz in Dreiecksstreifen zerlegt werden und sehr kompakt dargestellt werden.
+Durch Valenz-basierte Kodierung kann die Informationsmenge noch weiter reduziert werden.
+
+\textcolor{red}{TODO: nicht ganz klar was bessere kompressionsraten erreicht, werden beide Varianten untersucht.
+Klares Problem, der Rechenaufwand der Vollvernetzung steigt der Auflösung deutlich an}
 
 \section{Vollvernetzung}
 
 Bei der Vollvernetzung wird für jeden Pixel $d$ aus dem Tiefenbild $D$ ein Vertex $v$ erzeugt.
-Anschließend werden diese Vertices über Kanten zu Dreiecken miteinander verbunden.
-Die Abbildung \ref{fig:FULL_MESH} zeigt drei unterschiedliche Varianten, 
-wie sie Vertices zu einem Dreiecksnetz verbinden lassen.
-In dieser Arbeit wurden alle drei Varianten implementiert.
-Die Anzahl der Dreiecke lässt sich aus der Auflösung $w \times h$ wie folgt berechnen $2 (w-1) (h-1)$.
-Wird die Auflösung verdoppelt, verdoppelt sich auch die Anzahl der Vertices und 
-der Rechenaufwand vervierfacht sich.
+Die entstandenen Vertices werden über Kanten zu Dreiecken miteinander verbunden.
+Die Abbildung \ref{fig:FULL_MESH} zeigt drei unterschiedliche Varianten, wie sich die
+Vertices zu voll vernetzten Dreiecksnetzen verbinden lassen.
+Alle drei Varianten wurden implementiert, weisen bei entsprechend großen Auflösungen
+jedoch keine Unterschiede hinsichtlich der Qualität der Darstellung auf.
 
-Die x- und y-Komponenten, sowie deren Verknüpfungen können vorausberechnet werden und müssen aktualisiert werden, 
-wenn sich die Auflösung ändert.
-Die z-Komponente wird für jeden Vertex mit Hilfe der Pixelwerte aus dem Tiefenbild während der Bildsynthese
-gesetzt.
- 
-
-\begin{figure}[ph]
-	\subfigure[regulär]{
-	\begin{tikzpicture}[scale=0.6, every node/.style={scale=0.6}]
+\begin{figure}[h]
+	\subfigure[]{
+	\begin{tikzpicture}[scale=0.5, every node/.style={scale=0.5}]
 		\begin{scope}[
 			auto, vertice/.style={align=center, draw, circle, minimum width=2em, inner sep=2pt}]
 			\node[vertice] (V0) at (0,0) {$0$};
@@ -682,8 +693,8 @@ gesetzt.
 		\draw[-] (V18) edge (V19); \draw[-] (V19) edge (V23); \draw[-] (V23) edge (V18);
 		\draw[-] (V19) edge (V24); \draw[-] (V24) edge (V23); \draw[-] (V23) edge (V19);	
 	\end{tikzpicture}}
-	\subfigure[cookie-cutter]{
-	\begin{tikzpicture}[scale=0.6, every node/.style={scale=0.6}]
+	\subfigure[]{
+	\begin{tikzpicture}[scale=0.5, every node/.style={scale=0.5}]
 			\begin{scope}[
 				auto, vertice/.style={align=center, draw, circle, minimum width=2em, inner sep=2pt}]
 				\node[vertice] (V0) at (0,0) {$0$};
@@ -753,8 +764,8 @@ gesetzt.
 			\draw[-] (V18) edge (V19); \draw[-] (V19) edge (V24); \draw[-] (V24) edge (V18);
 			\draw[-] (V18) edge (V24); \draw[-] (V24) edge (V23); \draw[-] (V23) edge (V18);	
 		\end{tikzpicture}}
-		\subfigure[isometrisch]{
-		\begin{tikzpicture}[scale=0.6, every node/.style={scale=0.6}]
+		\subfigure[]{
+		\begin{tikzpicture}[scale=0.5, every node/.style={scale=0.5}]
 			\begin{scope}[
 				auto, vertice/.style={align=center, draw, circle, minimum width=2em, inner sep=2pt}]
 				\node[vertice] (V0) at (0,0) {$0$};
@@ -829,30 +840,38 @@ gesetzt.
 	\label{fig:FULL_MESH}
 \end{figure}
 
+Die Anzahl der Vertices ist abhängig von der Auflösung $w \times h$ 
+und lässt sich folgendermaßen berechnen: $3 \cdot w \cdot h$.
+Die x- und y-Komponenten lassen sich aus der bekannten Auflösung vorausberechnen und
+müssen im Falle eine Auflösungsänderung neu bestimmt werden.
+Für jeden Vertex wird die z-Komponente mit Hilfe der Pixelwerte aus dem Tiefenbild,
+während der Bildsynthese gesetzt.
+Die Anzahl der Dreiecke lässt sich dabei wie folgt berechnen: $2 (w-1) (h-1)$.
+
+Problematisch bei diesem Verfahren ist, das die Anzahl der Dreiecke von der Auflösung
+abhängt und der Rechenaufwand der Klientseitigen Bildsynthese quadratisch mit der Auflösung steigt.
+
 \section{Delaunay-Triangulierung}
 
-Die zweite Variante die in dieser Arbeit untersucht wird,
-ist die eine adaptive Vernetzung des Tiefenbildes.
-Diese wird vom Server durchgeführt und das Dreiecksnetz wird anschließend als solches zum Klient gesendet.
-Dazu wurde der von Banno \textit{et al.} \cite{Banno:2012:RCD:2407516.2407579} entwickelte Algorithmus
-implementiert.
+Die zweite Variante die in dieser Arbeit untersucht wird, ist die eine adaptive Vernetzung des Tiefenbildes.
+Diese wird vom Server durchgeführt und das erzeugte Dreiecksnetz wird anschließend als solches zum Klient gesendet.
+Das Verfahren lässt sich in drei Teile unterteilen. 
+Zuerst muss aus dem Tiefenbild $D$ eine Menge von Punkten $P \subset D$ definiert werden.
+Anschließend werden die Punkte $p \in P$ zu Dreiecken verbunden.
+Im letzten Schritt kann das entstandene Netz weiter optimiert werden. 
 
-Grundlage des Algorithmus ist die bereits in den Grundlagen erörterte Delaunay-Triangulierung.
-Zu beginn muss eine Menge von Punkten $P \subset D$ gewählt werden.
-Die Punkte $p \in P$ werden anschließend zu einem Dreiecksnetz mit Hilfe der Delaunay-Triangulierung
-vernetzt.
-Bevor das fertige Netz zum Klient gesendet wird, werden in einem Optimierungsschritt, die
-durch die Delaunay-Triangulierung erzeugten Kanten verbessert und gegeben falls neue Dreiecke
-zum Netz hinzugefügt.
-
-Ziel ist es die Menge $P$ so zu wählen, dass sie die Struktur des Tiefenbildes
-möglichst optimal approximiert wird.
-Punkte müssen an Stellen gesetzt werden, an denen Tiefensprünge auftreten oder die Oberfläche nicht planar ist.
-Die Dichte der gesetzten Punkte $P$ ist dabei proportional zur lokalen Komplexität der Szene.
+Entscheidend für das Ergebnisnetz ist die Wahl der Punkte $P$ im ersten Schritt.
+Sie müssen so gewählt werden, das die Werteverläufe der Tiefenwerte möglichst
+optimal wiedergegeben werden.
+Das bedeutet, das insbesondere im Bereich von Kanten Punkte gesetzt werden müssen,
+aber auch dort, wo Flächen nicht planar sind, damit die Oberflächenverläufe erhalten bleiben.
+Um diese Aufgaben zu lösen, wurden die beiden Verfahren von Banno \textit{et al.} \cite{Banno:2012:RCD:2407516.2407579}
+und Lee \textit{et al.} \cite{900943} implementiert.
 
 \subsubsection{Besondere Punkte}
 
-Um die besonderen Punkte bestimmen zu können, müssen zuerst die Gradienten des Tiefenbildes $\nabla_x$ und $\nabla_y$ berechnet werden, dies geschieht mit Hilfe des Sobel-Operators. 
+Um die Menge $P$ zu erzeugen, werden die Gradienten des Tiefenbildes $\nabla_x$ und $\nabla_y$ 
+mit Hilfe des Sobel-Operators berechnet. 
 Dieser berechnet die erste Ableitung und glättet gleichzeitig dazu die orthogonale Richtung.
 Mit Hilfe einer Faltungsmatrix der Größe $3 \times 3$ können die Gradienten berechnet werden:
 
@@ -1193,9 +1212,20 @@ der Wert im Intervall von $[0, 1]$ liegt.
 	\label{fig:OpenGl_pipeline}
 \end{figure}
 
-
-
 \chapter{Ergebnisse}
+
+\begin{figure}
+	\begin{tikzpicture}
+	\begin{axis}[axis lines = middle, enlargelimits = true, ylabel={in dB}, xlabel={in Grad}, xtick={0,5,10,20,...,90},
+				 every axis y label/.style={at={(ticklabel* cs:1.05)}, anchor=east},
+				 every axis x label/.style={at={(ticklabel* cs:1.05)}, anchor=south}]
+%	\addplot[green, only marks, mark=x] table [x=a, y=p, col sep=comma] {div_data_mean_7_512x512D10L0.1I0.1.csv};
+%	\addplot[blue, only marks, mark=x] table [x=a, y=p, col sep=comma] {div_data_mean_6_512x512D10L0.1I0.1.csv};
+	\addplot[green, only marks, mark=x] table [x=a, y=m, col sep=comma] {div_data_mean_7_512x512D10L0.1I0.1.csv};
+	\addplot[blue, only marks, mark=x] table [x=a, y=m, col sep=comma] {div_data_mean_6_512x512D10L0.1I0.1.csv};
+	\end{axis}
+	\end{tikzpicture}
+\end{figure}
 
 \chapter{Diskussion}
 
@@ -1204,86 +1234,6 @@ der Wert im Intervall von $[0, 1]$ liegt.
 \chapter{Ausblick}
 
 \chapter{Noch mehr Ergebnisse}
-
-\begin{tikzpicture}
-\begin{axis}[axis lines = middle, enlargelimits = true, ylabel={in dB}, xlabel={in Grad},
-			 every axis y label/.style={at={(ticklabel* cs:1.05)}, anchor=east},
-			 every axis x label/.style={at={(ticklabel* cs:1.05)}, anchor=south}]
-\addplot[blue, only marks, mark=x] table [x=a, y=p, col sep=comma] {div_data_4_512x512D10L0.0I0.0.csv};
-\end{axis}
-\end{tikzpicture}
-
-\begin{tikzpicture}
-\begin{axis}[axis lines = middle, enlargelimits = true, ylabel={in dB}, xlabel={in Grad},
-			 every axis y label/.style={at={(ticklabel* cs:1.05)}, anchor=east},
-			 every axis x label/.style={at={(ticklabel* cs:1.05)}, anchor=south}]
-\addplot[blue, only marks, mark=x] table [x=a, y=p, col sep=comma] {div_data_mean_4_512x512D10L0.0I0.0.csv};
-\end{axis}
-\end{tikzpicture}
-
-\begin{tikzpicture}
-\begin{axis}[axis lines = middle, enlargelimits = true, ylabel={in \%}, xlabel={in Grad},
-			 every axis y label/.style={at={(ticklabel* cs:1.05)}, anchor=east},
-			 every axis x label/.style={at={(ticklabel* cs:1.05)}, anchor=south}]
-\addplot[green, mark=x] table [x=a, y=m, col sep=comma] {div_data_mean_4_512x512D10L0.0I0.0.csv};
-\addplot[red, mark=x] table [x=a, y=m, col sep=comma] {div_data_mean_4_512x512D10L0.0I0.0.csv};
-\addplot[blue, mark=x] table [x=a, y=m, col sep=comma] {div_data_mean_4_512x512D10L0.0I0.0.csv};
-\end{axis}
-\end{tikzpicture}
-
-
-\vspace*{1cm}
-
-\begin{tikzpicture}
-\begin{axis}[axis lines = middle, enlargelimits = true, ylabel={in \%}, xlabel={in Grad},
-			 every axis y label/.style={at={(ticklabel* cs:1.05)}, anchor=east},
-			 every axis x label/.style={at={(ticklabel* cs:1.05)}, anchor=south}]
-\addplot[red, only marks, mark=x] table [x=a, y=r, col sep=comma] {div_data_4_512x512D10L0.0I0.0.csv};
-\addplot[green, only marks, mark=x] table [x=a, y=g, col sep=comma] {div_data_4_512x512D10L0.0I0.0.csv};
-\addplot[blue, only marks, mark=x] table [x=a, y=b, col sep=comma] {div_data_4_512x512D10L0.0I0.0.csv};
-\addplot[black, only marks, mark=x] table [x=a, y=m, col sep=comma] {div_data_4_512x512D10L0.0I0.0.csv};
-\end{axis}
-\end{tikzpicture}
-
-\begin{tikzpicture}
-\begin{axis}[axis lines = middle, enlargelimits = true, ylabel={$t$ in $ms$}, xlabel={Bild Nr.},
-			 every axis y label/.style={at={(ticklabel* cs:1.05)}, anchor=east},
-			 every axis x label/.style={at={(ticklabel* cs:1.05)}, anchor=south}]
-\addplot[green] table [x=i, y=min, col sep=comma]{div_duration_info_4_512x512D10L0.0I0.0.csv};
-\addplot[red] table [x=i, y=max, col sep=comma]{div_duration_info_4_512x512D10L0.0I0.0.csv};
-\addplot[black] table [x=i, y=mean, col sep=comma]{div_duration_info_4_512x512D10L0.0I0.0.csv};
-\addplot[blue, mark=x] table [x=i, y=d, col sep=comma]{div_duration_info_4_512x512D10L0.0I0.0.csv};
-\end{axis}
-\end{tikzpicture}
-
-\begin{figure}
-	\centering
-	\begin{tikzpicture}
-		\begin{axis}[view={0}{90}, 
-		 			 grid=major,
-		 			 xlabel=$T_{internal}$,
-		 			 ylabel=$T_{leaf}$,
-		 			 point meta min=0.7, point meta max=0.73,
-		 			 colormap={greenyellow}{
-		   			 	rgb255(0cm)	 =(128,0,0)
-		   			 	rgb255(0.5cm) =(255,255,0) 
-		   			 	rgb255(1cm) =(0,200,0)
-		 			 }, 
-		 			 colorbar, 
-		 			 enlargelimits=true, 
-		 			 xtick={0.0,0.1,...,1.1},
-		     		 ytick={0.0,0.1,...,1.1},
-		     		 xmajorgrids=true,
-		     		 ymajorgrids=true]
-		 
-		 \addplot3 [only marks, 
-		 		   mark=square*, 
-		 		   mark size=7,
-		 		   ycomb, 
-		 		   scatter] file {div.csv};      
-		\end{axis}
-	\end{tikzpicture}
-\end{figure}
 
 \cite*{}
 \end{document}

@@ -41,6 +41,28 @@ Scene::Scene(string filename, string suffix) {
 	}
 }
 
+Scene::Scene(string name) {
+	m_filename 	 = name;
+	m_scene_name = name;
+
+	m_infos.clear();
+	m_fbs.clear();
+}
+
+void Scene::addScene(Scene scene) {
+	m_suffix   = scene.m_suffix;
+	m_timestep = scene.m_timestep;
+	m_aabb_min = scene.m_aabb_min;
+	m_aabb_max = scene.m_aabb_max;
+	m_height   = scene.m_height;
+	m_width	   = scene.m_width;
+	m_aspect   = scene.m_aspect;
+	m_aperture = scene.m_aperture;
+
+	m_infos.insert(m_infos.end(), scene.m_infos.begin(), scene.m_infos.end());
+	m_fbs.insert(m_fbs.end(), scene.m_fbs.begin(), scene.m_fbs.end());
+}
+
 void Scene::procressLine(stringstream& line, FrameInfo& info) {
 	string 		tag;
 	string 	  	buf;
