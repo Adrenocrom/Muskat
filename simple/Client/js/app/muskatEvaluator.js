@@ -13,6 +13,12 @@ class MuskatEvaluator {
 		this.add(c7);
 
 	
+		var xxx = new MuskatConfig(this.nullFunction);
+		xxx.gridType		= gridTypes[0];
+		xxx.meshPrecision	= meshPrecision[0];
+		xxx.Tgrad 			= gradients[0];
+		xxx.fivePass		= true;
+
 		// Full Mesh
 /*		var gridTypes 		= ["default", "cookie_cutter", "isometric"];
 		var meshPrecision 	= ["16bit", "8bit"];

@@ -276,7 +276,7 @@ $(document).ready(function() {
 		shaderProgram.alpha					= muGl.getUniformLocation(shaderProgram, "uAlpha");
 
 		debug("set default colors");
-		muGl.gl.clearColor(0.0, 0.0, 0.0, 1.0);
+		muGl.gl.clearColor(1.0, 0.0, 0.0, 1.0);
         muGl.gl.enable(muGl.gl.DEPTH_TEST);
 		
 		muGl.gl.disable(muGl.gl.CULL_FACE)

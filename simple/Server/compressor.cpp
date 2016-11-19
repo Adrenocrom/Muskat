@@ -416,10 +416,10 @@ void Compressor::resizeQuadtree() {
 
 bool Compressor::isValid(cv::Mat& img, const Edge& e) {
 	Point pm = e.getPM(img, m_config->getMeshWidth(), m_config->getMeshHeight());
-	if(fabs(calcPMDepth(e) - pm.dz) > 0.0001) return false;
+	if(abs(calcIntPMDepth(e) - (int)pm.z) > 0) return false;
 
-	if(e.a.dz >= 1.0 || e.b.dz >= 1.0) return false;
-
+	if(e.a.z == USHRT_MAX || e.b.z == USHRT_MAX) return false;
+	
 	double value_a = fabs(e.a.dz - e.b.dz);
 	double value_b = norm(e.a, e.b) * (e.a.dz + e.b.dz);
 	if(value_b == 0.0) return false;

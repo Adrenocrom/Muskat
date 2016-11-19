@@ -32,7 +32,7 @@ struct Point {
 		
 		u = (double)x / (double) (w-1);
 		v = (double)y / (double) (h-1);
-		dz = (double)z / (double) USHRT_MAX;
+		dz = (double)z / ( ((double) USHRT_MAX) + 1.0) ;
 	}
 
 	bool operator == (const Point& p) {
@@ -104,7 +104,7 @@ struct Edge {
 		
 		p.u = (double)p.x / (double) (w-1);
 		p.v = (double)p.y / (double) (h-1);
-		p.dz = (double)p.z / (double) USHRT_MAX;
+		p.dz = (double)p.z / (((double) USHRT_MAX) + 1.0);
 		return p;
 	}
 };
@@ -112,6 +112,11 @@ struct Edge {
 inline double calcPMDepth(const Edge& e) {
 	return (e.a.dz + e.b.dz) / 2.0;
 }
+
+inline int calcIntPMDepth(const Edge& e) {
+	return (int)(((double)(e.a.z + e.b.z)) / 2.0);
+}
+
 
 class Compressor {
 public:
