@@ -32,7 +32,7 @@ struct Point {
 		
 		u = (double)x / (double) (w-1);
 		v = (double)y / (double) (h-1);
-		dz = (double)z / (((double) USHRT_MAX) + 1.0);
+		dz = (double)z / (double) USHRT_MAX;
 	}
 
 	bool operator == (const Point& p) {
@@ -104,7 +104,7 @@ struct Edge {
 		
 		p.u = (double)p.x / (double) (w-1);
 		p.v = (double)p.y / (double) (h-1);
-		p.dz = (double)p.z / (((double) (USHRT_MAX)) + 1.0);
+		p.dz = (double)p.z / (double) USHRT_MAX;
 		return p;
 	}
 };

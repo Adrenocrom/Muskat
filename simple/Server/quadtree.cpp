@@ -147,7 +147,7 @@ void QuadTree::subdivide(int id, uint current_depth) {
 		m_num_nodes++;
 
 		QtreeNode ne;
-		ne.rect.min_x = p_m_x+1;
+		ne.rect.min_x = p_m_x;
 		ne.rect.min_y = r.min_y;
 		ne.rect.max_x = r.max_x;
 		ne.rect.max_y = p_m_y;
@@ -156,15 +156,15 @@ void QuadTree::subdivide(int id, uint current_depth) {
 
 		QtreeNode sw;
 		sw.rect.min_x = r.min_x;
-		sw.rect.min_y = p_m_y+1;
+		sw.rect.min_y = p_m_y;
 		sw.rect.max_x = p_m_x;
 		sw.rect.max_y = r.max_y;
 		node.sw = m_num_nodes;
 		m_num_nodes++;
 
 		QtreeNode se;
-		se.rect.min_x = p_m_x+1;
-		se.rect.min_y = p_m_y+1;
+		se.rect.min_x = p_m_x;
+		se.rect.min_y = p_m_y;
 		se.rect.max_x = r.max_x;
 		se.rect.max_y = r.max_y;
 		node.se = m_num_nodes;

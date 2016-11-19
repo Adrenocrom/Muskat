@@ -416,7 +416,9 @@ void Compressor::resizeQuadtree() {
 
 bool Compressor::isValid(cv::Mat& img, const Edge& e) {
 	Point pm = e.getPM(img, m_config->getMeshWidth(), m_config->getMeshHeight());
-	if(fabs(calcPMDepth(e) - pm.dz) > 0.005) return false;
+	if(fabs(calcPMDepth(e) - pm.dz) > 0.0001) return false;
+
+	if(e.a.dz >= 1.0 || e.b.dz >= 1.0) return false;
 
 	double value_a = fabs(e.a.dz - e.b.dz);
 	double value_b = norm(e.a, e.b) * (e.a.dz + e.b.dz);
@@ -428,6 +430,7 @@ bool Compressor::isJoinable(cv::Mat& img, const Edge& e) {
 	Point pm = e.getPM(img, m_config->getMeshWidth(), m_config->getMeshHeight());	
 	double a = e.b.dz - pm.dz;
 	double b = pm.dz  - e.a.dz;
+
 	return fabs(a - b) < m_config->getTjoin();
 }
 
@@ -847,7 +850,7 @@ Point Compressor::getMaxJoinable(cv::Mat& img, const Point& p, const Point& a) {
 	Point d = a - p;
 
 	double step = 1.0 / length(a, p);
-	for(double i = 0.0; i <= 0.5; i += step) {
+	for(double i = 0.0; i <= 1.0; i += step) {
 		n = p + (d * i);
 		n.setP(img, m_config->getMeshWidth(), m_config->getMeshHeight());
 
@@ -868,7 +871,7 @@ vector<Point> Compressor::getMaxJoinablesPoints(cv::Mat& img, const Point& p, co
 	Point d = a - p;
 	
 	double step = 1.0 / length(a, p);
-	for(double i = 0.0; i <= 0.5; i += step) {
+	for(double i = 0.0; i <= 1.0; i += step) {
 		n = p + (d * i);
 		n.setP(img, m_config->getMeshWidth(), m_config->getMeshHeight());
 
