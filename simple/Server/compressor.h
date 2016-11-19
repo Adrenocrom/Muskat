@@ -41,6 +41,10 @@ struct Point {
 		return false;
 	}
 
+	void print() const {
+		cout<<x<<" "<<y<<endl;
+	}
+
 	//Point& operator = (const Point& p) {x = p.x; y = p.y; return *this;}
 	Point& operator = (const cv::Point& p) {x = p.x; y = p.y; return *this;}
 };
@@ -90,6 +94,10 @@ struct Edge {
 		return Point((int)((double)(a.x + b.x) / 2.0), (int)((double)(a.y + b.y) / 2.0));
 	}
 
+	double getDepth(double i) {
+		Point p = b - a;
+	}
+
 	Point getPM(const cv::Mat& img, int w, int h) const {
 		Point p((int)((double)(a.x + b.x) / 2.0), (int)((double)(a.y + b.y) / 2.0));
 		p.z = img.at<ushort>(p.y, p.x);
@@ -100,6 +108,10 @@ struct Edge {
 		return p;
 	}
 };
+
+inline double calcPMDepth(const Edge& e) {
+	return (e.a.dz + e.b.dz) / 2.0;
+}
 
 class Compressor {
 public:
@@ -168,7 +180,7 @@ private:
 
 	std::list<cv::Point2f> floydSteinberg(cv::Mat& gx, cv::Mat& gy, double T = 0.5, double gamma = 0.5);
 
-	bool isValid(const Edge& e);
+	bool isValid(cv::Mat& img, const Edge& e);
 
 	bool isJoinable(cv::Mat& img, const Edge& e);
 

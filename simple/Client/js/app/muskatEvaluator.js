@@ -1,6 +1,17 @@
 class MuskatEvaluator {
 	constructor() {
 		this._evaluation = [];
+
+		var c7 = new MuskatConfig(this.nullFunction);
+		c7.meshMode = "delaunay";
+		c7.maxDepth = 6;
+		c7.Tleaf	 = 0.5;
+		c7.Tinternal = 0.5;
+		c7.refine	 = true;
+		c7.preBackgroundSubtraction = true;
+		c7.praBackgroundSubtraction = false;
+		this.add(c7);
+
 	
 		// Full Mesh
 /*		var gridTypes 		= ["default", "cookie_cutter", "isometric"];
@@ -30,7 +41,7 @@ class MuskatEvaluator {
 		}
 */		
 		// Delaunay Mesh floyd-steinberg
-		var yyy = new MuskatConfig(this.nullFunction);
+/*		var yyy = new MuskatConfig(this.nullFunction);
 		yyy.meshMode = "delaunay";
 		yyy.seedMode = "floyd_steinberg";
 		yyy.refine	 = false;
@@ -89,8 +100,8 @@ class MuskatEvaluator {
 						this.add(f13);
 					}
 				}	*/
-			}
-		}
+//			}
+//		}
 
 		// Delaunay Mesh QTree
 /*		var zzz = new MuskatConfig(this.nullFunction);

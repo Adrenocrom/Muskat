@@ -195,7 +195,7 @@ $(document).ready(function() {
 	});
 	
 	$('#text_T_join').on('change', function() {
-		g_config.Tangle = parseFloat($('#text_T_join').val());
+		g_config.Tjoin = parseFloat($('#text_T_join').val());
 	});
 
 	$('#text_T_grad').on('change', function() {

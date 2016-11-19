@@ -32,8 +32,8 @@ class MuskatConfig {
 		this._max_depth		= 8;	// max depth of quadtree
 		this._T_leaf 		= 0;	// thresholds needed to generate seeds
 		this._T_internal 	= 0;	// - " -
-		this._T_angle		= 0.2;
-		this._T_join		= 0.5;
+		this._T_angle		= 85.0;
+		this._T_join		= 0.0;
 		this._T_grad		= 1.0;
 
 		this._T_threshold	= 0.5;

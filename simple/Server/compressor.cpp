@@ -13,7 +13,7 @@ Compressor::Compressor(Config* config) {
 	m_color_edge		= cv::Scalar(120, 120, 120);
 	m_color_green		= cv::Scalar(0, 120, 0);
 	m_color_red			= cv::Scalar(0, 0, 120);
-	m_color_red			= cv::Scalar(255, 0, 0);
+	m_color_blue		= cv::Scalar(120, 0, 0);
 	m_color_triangle	= cv::Scalar(0, 120, 0);
 	
 	m_delaunay_image = cv::Mat(m_config->getMeshWidth(), m_config->getMeshHeight(), CV_8UC3, cv::Scalar(255,255,255));
@@ -186,6 +186,7 @@ void Compressor::compressMeshDelaunay(QJsonObject& jo, cv::Mat& img) {
 
 	clock_t c_end = clock();
 	m_ctime_seeds = ((c_end - c_begin) * 1000.0) / CLOCKS_PER_SEC;
+	cout<<"Seeds: "<<m_ctime_seeds<<endl;
 
 	c_begin = clock();
 	// messure delaunay
@@ -193,6 +194,7 @@ void Compressor::compressMeshDelaunay(QJsonObject& jo, cv::Mat& img) {
 
 	c_end = clock();
 	m_ctime_delaunay = ((c_end - c_begin) * 1000.0) / CLOCKS_PER_SEC;
+	cout<<"Delaunay: "<<m_ctime_delaunay<<endl;
 	
 	
 	c_begin = clock();
@@ -282,6 +284,7 @@ void Compressor::compressMeshDelaunay(QJsonObject& jo, cv::Mat& img) {
 
 	c_end = clock();
 	m_ctime_transform = ((c_end - c_begin) * 1000.0) / CLOCKS_PER_SEC;
+	cout<<"Transform: "<<m_ctime_transform<<endl;
 	
 	// Draw delaunay
 	m_delaunay_image = cv::Mat(m_config->getMeshWidth(), m_config->getMeshHeight(), CV_8UC3, cv::Scalar(255,255,255));
@@ -318,6 +321,8 @@ void Compressor::compressMeshDelaunay(QJsonObject& jo, cv::Mat& img) {
 			splitTriangleDraw(img, points[0], points[1], points[2], &m_delaunay_image);
 		}
 	}
+
+	cv::imwrite("delaunay.png", m_delaunay_image);
 }
 
 int Compressor::getIndex(vector<cv::Point>& vertices, cv::Point p) {
@@ -409,10 +414,13 @@ void Compressor::resizeQuadtree() {
 								m_config->getMaxDepth());
 }
 
-bool Compressor::isValid(const Edge& e) {
+bool Compressor::isValid(cv::Mat& img, const Edge& e) {
+	Point pm = e.getPM(img, m_config->getMeshWidth(), m_config->getMeshHeight());
+	if(fabs(calcPMDepth(e) - pm.dz) > 0.005) return false;
+
 	double value_a = fabs(e.a.dz - e.b.dz);
 	double value_b = norm(e.a, e.b) * (e.a.dz + e.b.dz);
-	if(value_b == 0.0) return true;
+	if(value_b == 0.0) return false;
 	return (value_a / value_b) < m_config->getTangle();
 }
 
@@ -420,7 +428,6 @@ bool Compressor::isJoinable(cv::Mat& img, const Edge& e) {
 	Point pm = e.getPM(img, m_config->getMeshWidth(), m_config->getMeshHeight());	
 	double a = e.b.dz - pm.dz;
 	double b = pm.dz  - e.a.dz;
-	cout<<fabs(a - b)<<endl;
 	return fabs(a - b) < m_config->getTjoin();
 }
 
@@ -441,11 +448,11 @@ vector<Point> Compressor::splitTriangle(cv::Mat& img, const Point& a, const Poin
 		vector<Edge*> invalid_edges;
 		int			  valid_edge = -1;
 		
-		if(isValid(ab)) valid_edge = 0;
+		if(isValid(img, ab)) valid_edge = 0;
 		else invalid_edges.push_back(&ab);
-		if(isValid(bc)) valid_edge = 1;
+		if(isValid(img, bc)) valid_edge = 1;
 		else invalid_edges.push_back(&bc);
-		if(isValid(ca)) valid_edge = 2;
+		if(isValid(img, ca)) valid_edge = 2;
 		invalid_edges.push_back(&ca);
 		
 		int i_size = invalid_edges.size();
@@ -457,7 +464,7 @@ vector<Point> Compressor::splitTriangle(cv::Mat& img, const Point& a, const Poin
 
 			triangles[3] = b;
 			triangles[4] = getMaxJoinable(img, b, c);
-			triangles[5] = getMaxJoinable(img, b, c);
+			triangles[5] = getMaxJoinable(img, b, a);
 
 			triangles[6] = c;
 			triangles[7] = getMaxJoinable(img, c, a);
@@ -607,21 +614,21 @@ vector<Point> Compressor::splitTriangleDraw(cv::Mat& img, const Point& a, const 
 		vector<Edge*> invalid_edges;
 		int			  valid_edge = -1;
 		
-		if(isValid(ab)) {
+		if(isValid(img, ab)) {
 			valid_edge = 0;
 			line(*out, a.toCVPoint(), b.toCVPoint(), m_color_edge, 1, CV_AA, 0);
 		} else {
 			invalid_edges.push_back(&ab);
 			line(*out, a.toCVPoint(), b.toCVPoint(), m_color_red, 1, CV_AA, 0);
 		}
-		if(isValid(bc)) {
+		if(isValid(img, bc)) {
 			valid_edge = 1;
 			line(*out, b.toCVPoint(), c.toCVPoint(), m_color_edge, 1, CV_AA, 0);
 		} else {
 			invalid_edges.push_back(&bc);
 			line(*out, b.toCVPoint(), c.toCVPoint(), m_color_red, 1, CV_AA, 0);
 		}
-		if(isValid(ca)) {
+		if(isValid(img, ca)) {
 			valid_edge = 2;
 			line(*out, c.toCVPoint(), a.toCVPoint(), m_color_edge, 1, CV_AA, 0);
 		} else {
@@ -638,12 +645,19 @@ vector<Point> Compressor::splitTriangleDraw(cv::Mat& img, const Point& a, const 
 
 			triangles[3] = b;
 			triangles[4] = getMaxJoinable(img, b, c);
-			triangles[5] = getMaxJoinable(img, b, c);
+			triangles[5] = getMaxJoinable(img, b, a);
 
 			triangles[6] = c;
 			triangles[7] = getMaxJoinable(img, c, a);
 			triangles[8] = getMaxJoinable(img, c, b);
-			
+/*
+			cout<<"--------"<<endl;
+			a.print();
+			b.print();
+			c.print();
+			triangles[1].print();
+			triangles[2].print();
+*/			
 			if(!isCollinear(triangles[0], triangles[1], triangles[2])) {
 				result.push_back(triangles[0]);
 				result.push_back(triangles[1]);
@@ -772,9 +786,9 @@ vector<Point> Compressor::splitTriangleDraw(cv::Mat& img, const Point& a, const 
 				result.push_back(triangles[1]);
 				result.push_back(triangles[2]);
 
-				line(*out, triangles[0].toCVPoint(), triangles[1].toCVPoint(), m_color_green, 1, CV_AA, 0);
-				line(*out, triangles[1].toCVPoint(), triangles[2].toCVPoint(), m_color_green, 1, CV_AA, 0);
-				line(*out, triangles[2].toCVPoint(), triangles[0].toCVPoint(), m_color_green, 1, CV_AA, 0);
+				line(*out, triangles[0].toCVPoint(), triangles[1].toCVPoint(), m_color_blue, 1, CV_AA, 0);
+				line(*out, triangles[1].toCVPoint(), triangles[2].toCVPoint(), m_color_blue, 1, CV_AA, 0);
+				line(*out, triangles[2].toCVPoint(), triangles[0].toCVPoint(), m_color_blue, 1, CV_AA, 0);
 			} else {
 				line(*out, triangles[0].toCVPoint(), triangles[1].toCVPoint(), m_color_red, 1, CV_AA, 0);
 				line(*out, triangles[1].toCVPoint(), triangles[2].toCVPoint(), m_color_red, 1, CV_AA, 0);
@@ -785,9 +799,9 @@ vector<Point> Compressor::splitTriangleDraw(cv::Mat& img, const Point& a, const 
 				result.push_back(triangles[4]);
 				result.push_back(triangles[5]);
 
-				line(*out, triangles[3].toCVPoint(), triangles[4].toCVPoint(), m_color_green, 1, CV_AA, 0);
-				line(*out, triangles[4].toCVPoint(), triangles[5].toCVPoint(), m_color_green, 1, CV_AA, 0);
-				line(*out, triangles[5].toCVPoint(), triangles[3].toCVPoint(), m_color_green, 1, CV_AA, 0);
+				line(*out, triangles[3].toCVPoint(), triangles[4].toCVPoint(), m_color_blue, 1, CV_AA, 0);
+				line(*out, triangles[4].toCVPoint(), triangles[5].toCVPoint(), m_color_blue, 1, CV_AA, 0);
+				line(*out, triangles[5].toCVPoint(), triangles[3].toCVPoint(), m_color_blue, 1, CV_AA, 0);
 			} else {
 				line(*out, triangles[3].toCVPoint(), triangles[4].toCVPoint(), m_color_red, 1, CV_AA, 0);
 				line(*out, triangles[4].toCVPoint(), triangles[5].toCVPoint(), m_color_red, 1, CV_AA, 0);
@@ -798,9 +812,9 @@ vector<Point> Compressor::splitTriangleDraw(cv::Mat& img, const Point& a, const 
 				result.push_back(triangles[7]);
 				result.push_back(triangles[8]);
 
-				line(*out, triangles[6].toCVPoint(), triangles[7].toCVPoint(), m_color_green, 1, CV_AA, 0);
-				line(*out, triangles[7].toCVPoint(), triangles[8].toCVPoint(), m_color_green, 1, CV_AA, 0);
-				line(*out, triangles[8].toCVPoint(), triangles[6].toCVPoint(), m_color_green, 1, CV_AA, 0);
+				line(*out, triangles[6].toCVPoint(), triangles[7].toCVPoint(), m_color_blue, 1, CV_AA, 0);
+				line(*out, triangles[7].toCVPoint(), triangles[8].toCVPoint(), m_color_blue, 1, CV_AA, 0);
+				line(*out, triangles[8].toCVPoint(), triangles[6].toCVPoint(), m_color_blue, 1, CV_AA, 0);
 			} else {
 				line(*out, triangles[6].toCVPoint(), triangles[7].toCVPoint(), m_color_red, 1, CV_AA, 0);
 				line(*out, triangles[7].toCVPoint(), triangles[8].toCVPoint(), m_color_red, 1, CV_AA, 0);
@@ -831,9 +845,9 @@ Point Compressor::getMaxJoinable(cv::Mat& img, const Point& p, const Point& a) {
 	Point m = p;
 	Point n;
 	Point d = a - p;
-	
+
 	double step = 1.0 / length(a, p);
-	for(double i = 0.0; i <= 1.0; i += step) {
+	for(double i = 0.0; i <= 0.5; i += step) {
 		n = p + (d * i);
 		n.setP(img, m_config->getMeshWidth(), m_config->getMeshHeight());
 
@@ -854,7 +868,7 @@ vector<Point> Compressor::getMaxJoinablesPoints(cv::Mat& img, const Point& p, co
 	Point d = a - p;
 	
 	double step = 1.0 / length(a, p);
-	for(double i = 0.0; i <= 1.0; i += step) {
+	for(double i = 0.0; i <= 0.5; i += step) {
 		n = p + (d * i);
 		n.setP(img, m_config->getMeshWidth(), m_config->getMeshHeight());
 
