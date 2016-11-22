@@ -225,6 +225,10 @@ $(document).ready(function() {
 	$('#check_smooth_depth').change(function() {
 		g_config.smoothDepth = $('#check_smooth_depth').prop('checked');
 	});
+	
+	$('#check_pointcloud').change(function() {
+		g_config.pointcloud = !g_config.pointcloud;
+	});
 
 	var muGl;
 	var shaderProgram;
@@ -276,7 +280,7 @@ $(document).ready(function() {
 		shaderProgram.alpha					= muGl.getUniformLocation(shaderProgram, "uAlpha");
 
 		debug("set default colors");
-		muGl.gl.clearColor(1.0, 0.0, 0.0, 1.0);
+		muGl.gl.clearColor(0.0, 0.0, 0.0, 1.0);
         muGl.gl.enable(muGl.gl.DEPTH_TEST);
 		
 		muGl.gl.disable(muGl.gl.CULL_FACE)
@@ -420,48 +424,54 @@ $(document).ready(function() {
 			gl.disable(gl.CULL_FACE);
 			gl.drawElements(gl.TRIANGLES, g_mesh.indices.numItems, gl.UNSIGNED_INT, 0);
 		} else {
-			if(g_config.fivePass) {
-				/*
- 				*	Quint Pas
- 				*/
-   		
+			if(g_config.pointcloud) {
+				gl.enable(gl.VERTEX_PROGRAM_POINT_SIZE); 
 				gl.disable(gl.CULL_FACE);
-				gl.uniform1f(shaderProgram.alpha, 0.0);
-				gl.depthFunc(gl.LESS);
-				gl.drawElements(gl.TRIANGLES, g_mesh.indices.numItems, gl.UNSIGNED_INT, 0);
-
-				gl.enable(gl.CULL_FACE);
-				gl.cullFace(gl.FRONT);
-		
-				gl.depthFunc(gl.ALWAYS);
-				gl.drawElements(gl.TRIANGLES, g_mesh.indices.numItems, gl.UNSIGNED_INT, 0);
-	
-				gl.depthFunc(gl.LEQUAL);
-				gl.drawElements(gl.TRIANGLES, g_mesh.indices.numItems, gl.UNSIGNED_INT, 0);
-
-				gl.cullFace(gl.BACK);
-				gl.depthFunc(gl.ALWAYS);
-				gl.drawElements(gl.TRIANGLES, g_mesh.indices.numItems, gl.UNSIGNED_INT, 0);
-
-				gl.disable(gl.CULL_FACE);
-				gl.depthFunc(gl.LEQUAL);
-				gl.drawElements(gl.TRIANGLES, g_mesh.indices.numItems, gl.UNSIGNED_INT, 0);
+				gl.drawElements(gl.POINTS, g_mesh.indices.numItems, gl.UNSIGNED_INT, 0);
 			} else {
-				/*	
-				 *	Tri Pass wrong depth values
- 			 	 */
+				if(g_config.fivePass) {
+					/*
+ 					*	Quint Pas
+ 					*/
+   		
+					gl.disable(gl.CULL_FACE);
+					gl.uniform1f(shaderProgram.alpha, 0.0);
+					gl.depthFunc(gl.LESS);
+					gl.drawElements(gl.TRIANGLES, g_mesh.indices.numItems, gl.UNSIGNED_INT, 0);
 
-				gl.depthFunc(gl.LEQUAL);
-				gl.uniform1f(shaderProgram.alpha, 0.0);
-				gl.drawElements(gl.TRIANGLES, g_mesh.indices.numItems, gl.UNSIGNED_INT, 0);
+					gl.enable(gl.CULL_FACE);
+					gl.cullFace(gl.FRONT);
 		
-				gl.depthFunc(gl.GREATER);
-				gl.uniform1f(shaderProgram.alpha, 0.0);
-				gl.drawElements(gl.TRIANGLES, g_mesh.indices.numItems, gl.UNSIGNED_INT, 0);
+					gl.depthFunc(gl.ALWAYS);
+					gl.drawElements(gl.TRIANGLES, g_mesh.indices.numItems, gl.UNSIGNED_INT, 0);
 		
-				gl.depthFunc(gl.LEQUAL);
-				gl.uniform1f(shaderProgram.alpha, 0.0);
-				gl.drawElements(gl.TRIANGLES, g_mesh.indices.numItems, gl.UNSIGNED_INT, 0);
+					gl.depthFunc(gl.LEQUAL);
+					gl.drawElements(gl.TRIANGLES, g_mesh.indices.numItems, gl.UNSIGNED_INT, 0);
+	
+					gl.cullFace(gl.BACK);
+					gl.depthFunc(gl.ALWAYS);
+					gl.drawElements(gl.TRIANGLES, g_mesh.indices.numItems, gl.UNSIGNED_INT, 0);
+	
+					gl.disable(gl.CULL_FACE);
+					gl.depthFunc(gl.LEQUAL);
+					gl.drawElements(gl.TRIANGLES, g_mesh.indices.numItems, gl.UNSIGNED_INT, 0);
+				} else {
+					/*	
+					 *	Tri Pass wrong depth values
+ 			 		 */
+
+					gl.depthFunc(gl.LEQUAL);
+					gl.uniform1f(shaderProgram.alpha, 0.0);
+					gl.drawElements(gl.TRIANGLES, g_mesh.indices.numItems, gl.UNSIGNED_INT, 0);
+		
+					gl.depthFunc(gl.GREATER);
+					gl.uniform1f(shaderProgram.alpha, 0.0);
+					gl.drawElements(gl.TRIANGLES, g_mesh.indices.numItems, gl.UNSIGNED_INT, 0);
+		
+					gl.depthFunc(gl.LEQUAL);
+					gl.uniform1f(shaderProgram.alpha, 0.0);
+					gl.drawElements(gl.TRIANGLES, g_mesh.indices.numItems, gl.UNSIGNED_INT, 0);
+				}
 			}
 		}
 

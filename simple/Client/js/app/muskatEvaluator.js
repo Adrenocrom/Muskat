@@ -13,7 +13,7 @@ class MuskatEvaluator {
 		this.add(c7);
 
 	
-		var xxx = new MuskatConfig(this.nullFunction);
+/*		var xxx = new MuskatConfig(this.nullFunction);
 		xxx.gridType		= gridTypes[0];
 		xxx.meshPrecision	= meshPrecision[0];
 		xxx.Tgrad 			= gradients[0];

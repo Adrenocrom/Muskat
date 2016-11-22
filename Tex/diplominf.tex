@@ -76,6 +76,7 @@ Bild"ubernahmen zitieren.}
 \usepackage{filecontents}
 \usepackage{subfigure}
 \usepackage{xcolor}
+\usepackage{float}
 %\usepackage{setspace}
 
 \setcounter{tocdepth}{2}
@@ -88,6 +89,8 @@ Bild"ubernahmen zitieren.}
 
 
 \pagenumbering{arabic}
+
+%\newcommand{}[ANZAHL][OPTIONAL]{DEFINITION}
 
 \begin{document}
 
@@ -858,27 +861,23 @@ abhängt und der Rechenaufwand der klientseitigen Bildsynthese linear mit der Auf
 
 \section{Delaunay-Triangulierung}
 
-Die zweite Variante die in dieser Arbeit untersucht wird, ist die eine adaptive Vernetzung des Tiefenbildes.
-Diese wird vom Server durchgeführt und das erzeugte Dreiecksnetz wird anschließend als solches zum Klient gesendet.
-Das Verfahren lässt sich in drei Teile unterteilen. 
-Zuerst muss aus dem Tiefenbild $D$ eine Menge von Punkten $P \subset D$ definiert werden.
-Anschließend werden die Punkte $p \in P$ zu Dreiecken verbunden.
-Im letzten Schritt kann das entstandene Netz weiter optimiert werden. 
+Die zweite in dieser Arbeit untersuchte Variante, besteht in der serverseitigen Erzeugung eines adaptives Dreiecksnetz aus einem Tiefenbild $D$.
+Prinzipiell, lässt sich die Vorgehensweise in drei Schritte unterteilen.
+Im ersten Schritt muss eine Menge von Punkten $P \subset D$ definiert werden, sodass die Menge $P$
+die Werteverläufe des Tiefenbildes möglichst optimal wiedergegeben wird.
+Der zweite Schritt besteht in der Vernetzung der Punkte $p \in P$ zu Dreiecken, das dabei Eingesetze verfahren
+ist die Delaunay-Triangulierung.
+Zum Schluss kann das erzeugte Netz, in einem dritten Schritt, weiter verfeinert werden.
 
-Entscheidend für das Ergebnisnetz ist die Wahl der Punkte $P$ im ersten Schritt.
-Sie müssen so gewählt werden, das die Werteverläufe der Tiefenwerte möglichst
-optimal wiedergegeben werden.
-Das bedeutet, das insbesondere im Bereich von Kanten Punkte gesetzt werden müssen,
-aber auch dort, wo Flächen nicht planar sind, damit die Oberflächenverläufe erhalten bleiben.
-Um diese Aufgaben zu lösen, wurden die beiden Verfahren von Banno \textit{et al.} \cite{Banno:2012:RCD:2407516.2407579}
-und Lee \textit{et al.} \cite{900943} implementiert.
-
-\subsubsection{Besondere Punkte}
-
-Um die Menge $P$ zu erzeugen, werden die Gradienten des Tiefenbildes $\nabla_x$ und $\nabla_y$ 
-mit Hilfe des Sobel-Operators berechnet. 
-Dieser berechnet die erste Ableitung und glättet gleichzeitig dazu die orthogonale Richtung.
-Mit Hilfe einer Faltungsmatrix der Größe $3 \times 3$ können die Gradienten berechnet werden:
+Entscheidend für das Ergebnisnetz und für die Geschwindigkeit des gesamten Verfahrens ist die Wahl der Punktmenge $P$.
+Das Ziel bei der Verteilung der Punktemenge $P$ ist es, eine hohe Punktdichte im Bereich von Kanten und gekrümmten Flächen
+zu erzielen.
+Im Gegensatz dazu sollten Planare Regionen möglichst keine Punkte enthalten, weil diese mit wenigen Dreiecken approximiert
+werden können.
+Ausgangspunkt für die Erzeugung der Punktmenge $P$, sind die Gradienten des Tiefenbildes $\nabla_x$ und $\nabla_y$. 
+Die Gradienten werden mit Hilfe des Sobel-Operator berechnet. 
+Dazu wird die erste Ableitung berechnet und gleichzeitig wird die dazu orthogonale Richtung geglättet.
+Mit Hilfe einer Faltungsmatrix der Größe $3 \times 3$ lassen sich die Gradienten berechnen:
 
 \begin{align}
 \nabla_x &= \begin{bmatrix} 1 & 0 & -1 \\ 2 & 0 & -2 \\ 1 & 0 & -1 \end{bmatrix} \ast D \\
@@ -886,76 +885,175 @@ Mit Hilfe einer Faltungsmatrix der Größe $3 \times 3$ können die Gradienten bere
 \label{eq:SOBEL_GRAD}
 \end{align}
 
-Die Punktemenge $P$ wird mit Hilfe einer Quaternärbaum-Datenstruktur erzeugt.
-Ein Quaternärbaum unterteilt das Tiefenbild sukzessiv in vier rechteckige Regionen.
-Die maximale Tiefe des Quaternärbaums ist invers proportional zur Breite der Blattregionen.
-Mit diesem Parameter kann die Qualität und die Kompression des erzeugten Netzes,
-sowie der Berechnungsaufwand skaliert werden.
+Auf diese weise entstehen für ein Tiefenbild zwei Gradientenbilder, wie in Abbildung \ref{fig:gradient_images}
+dargestellt.
+Zur Erzeugung der Punktmenge $P$ wurden zwei Verfahren untersucht, die im Folgenden näher betrachtet werden. 
 
-Jeder Knoten des Baums entspricht einer rechteckigen Region $R$ des Tiefenbildes,
-welche mit Hilfe der Sobel-Gradienten auf planarität getestet wird.
-Wenn die Region $R$ nicht planar ist, dann werden die Eckpunkte von $R$ zur Menge $P$
-hinzugefügt.
-Wenn die Gradienten in einer Region $R$ nahezu gleich sind, dann wird diese
-Region $R$ als planar bezeichnet.
-Ob eine Region $R$ als planar bezeichnet werden kann, lässt sich
-mit Hilfe der Differenz, zwischen dem maximalen und  dem minimalen Gradienten von $R$ bestimmten:
+\begin{figure}[H]
+	\subfigure[]{\includegraphics[width=.49\textwidth]{../results/7/512x512_Delaunay/D10/L0.0/I0.0/gx.png}}
+	\subfigure[]{\includegraphics[width=.49\textwidth]{../results/7/512x512_Delaunay/D10/L0.0/I0.0/gy.png}}
+	%\subfigure[]{\includegraphics[width=.49\textwidth]{../results/6/512x512_Delaunay/D10/L0.0/I0.0/gx.png}}
+	%\subfigure[]{\includegraphics[width=.49\textwidth]{../results/6/512x512_Delaunay/D10/L0.0/I0.0/gy.png}}
+	\caption{Die Abbildung zeigt die Gradientenbilder beider Datensätze vom jeweils ersten Frame.
+			 Dabei zeigen a und c $\nabla_x$, während b und d $\nabla_y$ der beiden Datensätze zeigt.}
+	\label{fig:gradient_images}
+\end{figure}
+
+\subsection{Quadtree}
+
+Die erste in dieser Arbeit vorgestellte Methode, zur Erzeugung der Punktmenge $P$,
+basiert auf einer Quadtree-Datenstruktur.
+Ein Quadtree ist eine Baumdatenstruktur, in der die Anzahl der Kindknoten, eines Knotens auf vier Kindknoten
+beschränkt wird.
+Im Rahmen dieser Arbeit repräsentiert jeder Knoten eine rechteckige Region $R$ des Tiefenbildes $D$.
+Eine Region $R$ wird durch seine Eckpunkte parametrisiert.
+Um die Baumdatenstruktur zu erzeugen, wird ein Wurzelknoten definiert, dessen Region $R = (0, 0, w-1, h-1)$ den
+Ausmaßen des Tiefenbildes $D$ entspricht.
+Im Anschluss wird die Region des Wurzelknotens in vier gleichgroße Teilregionen aufgeteilt.
+Diese Teilregionen sind die Kindknoten des Wurzelknotens.
+Alle Kindknoten werden auf diese weise sukzessiv weiter unterteilt, bis die Tiefe des erzeugten Baumes
+eine maximale Baumtiefe $d_{max}$ erreicht.
+Die Kindknoten, der Baumtiefe $d_{max}$ enthalten selbst keine weiteren Kindknoten und
+werden als Blattknoten bezeichnet, die Regionen die sie repräsentieren als Blattregionen.
+Die maximale Tiefe des Quadtrees ist dabei invers proportional zur Breite der Blattregionen.
+Mit dem Parameter $d_{max}$, kann die Qualität und die Kompression des erzeugten Netzes,
+sowie der Berechnungsaufwand skaliert werden.
+Die erzeugte Baumdatenstruktur hängt von der Auflösung der Tiefenbilder ab
+und muss nur neu erzeugt werden, wenn sich die Auflösung oder der Parameter $d_{max}$ ändert.
+
+Im nächsten Schritt wird mit Hilfe der Baumdatenstruktur die Punktmenge $P$ erzeugt.
+Zu diesem Zweck wird der Baum, beginnend mit den Blattknoten, zum Wurzelknoten traversiert.
+Mit Hilfe der Gradienten kann die Region $R$ eines Knoten auf planarität getestet werden.
+Ist eine Region $R$ nicht planar, dann werden die Eckpunkte von $R$ zur Menge $P$ hinzugefügt.
+
+Um zu überprüfen, ob eine Region $R$ als planar bezeichnet werden kann, lässt sich
+mit Hilfe der Differenz, zwischen dem maximalen und dem minimalen Wert der Gradienten innerhalb von $R$ bestimmten:
 
 \begin{align}
-c_x &= \max\limits_{R} \nabla_x - \min\limits_{R} \nabla_x = \nabla_{H_x} - \nabla_{L_x} \\
-c_y &= \max\limits_{R} \nabla_y - \min\limits_{R} \nabla_y = \nabla_{H_y} - \nabla_ {L_y}.
+c_x &= \max\limits_{R} \nabla_x - \min\limits_{R} \nabla_x \\
+c_y &= \max\limits_{R} \nabla_y - \min\limits_{R} \nabla_y .
 \end{align}
 
-Wenn entweder $c_x$ oder $c_y$ größer als ein Schwellwert $T_{planar}$ ist, dann
+Wenn entweder $c_x$ oder $c_y$ größer als ein Schwellwert ist, dann
 ist die Region $R$ nicht planar und die Eckpunkte werden der Menge $P$ hinzugefügt.
+Die Werte für $c_x$ und $c_y$ der inneren Konten lassen sich effizient aus den bereits berechneten
+maximalen und minimalen Gradienten seiner Kindknoten berechnen.
 
-Der Baum wird beginnend mit dem Blattknoten zum Wurzelkonten traversiert.
-Die Werte für $c_x$ und $c_y$ der inneren Konten lassen sich effizient 
-mit Hilfe von $\nabla_H$ und $\nabla_L$ der vier Kindknoten berechnen.
+Die Wahl des Schwellwerts ist entscheidend für die Anzahl der eingefügten Punkte in $P$.
+Dieser kann adaptiv gewählt werden, um die Komplexität des Dreiecksnetzes anzupassen an die zur Verfügung stehende Bandbreite
+anzupassen.
 
-Der Schwellwert $T_{planar}$ ist entscheidend für die Anzahl der eingefügten
-Punkte in $P$.
-Der Wert von $T_{planar}$ kann adaptiv gewählt werden, um die Komplexität
-des Dreiecksnetzes anzupassen.
-Für den eigentlichen Planaritäts-Test unterscheidet sich der Schwellwert für Blatt oder
-innere Knoten in $T_{leaf}$ und $T_{inner}$.
-Die Idee dahinter ist, dass Blattknoten vorrangig Tiefenuntersprünge detektieren sollen bzw.
-die Kontur, während die inneren Knoten nicht-planare Oberflächen repräsentieren. 
-Weil Tiefensprünge größere Gradienten bedeuten als nicht-planare Oberflächen, 
-sollte $T_{internal}$ kleiner $T_{leaf}$ als gewählt werden.
+Für den eigentlichen Planaritäts-Test unterscheidet sich dieser Schwellwert,
+in Abhängigkeit, ob es sich um einen Inneren oder einen Blattknoten handelt.
+Der Schwellwert für die Blattknoten wird mit $l$ bezeichnet und der für die inneren Knoten mit $i$.
+Blattknoten sollten vorrangig Tiefenuntersprünge, Kanten detektieren und somit die Kontur der dargestellten Objekte.
+Innere Knoten dagegen, repräsentieren die Oberfläche der Objekte und werden gesetzt, um deren Verläufe von nicht planaren
+Regionen abzubilden zu können. 
+Weil Tiefensprünge größere Gradienten bedeuten als gekrümmte Oberflächen, 
+sollte der Schwellwert $i$, für die inneren Knoten kleiner sein, als der Schwellwert $l$ für die Blattknoten, $i < l$.
+Die Werte von $i$ und $l$ liegen im Intervall $[0,1]$.
 
-Durch das Traversieren des Quadtree lässt sich die Menge $P$ bestimmen
-und das Dreiecksnetz kann mit Hilfe der Delaunay-Triangulierung vernetzt werden.
+Das Ergebnis der Traversierung des Baums ist eine Menge von Punkten $P$, die sich aus den Eckpunkten der getesteten
+Regionen zusammensetzt, in denen die Gradientdifferenzen den entsprechenden Schwellwert überschreitet.
 
-Ähnlich zur Vollvernetzung kann die Datenstruktur des Quadtree im vorausberechnet werden
-und wird nur im Falle einer Auflösungsänderung oder einer Änderung des maximalen Tiefenwertes
-des Quadtree neu berechnet.
+Diese Punktmenge $P$ kann weiter reduziert werden, indem getestet wird, ob ein Punkt $p \in P$ zum Hintergrund gehört.
+Das ist der Fall, wenn der Tiefenwert des Tiefenbildes an stelle $p$ dem maximalen Tiefenwert entspricht.
+Zur Erinnerung die Tiefenwerte liegen linear zwischen den beiden Clippingebenen, wobei ein großer Wert bedeutet,
+dass dieser nahe der Bildschirmebene liegt.
 
-\subsubsection{Optimierung des Netzes}
+\subsection{Floyd-Steinberg}
 
-Das auf diese Weise entstandene Netz enthält zwei arten von Artefakten.
+Der Zweiter in dieser Arbeit vorgestellte Ansatz zur Erzeugung der Punktmenge $P$, basiert auf einem Fehler-Diffusionsverfahren.
+In diesem Abschnitt wird die Bildfunktion $f(x)$ über der zweidimensionalen Bilddomain definiert.
+Das Bedeutet, das die Tiefenwerte des Bildes $D$ mit der Funktion $f$ angegeben werden.
+Im ersten Schritt wird aus den Gradientenbildern ein Merkmalsbild $\sigma$ erzeugt:
+
+\begin{equation}
+	\sigma(x) = \left( \frac{\parallel \nabla f(x) \parallel}{A} \right)^\gamma.
+	\label{eq:featureMap}
+\end{equation}
+
+Dabei entspricht der Nenner von \ref{eq:featureMap} der Länge des Gradientenvektors, an der Stelle $x$.
+Dieser wird mit $A$, dem größtmöglichen Wert von $\parallel \nabla f(x) \parallel$ normiert.
+Der Parameter $\gamma \in [0,1]$ wir genutzt, um die Ausprägung von schwachen Kanten 
+im Merkmalsbild $\sigma$ zu erhöhen.
+
+Die beide Gradientenbilder $\nabla_x$ und $\nabla_y$ werden durch die Gleichung \ref{eq:featureMap} auf ein einzelnes Merkmalsbild $\sigma$ abgebildet.
+Um aus dem Merkmalsbild $\sigma$ die Punktmenge $P$ zu erzeugen, kommt der Floyd-Steinberg Algorithmus zum Einsatz. 
+Bei dem Floyd-Steinberg Algorithmus handelt es sich, um ein einfaches und effizientes Fehler-Diffusion-Verfahren.
+Zu diesem Zweck wird das Merkmalsbild $\sigma$ Pixel für Pixel Zeilenweise durchlaufen.
+Der betrachtete Pixel wird mit einem Schwellwert $\delta$ verglichen.
+Wenn der Wert des Pixels größer als der Schwellwert ist, 
+dann wird der Wert des Pixels mit $\delta$, andernfalls mit $0$ ersetzt.
+Zusätzlich wird der neu gesetzte Wert und der daraus resultierende Quantisierungsfehler 
+auf die benachbarten Pixel verteilt. 
+Das Folgende Codebeispiel \ref{lst:floyd_steinberg} verdeutlicht das Verfahren:
+
+\begin{lstlisting}[numbers=left,mathescape=true,xleftmargin=0.1\textwidth,captionpos=b,caption={Floyd-Steinberg Algorithmus},label={lst:floyd_steinberg}]
+for each y
+	for each x
+	   oldpixel        := pixel[x][y]
+	   newpixel        := (pixel[x][y] > $\delta$) ? $\delta$ : 0
+	   pixel[x][y]     := newpixel
+	   quant_error     := oldpixel - newpixel
+	   pixel[x+1][y  ] := pixel[x+1][y  ] + quant_error * 7 / 16
+	   pixel[x-1][y+1] := pixel[x-1][y+1] + quant_error * 3 / 16
+	   pixel[x  ][y+1] := pixel[x  ][y+1] + quant_error * 5 / 16
+	   pixel[x+1][y+1] := pixel[x+1][y+1] + quant_error * 1 / 16
+\end{lstlisting}
+
+Immer wenn die Bindung erfüllt wird und der Wert eines Pixels auf $\delta$ gesetzt wird,
+dann wird die Menge $P$ mit dem gerade bearbeiteten Pixel erweitert.
+Die Abbildung \ref{fig:feature_Maps} zeigt verschiedene bereits auf $\delta$ und $0$ reduzierte
+Merkmalsbilder $\sigma$.
+
+Ein Vorteil dieses Verfahrens, ist die effizienten Erzeugung der Menge $P$.
+Mit Hilfe der beiden Parameter $\gamma, \delta$ lässt sich die Anzahl der Punktmenge $P$ variieren.
+Dabei spielt insbesondere $\delta$ eine entscheidende Rolle, da durch diesen die Punktdichte
+angepasst werden kann.
+Wenn $\delta$ kleine Werte annimmt, dann wird die Punktdichte erhöht und im Fall großen Werten reduziert.
+
+\begin{figure}[H]
+	\subfigure[$\gamma = 0.2$]{\includegraphics[width=.49\textwidth]{../results/7/512x512_Delaunay/T0.5/G0.2/featuremap.png}}
+	\subfigure[$\gamma = 0.4$]{\includegraphics[width=.49\textwidth]{../results/7/512x512_Delaunay/T0.5/G0.4/featuremap.png}}
+	\subfigure[$\gamma = 0.6$]{\includegraphics[width=.49\textwidth]{../results/7/512x512_Delaunay/T0.5/G0.6/featuremap.png}}
+	\subfigure[$\gamma = 1.0$]{\includegraphics[width=.49\textwidth]{../results/7/512x512_Delaunay/T0.5/G1.0/featuremap.png}}
+	\caption{Die Bilder a bis d zeigen das Merkmalsbild, in Abhängigkeit des Parameters $\gamma$ bei einem 			 
+			 festgesetzten Schwellwert von $0.5$.}
+	\label{fig:feature_Maps}
+\end{figure}
+
+\subsection{Erzeugung des Netzes}
+
+Die aus den beiden erzeugten Methoden Punkte $p \in P$ können jetzt mit Hilfe der Delaunay-Triangulierung
+zu einem Dreiecksnetz miteinander verbunden werden.
+In dieser Arbeit wird zu diesem Zweck die Delaunay-Triangulierung aus dem opencv-Framework verwendet.
+
+\subsection{Netzoptimierung}
+
+Das auf diese Weise entstandene Netze können, in Abhängigkeit der Eingabedaten, zwei arten von Artefakten enthalten.
 Zum einen können Dreiecke falsche Tiefenregionen approximieren, weil nur
-die Eckpunkte der jeweiligen Regionen $R$ zur Konstruktion der Dreiecke
-genutzt werden.
-Zum anderen können Dreiecke über Tiefensprüngen liegen und dadurch werden Kanten nicht
-korrekt vom Netz abgebildet. 
+die Eckpunkte der jeweiligen Regionen $R$ zur Konstruktion der Dreiecke genutzt werden.
+Zum anderen können Dreiecke über Tiefensprüngen liegen, wodurch Kanten nicht korrekt vom Netz abgebildet werden.
+Diese Art von Artefakte kommen zustande, wenn die Blattregionen zu große Bildregionen repräsentieren.
 Um die Artefakte zu reduzieren, werden nicht valide Dreiecke nochmals unterteilt oder verworfen.
+
 Die Validität eines Dreiecks wird anhand seiner Kanten bestimmt.
 Eine Kante wird als nicht valide Kante bezeichnet, wenn die Tiefenwerte
 einiger von ihr überspannten Pixel abweicht, oder die 3D Richtung der Kante
-sich dem Lot der Bildebene nährt.
+sich dem Lot der Bildebene nährt, während gleichzeitig eine bestimmte Länge in der xy-Ebene überschritten wird.
 
 Die Eckpunkte der zu prüfenden Kante, werden im folgenden mit $p_1$ und $p_2$ bezeichnet.
-Der Punkt $p_m$ bezeichnet die Seitenhalbierende, den Median der Kante $p_1 p_2$.
-Ein entscheidender Punkt, ist der das alle Streckenlängen mit Texturkoodinaten berechnet werden,
-damit die Gleichungen unabhängig von der eigentlichen Auflösung sind.
+Der Punkt $p_m$ bezeichnet dabei den Mittelpunkt der Kante $p_1 p_2$.
 
+
+Eine Kante ist nicht valide, wenn der eigentliche Tiefenwert $D(p_m)$ 
 In der Gleichung \ref{eq:EDGE_VALID} approximiert der erste Term das Verhältnis,
 zwischen dem Betrag des Tiefenunterschieds von $p_1$ und $p_2$
 zu der Länge der Kante projiziert auf die $xy$-Ebene.
 
 \begin{equation}
-\frac{\mid d(p_1) - d(p_2) \mid}{\parallel p_1 - p_2 \parallel (d(p_1) + d(p_2)} < T_{angle}
+\frac{\mid d(p_1) - d(p_2) \mid}{\parallel p_1 - p_2 \parallel (d(p_1) + d(p_2))} < T_{angle}
 \label{eq:EDGE_VALID}
 \end{equation}
 
@@ -1124,6 +1222,10 @@ einer validen Kante.
 
 Zu beachten ist, dass jedes neu erzeugte Dreieck auf Kollinearität zu überprüfen
 und gegebenenfalls zu verwerfen.
+
+Um die Schwellwerte unabhängig von der Auflösung und Farbtiefe angeben zu können,
+werden die Streckenlängen in den Gleichungen \ref{eq:EDGE_JOIN}... mit Texturkoordinaten berechnet
+und die Farbwerte der Pixel auf das Intervall $[0,1]$ transformiert.
 
 \chapter{Implementierung}
 

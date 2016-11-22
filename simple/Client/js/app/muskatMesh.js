@@ -44,7 +44,7 @@ class MuskatMesh {
 			j = 1 - v * 2;
 
 			for(var x = ow; x < w; x++) {
-				u = x / w;
+				u = x / ws;
 				i = u * 2 - 1;
 
 				vb[v_index] = i;	v_index++;
@@ -91,7 +91,7 @@ class MuskatMesh {
 			j = 1 - v * 2;
 
 			for(var x = ow; x < w; x++) {
-				u = x / w;
+				u = x / ws;
 				i = u * 2 - 1;
 
 				vb[v_index] = i;	v_index++;
@@ -151,7 +151,7 @@ class MuskatMesh {
 			j = 1 - v * 2;
 
 			for(var x = ow; x < w; x++) {
-				u = x / w;
+				u = x / ws;
 				i = u * 2 - 1;
 
 				vb[v_index] = i;	v_index++;
@@ -191,6 +191,19 @@ class MuskatMesh {
 
 		this.vertices 	= vb;
 		this.texCoords 	= tb;
+		this.indices 	= ib;
+	}
+
+	createPointcloud(w, h) {
+		var ib = new Uint32Array(w * h);
+		
+		var cnt = 0;
+		for(var y = 0; y < h; y++) {
+			for(var x = 0; x < w; x++) {
+				ib[cnt] = cnt; 	cnt++;
+			}
+		}
+
 		this.indices 	= ib;
 	}
 

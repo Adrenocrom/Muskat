@@ -32,14 +32,15 @@ class MuskatConfig {
 		this._max_depth		= 8;	// max depth of quadtree
 		this._T_leaf 		= 0;	// thresholds needed to generate seeds
 		this._T_internal 	= 0;	// - " -
-		this._T_angle		= 85.0;
-		this._T_join		= 0.0;
+		this._T_angle		= 1.0;
+		this._T_join		= 0.1;
 		this._T_grad		= 1.0;
 
 		this._T_threshold	= 0.5;
 		this._gamma			= 0.5;
 
 		this._five_pass		= true;
+		this._pointcloud	= false;
 
 		this._refine		= false;
 		
@@ -82,14 +83,15 @@ class MuskatConfig {
 		this._max_depth		= 8;	// max depth of quadtree
 		this._T_leaf 		= 0;	// thresholds needed to generate seeds
 		this._T_internal 	= 0;	// - " -
-		this._T_angle		= 0.2;
-		this._T_join		= 0.5;
+		this._T_angle		= 1.0;
+		this._T_join		= 0.1;
 		this._T_grad		= 1.0;
 
 		this._T_threshold	= 0.5;
 		this._gamma			= 0.5;
 
 		this._five_pass		= true;
+		this._pointcloud	= false;
 		
 		this._refine		= true;
 		
@@ -209,6 +211,10 @@ class MuskatConfig {
 		return this._five_pass;
 	}
 
+	get pointcloud() {
+		return this._pointcloud;
+	}
+
 	get meshCompression() {
 		return this._mesh_compression;
 	}
@@ -326,6 +332,11 @@ class MuskatConfig {
 
 	set fivePass(value) {
 		this._five_pass = value;
+		this._callback();
+	}
+
+	set pointcloud(value) {
+		this._pointcloud = value;
 		this._callback();
 	}
 

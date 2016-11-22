@@ -94,10 +94,6 @@ struct Edge {
 		return Point((int)((double)(a.x + b.x) / 2.0), (int)((double)(a.y + b.y) / 2.0));
 	}
 
-	double getDepth(double i) {
-		Point p = b - a;
-	}
-
 	Point getPM(const cv::Mat& img, int w, int h) const {
 		Point p((int)((double)(a.x + b.x) / 2.0), (int)((double)(a.y + b.y) / 2.0));
 		p.z = img.at<ushort>(p.y, p.x);
@@ -127,6 +123,7 @@ public:
 	QJsonObject compressFrame(FrameInfo& info, FrameBuffer& fb);	
 	
 	cv::Mat*	getDelaunayImage();
+	cv::Mat*	getMeshImage();
 	cv::Mat*	getSobelXImage();
 	cv::Mat*	getSobelYImage();
 	cv::Mat*	getFeatureImage();
@@ -150,9 +147,11 @@ private:
 	cv::Scalar 	m_color_green;
 	cv::Scalar 	m_color_red;
 	cv::Scalar 	m_color_blue;
+	cv::Scalar 	m_color_black;
 	cv::Scalar 	m_color_triangle;
 
 	cv::Mat		m_delaunay_image;
+	cv::Mat		m_mesh_image;
 	cv::Mat		m_sobel_x_image;
 	cv::Mat		m_sobel_y_image;
 	cv::Mat		m_feature_image;
@@ -196,7 +195,7 @@ private:
 
 	Point getMaxJoinable(cv::Mat& img, const Point& p, const Point& a);
 	
-	vector<Point> getMaxJoinablesPoints(cv::Mat& img, const Point& p, const Point& a);
+	vector<Point> getMaxJoinablePoints(cv::Mat& img, const Point& p, const Point& a);
 	
 	pair<Point, Point> getMaxJoinables(cv::Mat& img, const Point& a, const Point& b, const Point& c);
 
