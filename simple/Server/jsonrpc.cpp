@@ -69,6 +69,9 @@ RPCResponse JsonRPC::loadScene(RPCRequest& request) {
 	m_mainWindow->m_filerenderer->setScene(&m_mainWindow->m_playlist->m_scenes[scene_id]);
 	m_mainWindow->m_evaluator->setScene(&m_mainWindow->m_playlist->m_scenes[scene_id]);
 
+	QJsonObject jo;
+	jo["sceneReady"] = true;
+	response.result = jo;
 	return response;
 }
 
@@ -83,6 +86,9 @@ RPCResponse JsonRPC::setConfig(RPCRequest& request) {
 
 	m_mainWindow->m_config->setConfig(request.params);
 
+	QJsonObject jo;
+	jo["configReady"] = true;
+	response.result = jo;
 	return response;
 }
 

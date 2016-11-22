@@ -98,10 +98,9 @@ $(document).ready(function() {
 
 		
 		$('fieldset').prop('disabled', true);
-		$('legend').prop('disabled', true);
 		
-		getFrameMessage(0);
-		runEvaluation(0);
+		g_evaluation_id = 0;
+		runEvaluation();
 	});
 
 	$( '#button_render_single_frame' ).click(function() {
@@ -256,8 +255,10 @@ $(document).ready(function() {
 	var g_time_start;
 	var g_time_end;
 	var g_evaluator;
+	var g_evaluation_id		= 0;
 	var g_scene_list 		= [6,7];
 	var g_scene_list_index 	= 0;
+	var g_callback_cnt 		= 0;
 
 	initConfig();
 	
@@ -321,10 +322,9 @@ $(document).ready(function() {
 	}
 
 	function updateConfig() {
-		setConfigMessage();
 		if(g_config.meshMode == "full")
 			resize(g_config.meshWidth, g_config.meshWidth);
-		getFrameMessage(0);
+		setConfigMessage();
 	}
 
 	function resize(w, h) {
@@ -378,8 +378,17 @@ $(document).ready(function() {
 		gl.flush();
 	}
 
-	function drawFirstFrame() {
+	function callback_draw() {
 		drawFrame(0);
+		g_callback_cnt++;
+
+		if(g_callback_cnt == -1) {
+			newMessureMessage(g_scene_index, g_evaluation_id, g_config.name, g_config.shortName);
+			g_callback_cnt = 0;
+		}
+		else if(g_callback_cnt == 2) {
+			g_callback_cnt = 0;
+		}
 	}
 
 	function drawFrame(to) {
@@ -583,12 +592,11 @@ $(document).ready(function() {
 		}
 	}
 
-	function runEvaluation(id) {
-		g_config = g_evaluator.getConfig(id);
-		updateConfig();
+	function runEvaluation() {
+		g_config	   = g_evaluator.getConfig(g_evaluation_id);
+		g_callback_cnt = -3;
 
-		newMessureMessage(g_scene_index, id, g_config.name, g_config.shortName);
-		runScene();
+		updateConfig();
 	}
 
 	function startWs() {
@@ -601,13 +609,9 @@ $(document).ready(function() {
 			websocket = new WebSocket( wsUri );
 			websocket.onopen = function (evt) {
 				debug("connected to " + wsUri);
-
-				setConfigMessage();
-				getPlaylistMessage();
 				initWebGl();
+				getPlaylistMessage();
 
-				loadSceneMessage(0);
-				getFrameMessage(0);
 			};
 
 			websocket.onmessage = function (evt) {
@@ -617,17 +621,26 @@ $(document).ready(function() {
 					playlist = obj.result;
 					
 					setPlaylist(playlist);
+					
 					//debug(JSON.stringify(playlist));
 					debug("numScenes: " + playlist.scenes.length);
 				}
+				
+				if(typeof obj.result.sceneReady !== 'undefined') {
+					debug("test");
+					setConfigMessage();
+				}
 
+				if(typeof obj.result.configReady !== 'undefined') {
+					getFrameMessage(0);
+				}
 
 				if(typeof obj.result.rgb !== 'undefined') {
-					muGl.setTextureFromBase64(colorTexture, g_config.textureCompressionMethod, obj.result.rgb, drawFirstFrame);
+					muGl.setTextureFromBase64(colorTexture, g_config.textureCompressionMethod, obj.result.rgb, callback_draw);
 				}
 				
 				if(typeof obj.result.depth !== 'undefined') {
-					muGl.setTextureFromBase64(depthTexture, "png", obj.result.depth, drawFirstFrame);
+					muGl.setTextureFromBase64(depthTexture, "png", obj.result.depth, callback_draw);
 				}
 				
 				if(typeof obj.result.indices !== 'undefined') {
@@ -638,25 +651,30 @@ $(document).ready(function() {
 					g_mesh.vertices = new Float32Array(vertices);
 					g_mesh.texCoords = new Float32Array(obj.result.numTexCoord);
 
-					drawFirstFrame();
+					callback_draw();
+				}
+
+				if(typeof obj.result.newMessureReady !== 'undefined') {
+					runScene();
 				}
 
 				if(typeof obj.result.messureReady !== 'undefined') {
-					var index = obj.result.messureReady + 1;
-					$('#label_evaluation').text("    " + index + " / " + g_evaluator.length + " | scene " + g_scene_index);
-					
-					$('#window_menu_overlay').width(100 * (index / g_evaluator.length) + '%');
+					g_evaluation_id = obj.result.messureReady + 1;
 
-					if(index < g_evaluator.length)
-						runEvaluation(index);
-					else  {
+					$('#label_evaluation').text("    " + g_evaluation_id + " / " + g_evaluator.length + " | scene " + g_scene_index);
+					
+					$('#window_menu_overlay').width(100 * (g_evaluation_id / g_evaluator.length) + '%');
+
+					if(g_evaluation_id < g_evaluator.length) {
+						runEvaluation();
+					} else  {
 						g_scene_list_index++;
 						g_config = new MuskatConfig(updateConfig);
 						updateConfig();
 
 
 						if(g_scene_list_index < g_scene_list.length) {
-							debug("index: " + g_scene_list_index + " " + g_scene_list[g_scene_list_index]);
+							debug("g_evaluation_id: " + g_scene_list_index + " " + g_scene_list[g_scene_list_index]);
 							
 							g_scene_index = g_scene_list[g_scene_list_index];
 							setScene(g_playlist.scenes[g_scene_index]);
@@ -665,8 +683,10 @@ $(document).ready(function() {
 							getFrameMessage(0);
 							
 							$('#window_menu_overlay').width(0 + '%');
-							runEvaluation(0);
-						} else { 
+							g_evaluation_id = 0;
+							runEvaluation();
+						} else {
+							g_evaluation_id = 0;
 							alert("Evaluation Done!");
 							$('#window_menu_overlay').width(0 + '%');
 							$('fieldset').prop('disabled', false);
