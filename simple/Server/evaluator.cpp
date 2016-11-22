@@ -141,15 +141,17 @@ void Evaluator::runEvaluation() {
 	// if delaunay save image
 	if(m_config->useDelaunay()) {
 		cv::imwrite(m_filename + "/delaunay.png" , *m_compressor->getDelaunayImage());
+		cv::imwrite(m_filename + "/mesh.png" , *m_compressor->getMeshImage());
 		cv::imwrite(m_filename + "/gx.png", *m_compressor->getSobelXImage());
 		cv::imwrite(m_filename + "/gy.png", *m_compressor->getSobelYImage());
+
+		if(!m_config->useQuadtree()) {
+			cv::Mat draw;
+			m_compressor->getFeatureImage()->convertTo(draw, CV_8U, 255);
+			cv::imwrite(m_filename + "/featuremap.png", draw);
+		}	
 	}
 
-	if(!m_config->useQuadtree()) {
-		cv::Mat draw;
-		m_compressor->getFeatureImage()->convertTo(draw, CV_8U, 255);
-		cv::imwrite(m_filename + "/featuremap.png", draw);
-	}	
 	
 	cout<<"end evaluation"<<endl;
 

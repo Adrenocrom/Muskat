@@ -690,7 +690,6 @@ $(document).ready(function() {
 							alert("Evaluation Done!");
 							$('#window_menu_overlay').width(0 + '%');
 							$('fieldset').prop('disabled', false);
-							$('legend').prop('disabled', false);
 						}
 					}
 				}
