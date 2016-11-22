@@ -50,8 +50,8 @@ list<cv::Point2f> QuadTree::generateSeeds(cv::Mat& gx, cv::Mat& gy) {
 
 		for(int y = rect.min_y; y <= rect.max_y; ++y) {
 			for(int x = rect.min_x; x <= rect.max_x; ++x) {
-				g_x = gx.at<ushort>(x, y);
-				g_y = gy.at<ushort>(x, y);
+				g_x = gx.at<ushort>(y, x);
+				g_y = gy.at<ushort>(y, x);
 				
 				leaf.H_x = MU_MAX( leaf.H_x, g_x );
 				leaf.H_y = MU_MAX( leaf.H_y, g_y );
@@ -74,7 +74,7 @@ list<cv::Point2f> QuadTree::generateSeeds(cv::Mat& gx, cv::Mat& gy) {
 			seeds.push_back(p1);
 			seeds.push_back(p2);
 			seeds.push_back(p3);
-			seeds.push_back(p4);
+			seeds.push_back(p4);		
 		}
 	}
 
@@ -115,6 +115,7 @@ list<cv::Point2f> QuadTree::generateSeeds(cv::Mat& gx, cv::Mat& gy) {
 			} 
 		}
 	}
+	
 	return seeds;
 }
 

@@ -37,12 +37,21 @@
 					<select id="select_frames_min"></select>
 					<select id="select_frames_max"></select>
 					<button id="button_show_frame">render</button>
-					<button id="button_run_scene">messure</button>
 					<button id="button_render_single_frame">download frame</button>
 				</p>
 			</fieldset>
 			<fieldset>
-				<legend>Texture</legend>
+				<legend>evaluation</legend>
+				<div style="float: left;">
+					<button id="button_evaluation_set_default">default</button>
+					<button id="button_evaluation_set_config">config</button>
+				</div>
+				<div style="float: right;">
+					<button id="button_run_scene">messure</button>
+				</div>
+			</fieldset>
+			<fieldset>
+				<legend>texture</legend>
 				<p>
 					<input type="radio" name="texture" value="jpeg">
 					<label>JPEG compression:</label>
@@ -89,7 +98,7 @@
 						<label>16 bit</label>
 					</p>
 				</div>
-				<div style="float: left;">
+				<div style="float: right;">
 					<p>
 						<input id="check_pointcloud" type="checkbox">
 						<label>pointcloud</label>
@@ -116,7 +125,7 @@
 						<input class="iput short" type="text" id="text_mesh_quality" value="0"></input>
 					</p>				
 				</div>
-				<div style="float: right;">
+				<div style="float: left;">
 					<p>
 						<input type="radio" name="grid_type" value="default" checked="checked">
 						<label>default</label> <br>
@@ -139,16 +148,16 @@
 						<label>quadtree</label>
 					</legend>
 					<p>
-						<input id="text_max_depth" class="iput middle" type="number" name="quantity" min="1" max="20" step="1" value="8">
+						<input id="text_max_depth" class="iput middle" type="number" name="quantity" min="1" max="10" step="1" value="8">
 						<label>max depth</label>
 					</p>
 						
 					<p>
-						<input id="text_T_internal" class="iput middle" type="number" name="quantity" min="0.0" max="1.0" step="0.01" value="0.0">
+						<input id="text_T_internal" class="iput middle" type="number" name="quantity" min="0.0" max="1.0" step="0.1" value="0.0">
 						<label>T internal</label></p>
 						
 					<p>
-						<input id="text_T_leaf" class="iput middle" type="number" name="quantity" min="0.0" max="1.0" step="0.01" value="0.0">
+						<input id="text_T_leaf" class="iput middle" type="number" name="quantity" min="0.0" max="1.0" step="0.1" value="0.0">
 						<label>T leaf</label>
 					</p>
 				</fieldset>
@@ -186,11 +195,11 @@
 						<label>refine</label>
 					</legend>
 					<p>
-						<input id="text_T_angle" class="iput middle" type="number" name="quantity" min="0.0" max="180.0" step="0.01" value="1.0">
+						<input id="text_T_angle" class="iput middle" type="number" name="quantity" min="0.0" max="360.0" step="0.1" value="1.0">
 						<label>T angle</label>
 					</p>
 					<p>
-						<input id="text_T_join" class="iput middle" type="number" name="quantity" min="0.0" max="1.0" step="0.01" value="0.1">
+						<input id="text_T_join" class="iput middle" type="number" name="quantity" min="0.0" max="1.0" step="0.1" value="0.1">
 						<label>T join</label>
 					</p>
 				</fieldset>
@@ -237,7 +246,9 @@
 			}
 		</script>
 		<script id="shader-vs" type="x-shader/x-vertex">
-    		attribute vec3 aVertexPosition;
+	   		precision highp float;
+    		
+			attribute vec3 aVertexPosition;
 			attribute vec2 aTextureCoord;
 
     		uniform mat4 		uMVPMatrix;

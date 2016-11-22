@@ -79,6 +79,16 @@ $(document).ready(function() {
 
 	});
 
+	$('#button_evaluation_set_default').click(function() {
+		g_evaluator.setDefault();
+		$('#label_evaluation').text("    0 / " + g_evaluator.length + " | scene " + g_scene_list[g_scene_list_index]);
+	});
+
+	$('#button_evaluation_set_config').click(function() {
+		g_evaluator.setFromConfig(g_config);
+		$('#label_evaluation').text("    0 / " + g_evaluator.length + " | scene " + g_scene_list[g_scene_list_index]);
+	});
+
 	$( '#button_run_scene' ).click(function() {
 		g_scene_list_index = 0;
 
@@ -88,12 +98,15 @@ $(document).ready(function() {
 
 		
 		$('fieldset').prop('disabled', true);
+		$('legend').prop('disabled', true);
 		
 		getFrameMessage(0);
 		runEvaluation(0);
 	});
 
 	$( '#button_render_single_frame' ).click(function() {
+		var select_frames_max = document.getElementById("select_frames_max");
+		drawFrame(select_frames_max.selectedIndex);
 		downloadFrameToPNG();
 	});
 
@@ -521,8 +534,6 @@ $(document).ready(function() {
 	}
 
 	function downloadFrameToPNG() {
-		drawFirstFrame();
-
 		var data = muGl.canvas.toDataURL("image/png;base64;");
 		var download = document.createElement('a');
 		document.body.appendChild(download);
@@ -659,6 +670,7 @@ $(document).ready(function() {
 							alert("Evaluation Done!");
 							$('#window_menu_overlay').width(0 + '%');
 							$('fieldset').prop('disabled', false);
+							$('legend').prop('disabled', false);
 						}
 					}
 				}

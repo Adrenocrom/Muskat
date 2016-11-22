@@ -29,7 +29,6 @@ public:
 
 	std::list<cv::Point2f> generateSeeds(cv::Mat& gx, cv::Mat& gy);
 
-
 	void setTleaf( ushort T_leaf );
 	void setTinternal( ushort T_internal );
 
@@ -57,7 +56,7 @@ private:
 	// id: id of node which will be divided
 	void subdivide(int id, uint current_depth);
 
-	void calcCxy(std::list<cv::Point2f>& seeds);
+	//void calcCxy(std::list<cv::Point2f>& seeds);
 
 	// get nodes by reference
 	std::vector<QtreeNode>*	 getNodes() {return &nodes;}

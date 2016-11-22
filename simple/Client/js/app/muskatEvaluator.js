@@ -1,26 +1,20 @@
 class MuskatEvaluator {
 	constructor() {
+		this.setDefault();
+	}
+
+	setDefault() {
 		this._evaluation = [];
 
-		var c7 = new MuskatConfig(this.nullFunction);
-		c7.meshMode = "delaunay";
-		c7.maxDepth = 6;
-		c7.Tleaf	 = 0.5;
-		c7.Tinternal = 0.5;
-		c7.refine	 = true;
-		c7.preBackgroundSubtraction = true;
-		c7.praBackgroundSubtraction = false;
-		this.add(c7);
-
 	
-/*		var xxx = new MuskatConfig(this.nullFunction);
-		xxx.gridType		= gridTypes[0];
-		xxx.meshPrecision	= meshPrecision[0];
-		xxx.Tgrad 			= gradients[0];
-		xxx.fivePass		= true;
+		var xxx = new MuskatConfig(this.nullFunction);
+		xxx.gridType		= "default";
+		xxx.meshPrecision	= "16bit";
+		xxx.Tgrad 			= 1.0;
+		this.add(xxx);
 
 		// Full Mesh
-/*		var gridTypes 		= ["default", "cookie_cutter", "isometric"];
+		var gridTypes 		= ["default", "cookie_cutter", "isometric"];
 		var meshPrecision 	= ["16bit", "8bit"];
 		var gradients 		= [1.0, 0.9, 0.8, 0.7];
 		for(var m = 1; m <= 4; m += m) {
@@ -45,7 +39,7 @@ class MuskatEvaluator {
 				}
 			}
 		}
-*/		
+		
 		// Delaunay Mesh floyd-steinberg
 /*		var yyy = new MuskatConfig(this.nullFunction);
 		yyy.meshMode = "delaunay";
@@ -209,6 +203,11 @@ class MuskatEvaluator {
 
 	add(config) {
 		this._evaluation.push(config);
+	}
+
+	setFromConfig(config) {
+		this._evaluation = [];
+		this.add(config);
 	}
 
 	getConfig(index) {

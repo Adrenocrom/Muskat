@@ -61,6 +61,29 @@ inline bool operator < (const Point& a, const Point& b) {
 	return false;
 }
 
+class muPoint : public cv::Point_<float> {
+public:
+	//int ix;
+	//int iy;
+
+	muPoint(const float& x, const float& y) : cv::Point_<float>((float) x, (float) y) {
+	//	ix = (int) x;
+	//	iy = (int) y;
+	}
+
+	bool operator < (const muPoint& p) const {
+		if(y < p.y) {
+			return true;
+		}
+		else if(y == p.y) {
+			if(x < p.x) {
+				return true;
+			}
+		}
+		return false;
+	}
+};
+
 inline double norm(const Point& a, const Point& b) {
 	double x = a.u - b.u;
 	double y = a.v - b.v;
@@ -110,7 +133,7 @@ inline double calcPMDepth(const Edge& e) {
 }
 
 inline int calcIntPMDepth(const Edge& e) {
-	return (int)(((double)(e.a.z + e.b.z)) / 2.0);
+	return ((int)(e.a.z + e.b.z)) / 2;
 }
 
 
@@ -180,9 +203,9 @@ private:
 
 	// performs delaunay triangulation, input are the depth image and seed points,
 	// the result is list of triangles in an 2D space
-	vector<cv::Vec6f> delaunay(cv::Mat& img, std::list<cv::Point2f>& seeds);
+	vector<cv::Vec6f> delaunay(cv::Mat& img, list<cv::Point2f>& seeds);
 
-	std::list<cv::Point2f> floydSteinberg(cv::Mat& gx, cv::Mat& gy, double T = 0.5, double gamma = 0.5);
+	list<cv::Point2f> floydSteinberg(cv::Mat& gx, cv::Mat& gy, double T = 0.5, double gamma = 0.5);
 
 	bool isValid(cv::Mat& img, const Edge& e);
 

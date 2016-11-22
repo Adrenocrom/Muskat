@@ -163,7 +163,7 @@ void Compressor::compressMeshDelaunay(QJsonObject& jo, cv::Mat& img) {
 	double invHeight 	= 1.0 / (double)(m_config->getMeshHeight()- 1);
 
 	// calc sobel gradients for 2 dimensions and store them
-	Sobel( img, sx, CV_16S, 1, 0, 3, 1, 0, cv::BORDER_DEFAULT );
+	Sobel( img, sx, CV_32F, 1, 0, 3, 1, 0, cv::BORDER_DEFAULT );
 	Sobel( img, sy, CV_32F, 0, 1, 3, 1, 0, cv::BORDER_DEFAULT );
 	cv::absdiff(sx, cv::Scalar::all(0), ax);
 	cv::absdiff(sy, cv::Scalar::all(0), ay);
@@ -185,6 +185,7 @@ void Compressor::compressMeshDelaunay(QJsonObject& jo, cv::Mat& img) {
 			return false;
 		});
 	}
+	
 
 	clock_t c_end = clock();
 	m_ctime_seeds = ((c_end - c_begin) * 1000.0) / CLOCKS_PER_SEC;
@@ -425,9 +426,7 @@ void Compressor::resizeQuadtree() {
 
 bool Compressor::isValid(cv::Mat& img, const Edge& e) {
 	Point pm = e.getPM(img, m_config->getMeshWidth(), m_config->getMeshHeight());
-	if(abs(calcIntPMDepth(e) - (int)pm.z) > 0) return false;
-
-	//if(e.a.z == USHRT_MAX || e.b.z == USHRT_MAX) return false;
+	if(abs(calcIntPMDepth(e) - (int)pm.z) > 1000) return false;
 	
 	double value_a = fabs(e.a.dz - e.b.dz);
 	double value_b = norm(e.a, e.b) * (e.a.dz + e.b.dz);
