@@ -29,93 +29,197 @@ QuadTree::QuadTree(uint w, uint h, uint max_depth) {
 	subdivide(0, 1);
 }
 
-list<cv::Point2f> QuadTree::generateSeeds(cv::Mat& gx, cv::Mat& gy) {
+list<cv::Point2f> QuadTree::generateSeeds(cv::Mat& depth, cv::Mat& gx, cv::Mat& gy, bool background) {
 	list<cv::Point2f> seeds;
-
+	
 	uint r_size = m_max_depth-1;
 	uint size = hnodes[r_size].size();
 
 	ushort g_x, g_y;
 	// calc c_x, c_y in the leaf nodes
-	for(uint n = 0; n < size; ++n) {
+	
+	if(background) {
+		for(uint n = 0; n < size; ++n) {
+			QtreeNode& leaf = nodes[hnodes[r_size][n]];
+			QtreeRect& rect = leaf.rect;
 
-		QtreeNode& leaf = nodes[hnodes[r_size][n]];
-		QtreeRect& rect = leaf.rect;
-
-		// init with the first values
-		leaf.H_x = gx.at<ushort>(rect.min_y, rect.min_x);
-		leaf.H_y = gy.at<ushort>(rect.min_y, rect.min_x);
-		leaf.L_x = leaf.H_x;
-		leaf.L_y = leaf.H_y;
-
-		for(int y = rect.min_y; y <= rect.max_y; ++y) {
-			for(int x = rect.min_x; x <= rect.max_x; ++x) {
-				g_x = gx.at<ushort>(y, x);
-				g_y = gy.at<ushort>(y, x);
+			// init with the first values
+			leaf.H_x = gx.at<ushort>(rect.min_y, rect.min_x);
+			leaf.H_y = gy.at<ushort>(rect.min_y, rect.min_x);
+			leaf.L_x = leaf.H_x;
+			leaf.L_y = leaf.H_y;
+			for(int y = rect.min_y; y <= rect.max_y; ++y) {
+				for(int x = rect.min_x; x <= rect.max_x; ++x) {
+					g_x = gx.at<ushort>(y, x);
+					g_y = gy.at<ushort>(y, x);
 				
-				leaf.H_x = MU_MAX( leaf.H_x, g_x );
-				leaf.H_y = MU_MAX( leaf.H_y, g_y );
+					leaf.H_x = MU_MAX( leaf.H_x, g_x );
+					leaf.H_y = MU_MAX( leaf.H_y, g_y );
+					leaf.L_x = MU_MIN( leaf.L_x, g_x );
+					leaf.L_y = MU_MIN( leaf.L_y, g_y );
+				}
+			}
 
-				leaf.L_x = MU_MIN( leaf.L_x, g_x );
-				leaf.L_y = MU_MIN( leaf.L_y, g_y );
+			leaf.c_x = leaf.H_x - leaf.L_x;
+			leaf.c_y = leaf.H_y - leaf.L_y;
+			if(leaf.c_x >= m_T_leaf || leaf.c_y >= m_T_leaf) {
+				// region is non planar
+	
+				if(depth.at<ushort>(rect.min_y, rect.min_x) != USHRT_MAX) {
+					cv::Point2f p1(rect.min_x, rect.min_y);
+					seeds.push_back(p1);
+				}
+
+				if(depth.at<ushort>(rect.min_y, rect.max_x) != USHRT_MAX) {
+					cv::Point2f p2(rect.max_x, rect.min_y);
+					seeds.push_back(p2);
+				}
+
+				if(depth.at<ushort>(rect.max_y, rect.min_x) != USHRT_MAX) {
+					cv::Point2f p3(rect.min_x, rect.max_y);
+					seeds.push_back(p3);
+				}
+
+				if(depth.at<ushort>(rect.max_y, rect.max_x) != USHRT_MAX) {
+					cv::Point2f p4(rect.max_x, rect.max_y);
+					seeds.push_back(p4);		
+				}
 			}
 		}
 
-		leaf.c_x = leaf.H_x - leaf.L_x;
-		leaf.c_y = leaf.H_y - leaf.L_y;
-
-		if(leaf.c_x >= m_T_leaf || leaf.c_y >= m_T_leaf) {
-			// region is non planar
-			cv::Point2f p1(rect.min_x, rect.min_y);
-			cv::Point2f p2(rect.max_x, rect.min_y);
-			cv::Point2f p3(rect.min_x, rect.max_y);
-			cv::Point2f p4(rect.max_x, rect.max_y);
-
-			seeds.push_back(p1);
-			seeds.push_back(p2);
-			seeds.push_back(p3);
-			seeds.push_back(p4);		
-		}
-	}
-
-	// calc c_x, c_y in the inner nodes
-	for(int d = (int)r_size - 1; d >= 0; --d) {
-		size = hnodes[d].size();
-
-		for(uint n = 0; n < size; ++n) {
-			QtreeNode& node = nodes[hnodes[d][n]];
-
-			QtreeNode& nw = nodes[node.nw];
-			QtreeNode& ne = nodes[node.ne];
-			QtreeNode& sw = nodes[node.sw];
-			QtreeNode& se = nodes[node.se];
-
-			node.H_x = MU_MAX4(nw.H_x, ne.H_x, sw.H_x, se.H_x);
-			node.H_y = MU_MAX4(nw.H_y, ne.H_y, sw.H_y, se.H_y);
-
-			node.L_x = MU_MIN4(nw.L_x, ne.L_x, sw.L_x, se.L_x);
-			node.L_y = MU_MIN4(nw.L_y, ne.L_y, sw.L_y, se.L_y);
-			
-			node.c_x = node.H_x - node.L_x;
-			node.c_y = node.H_y - node.L_y;
-
-			if(node.c_x >= m_T_internal || node.c_y >= m_T_internal) {
-				QtreeRect& rect = node.rect;
-
-				// region is non planar
-				cv::Point2f p1(rect.min_x, rect.min_y);
-				cv::Point2f p2(rect.max_x, rect.min_y);
-				cv::Point2f p3(rect.min_x, rect.max_y);
-				cv::Point2f p4(rect.max_x, rect.max_y);
-
-				seeds.push_back(p1);
-				seeds.push_back(p2);
-				seeds.push_back(p3);
-				seeds.push_back(p4);
-			} 
-		}
-	}
+		// calc c_x, c_y in the inner nodes
+		for(int d = (int)r_size - 1; d >= 0; --d) {
+			size = hnodes[d].size();
+			for(uint n = 0; n < size; ++n) {
+				QtreeNode& node = nodes[hnodes[d][n]];
 	
+				QtreeNode& nw = nodes[node.nw];
+				QtreeNode& ne = nodes[node.ne];
+				QtreeNode& sw = nodes[node.sw];
+				QtreeNode& se = nodes[node.se];
+	
+				node.H_x = MU_MAX4(nw.H_x, ne.H_x, sw.H_x, se.H_x);
+				node.H_y = MU_MAX4(nw.H_y, ne.H_y, sw.H_y, se.H_y);
+				node.L_x = MU_MIN4(nw.L_x, ne.L_x, sw.L_x, se.L_x);
+				node.L_y = MU_MIN4(nw.L_y, ne.L_y, sw.L_y, se.L_y);
+				
+				node.c_x = node.H_x - node.L_x;
+				node.c_y = node.H_y - node.L_y;
+				if(node.c_x >= m_T_internal || node.c_y >= m_T_internal) {
+					QtreeRect& rect = node.rect;
+
+					if(depth.at<ushort>(rect.min_y, rect.min_x) != USHRT_MAX) {
+						cv::Point2f p1(rect.min_x, rect.min_y);
+						seeds.push_back(p1);
+					}
+
+					if(depth.at<ushort>(rect.min_y, rect.max_x) != USHRT_MAX) {
+						cv::Point2f p2(rect.max_x, rect.min_y);
+						seeds.push_back(p2);
+					}
+
+					if(depth.at<ushort>(rect.max_y, rect.min_x) != USHRT_MAX) {
+						cv::Point2f p3(rect.min_x, rect.max_y);
+						seeds.push_back(p3);
+					}
+
+					if(depth.at<ushort>(rect.max_y, rect.max_x) != USHRT_MAX) {
+						cv::Point2f p4(rect.max_x, rect.max_y);
+						seeds.push_back(p4);		
+					}
+				} 
+			}
+		}
+	} else {
+		for(uint n = 0; n < size; ++n) {
+			QtreeNode& leaf = nodes[hnodes[r_size][n]];
+			QtreeRect& rect = leaf.rect;
+
+			// init with the first values
+			leaf.H_x = gx.at<ushort>(rect.min_y, rect.min_x);
+			leaf.H_y = gy.at<ushort>(rect.min_y, rect.min_x);
+			leaf.L_x = leaf.H_x;
+			leaf.L_y = leaf.H_y;
+			for(int y = rect.min_y; y <= rect.max_y; ++y) {
+				for(int x = rect.min_x; x <= rect.max_x; ++x) {
+					g_x = gx.at<ushort>(y, x);
+					g_y = gy.at<ushort>(y, x);
+				
+					leaf.H_x = MU_MAX( leaf.H_x, g_x );
+					leaf.H_y = MU_MAX( leaf.H_y, g_y );
+					leaf.L_x = MU_MIN( leaf.L_x, g_x );
+					leaf.L_y = MU_MIN( leaf.L_y, g_y );
+				}
+			}
+
+			leaf.c_x = leaf.H_x - leaf.L_x;
+			leaf.c_y = leaf.H_y - leaf.L_y;
+			if(leaf.c_x >= m_T_leaf || leaf.c_y >= m_T_leaf) {
+				// region is non planar
+	
+				cv::Point2f p1(rect.min_x, rect.min_y);
+				seeds.push_back(p1);
+
+				cv::Point2f p2(rect.max_x, rect.min_y);
+				seeds.push_back(p2);
+
+				cv::Point2f p3(rect.min_x, rect.max_y);
+				seeds.push_back(p3);
+
+				cv::Point2f p4(rect.max_x, rect.max_y);
+				seeds.push_back(p4);		
+			}
+		}
+
+		// calc c_x, c_y in the inner nodes
+		for(int d = (int)r_size - 1; d >= 0; --d) {
+			size = hnodes[d].size();
+			for(uint n = 0; n < size; ++n) {
+				QtreeNode& node = nodes[hnodes[d][n]];
+	
+				QtreeNode& nw = nodes[node.nw];
+				QtreeNode& ne = nodes[node.ne];
+				QtreeNode& sw = nodes[node.sw];
+				QtreeNode& se = nodes[node.se];
+	
+				node.H_x = MU_MAX4(nw.H_x, ne.H_x, sw.H_x, se.H_x);
+				node.H_y = MU_MAX4(nw.H_y, ne.H_y, sw.H_y, se.H_y);
+				node.L_x = MU_MIN4(nw.L_x, ne.L_x, sw.L_x, se.L_x);
+				node.L_y = MU_MIN4(nw.L_y, ne.L_y, sw.L_y, se.L_y);
+				
+				node.c_x = node.H_x - node.L_x;
+				node.c_y = node.H_y - node.L_y;
+				if(node.c_x >= m_T_internal || node.c_y >= m_T_internal) {
+					QtreeRect& rect = node.rect;
+
+					cv::Point2f p1(rect.min_x, rect.min_y);
+					seeds.push_back(p1);
+
+					cv::Point2f p2(rect.max_x, rect.min_y);
+					seeds.push_back(p2);
+
+					cv::Point2f p3(rect.min_x, rect.max_y);
+					seeds.push_back(p3);
+
+					cv::Point2f p4(rect.max_x, rect.max_y);
+					seeds.push_back(p4);		
+				} 
+			}
+		}
+	}
+
+	seeds.sort([](cv::Point2f& a, cv::Point2f& b) {
+		if(a.y < b.y) {
+			return true;
+		}
+		else if(a.y == b.y) {
+			if(a.x < b.x) {
+				return true;
+			}	
+		}
+		return false;
+	});
+	seeds.unique();
 	return seeds;
 }
 
@@ -191,4 +295,185 @@ void QtreeNode::createLeaf() {
 	ne = -1;
 	sw = -1;
 	se = -1;
+}
+
+
+void QuadTree::drawGenerateSeeds(cv::Mat& seedimg, cv::Mat& depth, cv::Mat& gx, cv::Mat& gy, bool background) {
+	uint r_size = m_max_depth-1;
+	uint size = hnodes[r_size].size();
+
+	ushort g_x, g_y;
+	// calc c_x, c_y in the leaf nodes
+	
+	if(background) {
+		for(uint n = 0; n < size; ++n) {
+			QtreeNode& leaf = nodes[hnodes[r_size][n]];
+			QtreeRect& rect = leaf.rect;
+
+			// init with the first values
+			leaf.H_x = gx.at<ushort>(rect.min_y, rect.min_x);
+			leaf.H_y = gy.at<ushort>(rect.min_y, rect.min_x);
+			leaf.L_x = leaf.H_x;
+			leaf.L_y = leaf.H_y;
+			for(int y = rect.min_y; y <= rect.max_y; ++y) {
+				for(int x = rect.min_x; x <= rect.max_x; ++x) {
+					g_x = gx.at<ushort>(y, x);
+					g_y = gy.at<ushort>(y, x);
+				
+					leaf.H_x = MU_MAX( leaf.H_x, g_x );
+					leaf.H_y = MU_MAX( leaf.H_y, g_y );
+					leaf.L_x = MU_MIN( leaf.L_x, g_x );
+					leaf.L_y = MU_MIN( leaf.L_y, g_y );
+				}
+			}
+
+			leaf.c_x = leaf.H_x - leaf.L_x;
+			leaf.c_y = leaf.H_y - leaf.L_y;
+			if(leaf.c_x >= m_T_leaf || leaf.c_y >= m_T_leaf) {
+				// region is non planar
+	
+				if(depth.at<ushort>(rect.min_y, rect.min_x) != USHRT_MAX) {
+					cv::Point2f p1(rect.min_x, rect.min_y);
+					circle(seedimg, p1, 2, cv::Scalar(255, 0, 0, 255), CV_FILLED);
+				}
+
+				if(depth.at<ushort>(rect.min_y, rect.max_x) != USHRT_MAX) {
+					cv::Point2f p2(rect.max_x, rect.min_y);
+					circle(seedimg, p2, 2, cv::Scalar(255, 0, 0, 255), CV_FILLED);
+				}
+
+				if(depth.at<ushort>(rect.max_y, rect.min_x) != USHRT_MAX) {
+					cv::Point2f p3(rect.min_x, rect.max_y);
+					circle(seedimg, p3, 2, cv::Scalar(255, 0, 0, 255), CV_FILLED);
+				}
+
+				if(depth.at<ushort>(rect.max_y, rect.max_x) != USHRT_MAX) {
+					cv::Point2f p4(rect.max_x, rect.max_y);
+					circle(seedimg, p4, 2, cv::Scalar(255, 0, 0, 255), CV_FILLED);
+				}
+			}
+		}
+
+		// calc c_x, c_y in the inner nodes
+		for(int d = (int)r_size - 1; d >= 0; --d) {
+			size = hnodes[d].size();
+			for(uint n = 0; n < size; ++n) {
+				QtreeNode& node = nodes[hnodes[d][n]];
+	
+				QtreeNode& nw = nodes[node.nw];
+				QtreeNode& ne = nodes[node.ne];
+				QtreeNode& sw = nodes[node.sw];
+				QtreeNode& se = nodes[node.se];
+	
+				node.H_x = MU_MAX4(nw.H_x, ne.H_x, sw.H_x, se.H_x);
+				node.H_y = MU_MAX4(nw.H_y, ne.H_y, sw.H_y, se.H_y);
+				node.L_x = MU_MIN4(nw.L_x, ne.L_x, sw.L_x, se.L_x);
+				node.L_y = MU_MIN4(nw.L_y, ne.L_y, sw.L_y, se.L_y);
+				
+				node.c_x = node.H_x - node.L_x;
+				node.c_y = node.H_y - node.L_y;
+				if(node.c_x >= m_T_internal || node.c_y >= m_T_internal) {
+					QtreeRect& rect = node.rect;
+
+					if(depth.at<ushort>(rect.min_y, rect.min_x) != USHRT_MAX) {
+						cv::Point2f p1(rect.min_x, rect.min_y);
+						circle(seedimg, p1, 2, cv::Scalar(0, 255, 0, 255), CV_FILLED);
+					}
+
+					if(depth.at<ushort>(rect.min_y, rect.max_x) != USHRT_MAX) {
+						cv::Point2f p2(rect.max_x, rect.min_y);
+						circle(seedimg, p2, 2, cv::Scalar(0, 255, 0, 255), CV_FILLED);
+					}
+
+					if(depth.at<ushort>(rect.max_y, rect.min_x) != USHRT_MAX) {
+						cv::Point2f p3(rect.min_x, rect.max_y);
+						circle(seedimg, p3, 2, cv::Scalar(0, 255, 0, 255), CV_FILLED);
+					}
+
+					if(depth.at<ushort>(rect.max_y, rect.max_x) != USHRT_MAX) {
+						cv::Point2f p4(rect.max_x, rect.max_y);
+						circle(seedimg, p4, 2, cv::Scalar(0, 255, 0, 255), CV_FILLED);
+					}
+				} 
+			}
+		}
+	} else {
+		for(uint n = 0; n < size; ++n) {
+			QtreeNode& leaf = nodes[hnodes[r_size][n]];
+			QtreeRect& rect = leaf.rect;
+
+			// init with the first values
+			leaf.H_x = gx.at<ushort>(rect.min_y, rect.min_x);
+			leaf.H_y = gy.at<ushort>(rect.min_y, rect.min_x);
+			leaf.L_x = leaf.H_x;
+			leaf.L_y = leaf.H_y;
+			for(int y = rect.min_y; y <= rect.max_y; ++y) {
+				for(int x = rect.min_x; x <= rect.max_x; ++x) {
+					g_x = gx.at<ushort>(y, x);
+					g_y = gy.at<ushort>(y, x);
+				
+					leaf.H_x = MU_MAX( leaf.H_x, g_x );
+					leaf.H_y = MU_MAX( leaf.H_y, g_y );
+					leaf.L_x = MU_MIN( leaf.L_x, g_x );
+					leaf.L_y = MU_MIN( leaf.L_y, g_y );
+				}
+			}
+
+			leaf.c_x = leaf.H_x - leaf.L_x;
+			leaf.c_y = leaf.H_y - leaf.L_y;
+			if(leaf.c_x >= m_T_leaf || leaf.c_y >= m_T_leaf) {
+				// region is non planar
+	
+				cv::Point2f p1(rect.min_x, rect.min_y);
+				circle(seedimg, p1, 2, cv::Scalar(255, 0, 0, 255), CV_FILLED);
+
+				cv::Point2f p2(rect.max_x, rect.min_y);
+				circle(seedimg, p2, 2, cv::Scalar(255, 0, 0, 255), CV_FILLED);
+
+				cv::Point2f p3(rect.min_x, rect.max_y);
+				circle(seedimg, p3, 2, cv::Scalar(255, 0, 0, 255), CV_FILLED);
+
+				cv::Point2f p4(rect.max_x, rect.max_y);
+				circle(seedimg, p4, 2, cv::Scalar(255, 0, 0, 255), CV_FILLED);
+			}
+		}
+
+		// calc c_x, c_y in the inner nodes
+		for(int d = (int)r_size - 1; d >= 0; --d) {
+			size = hnodes[d].size();
+			for(uint n = 0; n < size; ++n) {
+				QtreeNode& node = nodes[hnodes[d][n]];
+	
+				QtreeNode& nw = nodes[node.nw];
+				QtreeNode& ne = nodes[node.ne];
+				QtreeNode& sw = nodes[node.sw];
+				QtreeNode& se = nodes[node.se];
+	
+				node.H_x = MU_MAX4(nw.H_x, ne.H_x, sw.H_x, se.H_x);
+				node.H_y = MU_MAX4(nw.H_y, ne.H_y, sw.H_y, se.H_y);
+				node.L_x = MU_MIN4(nw.L_x, ne.L_x, sw.L_x, se.L_x);
+				node.L_y = MU_MIN4(nw.L_y, ne.L_y, sw.L_y, se.L_y);
+				
+				node.c_x = node.H_x - node.L_x;
+				node.c_y = node.H_y - node.L_y;
+				if(node.c_x >= m_T_internal || node.c_y >= m_T_internal) {
+					QtreeRect& rect = node.rect;
+
+					cv::Point2f p1(rect.min_x, rect.min_y);
+					circle(seedimg, p1, 2, cv::Scalar(0, 255, 0, 255), CV_FILLED);
+
+					cv::Point2f p2(rect.max_x, rect.min_y);
+					circle(seedimg, p2, 2, cv::Scalar(0, 255, 0, 255), CV_FILLED);
+
+					cv::Point2f p3(rect.min_x, rect.max_y);
+					circle(seedimg, p3, 2, cv::Scalar(0, 255, 0, 255), CV_FILLED);
+
+					cv::Point2f p4(rect.max_x, rect.max_y);
+					circle(seedimg, p4, 2, cv::Scalar(0, 255, 0, 255), CV_FILLED);
+				} 
+			}
+		}
+	}
+
+	cv::imwrite("quadtree_seeds.png", seedimg);
 }

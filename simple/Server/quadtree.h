@@ -27,7 +27,8 @@ class QuadTree {
 public:
 	QuadTree(uint w, uint h, uint max_depth);
 
-	std::list<cv::Point2f> generateSeeds(cv::Mat& gx, cv::Mat& gy);
+	std::list<cv::Point2f> generateSeeds(cv::Mat& depth, cv::Mat& gx, cv::Mat& gy, bool background);
+	void	 			   drawGenerateSeeds(cv::Mat& seedimg, cv::Mat& depth, cv::Mat& gx, cv::Mat& gy, bool background);
 
 	void setTleaf( ushort T_leaf );
 	void setTinternal( ushort T_internal );

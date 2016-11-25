@@ -149,13 +149,13 @@ void Evaluator::runEvaluation() {
 			cv::Mat draw;
 			m_compressor->getFeatureImage()->convertTo(draw, CV_8U, 255);
 			cv::imwrite(m_filename + "/featuremap.png", draw);
+		} else {
+			cv::imwrite(m_filename + "/seeds.png", *m_compressor->getSeedImage());
 		}	
 	}
 
 	
 	cout<<"end evaluation"<<endl;
-
-	//system("pdflatex res/auto.tex");
 }
 
 void Evaluator::newMessure(int sceneId, int messureId, const string& name, const string& short_name, int num_vertices, int num_indices, int num_triangles) {

@@ -108,14 +108,18 @@ class MuskatConfig {
 		var name = this.meshWidth+"x"+this.meshHeight+"_";
 
 		if(this.meshMode == "full") {
-			name += "Full/"+this.gridType+"/"+this.meshPrecision;
+			if(this.pointcloud) {
+				name +="Pointcloud2";
+			} else {
+				name += "Full/"+this.gridType+"/"+this.meshPrecision;
 			
-			if(this.fivePass) 	name += "/5Pass";
-			else		 		name += "/3Pass";
+				if(this.fivePass) 	name += "/5Pass";
+				else		 		name += "/3Pass";
 			
-			if(this.smoothDepth) name += "_smooth";
-
-			name += "/G"+ this.Tgrad.toFixed(1);
+				if(this.smoothDepth) name += "_smooth";
+	
+				name += "/G"+ this.Tgrad.toFixed(1);
+			}
 		} else {
 			name += "Delaunay/";
 	
@@ -136,20 +140,24 @@ class MuskatConfig {
 		var name = this.meshWidth+"x"+this.meshHeight;
 
 		if(this.meshMode == "full") {
-			name += "F";
-			if(this.gridType == "default") name += "d";
-			else if(this.gridType == "cookie_cutter") name += "c";
-			else name += "i";
+			if(this.pointcloud) {
+				name +="Pointcloud2";
+			} else {
+				name += "F";
+				if(this.gridType == "default") name += "d";
+				else if(this.gridType == "cookie_cutter") name += "c";
+				else name += "i";
 			
-			if(this.meshPrecision == "8bit") name += "8";
-			else name += "16";
+				if(this.meshPrecision == "8bit") name += "8";
+				else name += "16";
 			
-			if(this.fivePass) 	name += "5";
-			else		 		name += "3";
+				if(this.fivePass) 	name += "5";
+				else		 		name += "3";
 			
-			name += this.Tgrad.toFixed(1);
+				name += this.Tgrad.toFixed(1);
 			
-			if(this.smoothDepth) name += "s";
+				if(this.smoothDepth) name += "s";
+			}
 		} else {
 			if(this.seedMode == "quadtree") name += "D"+this.maxDepth+"L"+this.Tleaf.toFixed(1)+"I"+this.Tinternal.toFixed(1);
 			else							name += "T"+this.Tthreshold.toFixed(1)+"G"+this.gamma.toFixed(1);

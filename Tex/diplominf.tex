@@ -10,7 +10,6 @@
 % twoside		zweiseitig
 
 \usepackage{lmodern}
-\pagenumbering{roman}
 %\usepackage[ngerman]{babel}
 
 \author{Josef Schulz}
@@ -32,7 +31,6 @@ Im Rahmen dieser Arbeit soll untersucht werden, wie die Darstellung mittels Höhe
 Ansätze sind hierfür Algorithmen aus der Netzvereinfachung. Zu erwarten sind sowohl 
 harte Kanten als auch glatte Verläufe der Tiefenwerte, welche sich in der Netzgeometrie durch 
 adaptive Vernetzung mit reduziertem Datenaufwand darstellen lassen.
-
 
 Dem Szenario der Web-basierten Remote-Visualisierung folgend soll der Web-Browser als
 Klient-Komponente eingesetzt werden. Die einzusetzenden Technologien sind HTML5, Javascript, 
@@ -72,23 +70,51 @@ Bild"ubernahmen zitieren.}
 \abstractde{ Zusammenfassung Text Deutsch}
 
 \usepackage{pgfplots}
-%\usepackage{pgf-umlsd}
 \usepackage{filecontents}
 \usepackage{subfigure}
 \usepackage{xcolor}
 \usepackage{float}
-%\usepackage{setspace}
 
 \setcounter{tocdepth}{2}
 
 \input{../results/7/512x512_Full/default/16bit/5Pass/G1.0/results.tex}
+\input{../results/7/512x512_Full/default/16bit/5Pass/G0.9/results.tex}
+\input{../results/7/512x512_Full/default/16bit/5Pass/G0.8/results.tex}
 \input{../results/6/512x512_Full/default/16bit/5Pass/G1.0/results.tex}
+\input{../results/6/512x512_Full/default/16bit/5Pass/G0.9/results.tex}
+\input{../results/6/512x512_Full/default/16bit/5Pass/G0.8/results.tex}
 
-\input{../results/6/512x512_Delaunay/D10/L0.1/I0.1/results.tex}
-\input{../results/7/512x512_Delaunay/D10/L0.1/I0.1/results.tex}
+\input{../results/6/512x512_Delaunay/D10/L0.1/I0.1/_pre/results.tex}
+\input{../results/6/512x512_Delaunay/D9/L0.1/I0.1/_pre/results.tex}
+\input{../results/6/512x512_Delaunay/D8/L0.1/I0.1/_pre/results.tex}
+\input{../results/7/512x512_Delaunay/D10/L0.1/I0.1/_pre/results.tex}
+\input{../results/7/512x512_Delaunay/D9/L0.1/I0.1/_pre/results.tex}
+\input{../results/7/512x512_Delaunay/D8/L0.1/I0.1/_pre/results.tex}
 
+\input{../results/6/512x512_Delaunay/T1.0/G1.0/results.tex}
+\input{../results/6/512x512_Delaunay/T0.7/G0.7/results.tex}
+\input{../results/6/512x512_Delaunay/T0.5/G0.5/results.tex}
+\input{../results/7/512x512_Delaunay/T1.0/G1.0/results.tex}
+\input{../results/7/512x512_Delaunay/T0.7/G0.7/results.tex}
+\input{../results/7/512x512_Delaunay/T0.5/G0.5/results.tex}
 
-\pagenumbering{arabic}
+\input{../results/s_6_D10.tex}
+\input{../results/s_6_D9.tex}
+\input{../results/s_6_D8.tex}
+\input{../results/s_7_D10.tex}
+\input{../results/s_7_D9.tex}
+\input{../results/s_7_D8.tex}
+\input{../results/s_6floydSteinberg.tex}
+\input{../results/s_7floydSteinberg.tex}
+
+\input{../results/s_6_D10_cost.tex}
+\input{../results/s_6_D9_cost.tex}
+\input{../results/s_6_D8_cost.tex}
+\input{../results/s_7_D10_cost.tex}
+\input{../results/s_7_D9_cost.tex}
+\input{../results/s_7_D8_cost.tex}
+\input{../results/s_6floydSteinberg_cost.tex}
+\input{../results/s_7floydSteinberg_cost.tex}
 
 %\newcommand{}[ANZAHL][OPTIONAL]{DEFINITION}
 
@@ -118,45 +144,38 @@ Die Latenz bezeichnet in der Netzwerktechnik die Übertragungszeit von einem zum 
 Diese ist in modernen Netzwerken gering, für die Interaktive Visualisierung allerdings immer
 noch zu groß um eine für den Menschen nicht wahrnehmbare Verzögerungszeit und 
 damit eine interaktive Visualisierung zu gewährleisten.
-Ein möglicher Ausweg besteht darin, dass der Klient-Prozess ein bereits empfangenes Bild extrapoliert. 
-Auf diese Weise, ist es möglich, dass der Klient-Prozess bereits ein neues Bild ausgeben kann, 
-obwohl es noch nicht empfangen wurde.
+Ein möglicher Ausweg besteht darin, dass der Klient-Prozess ein bereits empfangenes Bild extrapoliert.
+Das bedeutet, dass das noch nicht empfangene Bild aus den vorhanden Informationen approximiert
+wird, wodurch die Bildwiederholfrequenz akzeptabel bleibt.
 
-Bei der Bildsynthese des Server-Prozesses entsteht neben dem Farbbild zusätzlich ein Tiefenbild.
-Dieses kann genutzt werden, um geometrische Informationen an den Klient-Prozess weiter zureichen.
-Geometrisch entspricht das Tiefenbild einer 2.5D Ansicht der Szene, in Form einer Punktwolke.
-Die Extrapolation eines Bildes wird durchgeführt, indem diese Informationen aus einer
-neuen Kameraperspektive gezeichnet wird.
-Um die Qualität zu verbessern und Informationen einzusparen, wird aus dem Tiefenbild
-ein Dreiecksnetz erzeugt.
+Bei der Bildsynthese des Server-Prozesses lässt sich, aus dem Tiefenpuffer ein Tiefenbild erzeugen, zusätzlich zum Farbbild.
+Geometrisch entspricht das Tiefenbild einer 2.5D Ansicht der Szene.
+Wird es zum Klient gesendet, kann dieser das Tiefenbild exemplarisch als Punktwolke interpretieren.
+Das approximierte Bild entsteht, indem die Punktwolke aus einer neuen Kameraperspektive gezeichnet wird.
+Mit zunehmenden Winkelunterschied, zwischen der alten und der neuen Kameraperspektive,
+werden die Lücken zwischen den Punkten, der Punktwolke, immer größer.
+Durch die Erzeugung eines Dreiecksnetzes, aus dem Tiefenbild, lassen sich die Lücken
+schließen.
 Das Farbbild wird dabei als Textur über das Netz gelegt.
 
-Die Zentrale Aufgabe ist die Optimierung und die Übertragung der Tiefeninformationen,
-vom Server zum Klient.
-Es gibt im wesentlichen zwei Möglichkeiten diese Aufgabe zu erfüllen.
-Zum einen, kann das Tiefenbild direkt komprimiert werden 
-und im Anschluss daran wird es an den Klient gesendet,
-welcher das Dreiecksnetz aus dem Tiefenbild erzeugt und die Extrapolation durchführt.
-Die zweite Möglichkeit besteht in der Konstruktion des Dreiecksnetzes durch den Server.
-Beide Varianten werden in dieser Arbeit untersucht und mit Ground-Truth Datensätzen, hinsichtlich ihrer Güte in Abhängigkeit des Kamerawinkels evaluiert. 
-Die Abbildung \ref{fig:datasets_frame0} zeigt zwei Bilder aus den Datensätzen.
+\begin{figure}[H]
+	\subfigure[]{\includegraphics[width=.49\textwidth]{../Scenes/TestSpheres/run_1/testspheres_00000.png}}
+	\subfigure[]{\includegraphics[width=.49\textwidth]{../results/7/512x512_Full/default/16bit/5Pass/G1.0/frame_00277.png}}
+\caption{Die Abbildungen zeigt die Extrapolation des ersten Bildes a, aus dem Datensatz \textit{TestSpheres}. Der Winkelunterschied zum Bild b beträgt 8 Grad.}
+\label{fig:firstframes}
+\end{figure}
+
+Die Zentrale Aufgabe dieser Arbeit, ist die Optimierung und die Übertragung der 
+Tiefeninformationen, vom Server zum Klient.
+Zu diesem Zweck erzeugt der Server, aus dem Tiefenbild ein adaptives Dreiecksnetz.
+Dieses wird an den Klient übertragen und extrapoliert. 
+Mit Ground-Truth Datensätzen werden, in Abhängigkeit des Kamerawinkels, verschiedene
+Ansätze hinsichtlich ihrer Güte evaluiert. 
 Um die Algorithmen zu testen wurde eine Server- und eine Klient-Komponente entwickelt.
 Beide Komponenten tauschen Informationen über das auf TCP basierende Websocket-Protokoll aus.
 Der Klient ist ein Browser basierter Web-Klient, damit die implementierten Algorithmen
 mit den Einschränkungen durch JavaScript und WebGl evaluiert werden können.
 
-Im Folgenden werden bereits existierender Arbeiten diskutiert.
-
-\begin{figure}[h]
-	\subfigure[CoolRandom]{\includegraphics[width=.49\textwidth]{../Scenes/CoolRandom/run_1/coolrandom_00000.png}}
-	\subfigure[TestSpheres]{\includegraphics[width=.49\textwidth]{../Scenes/TestSpheres/run_1/testspheres_00000.png}}
-\caption{Die Abbildungen a und b zeigen Bilder aus den Datensätzen.}
-\label{fig:firstframes}
-\end{figure}
-
-Das Ziel dieser Arbeit ist es, ein Remote-Visualisierungssystem zu entwickeln,
-und eine Klient-seitige Bildextrapolation durchzuführen.
-Grundlage sind jeweils ein Farbbild, ein Tiefenbild und die entsprechenden Kamerainformationen.
 
 \chapter{Verwandte Arbeiten}
 
@@ -165,7 +184,8 @@ Zum zentralen Problem ihrer Arbeit, wird die Latenz und die effiziente Übertragu
 Lösungen hängen vom Anwendungsfall ab.
 In \textit{THIN}-Systemen besteht die Aufgabe in der Übertragung von
 2D Informationen, mit denen sich zum Beispiel Desktop-Anwendungen Fernsteuern lassen.
-Beispiele sind \textit{SLIM} \cite{Schmidt:1999:IPS:319344.319154} und \textit{THiNC} \cite{Baratto:2005:TVD:1095809.1095837}. Sie sind für die Übertragung von 2D-Daten optimiert und profitieren davon, dass die meisten Änderungen nur Teilbereiche der eigentlichen Oberfläche betreffen.
+Beispiele sind \textit{SLIM} \cite{Schmidt:1999:IPS:319344.319154} und \textit{THiNC} \cite{Baratto:2005:TVD:1095809.1095837}. 
+Sie sind für die Übertragung von 2D-Daten optimiert und profitieren davon, dass die meisten Änderungen nur Teilbereiche der eigentlichen Oberfläche betreffen.
 Ein anderes extrem der Remote-Visualisierung ist die Aufteilung der Bildsynthese,
 auf verschiedene Host-Systeme wie bei WireGL \cite{Humphreys:2001:WSG:383259.383272}.
 Jin Zhefan stellt in diesem Kontext Kompressionsmethoden für Zeicheninstruktionen, Vektoren, Normalen und Texturinformationen vor \cite{Jin:2006:RRI:1128923.1128927}.
@@ -179,10 +199,11 @@ ist die Latenz zu hoch um vom Benutzer nicht registriert zu werden.
 Mit Hilfe einer Bildextrapolation durch den Klienten kann die Latenz reduziert werden. 
 Zu diesen Zweck schätzen Shu \textit{et al.} in ihrer Arbeit \cite{1331221}, 
 zusätzliche Referenz-Kamerapositionen und erzeugen zusätzlich zum Farbbild der Originalen
-Kameraposition weitere Tiefenbilder. 
+Kameraposition weitere Tiefenbilder.
+Durch Warping, werden die Farbinformationen, unter Zuhilfenahme der Tiefenbilder
+in die neue Kameraperspektive überführt. 
+Durch Verdeckung bedingte Lücken lassen sich durch die Referenztiefenbilder schließen.
 Das Farbbild wird mit JPEG komprimiert und die Tiefenbilder mit ZLIB.
-Mit Hilfe der zusätzlichen Tiefeninformationen können durch Verdeckung bedingte Lücken
-bei der Extrapolation durch den Klienten geschlossen werden.
 Ein ähnlicher Ansatz wurde im VR-Bereich von Smit \textit{et al.} erprobt \cite{4810995}.
 Auch in diesem System werden Lücken mit Hilfe von Tiefenbildern aus Referenz-Kamerapositionen
 geschlossen.
@@ -190,10 +211,11 @@ Die Wahl des Warping-Algorithmus ist entscheidend für die Performance der Klient
 neben der im VR-System zum Einsatz kommenden Variante \cite{Mark:1997:PW:253284.253292},
 bieten Mark \textit{et al.} eine Übersicht über verschiedene mögliche Verfahren \cite{Mark99post-rendering3d}.
 
+Von der Kameraperspektive abhängige betrachtung...
+
 Die Übertragung und Visualisierung von Tiefenbildern spielt auch in der Visualisierung 
 von Sensordaten eine wichtige Rolle.
-Debevec1998
-Palomo \textit{et al.} beschäftigen sich mit der Visualisierung von Tiefenbildern \cite{Palomo:2010:EAD:1900179.1900236}, in ihrem Fall wurden diese mit Tiefensensoren erhoben.
+Palomo \textit{et al.} beschäftigen sich mit der Visualisierung und Übertragung, von Tiefenbildern \cite{Palomo:2010:EAD:1900179.1900236}, die von Tiefensensoren erhoben werden.
 Sie kombinieren mehrerer aus verschiedenen Blickwinkeln aufgenommenen Bilder mit Hilfe
 eines Tiefenpuffers zu einem Gesamtbild und vermindern auf diese Weise
 entstehende Artefakte im Zusammenhang von Verdeckung bei der Visualisierung der Daten aus einer
@@ -392,6 +414,11 @@ Eine bessere Lösung ist es, aus dem Tiefenbild ein Dreiecksnetz zu erzeugen
 und dieses für die Bildsynthese zu verwenden.
 Mit Hilfe der Delaunay-Triangulierung ist es möglich aus Tiefenbildern
 adaptive Dreiecksnetze zu erzeugen, welche die Lücke füllen.
+
+\begin{figure}[H]
+	\subfigure[]{\includegraphics[width=.49\textwidth]{img/CoolRandom_PointCloud_199}}
+	\subfigure[]{\includegraphics[width=.49\textwidth]{img/TestSpheres_PointCloud_306.png}}
+\end{figure}
 
 \section{Delaunay-Triangulierung}
 
@@ -607,23 +634,24 @@ Mittelwert über allen $x \in X$ und $y \in Y$ berechnet werden:
 
 In dieser Arbeit werden zwei grundsätzliche Verfahren untersucht, um die Tiefeninformationen zu übertragen
 und als Dreiecksnetz darzustellen.
-Der erste Ansatz besteht darin, das Tiefenbild als solches zu komprimieren und zu übertragen.
+Der erste Ansatz besteht darin, das Tiefenbild als solches verlustfrei zu komprimieren und zu übertragen.
 Der Klient empfängt und dekodiert das Tiefenbild und erzeugt daraus ein voll vernetztes Dreiecksnetz.
 Im zweiten Ansatz wird aus dem Tiefenbild ein adaptives Dreiecksnetz mit Hilfe
 der Delaunay-Triangulierung vom Server konstruiert und an den Klienten übertragen.
 
-Die Erzeugung von adaptiven Dreiecksnetzen lässt sich als eine Form der geometrischen Kompression
-bezeichnen.
+Die Erzeugung von adaptiven Dreiecksnetzen lässt sich als eine Form der 
+verlustbehafteten geometrischen Kompression bezeichnen.
 Um die Anzahl der zu übertragenden Informationen weiter zu reduzieren, kann das erzeugte
-Dreiecksnetz in Dreiecksstreifen zerlegt werden und sehr kompakt dargestellt werden.
-Durch Valenz-basierte Kodierung kann die Informationsmenge noch weiter reduziert werden.
+Dreiecksnetz in Dreiecksstreifen zerlegt und sehr kompakt kodiert werden.
+Durch Valenz-basierte Kodierung lässt sich diese Informationsmenge weiter reduzieren.
 
-\textcolor{red}{TODO: nicht ganz klar was bessere kompressionsraten erreicht, werden beide Varianten untersucht.
-Klares Problem, der Rechenaufwand der Vollvernetzung steigt der Auflösung deutlich an}
+Weil die Tiefenwerte des Tiefenbildes komplett und ohne Informationsverlust
+im voll vernetzen Dreiecksnetz enthalten sind, liefert dieses Verfahren Ergebnisse,
+die als \textit{Ground-Truth} Information zum Vergleich für die adaptive Vernetzung dienen. 
 
 \section{Vollvernetzung}
 
-Bei der Vollvernetzung wird für jeden Pixel $d$ aus dem Tiefenbild $D$ ein Vertex $v$ erzeugt.
+Bei der Vollvernetzung wird für jeden Pixel aus dem Tiefenbild $D$ ein Vertex erzeugt.
 Die entstandenen Vertices werden über Kanten zu Dreiecken miteinander verbunden.
 Die Abbildung \ref{fig:FULL_MESH} zeigt drei unterschiedliche Varianten, wie sich die
 Vertices zu voll vernetzten Dreiecksnetzen verbinden lassen.
@@ -863,39 +891,40 @@ abhängt und der Rechenaufwand der klientseitigen Bildsynthese linear mit der Auf
 
 Die zweite in dieser Arbeit untersuchte Variante, besteht in der serverseitigen Erzeugung eines adaptives Dreiecksnetz aus einem Tiefenbild $D$.
 Prinzipiell, lässt sich die Vorgehensweise in drei Schritte unterteilen.
-Im ersten Schritt muss eine Menge von Punkten $P \subset D$ definiert werden, sodass die Menge $P$
-die Werteverläufe des Tiefenbildes möglichst optimal wiedergegeben wird.
-Der zweite Schritt besteht in der Vernetzung der Punkte $p \in P$ zu Dreiecken, das dabei Eingesetze verfahren
-ist die Delaunay-Triangulierung.
+Im ersten Schritt muss eine Menge von Punkten $P \subset D$ definiert werden.
+Dabei muss die Menge $P$ so gewählt werden, 
+dass die Werteverläufe des Tiefenbildes möglichst optimal wiedergegeben werden.
+Der zweite Schritt besteht in der Vernetzung der Punkte $p \in P$ zu Dreiecken,
+dass dabei Eingesetze verfahren ist die Delaunay-Triangulierung.
 Zum Schluss kann das erzeugte Netz, in einem dritten Schritt, weiter verfeinert werden.
 
 Entscheidend für das Ergebnisnetz und für die Geschwindigkeit des gesamten Verfahrens ist die Wahl der Punktmenge $P$.
-Das Ziel bei der Verteilung der Punktemenge $P$ ist es, eine hohe Punktdichte im Bereich von Kanten und gekrümmten Flächen
-zu erzielen.
-Im Gegensatz dazu sollten Planare Regionen möglichst keine Punkte enthalten, weil diese mit wenigen Dreiecken approximiert
-werden können.
+Das Ziel bei der Verteilung der Punktemenge $P$ ist es, eine hohe Punktdichte im Bereich von
+Kanten und gekrümmten Flächen zu erzielen.
+Im Gegensatz dazu sollten planare Regionen möglichst keine Punkte enthalten, 
+weil diese mit wenigen Dreiecken approximiert werden können.
 Ausgangspunkt für die Erzeugung der Punktmenge $P$, sind die Gradienten des Tiefenbildes $\nabla_x$ und $\nabla_y$. 
-Die Gradienten werden mit Hilfe des Sobel-Operator berechnet. 
+Die Gradienten werden mit Hilfe des Sobel-Operators berechnet. 
 Dazu wird die erste Ableitung berechnet und gleichzeitig wird die dazu orthogonale Richtung geglättet.
 Mit Hilfe einer Faltungsmatrix der Größe $3 \times 3$ lassen sich die Gradienten berechnen:
 
-\begin{align}
-\nabla_x &= \begin{bmatrix} 1 & 0 & -1 \\ 2 & 0 & -2 \\ 1 & 0 & -1 \end{bmatrix} \ast D \\
+\begin{align*}
+\nabla_x &= \begin{bmatrix} 1 & 0 & -1 \\ 2 & 0 & -2 \\ 1 & 0 & -1 \end{bmatrix} \ast D, &
 \nabla_y &= \begin{bmatrix} 1 & 2 & 1 \\ 0 & 0 & 0 \\ -1 & -2 & -1 \end{bmatrix} \ast D.
 \label{eq:SOBEL_GRAD}
-\end{align}
+\end{align*}
 
 Auf diese weise entstehen für ein Tiefenbild zwei Gradientenbilder, wie in Abbildung \ref{fig:gradient_images}
 dargestellt.
 Zur Erzeugung der Punktmenge $P$ wurden zwei Verfahren untersucht, die im Folgenden näher betrachtet werden. 
 
 \begin{figure}[H]
-	\subfigure[]{\includegraphics[width=.49\textwidth]{../results/7/512x512_Delaunay/D10/L0.0/I0.0/gx.png}}
-	\subfigure[]{\includegraphics[width=.49\textwidth]{../results/7/512x512_Delaunay/D10/L0.0/I0.0/gy.png}}
-	%\subfigure[]{\includegraphics[width=.49\textwidth]{../results/6/512x512_Delaunay/D10/L0.0/I0.0/gx.png}}
-	%\subfigure[]{\includegraphics[width=.49\textwidth]{../results/6/512x512_Delaunay/D10/L0.0/I0.0/gy.png}}
-	\caption{Die Abbildung zeigt die Gradientenbilder beider Datensätze vom jeweils ersten Frame.
-			 Dabei zeigen a und c $\nabla_x$, während b und d $\nabla_y$ der beiden Datensätze zeigt.}
+	\subfigure[]{\includegraphics[width=.49\textwidth]{../results/7/512x512_Delaunay/D10/L0.0/I0.0/_pre/gx.png}}
+	\subfigure[]{\includegraphics[width=.49\textwidth]{../results/7/512x512_Delaunay/D10/L0.0/I0.0/_pre/gy.png}}
+	
+	\subfigure[]{\includegraphics[width=.49\textwidth]{../results/6/512x512_Delaunay/D10/L0.0/I0.0/_pre/gx.png}}
+	\subfigure[]{\includegraphics[width=.49\textwidth]{../results/6/512x512_Delaunay/D10/L0.0/I0.0/_pre/gy.png}}
+	\caption{Gradientenbilder beider Datensätze vom jeweils ersten Tiefenbild.}
 	\label{fig:gradient_images}
 \end{figure}
 
@@ -956,6 +985,12 @@ Die Werte von $i$ und $l$ liegen im Intervall $[0,1]$.
 Das Ergebnis der Traversierung des Baums ist eine Menge von Punkten $P$, die sich aus den Eckpunkten der getesteten
 Regionen zusammensetzt, in denen die Gradientdifferenzen den entsprechenden Schwellwert überschreitet.
 
+\begin{figure}
+	\subfigure[]{\includegraphics[width=.49\textwidth]{img/seed_7_D9_5_4.png}}
+	\subfigure[]{\includegraphics[width=.49\textwidth]{img/seed_7_D9_5_4_pre.png}}
+	\caption{Szene \textit{TestSpheres}, Baumtiefe 9, l=5, i=4}
+\end{figure}
+
 Diese Punktmenge $P$ kann weiter reduziert werden, indem getestet wird, ob ein Punkt $p \in P$ zum Hintergrund gehört.
 Das ist der Fall, wenn der Tiefenwert des Tiefenbildes an stelle $p$ dem maximalen Tiefenwert entspricht.
 Zur Erinnerung die Tiefenwerte liegen linear zwischen den beiden Clippingebenen, wobei ein großer Wert bedeutet,
@@ -989,7 +1024,7 @@ Zusätzlich wird der neu gesetzte Wert und der daraus resultierende Quantisierung
 auf die benachbarten Pixel verteilt. 
 Das Folgende Codebeispiel \ref{lst:floyd_steinberg} verdeutlicht das Verfahren:
 
-\begin{lstlisting}[numbers=left,mathescape=true,xleftmargin=0.1\textwidth,captionpos=b,caption={Floyd-Steinberg Algorithmus},label={lst:floyd_steinberg}]
+\begin{lstlisting}[numbers=left,mathescape=true,xleftmargin=0.1\textwidth,captionpos=b,caption={Floyd-Steinberg Algorithmus \cite{wiki:001}},label={lst:floyd_steinberg}]
 for each y
 	for each x
 	   oldpixel        := pixel[x][y]
@@ -1046,6 +1081,9 @@ sich dem Lot der Bildebene nährt, während gleichzeitig eine bestimmte Länge in d
 Die Eckpunkte der zu prüfenden Kante, werden im folgenden mit $p_1$ und $p_2$ bezeichnet.
 Der Punkt $p_m$ bezeichnet dabei den Mittelpunkt der Kante $p_1 p_2$.
 
+\begin{equation}
+	\frac{d_{p_1} + d_{p_2}}{2} - d_{p_m} < \varepsilon
+\end{equation}
 
 Eine Kante ist nicht valide, wenn der eigentliche Tiefenwert $D(p_m)$ 
 In der Gleichung \ref{eq:EDGE_VALID} approximiert der erste Term das Verhältnis,
@@ -1053,7 +1091,7 @@ zwischen dem Betrag des Tiefenunterschieds von $p_1$ und $p_2$
 zu der Länge der Kante projiziert auf die $xy$-Ebene.
 
 \begin{equation}
-\frac{\mid d(p_1) - d(p_2) \mid}{\parallel p_1 - p_2 \parallel (d(p_1) + d(p_2))} < T_{angle}
+\frac{\mid d_{p_1} - d_{p_2} \mid}{\parallel p_1 - p_2 \parallel (d_{p_1} + d_{p_2})} < \alpha
 \label{eq:EDGE_VALID}
 \end{equation}
 
@@ -1075,7 +1113,7 @@ Eine Strecke wird als Verbindbar bezeichnet, wenn sie die folgende Gleichung
 erfüllt:
 
 \begin{equation}
-\mid (d(p_2) - d(p_m)) - (d(p_m) - d(p_1)) \mid < T_{join}
+\mid (d(p_2) - d(p_m)) - (d(p_m) - d(p_1)) \mid < \beta
 \label{eq:EDGE_JOIN}
 \end{equation}.
 
@@ -1227,20 +1265,34 @@ Um die Schwellwerte unabhängig von der Auflösung und Farbtiefe angeben zu können
 werden die Streckenlängen in den Gleichungen \ref{eq:EDGE_JOIN}... mit Texturkoordinaten berechnet
 und die Farbwerte der Pixel auf das Intervall $[0,1]$ transformiert.
 
+\begin{figure}
+	\includegraphics[width=\textwidth]{../results/7/512x512_Delaunay/D9/L0.5/I0.4/A1.0/J0.1/_pre/delaunay.png}
+	\caption{Nachbearbeites Netz}
+\end{figure}
+
 \chapter{Implementierung}
 
 Die Klient-Anwendung ist eine Browser basierte Web-Anwendung, die mit dem Server
 über das WebSocket-Protokoll kommuniziert.
 Dabei handelt es sich um ein auf TCP basierendes Netzwerkprotokoll,
 das eine Bidirektionale Verbindung zwischen den Verbindungsteilnehmern erlaubt.
-Die Extrapolation der Bilddaten wird mit Hilfe von WebGL durchgeführt wird.
+Die klientseitge Extrapolation der Bilddaten wird mit Hilfe von WebGL durchgeführt wird.
 Bei WebGL handelt es sich um eine Bibliothek die von modernen Browsern zur Verfügung gestellt wird,
 um eine Hardware beschleunigte Bildsynthese zu ermöglichen.
 Der Vorteil dieser Technologie ist die Unabhängigkeit der Anwendung im Bezug,
 zur Plattform und dem Gerät, in Kombination mit einer hohen Rechengeschwindigkeit.
 
 Beide Komponenten tauschen Informationen mit Hilfe des kompakten vom Menschen
-lesbaren Java 
+lesbaren JSON
+
+\begin{figure}[H]
+	\begin{tikzpicture}[node distance=2cm,
+						Komponente/.style = {draw, rectangle},
+						ServerKomponente/.style = {Komponente, fill=yellow!30, minimum width=5cm}]
+		\node[ServerKomponente] (A) {Server};
+		\node[Komponente, right of=A] 		(B) {Client};
+	\end{tikzpicture}
+\end{figure}
 
 \subsection{16 Bit}
 
@@ -1321,35 +1373,465 @@ der Wert im Intervall von $[0, 1]$ liegt.
 
 \chapter{Ergebnisse}
 
-\begin{figure}
+\begin{figure}[H]
+	\subfigure[]{
+	\begin{tikzpicture}
+	\begin{axis}[axis lines = middle, enlargelimits = true, ylabel={in \%}, xlabel={in Grad}, xtick={0,5,10,20,...,90},
+		 every axis y label/.style={at={(ticklabel* cs:1.05)}, anchor=east},
+		 every axis x label/.style={at={(ticklabel* cs:1.05)}, anchor=south}]
+	\addplot[red, only marks, mark=x] table [x=a, y=m, col sep=comma] {div_data_mean_6_512x512Fd1651.0.csv};
+	\addplot[green, only marks, mark=x] table [x=a, y=m, col sep=comma] {div_data_mean_6_512x512D10L0.1I0.1pre.csv};
+	\addplot[blue, only marks, mark=x] table [x=a, y=m, col sep=comma] {div_data_mean_6_512x512T1.0G1.0.csv};
+	\end{axis}
+	\end{tikzpicture}}
+	\subfigure[]{
 	\begin{tikzpicture}
 	\begin{axis}[axis lines = middle, enlargelimits = true, ylabel={in dB}, xlabel={in Grad}, xtick={0,5,10,20,...,90},
 				 every axis y label/.style={at={(ticklabel* cs:1.05)}, anchor=east},
 				 every axis x label/.style={at={(ticklabel* cs:1.05)}, anchor=south}]
-%	\addplot[green, only marks, mark=x] table [x=a, y=p, col sep=comma] {div_data_mean_7_512x512D10L0.1I0.1.csv};
-%	\addplot[blue, only marks, mark=x] table [x=a, y=p, col sep=comma] {div_data_mean_6_512x512D10L0.1I0.1.csv};
-	\addplot[green, only marks, mark=x] table [x=a, y=m, col sep=comma] {div_data_mean_7_512x512D10L0.1I0.1.csv};
-	\addplot[blue, only marks, mark=x] table [x=a, y=m, col sep=comma] {div_data_mean_6_512x512D10L0.1I0.1.csv};
-	\addplot[red, only marks, mark=x] table [x=a, y=m, col sep=comma] {div_data_mean_6_512x512Fd1651.0.csv};
-	\addplot[black, only marks, mark=x] table [x=a, y=m, col sep=comma] {div_data_mean_7_512x512Fd1651.0.csv};
+	\addplot[red, only marks, mark=x] table [x=a, y=p, col sep=comma] {div_data_mean_6_512x512Fd1651.0.csv};
+	\addplot[green, only marks, mark=x] table [x=a, y=p, col sep=comma] {div_data_mean_6_512x512D10L0.1I0.1pre.csv};
+	\addplot[blue, only marks, mark=x] table [x=a, y=p, col sep=comma] {div_data_mean_6_512x512T1.0G1.0.csv};
 	\end{axis}
-	\end{tikzpicture}
+	\end{tikzpicture}}
+	\caption{\textit{CoolRandom} FULL, FLOYD, QUAD}
 \end{figure}
 
-\begin{figure}
+\begin{figure}[H]
+	\subfigure[]{
+	\begin{tikzpicture}
+	\begin{axis}[axis lines = middle, enlargelimits = true, ylabel={in \%}, xlabel={in Grad}, xtick={0,5,10,20,...,90},
+		 every axis y label/.style={at={(ticklabel* cs:1.05)}, anchor=east},
+		 every axis x label/.style={at={(ticklabel* cs:1.05)}, anchor=south}]
+	\addplot[red, only marks, mark=x] table [x=a, y=m, col sep=comma] {div_data_mean_7_512x512Fd1651.0.csv};
+	\addplot[green, only marks, mark=x] table [x=a, y=m, col sep=comma] {div_data_mean_7_512x512D10L0.1I0.1pre.csv};
+	\addplot[blue, only marks, mark=x] table [x=a, y=m, col sep=comma] {div_data_mean_7_512x512T1.0G1.0.csv};
+	\end{axis}
+	\end{tikzpicture}}
+	\subfigure[]{
 	\begin{tikzpicture}
 	\begin{axis}[axis lines = middle, enlargelimits = true, ylabel={in dB}, xlabel={in Grad}, xtick={0,5,10,20,...,90},
 				 every axis y label/.style={at={(ticklabel* cs:1.05)}, anchor=east},
 				 every axis x label/.style={at={(ticklabel* cs:1.05)}, anchor=south}]
-%	\addplot[green, only marks, mark=x] table [x=a, y=p, col sep=comma] {div_data_mean_7_512x512D10L0.1I0.1.csv};
-%	\addplot[blue, only marks, mark=x] table [x=a, y=p, col sep=comma] {div_data_mean_6_512x512D10L0.1I0.1.csv};
-	\addplot[green, only marks, mark=x] table [x=a, y=p, col sep=comma] {div_data_mean_7_512x512D10L0.1I0.1.csv};
-	\addplot[blue, only marks, mark=x] table [x=a, y=p, col sep=comma] {div_data_mean_6_512x512D10L0.1I0.1.csv};
-	\addplot[red, only marks, mark=x] table [x=a, y=p, col sep=comma] {div_data_mean_6_512x512Fd1651.0.csv};
-	\addplot[black, only marks, mark=x] table [x=a, y=p, col sep=comma] {div_data_mean_7_512x512Fd1651.0.csv};
+	\addplot[red, only marks, mark=x] table [x=a, y=p, col sep=comma] {div_data_mean_7_512x512Fd1651.0.csv};
+	\addplot[green, only marks, mark=x] table [x=a, y=p, col sep=comma] {div_data_mean_7_512x512D10L0.1I0.1pre.csv};
+	\addplot[blue, only marks, mark=x] table [x=a, y=p, col sep=comma] {div_data_mean_7_512x512T1.0G1.0.csv};
 	\end{axis}
-	\end{tikzpicture}
+	\end{tikzpicture}}
+	\caption{\textit{TestSpheres} FULL, FLOYD, QUAD}
 \end{figure}
+
+\begin{figure}[H]
+	\subfigure[]{
+	\begin{tikzpicture}
+	\begin{axis}[axis lines = middle, enlargelimits = true, ylabel={in \%}, xlabel={in Grad}, xtick={0,5,10,20,...,90},
+		 every axis y label/.style={at={(ticklabel* cs:1.05)}, anchor=east},
+		 every axis x label/.style={at={(ticklabel* cs:1.05)}, anchor=south}]
+	\addplot[green, only marks, mark=x] table [x=a, y=m, col sep=comma] {div_data_mean_7_512x512D10L0.1I0.1pre.csv};
+	\addplot[darkgray, only marks, mark=x] table [x=a, y=m, col sep=comma] {div_data_mean_7_512x512D9L0.1I0.1pre.csv};
+	\addplot[red, only marks, mark=x] table [x=a, y=m, col sep=comma] {div_data_mean_7_512x512D8L0.1I0.1pre.csv};
+	
+	\addplot[blue, only marks, mark=x] table [x=a, y=m, col sep=comma] {div_data_mean_7_512x512T0.7G0.7.csv};
+	\addplot[violet, only marks, mark=x] table [x=a, y=m, col sep=comma] {div_data_mean_7_512x512T0.5G0.5.csv};
+	\end{axis}
+	\end{tikzpicture}}
+	\subfigure[]{
+	\begin{tikzpicture}
+	\begin{axis}[axis lines = middle, enlargelimits = true, ylabel={in dB}, xlabel={in Grad}, xtick={0,5,10,20,...,90},
+				 every axis y label/.style={at={(ticklabel* cs:1.05)}, anchor=east},
+				 every axis x label/.style={at={(ticklabel* cs:1.05)}, anchor=south}]
+	\addplot[green, only marks, mark=x] table [x=a, y=p, col sep=comma] {div_data_mean_7_512x512D10L0.1I0.1pre.csv};
+	\addplot[gray, only marks, mark=x] table [x=a, y=p, col sep=comma] {div_data_mean_7_512x512D9L0.1I0.1pre.csv};
+	\addplot[red, only marks, mark=x] table [x=a, y=p, col sep=comma] {div_data_mean_7_512x512D8L0.1I0.1pre.csv};
+	
+	\addplot[blue, only marks, mark=x] table [x=a, y=p, col sep=comma] {div_data_mean_7_512x512T0.7G0.7.csv};
+	\addplot[violet, only marks, mark=x] table [x=a, y=p, col sep=comma] {div_data_mean_7_512x512T0.5G0.5.csv};
+	\end{axis}
+	\end{tikzpicture}}
+	\caption{\textit{TestSpheres} D10, D9, D8}
+\end{figure}
+
+\begin{figure}[H]
+	\subfigure[]{
+	\begin{tikzpicture}
+	\begin{axis}[axis lines = middle, enlargelimits = true, ylabel={in \%}, xlabel={in Grad}, xtick={0,5,10,20,...,90},
+		 every axis y label/.style={at={(ticklabel* cs:1.05)}, anchor=east},
+		 every axis x label/.style={at={(ticklabel* cs:1.05)}, anchor=south}]
+	\addplot[green, only marks, mark=x] table [x=a, y=m, col sep=comma] {div_data_mean_6_512x512D10L0.1I0.1pre.csv};
+	\addplot[gray, only marks, mark=x] table [x=a, y=m, col sep=comma] {div_data_mean_6_512x512D9L0.1I0.1pre.csv};
+	\addplot[red, only marks, mark=x] table [x=a, y=m, col sep=comma] {div_data_mean_6_512x512D8L0.1I0.1pre.csv};
+	
+	\addplot[blue, only marks, mark=x] table [x=a, y=m, col sep=comma] {div_data_mean_6_512x512T0.7G0.7.csv};
+	\addplot[violet, only marks, mark=x] table [x=a, y=m, col sep=comma] {div_data_mean_6_512x512T0.5G0.5.csv};
+	\end{axis}
+	\end{tikzpicture}}
+	\subfigure[]{
+	\begin{tikzpicture}
+	\begin{axis}[axis lines = middle, enlargelimits = true, ylabel={in dB}, xlabel={in Grad}, xtick={0,5,10,20,...,90},
+				 every axis y label/.style={at={(ticklabel* cs:1.05)}, anchor=east},
+				 every axis x label/.style={at={(ticklabel* cs:1.05)}, anchor=south}]
+	\addplot[green, only marks, mark=x] table [x=a, y=p, col sep=comma] {div_data_mean_6_512x512D10L0.1I0.1pre.csv};
+	\addplot[gray, only marks, mark=x] table [x=a, y=p, col sep=comma] {div_data_mean_6_512x512D9L0.1I0.1pre.csv};
+	\addplot[red, only marks, mark=x] table [x=a, y=p, col sep=comma] {div_data_mean_6_512x512D8L0.1I0.1pre.csv};
+	
+	\addplot[blue, only marks, mark=x] table [x=a, y=p, col sep=comma] {div_data_mean_7_512x512T0.7G0.7.csv};
+	\addplot[violet, only marks, mark=x] table [x=a, y=p, col sep=comma] {div_data_mean_7_512x512T0.5G0.5.csv};
+	\end{axis}
+	\end{tikzpicture}}
+	\caption{\textit{CoolRandom} D10, D9, D8}
+\end{figure}
+
+\begin{figure}[H]
+	\centering
+	\subfigure[]{
+	\begin{tikzpicture}[scale=0.8]
+		\begin{axis}[view={0}{90}, grid=major,
+		 			 xlabel=$i$,
+		 			 ylabel=$l$,
+		 			 ylabel style={rotate=-90},
+		 			 point meta min=0.7, point meta max=0.8,
+		 			 colormap={greenyellow}{
+		   			 	rgb255(0cm)	 =(128,0,0)
+		   			 	rgb255(0.5cm) =(255,255,0) 
+		   			 	rgb255(1cm) =(0,200,0)
+		 			 }, 
+		 			 colorbar, enlargelimits=true, 
+		 			 xtick={0.0,0.1,...,1.1},
+		     		 ytick={0.0,0.1,...,1.1},
+		     		 xmajorgrids=true, ymajorgrids=true]
+			\addplot3[only marks, mark=square*, mark size=7, ycomb, scatter] file {div_s_6_D10.csv};      
+		\end{axis}
+	\end{tikzpicture}}
+	\subfigure[]{
+	\begin{tikzpicture}[scale=0.8]
+			\begin{axis}[view={0}{90}, grid=major,
+			 			 xlabel=$i$,
+			 			 ylabel=$l$,
+			 			 ylabel style={rotate=-90},
+			 			 point meta min=20.0,
+			 			 point meta max=120.0,
+			 			 colormap={greenyellow}{
+			   			 	rgb255(0cm)	 =(0,200,0)
+			   			 	rgb255(0.5cm) =(128,128,128) 
+			   			 	rgb255(1cm) =(128,0,0)
+			 			 }, 
+			 			 colorbar, colorbar style={y dir=reverse}, enlargelimits=true, 
+			 			 xtick={0.0,0.1,...,1.1},
+			     		 ytick={0.0,0.1,...,1.1},
+			     		 xmajorgrids=true, ymajorgrids=true]
+			 \addplot3[only marks, mark=square*, mark size=7, ycomb, scatter] file {div_s_6_D10_cost.csv};      
+		\end{axis}
+	\end{tikzpicture}}
+	\caption{\textit{CoolRandom} D10}
+\end{figure}
+
+\begin{figure}[H]
+	\centering
+	\subfigure[]{
+	\begin{tikzpicture} [scale=0.8]
+		\begin{axis}[view={0}{90}, grid=major,
+		 			 xlabel=$i$,
+		 			 ylabel=$l$,
+		 			 ylabel style={rotate=-90},
+		 			 point meta min=0.7, point meta max=0.8,
+		 			 colormap={greenyellow}{
+		   			 	rgb255(0cm)	 =(128,0,0)
+		   			 	rgb255(0.5cm) =(255,255,0) 
+		   			 	rgb255(1cm) =(0,200,0)
+		 			 }, 
+		 			 colorbar, enlargelimits=true, 
+		 			 xtick={0.0,0.1,...,1.1},
+		     		 ytick={0.0,0.1,...,1.1},
+		     		 xmajorgrids=true, ymajorgrids=true]
+			\addplot3[only marks, mark=square*, mark size=7, ycomb, scatter] file {div_s_6_D9.csv};      
+		\end{axis}
+	\end{tikzpicture}}
+	\subfigure[]{
+	\begin{tikzpicture} [scale=0.8]
+			\begin{axis}[view={0}{90}, grid=major,
+			 			 xlabel=$i$,
+			 			 ylabel=$l$,
+			 			 ylabel style={rotate=-90},
+			 			 point meta min=20.0,
+			 			 point meta max=120.0,
+			 			 colormap={greenyellow}{
+			   			 	rgb255(0cm)	 =(0,200,0)
+			   			 	rgb255(0.5cm) =(128,128,128) 
+			   			 	rgb255(1cm) =(128,0,0)
+			 			 }, 
+			 			 colorbar, colorbar style={y dir=reverse}, enlargelimits=true, 
+			 			 xtick={0.0,0.1,...,1.1},
+			     		 ytick={0.0,0.1,...,1.1},
+			     		 xmajorgrids=true, ymajorgrids=true]
+			 \addplot3[only marks, mark=square*, mark size=7, ycomb, scatter] file {div_s_6_D9_cost.csv};      
+		\end{axis}
+	\end{tikzpicture}}
+	\caption{\textit{CoolRandom} D9}
+\end{figure}
+
+\begin{figure}[H]
+	\centering
+	\subfigure[]{
+	\begin{tikzpicture} [scale=0.8]
+		\begin{axis}[view={0}{90}, grid=major,
+		 			 xlabel=$i$,
+		 			 ylabel=$l$,
+		 			 ylabel style={rotate=-90},
+		 			 point meta min=0.7, point meta max=0.8,
+		 			 colormap={greenyellow}{
+		   			 	rgb255(0cm)	 =(128,0,0)
+		   			 	rgb255(0.5cm) =(255,255,0) 
+		   			 	rgb255(1cm) =(0,200,0)
+		 			 }, 
+		 			 colorbar, enlargelimits=true, 
+		 			 xtick={0.0,0.1,...,1.1},
+		     		 ytick={0.0,0.1,...,1.1},
+		     		 xmajorgrids=true, ymajorgrids=true]
+			\addplot3[only marks, mark=square*, mark size=7, ycomb, scatter] file {div_s_6_D8.csv};      
+		\end{axis}
+	\end{tikzpicture}}
+	\subfigure[]{
+	\begin{tikzpicture} [scale=0.8]
+			\begin{axis}[view={0}{90}, grid=major,
+			 			 xlabel=$i$,
+			 			 ylabel=$l$,
+			 			 ylabel style={rotate=-90},
+			 			 point meta min=20.0,
+			 			 point meta max=120.0,
+			 			 colormap={greenyellow}{
+			   			 	rgb255(0cm)	 =(0,200,0)
+			   			 	rgb255(0.5cm) =(128,128,128) 
+			   			 	rgb255(1cm) =(128,0,0)
+			 			 }, 
+			 			 colorbar, colorbar style={y dir=reverse}, enlargelimits=true, 
+			 			 xtick={0.0,0.1,...,1.1},
+			     		 ytick={0.0,0.1,...,1.1},
+			     		 xmajorgrids=true, ymajorgrids=true]
+			 \addplot3[only marks, mark=square*, mark size=7, ycomb, scatter] file {div_s_6_D8_cost.csv};      
+		\end{axis}
+	\end{tikzpicture}}
+	\caption{\textit{CoolRandom} D8}
+\end{figure}
+
+\begin{figure}[H]
+	\centering
+	\subfigure[]{
+	\begin{tikzpicture} [scale=0.8]
+		\begin{axis}[view={0}{90}, grid=major,
+		 			 xlabel=$i$,
+		 			 ylabel=$l$,
+		 			 ylabel style={rotate=-90},
+		 			 point meta min=0.7, point meta max=0.8,
+		 			 colormap={greenyellow}{
+		   			 	rgb255(0cm)	 =(128,0,0)
+		   			 	rgb255(0.5cm) =(255,255,0) 
+		   			 	rgb255(1cm) =(0,200,0)
+		 			 }, 
+		 			 colorbar, enlargelimits=true, 
+		 			 xtick={0.0,0.1,...,1.1},
+		     		 ytick={0.0,0.1,...,1.1},
+		     		 xmajorgrids=true, ymajorgrids=true]
+			\addplot3[only marks, mark=square*, mark size=7, ycomb, scatter] file {div_s_7_D10.csv};      
+		\end{axis}
+	\end{tikzpicture}}
+	\subfigure[]{
+	\begin{tikzpicture} [scale=0.8]
+			\begin{axis}[view={0}{90}, grid=major,
+			 			 xlabel=$i$,
+			 			 ylabel=$l$,
+			 			 ylabel style={rotate=-90},
+			 			 point meta min=20.0,
+			 			 point meta max=120.0,
+			 			 colormap={greenyellow}{
+			   			 	rgb255(0cm)	 =(0,200,0)
+			   			 	rgb255(0.5cm) =(128,128,128) 
+			   			 	rgb255(1cm) =(128,0,0)
+			 			 }, 
+			 			 colorbar, colorbar style={y dir=reverse}, enlargelimits=true, 
+			 			 xtick={0.0,0.1,...,1.1},
+			     		 ytick={0.0,0.1,...,1.1},
+			     		 xmajorgrids=true, ymajorgrids=true]
+			 \addplot3[only marks, mark=square*, mark size=7, ycomb, scatter] file {div_s_7_D10_cost.csv};      
+		\end{axis}
+	\end{tikzpicture}}
+	\caption{\textit{TestSpheres} D10}
+\end{figure}
+
+\begin{figure}[H]
+	\centering
+	\subfigure[]{
+	\begin{tikzpicture} [scale=0.8]
+		\begin{axis}[view={0}{90}, grid=major,
+		 			 xlabel=$i$,
+		 			 ylabel=$l$,
+		 			 ylabel style={rotate=-90},
+		 			 point meta min=0.7, point meta max=0.8,
+		 			 colormap={greenyellow}{
+		   			 	rgb255(0cm)	 =(128,0,0)
+		   			 	rgb255(0.5cm) =(255,255,0) 
+		   			 	rgb255(1cm) =(0,200,0)
+		 			 }, 
+		 			 colorbar, enlargelimits=true, 
+		 			 xtick={0.0,0.1,...,1.1},
+		     		 ytick={0.0,0.1,...,1.1},
+		     		 xmajorgrids=true, ymajorgrids=true]
+			\addplot3[only marks, mark=square*, mark size=7, ycomb, scatter] file {div_s_7_D9.csv};      
+		\end{axis}
+	\end{tikzpicture}}
+	\subfigure[]{
+	\begin{tikzpicture} [scale=0.8]
+			\begin{axis}[view={0}{90}, grid=major,
+			 			 xlabel=$i$,
+			 			 ylabel=$l$,
+			 			 ylabel style={rotate=-90},
+			 			 point meta min=20.0,
+			 			 point meta max=120.0,
+			 			 colormap={greenyellow}{
+			   			 	rgb255(0cm)	 =(0,200,0)
+			   			 	rgb255(0.5cm) =(128,128,128) 
+			   			 	rgb255(1cm) =(128,0,0)
+			 			 }, 
+			 			 colorbar, colorbar style={y dir=reverse}, enlargelimits=true, 
+			 			 xtick={0.0,0.1,...,1.1},
+			     		 ytick={0.0,0.1,...,1.1},
+			     		 xmajorgrids=true, ymajorgrids=true]
+			 \addplot3[only marks, mark=square*, mark size=7, ycomb, scatter] file {div_s_7_D9_cost.csv};      
+		\end{axis}
+	\end{tikzpicture}}
+	\caption{\textit{TestSpheres} D9}
+\end{figure}
+
+\begin{figure}[H]
+	\centering
+	\subfigure[]{
+	\begin{tikzpicture} [scale=0.8]
+		\begin{axis}[view={0}{90}, grid=major,
+		 			 xlabel=$i$,
+		 			 ylabel=$l$,
+		 			 ylabel style={rotate=-90},
+		 			 point meta min=0.7, point meta max=0.8,
+		 			 colormap={greenyellow}{
+		   			 	rgb255(0cm)	 =(128,0,0)
+		   			 	rgb255(0.5cm) =(255,255,0) 
+		   			 	rgb255(1cm) =(0,200,0)
+		 			 }, 
+		 			 colorbar, enlargelimits=true, 
+		 			 xtick={0.0,0.1,...,1.1},
+		     		 ytick={0.0,0.1,...,1.1},
+		     		 xmajorgrids=true, ymajorgrids=true]
+			\addplot3[only marks, mark=square*, mark size=7, ycomb, scatter] file {div_s_7_D8.csv};      
+		\end{axis}
+	\end{tikzpicture}}
+	\subfigure[]{
+	\begin{tikzpicture} [scale=0.8]
+			\begin{axis}[view={0}{90}, grid=major,
+			 			 xlabel=$i$,
+			 			 ylabel=$l$,
+			 			 ylabel style={rotate=-90},
+			 			 point meta min=20.0,
+			 			 point meta max=120.0,
+			 			 colormap={greenyellow}{
+			   			 	rgb255(0cm)	 =(0,200,0)
+			   			 	rgb255(0.5cm) =(128,128,128) 
+			   			 	rgb255(1cm) =(128,0,0)
+			 			 }, 
+			 			 colorbar, colorbar style={y dir=reverse}, enlargelimits=true, 
+			 			 xtick={0.0,0.1,...,1.1},
+			     		 ytick={0.0,0.1,...,1.1},
+			     		 xmajorgrids=true, ymajorgrids=true]
+			 \addplot3[only marks, mark=square*, mark size=7, ycomb, scatter] file {div_s_7_D8_cost.csv};      
+		\end{axis}
+	\end{tikzpicture}}
+	\caption{\textit{TestSpheres} D8}
+\end{figure}
+
+\begin{figure}[H]
+	\centering
+	\subfigure[]{
+	\begin{tikzpicture} [scale=0.8]
+		\begin{axis}[view={0}{90}, grid=major,
+		 			 xlabel=$i$,
+		 			 ylabel=$l$,
+		 			 ylabel style={rotate=-90},
+		 			 point meta min=0.7, point meta max=0.8,
+		 			 colormap={greenyellow}{
+		   			 	rgb255(0cm)	 =(128,0,0)
+		   			 	rgb255(0.5cm) =(255,255,0) 
+		   			 	rgb255(1cm) =(0,200,0)
+		 			 }, 
+		 			 colorbar, enlargelimits=true, 
+		 			 xtick={0.0,0.1,...,1.1},
+		     		 ytick={0.0,0.1,...,1.1},
+		     		 xmajorgrids=true, ymajorgrids=true]
+			\addplot3[only marks, mark=square*, mark size=7, ycomb, scatter] file {div_s_6floydSteinberg.csv};      
+		\end{axis}
+	\end{tikzpicture}}
+	\subfigure[]{
+	\begin{tikzpicture} [scale=0.8]
+			\begin{axis}[view={0}{90}, grid=major,
+			 			 xlabel=$g$,
+			 			 ylabel=$t$,
+			 			 ylabel style={rotate=-90},
+			 			 point meta min=20.0,
+			 			 point meta max=120.0,
+			 			 colormap={greenyellow}{
+			   			 	rgb255(0cm)	 =(0,200,0)
+			   			 	rgb255(0.5cm) =(128,128,128) 
+			   			 	rgb255(1cm) =(128,0,0)
+			 			 }, 
+			 			 colorbar, colorbar style={y dir=reverse}, enlargelimits=true, 
+			 			 xtick={0.0,0.1,...,1.1},
+			     		 ytick={0.0,0.1,...,1.1},
+			     		 xmajorgrids=true, ymajorgrids=true]
+			 \addplot3[only marks, mark=square*, mark size=7, ycomb, scatter] file {div_s_6floydSteinberg_cost.csv};      
+		\end{axis}
+	\end{tikzpicture}}
+	\caption{\textit{CoolRandom} FloydSteinberg}
+\end{figure}
+
+	\begin{figure}[H]
+		\centering
+		\subfigure[]{
+		\begin{tikzpicture} [scale=0.8]
+			\begin{axis}[view={0}{90}, grid=major,
+			 			 xlabel=$g$,
+			 			 ylabel=$t$,
+			 			 ylabel style={rotate=-90},
+			 			 point meta min=0.7, point meta max=0.8,
+			 			 colormap={greenyellow}{
+			   			 	rgb255(0cm)	 =(128,0,0)
+			   			 	rgb255(0.5cm) =(255,255,0) 
+			   			 	rgb255(1cm) =(0,200,0)
+			 			 }, 
+			 			 colorbar, enlargelimits=true, 
+			 			 xtick={0.0,0.1,...,1.1},
+			     		 ytick={0.0,0.1,...,1.1},
+			     		 xmajorgrids=true, ymajorgrids=true]
+				\addplot3[only marks, mark=square*, mark size=7, ycomb, scatter] file {div_s_7floydSteinberg.csv};      
+			\end{axis}
+		\end{tikzpicture}}
+		\subfigure[]{
+		\begin{tikzpicture} [scale=0.8]
+				\begin{axis}[view={0}{90}, grid=major,
+				 			 xlabel=$g$,
+				 			 ylabel=$t$,
+				 			 ylabel style={rotate=-90},
+				 			 point meta min=20.0,
+				 			 point meta max=120.0,
+				 			 colormap={greenyellow}{
+				   			 	rgb255(0cm)	 =(0,200,0)
+				   			 	rgb255(0.5cm) =(128,128,128) 
+				   			 	rgb255(1cm) =(128,0,0)
+				 			 }, 
+				 			 colorbar, colorbar style={y dir=reverse}, enlargelimits=true, 
+				 			 xtick={0.0,0.1,...,1.1},
+				     		 ytick={0.0,0.1,...,1.1},
+				     		 xmajorgrids=true, ymajorgrids=true]
+				 \addplot3[only marks, mark=square*, mark size=7, ycomb, scatter] file {div_s_7floydSteinberg_cost.csv};      
+			\end{axis}
+		\end{tikzpicture}}
+		\caption{\textit{TestSpheres} FloydSteinberg}
+	\end{figure}
 
 \chapter{Diskussion}
 
@@ -1357,7 +1839,5 @@ der Wert im Intervall von $[0, 1]$ liegt.
 
 \chapter{Ausblick}
 
-\chapter{Noch mehr Ergebnisse}
-
-\cite*{}
+\nocite{*}
 \end{document}

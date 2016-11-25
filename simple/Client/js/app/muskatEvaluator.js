@@ -10,7 +10,7 @@ class MuskatEvaluator {
 		var gridTypes 		= ["default", "cookie_cutter", "isometric"];
 		var meshPrecision 	= ["16bit", "8bit"];
 		var gradients 		= [1.0, 0.9, 0.8];
-		var angles			= [0, 0.1, 0.5, 1, 5, 10];
+		var angles			= [0.1, 1, 10];
 		for(var m = 1; m <= 1; m += m) {
 			for(var p = 0; p < meshPrecision.length; p++) {
 				for(var g = 0; g < gradients.length; g++) {
@@ -46,21 +46,23 @@ class MuskatEvaluator {
 				f7.praBackgroundSubtraction = false;
 				this.add(f7);
 
-/*				for(var a = 0; a < angles.length; a++) {
-					for(var j = 0.0; j <= 0.2; j += 0.1) {
-						var f13 = new MuskatConfig(this.nullFunction);
-						f13.meshMode = "delaunay";
-						f13.seedMode = "floyd_steinberg";
-						f13.Tthreshold = t;
-						f13.gamma	 = g;
-						f13.refine	 = true;
-						f13.Tangle	 = angles[a];
-						f13.Tjoin	 = j;
-						f13.preBackgroundSubtraction = false;
-						f13.praBackgroundSubtraction = false;
-						this.add(f13);
+				if(g >= 0.8 && t >= 0.8) {
+					for(var a = 0; a < angles.length; a++) {
+						for(var j = 0.1; j <= 0.2; j += 0.1) {
+							var f13 = new MuskatConfig(this.nullFunction);
+							f13.meshMode = "delaunay";
+							f13.seedMode = "floyd_steinberg";
+							f13.Tthreshold = t;
+							f13.gamma	 = g;
+							f13.refine	 = true;
+							f13.Tangle	 = angles[a];
+							f13.Tjoin	 = j;
+							f13.preBackgroundSubtraction = false;
+							f13.praBackgroundSubtraction = false;
+							this.add(f13);
+						}
 					}
-				}	*/
+				}
 			}
 		}
 
@@ -69,14 +71,32 @@ class MuskatEvaluator {
 			for(var l = 0.0; l <= 1.0; l += 0.1) {
 				for(var i = 0.0; i <= l; i += 0.1) {							
 					var c9 = new MuskatConfig(this.nullFunction);
-					c9.meshMode = "delaunay";
-					c9.maxDepth = d;
+					c9.meshMode  = "delaunay";
+					c9.maxDepth  = d;
 					c9.Tleaf	 = l;
 					c9.Tinternal = i;
 					c9.refine	 = false;
 					c9.preBackgroundSubtraction = true;
 					c9.praBackgroundSubtraction = false;
 					this.add(c9);
+				
+					if(l >= 0.4 && i >= 0.4) {
+						for(var a = 0; a < angles.length; a++) {
+							for(var j = 0.1; j <= 0.2; j += 0.1) {
+								var d2 = new MuskatConfig(this.nullFunction);
+								d2.meshMode  = "delaunay";
+								d2.maxDepth  = d;
+								d2.Tleaf	 = l;
+								d2.Tinternal = i;
+								d2.refine	 = true;
+								d2.Tangle	 = angles[a];
+								d2.Tjoin	 = j;
+								d2.preBackgroundSubtraction = true;
+								d2.praBackgroundSubtraction = false;
+								this.add(d2);
+							}
+						}
+					}
 				}
 			}
 		}

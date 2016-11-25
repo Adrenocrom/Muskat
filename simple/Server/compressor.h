@@ -147,6 +147,7 @@ public:
 	
 	cv::Mat*	getDelaunayImage();
 	cv::Mat*	getMeshImage();
+	cv::Mat*	getSeedImage();
 	cv::Mat*	getSobelXImage();
 	cv::Mat*	getSobelYImage();
 	cv::Mat*	getFeatureImage();
@@ -175,6 +176,7 @@ private:
 
 	cv::Mat		m_delaunay_image;
 	cv::Mat		m_mesh_image;
+	cv::Mat		m_seed_image;
 	cv::Mat		m_sobel_x_image;
 	cv::Mat		m_sobel_y_image;
 	cv::Mat		m_feature_image;
