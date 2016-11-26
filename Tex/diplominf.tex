@@ -182,9 +182,10 @@ mit den Einschränkungen durch JavaScript und WebGl evaluiert werden können.
 Einen Überblick über Architekturen und Methoden der interaktiven Remote-Visualisierung geben Shu Shi \textit{et al.} \cite{Shi:2015:SIR:2775083.2719921}.
 Zum zentralen Problem ihrer Arbeit, wird die Latenz und die effiziente Übertragung der Daten vom Server zum Klient.
 Lösungen hängen vom Anwendungsfall ab.
-In \textit{THIN}-Systemen besteht die Aufgabe in der Übertragung von
-2D Informationen, mit denen sich zum Beispiel Desktop-Anwendungen Fernsteuern lassen.
-Beispiele sind \textit{SLIM} \cite{Schmidt:1999:IPS:319344.319154} und \textit{THiNC} \cite{Baratto:2005:TVD:1095809.1095837}. 
+Sie definieren \textit{THIN}-Systeme, als eine Klasse von Remote-Visualisierungsanwendungen,
+die auf die Übertragung von 2D Informationen beschränkt sind. 
+Das Ziel \textit{THIN}-Systemen von besteht darin Desktop-Anwendungen fern steuern zu können.
+Beispiele für existierende Architekturen sind \textit{SLIM} \cite{Schmidt:1999:IPS:319344.319154} und \textit{THiNC} \cite{Baratto:2005:TVD:1095809.1095837}. 
 Sie sind für die Übertragung von 2D-Daten optimiert und profitieren davon, dass die meisten Änderungen nur Teilbereiche der eigentlichen Oberfläche betreffen.
 Ein anderes extrem der Remote-Visualisierung ist die Aufteilung der Bildsynthese,
 auf verschiedene Host-Systeme wie bei WireGL \cite{Humphreys:2001:WSG:383259.383272}.
@@ -207,29 +208,42 @@ Das Farbbild wird mit JPEG komprimiert und die Tiefenbilder mit ZLIB.
 Ein ähnlicher Ansatz wurde im VR-Bereich von Smit \textit{et al.} erprobt \cite{4810995}.
 Auch in diesem System werden Lücken mit Hilfe von Tiefenbildern aus Referenz-Kamerapositionen
 geschlossen.
+Palomo \textit{et al.} nutzen ebenfalls einen Warping-Algorithmus um mehrere Tiefenbilder und ein Farbbild
+miteinander zu vereinen \cite{Palomo:2010:EAD:1900179.1900236}.
 Die Wahl des Warping-Algorithmus ist entscheidend für die Performance der Klient-Komponente,
 neben der im VR-System zum Einsatz kommenden Variante \cite{Mark:1997:PW:253284.253292},
-bieten Mark \textit{et al.} eine Übersicht über verschiedene mögliche Verfahren \cite{Mark99post-rendering3d}.
-Auch Palomo \textit{et al.} nutzen einen Warping-Algorithmus um mehrere Tiefenbilder und ein Farbbild
-miteinander zu vereinen \cite{Palomo:2010:EAD:1900179.1900236}.
+bieten Mark \textit{et al.} eine Übersicht über verschiedene Warping-Verfahren \cite{Mark99post-rendering3d}.
+Die Erzeugung von mehreren Referenz Tiefenbildern ist eine teure Operation,
+da von diesen nur wenige Pixel tatsächlich benötigt werden, um die Verdeckungsbedingten Lücken
+zu füllen.
+Popescu und Aliaga haben zu diesen Zweck ein spezielles Kameramodell entworfen, dass verdeckte
+Bildbereiche mit Hilfe gekrümmter Sichtstrahlen mitberechnen kann \cite{Popescu:2006:DDO:1111411.1111436}.
+Die bisher vorgestellten Ansätze werden in dieser Arbeit nicht aufgegriffen, sie sollen
+verdeutlichen, welche alternativen Möglichkeiten existieren.
+  
+Die effiziente Übertragung und Visualisierung von Tiefenbildern,
+ist auch für die Arbeit mit Tiefensensorsystemen von großem Interesse.
+Banno \textit{et al.} erzeugen aus Tiefenbildern, die durch Tiefensensoren erhoben wurden,
+Dreicksnetze mit Hilfe der Delaunay-Triangulierung \cite{Banno:2012:RCD:2407516.2407579}.
+Ausgangspunkt für die Vernetzung ist eine Menge von Punkten, die Kanten und Krümmungen
+im Tiefenbild repräsentieren.
+Zur Erzeugung dieser Punkte kommt ein Quadtree zum Einsatz.
+Zusätzlich haben sie ein Verfahren entwickelt, um das erzeugte Netz in einem weiteren Schritt 
+zu verbessern.
+Einen alternativen Ansatz für die Erzeugung, der zur Vernetzung benötigten Punktmenge
+wird von Lee \textit{et al.} vorgestellt \cite{900943}.
+Sie nutzen ein Fehlerdiffusionsverfahren, um in der Nähe von Kanten Punkte zu platzieren.
+In beiden Arbeiten wird die Extrapolation der Bilder, durch die Rückprojektion der Dreiecksnetze durchgeführt.
+Diese beiden Ansätze bilden den Kern dieser Arbeit.
 
- beschäftigen sich mit der Visualisierung und Übertragung, von Tiefenbildern  die von Tiefensensoren erhoben werden.
-Sie kombinieren mehrerer aus verschiedenen Blickwinkeln aufgenommenen Bilder mit Hilfe
-eines Tiefenpuffers zu einem Gesamtbild und vermindern auf diese Weise
-entstehende Artefakte im Zusammenhang von Verdeckung bei der Visualisierung der Daten aus einer
-anderen Perspektive.
-
-Um die Latenz bei der Übertragung von Tiefeninformation zu verbessern,
-können die Daten auch progressiv zum Klient gesendet werden.
-Evans \textit{et al.} haben für diesen Zweck ein Datenformat für Punktwolken entwickelt und für den Einsatz mit WebGL optimiert \cite{Evans:2014:WVO:2668904.2668937}.
- 
-Banno \textit{et al.} erzeugen mit Hilfe der Delaunay-Triangulierung adaptive
-Dreiecksnetze aus Tiefenbildern, um die Qualität der Darstellung zu verbessern \cite{Banno:2012:RCD:2407516.2407579}.
-
-Lee \textit{et al.} 
-
-Eine Vergleichbaren Ansatz wird von untersucht.
-
+Um die Latenz bei der Übertragung zu verbessern, können mehrere Qualitätsstufen von einem Dreiecksnetz
+erzeugt werden, wie in der Arbeit von Chai \textit{et al.} \cite{1024050},
+die auf dem Verfahren von Lindstrom \textit{et al.} basiert \cite{Lindstrom:1996:RCL:237170.237217}.
+Mwalongo \textit{et al.} haben einen hybriden Ansatz entwickelt, der zusätzlich
+zu einzelnen Vertizes des Netzes Parameter für Kugeln übermittelt, die anschließend vom
+Klienten rekonstruiert werden \cite{Mwalongo:2015:RVD:2775292.2775307}.
+Evans \textit{et al.} haben ein Dateiformat für Punktwolken entwickelt, um diese progressiv
+an einen auf WebGL basierten Klient zu senden \cite{Evans:2014:WVO:2668904.2668937}. 
 
 
 Wessels \textit{et al.} stellen eine Konzeption für den Programmaufbau eines interaktiven Remote-Visualisierungssystem basierend auf dem WebSocket-Protokoll vor \cite{DBLP:conf/itng/WesselsPJR11}.
@@ -242,14 +256,6 @@ Dieser wertet die Daten aus und erzeugt darauf hin ein mit JPEG komprimiertes Bi
 Dieser kann das Bild nativ mit Hilfe eines HTML5 Canvas dekodieren und darstellen.
 Ihr System wird zur Grundlage dieser Arbeit.
 
-
-
-Das erzeugte Tiefenbild lässt sich 
-Pauly et al. \cite{Pauly:2002:ESP:602099.602123}
-
-Simon Stegmaier \cite{Stegmaier02ageneric} 
-A Generic Solution for Hardware-Accelerated Remote Visualization
-
 Gabriel Taubin und Jarek Rossignac haben ein Algorithmus zur Erzeugung und effizienten Kodierung von Dreiecksstreifen aus Dreiecksnetzen entwickelt \cite{Taubin:1998:GCT:274363.274365}.
 Dazu konstruiert ihr Algorithmus Spannbäume über dem Netz, die zur Erzeugung möglichst großer
 Dreiecksstreifen genutzt werden. Die Kompression kann wahlweise verlustfrei oder verlustbehaftet
@@ -261,21 +267,6 @@ Kompression und Dekompression sind echtzeitfähig.
 
 Michael Deering hat ebenfalls ein Geometrisches Kompressionsverfahren entwickelt. \cite{Deering:1995:GC:218380.218391}
 
-Federico Ponchio  und Matteo Dellepiane \cite{Ponchio:2015:FDW:2775292.2775308}
-Fast decompression for web-based view-dependent 3D rendering
-
-
-
-Diplomarbeit mädcheninformatiker Effiziente Datenübertragung von Modellen und
-Texturen für die Verwendung in WebGL
-Stefan Wagner noch kein cite
-
-
-
-WEB-BASED VISUALISATION OF ON-SET POINT CLOUD
-DATA Alun Evans et al \cite{Evans:2014:WVO:2668904.2668937}
-
-planarer scheiß \cite{Ma13ecmr}
 
 
 
