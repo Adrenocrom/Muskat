@@ -74,6 +74,8 @@ Bild"ubernahmen zitieren.}
 \usepackage{subfigure}
 \usepackage{xcolor}
 \usepackage{float}
+\usepackage{cancel}
+\tikzset{>=latex}
 
 \setcounter{tocdepth}{2}
 
@@ -182,13 +184,13 @@ mit den Einschränkungen durch JavaScript und WebGl evaluiert werden können.
 Einen Überblick über Architekturen und Methoden der interaktiven Remote-Visualisierung geben Shu Shi \textit{et al.} \cite{Shi:2015:SIR:2775083.2719921}.
 Zum zentralen Problem ihrer Arbeit, wird die Latenz und die effiziente Übertragung der Daten vom Server zum Klient.
 Lösungen hängen vom Anwendungsfall ab.
-Sie definieren \textit{THIN}-Systeme, als eine Klasse von Remote-Visualisierungsanwendungen,
-die auf die Übertragung von 2D Informationen beschränkt sind. 
-Das Ziel \textit{THIN}-Systemen von besteht darin Desktop-Anwendungen fern steuern zu können.
+Sie definieren \textit{THIN}-Systeme, als eine Klasse von Remote-Visualisierungssysteme,
+die auf die Übertragung von 2D Informationen beschränkt sind und die Bildwiederholfrequenz weitaus geringer sein kann, als es in interaktiven 3D-Anwendungen erforderlich ist. 
+Das Ziel von \textit{THIN}-Systemen von besteht im darin Desktop-Anwendungen fern steuern zu können.
 Beispiele für existierende Architekturen sind \textit{SLIM} \cite{Schmidt:1999:IPS:319344.319154} und \textit{THiNC} \cite{Baratto:2005:TVD:1095809.1095837}. 
 Sie sind für die Übertragung von 2D-Daten optimiert und profitieren davon, dass die meisten Änderungen nur Teilbereiche der eigentlichen Oberfläche betreffen.
 Ein anderes extrem der Remote-Visualisierung ist die Aufteilung der Bildsynthese,
-auf verschiedene Host-Systeme wie bei WireGL \cite{Humphreys:2001:WSG:383259.383272}.
+auf verschiedene Host-Systeme, wie bei dem Cluster-basierten System WireGL \cite{Humphreys:2001:WSG:383259.383272}.
 Jin Zhefan stellt in diesem Kontext Kompressionsmethoden für Zeicheninstruktionen, Vektoren, Normalen und Texturinformationen vor \cite{Jin:2006:RRI:1128923.1128927}.
 Peter Eisert und Philipp Fechteler haben ein Remote-Visualisierungssystem für Computerspiele entwickelt \cite{Eisert07remoterendering}.
 Ihr System überträgt bei kleinen Auflösungen, für Endgeräte ohne GPU die Bilder
@@ -203,13 +205,15 @@ zusätzliche Referenz-Kamerapositionen und erzeugen zusätzlich zum Farbbild der O
 Kameraposition weitere Tiefenbilder.
 Durch Warping, werden die Farbinformationen, unter Zuhilfenahme der Tiefenbilder
 in die neue Kameraperspektive überführt. 
-Durch Verdeckung bedingte Lücken lassen sich durch die Referenztiefenbilder schließen.
+Dabei lassen sich durch Verdeckung bedingte Lücken, durch Pixel aus den Referenztiefenbilder schließen.
 Das Farbbild wird mit JPEG komprimiert und die Tiefenbilder mit ZLIB.
 Ein ähnlicher Ansatz wurde im VR-Bereich von Smit \textit{et al.} erprobt \cite{4810995}.
 Auch in diesem System werden Lücken mit Hilfe von Tiefenbildern aus Referenz-Kamerapositionen
 geschlossen.
-Palomo \textit{et al.} nutzen ebenfalls einen Warping-Algorithmus um mehrere Tiefenbilder und ein Farbbild
-miteinander zu vereinen \cite{Palomo:2010:EAD:1900179.1900236}.
+Palomo \textit{et al.} nutzen ebenfalls einen Warping-Algorithmus um mehrere Tiefenbilder und ein Farbbild miteinander zu vereinen. 
+Zu diesem Zweck konstruieren mit Hilfe des Alpha-Farbkanals der
+Bilder einen speziellen z-Buffer \cite{Palomo:2010:EAD:1900179.1900236},
+um ihren Algorithmus komplett auf die GPU auslagern zu können.
 Die Wahl des Warping-Algorithmus ist entscheidend für die Performance der Klient-Komponente,
 neben der im VR-System zum Einsatz kommenden Variante \cite{Mark:1997:PW:253284.253292},
 bieten Mark \textit{et al.} eine Übersicht über verschiedene Warping-Verfahren \cite{Mark99post-rendering3d}.
@@ -256,19 +260,20 @@ Dieser wertet die Daten aus und erzeugt darauf hin ein mit JPEG komprimiertes Bi
 Dieser kann das Bild nativ mit Hilfe eines HTML5 Canvas dekodieren und darstellen.
 Ihr System wird zur Grundlage dieser Arbeit.
 
+Auch wenn die Kompression und kompakte Darstellung der Dreiecksnetze nicht teil dieser Arbeit sind,
+sollen die folgenden Arbeiten einen Überblick über mögliche Techniken geben.
 Gabriel Taubin und Jarek Rossignac haben ein Algorithmus zur Erzeugung und effizienten Kodierung von Dreiecksstreifen aus Dreiecksnetzen entwickelt \cite{Taubin:1998:GCT:274363.274365}.
 Dazu konstruiert ihr Algorithmus Spannbäume über dem Netz, die zur Erzeugung möglichst großer
-Dreiecksstreifen genutzt werden. Die Kompression kann wahlweise verlustfrei oder verlustbehaftet
-durchgeführt werden. Typische Kompressionsraten werden mit 1:50 angegeben.
-
+Dreiecksstreifen genutzt werden. 
+Die Kompression, kann wahlweise verlustfrei oder verlustbehaftet
+durchgeführt werden. 
+Typische Kompressionsraten werden mit 1:50 angegeben.
 Eine weitere Arbeit die sich mit der Kompression von Dreiecksnetzen und einer kompakten Repräsentation
 von diesen beschäftigt wurde Stefan Gumhold und Wolfgang Straßer geschrieben \cite{Gumhold:1998:RTC:280814.280836}.
 Kompression und Dekompression sind echtzeitfähig.
-
-Michael Deering hat ebenfalls ein Geometrisches Kompressionsverfahren entwickelt. \cite{Deering:1995:GC:218380.218391}
-
-
-
+Weitere geometrische Kompressionsverfahren für Vertices, Indizes und Normalen, sind in der Arbeit von
+Michael Deering zu finden \cite{Deering:1995:GC:218380.218391}.
+Sowie in der Arbeit \cite{gotsman-touma-gi98}, von den Autoren Touma und Gotsman.
 
 \chapter{Grundlagen}
 
@@ -425,32 +430,31 @@ Die besten erreichen eine Laufzeit von $O(n \log n)$ und sind damit
 für den Einsatz in Echtzeitanwendungen tauglich.
 Beispiele sind der Sweep-Algorithmus und die inkrementelle Konstruktion.
 
-\section{PSNR}
+\section{Bildvergleich}
 
-Die Abkürzung PSNR in Englisch \textit{Peak signal-to-noise ratio}, gibt das Verhältnis
-zwischen dem 
+Im Folgenden werden zwei Metriken zum Vergleich von Bildern vorgestellt.
+Sie werden genutzt, um die Ähnlichkeit zwischen den extrapolierten
+und den Ground-Truth Bildern zu bestimmen.
+Beide Metriken werden für jeden Farbkanal separat berechnet. 
 
-\textit{Peak signal-to-noise ratio}, kurz PSNR, gibt das Verhältnis zwischen dem Maximalwert und
-der maximalen Störung an. 
-Da die meisten Signale sehr große Skalen haben,
-wird der PSNR häufig mittels einer logarithmischen Skala angeben.
+\subsection{PSNR}
 
-Der PSNR wird zur Messung der Qualität von nicht verlustfreien Kompressionsalgorithmen verwendet.
-Dazu wird das Originalbild als Signal interpretiert und der Fehler, der durch die Kompression
-eingeführt wird als Rauschen.
-Ein größer der PSNR-Wert bedeutet eine besser Qualität des dekomprimierten Bildes. 
+Die Abkürzung PSNR, im Englischen \textit{Peak signal-to-noise ratio}, 
+gibt das Verhältnis zwischen dem Maximalwert des Signals, auch als Nutzleistung bezeichnet und dem Einfluss des Rauschens, der Störleistung an. 
+Der PSNR wird auf eine logarithmische Skala abgebildet,
+weil die Nutzleistung in der Regel wesentlich größer als die Störleistung ist.
 
-Bei einer Farbtiefe von 8 Bit pro Kanal, stehen Werte von 30 - 40 dB für ein
-geringes Störsignal.
-
-Der \textit{mean squared error}, kurz $MSE$ summiert einem Fenster der Größe $m \times n$
-die quadratischen Abstände zwischen dem Original und dem rekonstruierten Bild auf.
+Um die Stärke des Fehlers zu bestimmen, wird der \textit{mean squared error}, kurz $MSE$ verwendet. 
+Dieser lässt sich bestimmen, in dem innerhalb eines Fenster der Größe $m \times n$
+die quadratischen Abstände zwischen dem Originalbild $I$ und dem 
+rekonstruierten Bild $K$ aufsummiert werden:
 
 \begin{equation}
-	MSE = \frac{1}{mn} \sum\limits_{i=0}^{m-1} \sum\limits_{j=0}^{n-1}[I(i, j) - K(i, j)]^2
+	MSE = \frac{1}{mn} \sum\limits_{i=0}^{m-1} \sum\limits_{j=0}^{n-1}[I(i, j) - K(i, j)]^2.
 \end{equation}
 
-Beim PSNR wird der maximal mögliche Wert $MAX_I$ mit dem $MSE$ ins Verhältnis gesetzt:
+Der PSNR ist der Quotient, gebildet aus dem maximal möglichen Farbwert $MAX_I$,
+des untersuchten Farbkanals und dem $MSE$:
 
 \begin{align}
 PSNR &= 10 \times \log_{10} \left( \frac{MAX^2_I}{MSE} \right) \\
@@ -458,37 +462,38 @@ PSNR &= 10 \times \log_{10} \left( \frac{MAX^2_I}{MSE} \right) \\
 	 &= 20 \times \log_{10} (MAX_I) - 10 \times \log_{10} (MSE)
 \end{align}
 
+Bei einer Farbtiefe von 8 Bit pro Kanal, stehen Werte von 30 - 40 dB für ein
+geringes Störsignal und gleichzeitig für eine höhere Übereinstimmung der Bilder.
+Der PSNR ist ein häufig genutztes Maß, 
+um die Ähnlichkeit zweier Bilder zu bestimmen.
+
 \section{SSIM}
 
-Eine weitere Metrik, die zum Vergleich von Bilder eingesetzt wird, wurde von Wang \textit{et al.}
-entwickelt \cite{Wang04imagequality}.
-Diese basiert auf der Idee das die Struktur der abgebildeten Objekte von Beleuchtung und
-Kontrast unabhängig ist.
+Im Gegensatz, zum PSNR, ist die von Wang \textit{et al.} entwickelt Metrik
+\textit{structural similarity index} auf ein Modell menschlicher Wahrnehmung angepasst \cite{Wang04imagequality} ist.
+Die Metrik basiert auf der Idee auf, dass die Struktur der abgebildeten Objekte
+unabhängig von Beleuchtung und Kontrast gemessen werden kann.
 
-Beleuchtung und Kontrast können im gesamten Bild variieren, aus diesem Grund werden
-beide Parameter lokal in einem Fenster bestimmt.
-
-In ihrem System wird die Aufgabe, die Ähnlichkeit zu messen in drei Teile unterteilt:
-Beleuchtung, Kontrast und Struktur.
-Als Erstes wird die Beleuchtung bestimmt. 
-Wenn die Signale, wie in diesem Fall diskret sind, lässt sich die mittlere Intensität, 
-des Signals $x$ mit dem Term
+Die mittlere Intensität, es diskreten Signals $x$ lässt sich in
+einem lokalen Bereich der größe $N$ folgendermaßen bestimmen:
 
 \begin{equation}
-	\mu_x = \frac{1}{N} \sum\limits_{i=1}^{N} x_i
+	\mu_x = \frac{1}{N} \sum\limits_{i=1}^{N} x_i.
 \end{equation}
 
-berechnen. Die Vergleichsfunktion für die Beleuchtung zwischen zwei Signalen $x$ und $y$
-wird $l(x, y)$ und setzt die werte $\mu_x$ und $\mu_y$ wie folgt ins Verhältnis:
+Die Vergleichsfunktion, welche die Beleuchtung zwischen zwei Signalen $x$ und $y$
+misst wird durch dem Term $l(x, y)$ bezeichnet.
+Dieser setzt die mittleren Intensitäten $\mu_x$ und $\mu_y$, wie folgt ins Verhältnis:
 
 \begin{equation}
 	l(x, y) = \frac{2\mu_x \mu_y + C_1}{\mu^2_x + \mu^2_y + C_1}.
 \end{equation}
 
-Als Nächstes wird die mittlere Intensität von den Signalen $x$ und $y$ abgezogen,
-so dass $x' = x - \mu_x$ und $y' = y - \mu_y$ entstehen.
+Die Konstante $C_1$ wird benötigt, um die numerische Stabilität
+zu gewährleisten.
+Analog zur Abbildung \ref{fig:SSIM_DIAGRAM}, wird im Anschluss an die Beleuchtungsmessung, die mittlere Intensität von beiden Signalen $x - \mu_x$ und $y - \mu_y$ abgezogen.
 
-Der Kontrast des Signals $x$ wird mit Hilfe der Standardabweichung $\sigma_{x}$ approximiert.
+Der Kontrast wird mit Hilfe der Standardabweichung $\sigma_{x}$ approximiert.
 In diskreter Form lässt sich diese mit der folgenden Formel berechnen:
 
 \begin{equation}
@@ -501,11 +506,12 @@ Die Vergleichsfunktion für den Kontrast wird mit $c(x, y)$ bezeichnet und defini
 	c(x, y) = \frac{2\sigma_x \sigma_y + C_2}{\sigma^2_x + \sigma^2_y + C_2}.
 \end{equation}
 
+Wie bei der Berechnung der mittleren Intensität wird eine Konstante $C_2$
+eingeführt.
 An dieser Stelle wird das Signal normalisiert, 
-indem es durch seine eigene Standartabweichung geteilt wird,
-so dass die Signale $x'' = x' - \mu_{x'} / \sigma_x'$ und $y'' = y' - \mu_{y'} / \sigma_y'$ entstehen.
-Der Vergleich der strukturellen Eigenschaften $s(x, y)$ wird mit den normalisierten Signalen $x''$
-und $y''$ durchgeführt.
+indem es durch seine eigene Standartabweichung geteilt wird und 
+die beiden Signale $(x - \mu_{x}) / \sigma_x$, $(y - \mu_{y}) / \sigma_y$ entstehen.
+Der Vergleich der strukturellen Eigenschaften $s(x, y)$ wird mit den normalisierten Signalen durchgeführt.
 Für den Vergleich der Struktur sollen folgende Eigenschaften gelten:
 
 \begin{figure}
@@ -552,7 +558,7 @@ Für den Vergleich der Struktur sollen folgende Eigenschaften gelten:
 			\draw[->, thick] (I) -- (J);
 	\end{tikzpicture}
 	\centering
-	\caption{Das Modell zeigt das Vorgehen von dem SSIM-Algorithmus}
+	\caption{Das Modell zeigt das Vorgehen von dem SSIM-Algorithmus \cite{Wang04imagequality}.}
 	\label{fig:SSIM_DIAGRAM}
 \end{figure}
 
@@ -563,7 +569,7 @@ Zweitens soll die Funktion auf einen Wert kleiner oder gleich $1$ beschränkt wer
 Drittens es soll nur ein Maximum $s(x, y) = 1$, 
 genau dann und nur dann, wenn gilt das $x = y$.
 
-Eine Definition, die diese Forderungen erfüllt ist:
+Die Folgende Definition erfüllt alle drei Forderungen:
 
 \begin{equation}
 	s(x, y) = \frac{\sigma_{xy} + C_3}{\sigma_x + \sigma_y + C_3}.
@@ -593,7 +599,7 @@ Im Rahmen dieser Arbeit gilt $\alpha = \beta = \gamma = 1$ und
 es gilt für die Konstanten:
 $C_3 = C_2 / 2$, mit $C_1 = 6.5025$ und $C_2 = 58.5225$.
 Der $SSIM$ wird lokal berechnet, in Fenstern der Größe $11 \times 11$,
-dabei erden die Signalwerte $x_i$ und $y_i$ mit einer Gaussianfunktion
+dabei werden die Signalwerte $x_i$ und $y_i$ mit einer Gaussianfunktion
 gewichtet.
 Damit lassen sich die mittlere Intensität, die Standardabweichung
 und die Kovarianz zu folgenden Gleichungen umschreiben, wobei $w_i$
@@ -605,15 +611,15 @@ die Gewichtung an dem Punkt $i$ bezeichnet:
 	\sigma_{xy} &= \sum\limits_{i=1}^{N} w_i(x_i - \mu_x)(y_i - \mu_y).
 \end{align}
 
-Die Gesamtgleichung für den $SSIM(x, y)$ lässt sich durch die Gleichung
+Damit lässt sich der $SSIM(x, y)$ durch die folgende Gleichung bestimmen:
 
 \begin{equation}
-	SSIM(x, y) = \frac{(2 \mu_x \mu_y + C_1)(2\sigma_{xy} + C_2)}{(\mu^2_x + \mu^2_y + C_1)(\sigma^2_x + \sigma^2_y + C_2)}
+	SSIM(x, y) = \frac{(2 \mu_x \mu_y + C_1)(2\sigma_{xy} + C_2)}{(\mu^2_x + \mu^2_y + C_1)(\sigma^2_x + \sigma^2_y + C_2)}.
 \end{equation}
 
-ausrechnen. Der $SSIM(x, y)$ misst die Güte jedoch nur lokal, um
-eine Aussage über das gesamte Bild treffen zu können, kann der
-Mittelwert über allen $x \in X$ und $y \in Y$ berechnet werden:
+Der $SSIM(x, y)$ misst die Güte jedoch nur lokal, um
+eine Aussage über das gesamte Bild treffen zu können, wird der
+Mittelwert über allen $x \in X$ und $y \in Y$ berechnet:
 
 \begin{equation}
 	MSSIM(X, Y) = \frac{1}{M} \sum\limits_{j=1}^{M} SSIM(x_j, y_j).
@@ -987,31 +993,49 @@ dass dieser nahe der Bildschirmebene liegt.
 
 \subsection{Floyd-Steinberg}
 
-Der Zweiter in dieser Arbeit vorgestellte Ansatz zur Erzeugung der Punktmenge $P$, basiert auf einem Fehler-Diffusionsverfahren.
-In diesem Abschnitt wird die Bildfunktion $f(x)$ über der zweidimensionalen Bilddomain definiert.
-Das Bedeutet, das die Tiefenwerte des Bildes $D$ mit der Funktion $f$ angegeben werden.
-Im ersten Schritt wird aus den Gradientenbildern ein Merkmalsbild $\sigma$ erzeugt:
+Der Zweiter in dieser Arbeit vorgestellte Ansatz, zur Erzeugung der Punktmenge $P$, basiert auf einem Fehler-Diffusionsverfahren.
+Im ersten Schritt wird aus den beiden Gradientenbildern $\nabla_x, \nabla_y$ ein 
+Merkmalsbild $\sigma$ erzeugt:
 
 \begin{equation}
-	\sigma(x) = \left( \frac{\parallel \nabla f(x) \parallel}{A} \right)^\gamma.
+	\sigma_d = \left( \frac{\parallel \nabla d \parallel}{A} \right)^\gamma.
 	\label{eq:featureMap}
 \end{equation}
 
-Dabei entspricht der Nenner von \ref{eq:featureMap} der Länge des Gradientenvektors, an der Stelle $x$.
-Dieser wird mit $A$, dem größtmöglichen Wert von $\parallel \nabla f(x) \parallel$ normiert.
-Der Parameter $\gamma \in [0,1]$ wir genutzt, um die Ausprägung von schwachen Kanten 
-im Merkmalsbild $\sigma$ zu erhöhen.
+Dabei entspricht der Nenner von \ref{eq:featureMap} der Länge des Gradientenvektors $\nabla d$, des Pixels $d \in D$.
+Dieser wird mit $A$, dem größtmöglichen Wert von $\parallel \nabla d \parallel$ normiert.
+Der Parameter $\gamma \in [0,1]$ wir genutzt, um die Ausprägung von schwachen 
+Kanten im Merkmalsbild $\sigma$ zu erhöhen.
 
-Die beide Gradientenbilder $\nabla_x$ und $\nabla_y$ werden durch die Gleichung \ref{eq:featureMap} auf ein einzelnes Merkmalsbild $\sigma$ abgebildet.
 Um aus dem Merkmalsbild $\sigma$ die Punktmenge $P$ zu erzeugen, kommt der Floyd-Steinberg Algorithmus zum Einsatz. 
-Bei dem Floyd-Steinberg Algorithmus handelt es sich, um ein einfaches und effizientes Fehler-Diffusion-Verfahren.
+Bei dem Floyd-Steinberg Algorithmus handelt es sich, um einen einfachen und effizienten Dithering-Algorithmus, der auf einen Fehler-Diffusionsverfahren
+fußt.
+Das Merkmalsbild wird mit Hilfe des Schwellwerts $\delta$ binärisiert.
 Zu diesem Zweck wird das Merkmalsbild $\sigma$ Pixel für Pixel Zeilenweise durchlaufen.
 Der betrachtete Pixel wird mit einem Schwellwert $\delta$ verglichen.
 Wenn der Wert des Pixels größer als der Schwellwert ist, 
 dann wird der Wert des Pixels mit $\delta$, andernfalls mit $0$ ersetzt.
-Zusätzlich wird der neu gesetzte Wert und der daraus resultierende Quantisierungsfehler 
-auf die benachbarten Pixel verteilt. 
-Das Folgende Codebeispiel \ref{lst:floyd_steinberg} verdeutlicht das Verfahren:
+Zudem wird der Binärisierung resultierende Quantisierungsfehler, des Pixels $d \in D$, entsprechend der Abbildung \ref{fig:FloydSteinberg_Quantisierungsfehler} auf die benachbarten Pixel verteilt. 
+
+\begin{figure}[H]
+	\begin{tikzpicture}
+		\tikzstyle{Element} = [draw=black,
+	    minimum width=1.5cm, minimum height=1.5cm, node distance=1.5cm]
+		\node[Element, fill=blue!20] (A) {d};
+		\node[Element, right of=A] (B) {$\frac{7}{16}$};
+		\node[Element, below of=A] (C) {$\frac{5}{16}$};
+		\node[Element, below of=B] (D) {$\frac{1}{16}$};
+		\node[Element, left  of=C] (E) {$\frac{3}{16}$};
+	\end{tikzpicture}
+	\centering
+	\caption{Darstellung der gewichteten Verteilung des Quantisierungsfehlers \cite{wiki:001}.}
+	\label{fig:FloydSteinberg_Quantisierungsfehler}
+\end{figure}
+
+Dadurch lässt sich Verteilung von dem Quantisierungsfehler, ohne einen zusätzlichen Puffer, in einem einzigen Durchlauf berechnen.
+Das Folgende Pseudocodebeispiel \ref{lst:floyd_steinberg} verdeutlicht das Verfahren:
+
+\newpage
 
 \begin{lstlisting}[numbers=left,mathescape=true,xleftmargin=0.1\textwidth,captionpos=b,caption={Floyd-Steinberg Algorithmus \cite{wiki:001}},label={lst:floyd_steinberg}]
 for each y
@@ -1027,7 +1051,7 @@ for each y
 \end{lstlisting}
 
 Immer wenn die Bindung erfüllt wird und der Wert eines Pixels auf $\delta$ gesetzt wird,
-dann wird die Menge $P$ mit dem gerade bearbeiteten Pixel erweitert.
+dann wird die Menge $P$ mit der Position, von dem gerade bearbeiteten Pixel erweitert.
 Die Abbildung \ref{fig:feature_Maps} zeigt verschiedene bereits auf $\delta$ und $0$ reduzierte
 Merkmalsbilder $\sigma$.
 
@@ -1049,7 +1073,7 @@ Wenn $\delta$ kleine Werte annimmt, dann wird die Punktdichte erhöht und im Fall
 
 \subsection{Erzeugung des Netzes}
 
-Die aus den beiden erzeugten Methoden Punkte $p \in P$ können jetzt mit Hilfe der Delaunay-Triangulierung
+Die aus den beiden Methoden erzeugten Punkte $p \in P$ können jetzt mit Hilfe der Delaunay-Triangulierung
 zu einem Dreiecksnetz miteinander verbunden werden.
 In dieser Arbeit wird zu diesem Zweck die Delaunay-Triangulierung aus dem opencv-Framework verwendet.
 
@@ -1250,13 +1274,19 @@ einer validen Kante.
 Zu beachten ist, dass jedes neu erzeugte Dreieck auf Kollinearität zu überprüfen
 und gegebenenfalls zu verwerfen.
 
-Um die Schwellwerte unabhängig von der Auflösung und Farbtiefe angeben zu können,
-werden die Streckenlängen in den Gleichungen \ref{eq:EDGE_JOIN}... mit Texturkoordinaten berechnet
-und die Farbwerte der Pixel auf das Intervall $[0,1]$ transformiert.
+Die Pixelpositionen, in den Gleichungen \ref{eq:EDGE_VALID} und \ref{eq:EDGE_JOIN} werden in Texturkoordinaten angegeben und die Farbwerte der Pixel auf das Intervall $[0,1]$ transformiert.
+
+Die Abbildung \ref{fig:refined_mesh_1} zeigt ein nachbearbeitetes Dreiecksnetz.
+Rot markierte Kanten sind nicht valide und werden nicht zum endgültigen Netz hinzugefügt.
+Alle grünen Kanten, gehören zu Dreiecken die aus einem Dreieck, ohne valide Kante erzeugt wurden.
+Analog dazu wurden Dreiecke, hervorgehoben durch blaue Kanten aus Dreiecken erzeugt mit nur einer
+validen Kante.
+Kollineare Dreiecke fallen zu Schwarzen Kanten oder Punkten zusammen.
 
 \begin{figure}
 	\includegraphics[width=\textwidth]{../results/7/512x512_Delaunay/D9/L0.5/I0.4/A1.0/J0.1/_pre/delaunay.png}
-	\caption{Nachbearbeites Netz}
+	\caption{Nachbearbeites Netz des ersten Frames aus dem \textit{TestSpheres}-Datensatz.}
+	\label{fig:refined_mesh_1}
 \end{figure}
 
 \chapter{Implementierung}
@@ -1264,101 +1294,224 @@ und die Farbwerte der Pixel auf das Intervall $[0,1]$ transformiert.
 Die Klient-Anwendung ist eine Browser basierte Web-Anwendung, die mit dem Server
 über das WebSocket-Protokoll kommuniziert.
 Dabei handelt es sich um ein auf TCP basierendes Netzwerkprotokoll,
-das eine Bidirektionale Verbindung zwischen den Verbindungsteilnehmern erlaubt.
+das eine Bidirektionale Verbindung zwischen den Verbindungsteilnehmern erlaubt,
+ohne auf Methoden wie Long Polling zurückgreifen zu müssen.
 Die klientseitge Extrapolation der Bilddaten wird mit Hilfe von WebGL durchgeführt wird.
 Bei WebGL handelt es sich um eine Bibliothek die von modernen Browsern zur Verfügung gestellt wird,
 um eine Hardware beschleunigte Bildsynthese zu ermöglichen.
 Der Vorteil dieser Technologie ist die Unabhängigkeit der Anwendung im Bezug,
 zur Plattform und dem Gerät, in Kombination mit einer hohen Rechengeschwindigkeit.
 
-Beide Komponenten tauschen Informationen mit Hilfe des kompakten vom Menschen
-lesbaren JSON
+Die Server-Anwendung wurde mit der Sprache c++ entwickelt.
+Dabei wird auf die Implementierung der WebSocket-Serverkomponente
+aus dem QT-Framework zurückgegriffen.
+Der Server-Prozess besteht aus einem Thread.
+Zur Verwaltung der Anfragen wird auf das Event-Managementsystem von QT verwendet. 
+Beim Start der Serveranwendung werden die Szenen geladen.
+Aus diesen wird eine \textit{Playlist} erstellt, die die Informationen aller Szenen
+vereint.
+Im Anschluss daran wird Standardparameterkonfiguration geladen
+und der Server wartet darauf, dass sich ein Klient verbindet.
+
+Die Kommunikation zwischen Server- und die Klient-Komponente basiert auf dem
+JSON-RPC 2.0 Protokoll.
+
+Die Abkürzung JSON-RPC steht für \textit{JavaScript Object Notation Remote Procedure Call}.
+Es handelt sich dabei, um ein Protokoll, das den Aufbau und die Nominatur von Nachrichten beschreibt. 
+Im speziellen um Nachrichten, die dazu dienen, dass der Kommunikationsteilnehmer bestimmte 
+Methoden mit bestimmten Parameterkonfigurationen zu starten.
+Es basiert auf dem Textbasierten Datenformat JSON.
+Nachrichten werden in Anfragen und Antworten unterteilt.
+Mit Hilfe einer $id$ lassen sich Nachrichten bei asynchroner Kommunikation zuordnen.
+Es werden drei verschiedene Typen von Anfragen unterschieden, \textit{Request}, \textit{Notification}  und \textit{Batch Request}.
+Ein \textit{Request} ist eine Anfrage, welche die Antwort eines Kommunikationsteilnehmers verlangt.
+Diese Form der Anfragen, kann zu Synchronisierten Nachrichtenübertragung genutzt werden. 
+Im Gegensatz dazu, entfällt bei einer \textit{Notification} die $id$, weil keine Antwort verlangt wird.
+Der \textit{Batch Request} fast eine Menge von \textit{Requests} und \textit{Notifications} in
+eine einzige Anfrage zusammen.
+
+Die in dieser Arbeit implementierte Variante von JSON-RPC 2.0, 
+wird auf Anfragen vom Typ \textit{Request} beschränkt,
+weilt die gesamte Kommunikation synchronisiert stattfindet.
+
+Eine JSON-RPC-Anfrage ist ein JSON-Objekt, das sich aus vier Teilen zusammensetzt.
+Der erste ist ein String mit der JSON-RPC Version, gefolgt vom Namen der aufzurufenden Methode.
+Im Anschluss folgt ein JSON-Objekt, das die Parameter der Aufzurufenden Methode enthält
+und zum Schluss kommt die $id$ der Anfrage.
+
+Wurde die Anfrage empfangen und die Methode ausgeführt, wird eine Antwort zurückgesendet.
+Eine JSON-RPC-Antwort ist ebenfalls ein JSON-Objekt, dass aus drei Teilen besteht.
+Der erste Teil ist ebenfalls die JSON-RPC Version als String kodiert.
+Der zweite Teil enthält den Rückgabewert in Form eines JSON-Objektes
+und zum Schluss folgt die $id$ der Anfrage.
+ 
+Als Beispielanfrage soll der Aufruf der Methode \textit{resize} dienen.
+Möchte der Klient die Auflösung ändern schickt er die Anfrage, dem Beispiel \ref{lst:jsonrpc_request_resize}
+entsprechend zum Server.
+
+\begin{lstlisting}[numbers=left,mathescape=true,xleftmargin=0.1\textwidth,captionpos=b,caption={RPC-Request},label={lst:jsonrpc_request_resize}]
+{
+	"jsonrpc" 	: "2.0",
+	"method"	: "resize",
+	"params"	: [512, 512],
+	"id",		: 0
+}
+\end{lstlisting}
+
+Hat der Server die Anfrage empfangen, ruft dieser darauf hin die Methode \textit{resize} mit den entsprechenden Parametern aus der Anfrage auf.
+Anschließend schickt er eine Antwort an den Klient zurück, wie im Beispiel \ref{lst:jsonrpc_response_resize} demonstriert.
+
+\begin{lstlisting}[numbers=left,mathescape=true,xleftmargin=0.1\textwidth,captionpos=b,caption={RPC-Response},label={lst:jsonrpc_response_resize}]
+{
+	"jsonrpc" 	: "2.0",
+	"result"	: [512, 512],
+	"id",		: 0
+}
+\end{lstlisting}
+
+Der Server stellt eine Menge von Methoden zur Verfügung, die durch den Klient initiiert,
+von dem Serverprozess ausführt werden.
+
+Eine Beispielkommunikation, dargestellt im Sequenzdiagramm \ref{fig:Squenzdiagram} veranschaulicht
+den Remote-Aufruf verschiedener Methoden.
 
 \begin{figure}[H]
-	\begin{tikzpicture}[node distance=2cm,
-						Komponente/.style = {draw, rectangle},
-						ServerKomponente/.style = {Komponente, fill=yellow!30, minimum width=5cm}]
-		\node[ServerKomponente] (A) {Server};
-		\node[Komponente, right of=A] 		(B) {Client};
+	\begin{tikzpicture}
+		\tikzstyle{Komponent} = [draw=black, minimum width=2.5cm, minimum height=1.5cm]
+		\tikzstyle{IsActive} = [draw=black, fill=white, minimum width=0.2cm, minimum height=0.5cm] % node distance=1.5cm
+		\node[Komponent] (SERVER) at (0, 0) {:Server};
+		\node[Komponent] (CLIENT) at (10, 0) {:Klient};
+		\draw[thick, dashed] (SERVER) -- (0, -13);
+		\draw[thick, dashed] (CLIENT) -- (10, -13);
+		
+		\node[IsActive] (S1) at (0, -2) {};
+		\node[IsActive] (C1) at (10, -2) {};
+		\draw[thick, ->] (C1.north west) -- (S1.north east) node [midway, above] {Connect};
+		\draw[thick, dashed, ->, >=stealth] (S1.south east) -- (C1.south west) node [midway, below] {Connected};
+		
+		\node[IsActive] (S2) at (0, -4) {};
+		\node[IsActive] (C2) at (10, -4) {};
+		\draw[thick, ->] (C2.north west) -- (S2.north east) node [midway, above] { method : getPlaylist, id : 0};
+		\draw[thick, dashed, ->, >=stealth] (S2.south east) -- (C2.south west) node [midway, below] {result : \{...\}, id : 0 };
+		
+		\node[IsActive] (S3) at (0, -6) {};
+		\node[IsActive] (C3) at (10, -6) {};
+		\draw[thick, ->] (C3.north west) -- (S3.north east) node [midway, above] { method : loadScene, id : 1};
+		\draw[thick, dashed, ->, >=stealth] (S3.south east) -- (C3.south west) node [midway, below] {result : \{...\}, id : 1 };
+		
+		\node[IsActive] (S4) at (0, -8) {};
+		\node[IsActive] (C4) at (10, -8) {};
+		\draw[thick, ->] (C4.north west) -- (S4.north east) node [midway, above] { method : setConfig, id : 2};
+		\draw[thick, dashed, ->, >=stealth] (S4.south east) -- (C4.south west) node [midway, below] {result : \{...\}, id : 2 };
+		
+		\node[IsActive] (S5) at (0, -10) {};
+		\node[IsActive] (C5) at (10, -10) {};
+		\draw[thick, ->] (C5.north west) -- (S5.north east) node [midway, above] { method : getFrame, id : 3};
+		\draw[thick, dashed, ->, >=stealth] (S5.south east) -- (C5.south west) node [midway, below] {result : \{...\}, id : 3 };
+		
+		\node[IsActive] (S6) at (0, -12) {};
+		\node[IsActive] (C6) at (10, -12) {};
+		\draw[thick, ->] (C6.north west) -- (S6.north east) node [midway, above] {disconnect};
+		\draw[thick, dashed, ->, >=stealth] (S6.south east) -- (C6.south west) node [midway, below] {disconnected};
+		
+		\node[IsActive, minimum height=10.5cm] at (10, -7) {};
 	\end{tikzpicture}
+	\centering
+	\caption{Das Sequenzdiagramm zeigt eine Beispielkommunikation, um ein Bild vom Server anzufordern.}
+	\label{fig:Squenzdiagram}
 \end{figure}
 
-\subsection{16 Bit}
+Kann sich der Klient erfolgreich mit dem Server verbinden, fragt er die \textit{Playlist} ab.
+Nachdem alle Szenen bekannt sind, wird eine Szene geladen.
+Anschließend wird mit der Methode \textit{setConfig} eine gewählte Parameterkonfiguration gesetzt.
+Mit Hilfe der \textit{Playlist} kann ein beliebiger Frame, der geladenen Szene angefordert werden.
+Der empfangene Frame, kann vom Klient beliebig extrapoliert werden.
+Neben den Vorgestellten, stehen zusätzliche Methoden, zum Starten einer Messung beziehungsweise zum 
+Speichern eines Bildes durch den Server zur Verfügung.
 
-Farb- und Tiefenbild werden mit base64 kodiert übertragen und lassen
-sich vom Browser nativ dekodieren.
-Die Farbtiefe pro Kanal ist Browserseitig auf 8 Bit beschränkt.
-Um 16 Bit Tiefeninformationen im Vertex-Shader nutzen zu können,
-müssen diese 16 Bit auf zwei 8 Bit Kanäle aufgeteilt werden.
-Die Abbildung \ref{fig:use2channels} verdeutlicht dieses Verfahren.
-In den roten-Farbkanal werden die ersten 8 Bit und in den
-grünen-Farbkanal die restlichen 8 Bit aufgeteilt.
-Die Aufteilung der 16 Bit auf die Farbkanäle erfolgt Server-seitig.
+\section{Implentierung der Algorithmen}
+
+In diesem Abschnitt werden Details zur Implementierung, der vorgestellten Algorithmen
+genauer betrachtet.
+Begonnen wird mit den Farbbildern.
+Um eine verlustbehaftete Komprimierung ermöglichen zu können,
+kommt das JPEG-Format zum Einsatz.  
+Anschließend müssen die Bildinformationen mit Base64 kodiert werden, 
+damit diese als String in ein JSON-Objekt integriert werden können.
+
+\subsection{Vollvernetzung}
+
+Im Fall der Vollvernetzung, wird neben dem Farbbild auch das Tiefenbild mit Base64 kodiert
+und als String in ein JSON-Objekt eingebettet.
+Im Gegensatz zu den Farbbildern, werden die Tiefenbilder verlustfrei als PNG komprimiert.
+
+Die Dekodierung von Farb- und Tiefenbilder kann mit Hilfe des Bildcontainers nativ durch
+vom Browser durchgeführt werden.
+Im Bezug auf das Tiefenbild ergibt sich ein Problem.
+Dieser Bildcontainer erlaubt für jeden Farbkanal ausschließlich eine Farbtiefe von 8 Bit.
+Damit ein Shaderprogramm trotzdem auf 16 Bit Informationen aus einer Textur zurückgreifen 
+kann, muss der 16 Bit Wert auf zwei Farbkanäle aufgeteilt werden und die Rekonstruktion
+erfolgt im Shader.
+Diese Aufteilung findet auf dem Server statt, bevor das Bild mit Base64 kodiert wird.
+Auf den roten-Farbkanal entfallen die ersten 8 Bit und 
+die zweiten 8 Bit, der 16 Bit Zahl werden auf den grünen Farbkanal ausgelagert.
+Die Abbildung \ref{fig:use2channels} verdeutlicht die Aufteilung.
 
 \begin{figure}[h]
 	\begin{tikzpicture}
-		\node[draw=none] (A) at (0,0) {$2^{16}$};
-		\node[draw=none, fill=red!20, minimum width=6cm, minimum height=1cm] (B) at (-3,-1) {$2^{8}$};
-		\node[draw=none, fill=green!20, minimum width=6cm, minimum height=1cm] (C) at (3,-1) {$2^{8}$};
-		\node[draw=none] (D) at (-3,-2) {heigh};
-		\node[draw=none] (E) at (3, -2) {low};
+		\node[draw=none, fill=red!10, minimum width=8cm, minimum height=1cm] (B) at (-3.5,-1) {$d_{low}$};
+		\node[draw=none, fill=green!10, minimum width=8cm, minimum height=1cm] (C) at (4.5,-1) {$d_{up}$};
+			
+		\foreach \x in {0,1,...,15}
+			\draw (\x cm -7.5 cm, 0.5cm) -- (\x cm -7.5 cm,-0.5cm) node[anchor=south west] {$\x$};
 		
-		\draw (-6, -2.5) -- (-6, 0.5) -- (6, 0.5) -- (6, -2.5);
-		\draw (-6, -0.5) -- (6, -0.5);
-		\draw (-6, -1.5) -- (6, -1.5);
-		\draw (-6, -2.5) -- (6, -2.5);
-		\draw (0, -2.5) -- (0, -0.5);
+		\draw (-7.5, -1.5) -- (-7.5, 0.5) -- (8.5, 0.5) -- (8.5, -1.5);
+		\draw (-7.5, -0.5) -- (8.5, -0.5);
+		\draw (-7.5, -1.5) -- (8.5, -1.5);
+		\draw (0.5, -1.5) -- (0.5, -0.5);
 	\end{tikzpicture}
 	\centering
-	\caption{Hier wird die Aufteilung einer 16 Bit Zahl auf die Farbkanäle, links rot und rechts grün, visuell verdeutlicht. Das Schlüsselwort \textit{heigh} bezeichnet die ersten 8 Bit und \textit{low} die zweiten 8 Bit.}
+	\caption{Hier wird die Aufteilung einer 16 Bit Zahl auf die Farbkanäle, links rot und rechts grün, visuell verdeutlicht. Das Schlüsselwort $d_{up}$ bezeichnet die ersten 8 Bit und $d_{low}$ die zweiten 8 Bit.}
 	\label{fig:use2channels}
 \end{figure}
 
-Um aus \textit{heigh} und \textit{low} die 16 Bit $v$ zu berechnen, genügt es den Wert von \textit{heigh}
-zuerst mit 255 zu multiplizieren und dann den Wert von \textit{low} zu addieren.
-Die Gleichung \ref{eq:reconstruct1} zeigt genau diesen Zusammenhang:
+Um aus $d_{up}$ und $d_{low}$ die 16 Bit $d$ Zahl zu erhalten, genügt es den Wert von $d_{up}$
+zuerst mit 255 zu multiplizieren und den Wert von $d_{low}$ zu addieren,
+wie in der Gleichung \ref{eq:reconstruct1} beschrieben.
 
 \begin{equation}
-	v = low + heigh \times 255.
+	d = d_{low} + d_{up} \cdot 256.
 	\label{eq:reconstruct1}
 \end{equation}
 
-Beim Laden einer Textur auf die Grafikkarte, werden alle Farbkanäle normiert, im Fall
-eines 8 Bit Bildes, wird jeder Wert durch den Maximalwert 255 geteilt, so dass
-der Wert im Intervall von $[0, 1]$ liegt.
+Die rekonstruierte Zahl $d$ aus der Gleichung \ref{eq:reconstruct1} liegt im Ganzzahligem Intervall $[0,65535]$.
+Beim Zugriff auf die Farbwerte einer Textur im Shader, werden die jedoch normiert.
+Das bedeutet, im Fall eines 8 Bit Farbkanals, wird jeder Wert durch den Maximalwert 255 geteilt.
+Auf diese weise werden die Werte eines Pixels in das Intervall $[0, 1]$ überführt.
+Um eine 16 Bit Zahl in dieses Intervall zu überführen, muss sie durch den Wert $65535$ geteilt werden.
+Aus diesem Zusammenhang ergibt sich die folgende Gleichung zur Rekonstruktion der Zahl $d$:
 
-\begin{figure}[h]
-	\begin{tikzpicture}
-		\begin{scope}[auto, every node/.style={minimum width=15em}]
-		 
-		\node[draw, fill=lightgray!20] (A) at (0,0) {Vertex Data};
-		
-		\node[draw, fill=yellow]	(B) at (0,-1) {Vertex Shader};
-		
-		\node[draw, fill=lightgray!20] (C) at (0, -2) {Primitive Assembly};
+\begin{equation}
+	d = \frac{255 \cdot \frac{d_{low}}{255} + \frac{d_{up}}{255} \cdot 255 \cdot 265}{2^{16} -1}.
+	\label{eq:reconstruct2}
+\end{equation}
 
-		\node[draw, fill=lightgray!20] (D) at (0,-3) {Rasterization};
-		
-		\node[draw, fill=yellow] 	(E) at (0,-4) {Fragment Shader};
-		
-		\node[draw, fill=lightgray!20] (F) at (0,-5) {Per-Fragment Operations};
-		
-		\node[draw, fill=lightgray!20] (G) at (0,-6) {Framebuffer};	
+Die Zahl $65535$ lässt sich in das Produkt $65535 = 255 \cdot 257$ umschreiben
+und dadurch Gleichung \ref{eq:reconstruct2} kann weiter vereinfacht werden:
 
-		\draw[->, line width=1mm] (A) edge (B);
-		\draw[->, line width=1mm] (B) edge (C);
-		\draw[->, line width=1mm] (C) edge (D);
-		\draw[->, line width=1mm] (D) edge (E);
-		\draw[->, line width=1mm] (E) edge (F);
-		\draw[->, line width=1mm] (F) edge (G);
-		
-		\end{scope}
-	\end{tikzpicture}
-	\centering
-	\caption{OpengGl ES 2.0 Darstellungspipeline. 
-			 Grau unterlegt sind statischen und gelb die programmierbaren Elemente.}
-	\label{fig:OpenGl_pipeline}
-\end{figure}
+\begin{align}
+	d &= \frac{ \cancel{255} \cdot \left( \frac{d_{low}}{255} + \frac{d_{up}}{255} \cdot 265 \right)}{\cancel{255} \cdot 257} \\
+	&= \frac{d_{low}}{255} \cdot \frac{1}{257} + \frac{d_{up}}{255} \cdot \frac{256}{257}
+		\label{eq:reconstruct3}
+\end{align}
+
+Im Shader kann die 16 Bit zahl deshalb einfach entsprechend der Gleichung \ref{eq:reconstruct3} rekonstruieren.
+Der Farbwert des roten Farbkanals wird mit (1/257) multipliziert und der des grünen mit (256/257).
+Im Anschluss daran werden die beiden Werte aufsummiert und der Wert der 16 Bit Zahl steht im Shader zur Verfügung.
+
+Im Fall der Vollvernetzung, werden alle Dreiecke, die zum Hintergrund gehören transparent gezeichnet.
+Es ist möglich eine Schwellwert zu bestimmen, der mit den Gradienten im Tiefenbild vergleichen wird.
+Wird der Schwellwert überschritten, dann werden die entsprechenden Fragmente ebenfalls durchsichtig.
 
 \chapter{Ergebnisse}
 
