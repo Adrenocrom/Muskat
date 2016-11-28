@@ -1,4 +1,4 @@
-\documentclass[hyperref,german,diplominf]{cgvpub}
+\documentclass[hyperref,german,diplominf,final,lof,lot]{cgvpub}
 %weitere Optionen zum Ergänzen (in eckigen Klammern):
 % 
 % bibnum	numerische Literaturschlüssel
@@ -69,10 +69,10 @@ Bild"ubernahmen zitieren.}
 \abstracten{abstract text english}
 \abstractde{ Zusammenfassung Text Deutsch}
 
+\usepackage[dvipsnames]{xcolor}
 \usepackage{pgfplots}
 \usepackage{filecontents}
 \usepackage{subfigure}
-\usepackage{xcolor}
 \usepackage{float}
 \usepackage{cancel}
 \tikzset{>=latex}
@@ -85,6 +85,24 @@ Bild"ubernahmen zitieren.}
 \input{../results/6/512x512_Full/default/16bit/5Pass/G1.0/results.tex}
 \input{../results/6/512x512_Full/default/16bit/5Pass/G0.9/results.tex}
 \input{../results/6/512x512_Full/default/16bit/5Pass/G0.8/results.tex}
+\input{../results/7/512x512_Full/default/8bit/5Pass/G1.0/results.tex}
+\input{../results/7/512x512_Full/default/8bit/5Pass/G0.9/results.tex}
+\input{../results/7/512x512_Full/default/8bit/5Pass/G0.8/results.tex}
+\input{../results/6/512x512_Full/default/8bit/5Pass/G1.0/results.tex}
+\input{../results/6/512x512_Full/default/8bit/5Pass/G0.9/results.tex}
+\input{../results/6/512x512_Full/default/8bit/5Pass/G0.8/results.tex}
+\input{../results/7/512x512_Full/default/16bit/3Pass/G1.0/results.tex}
+\input{../results/7/512x512_Full/default/16bit/3Pass/G0.9/results.tex}
+\input{../results/7/512x512_Full/default/16bit/3Pass/G0.8/results.tex}
+\input{../results/6/512x512_Full/default/16bit/3Pass/G1.0/results.tex}
+\input{../results/6/512x512_Full/default/16bit/3Pass/G0.9/results.tex}
+\input{../results/6/512x512_Full/default/16bit/3Pass/G0.8/results.tex}
+\input{../results/7/512x512_Full/default/8bit/3Pass/G1.0/results.tex}
+\input{../results/7/512x512_Full/default/8bit/3Pass/G0.9/results.tex}
+\input{../results/7/512x512_Full/default/8bit/3Pass/G0.8/results.tex}
+\input{../results/6/512x512_Full/default/8bit/3Pass/G1.0/results.tex}
+\input{../results/6/512x512_Full/default/8bit/3Pass/G0.9/results.tex}
+\input{../results/6/512x512_Full/default/8bit/3Pass/G0.8/results.tex}
 
 \input{../results/6/512x512_Delaunay/D10/L0.1/I0.1/_pre/results.tex}
 \input{../results/6/512x512_Delaunay/D9/L0.1/I0.1/_pre/results.tex}
@@ -93,12 +111,116 @@ Bild"ubernahmen zitieren.}
 \input{../results/7/512x512_Delaunay/D9/L0.1/I0.1/_pre/results.tex}
 \input{../results/7/512x512_Delaunay/D8/L0.1/I0.1/_pre/results.tex}
 
+\input{../results/6/512x512_Delaunay/D10/L0.6/I0.4/_pre/results.tex}
+\input{../results/6/512x512_Delaunay/D10/L0.6/I0.4/A0.1/J0.1/_pre/results.tex}
+\input{../results/6/512x512_Delaunay/D10/L0.6/I0.4/A0.1/J0.2/_pre/results.tex}
+\input{../results/6/512x512_Delaunay/D10/L0.6/I0.4/A1.0/J0.1/_pre/results.tex}
+\input{../results/6/512x512_Delaunay/D10/L0.6/I0.4/A1.0/J0.2/_pre/results.tex}
+\input{../results/6/512x512_Delaunay/D10/L0.6/I0.4/A10.0/J0.1/_pre/results.tex}
+\input{../results/6/512x512_Delaunay/D10/L0.6/I0.4/A10.0/J0.2/_pre/results.tex}
+\input{../results/7/512x512_Delaunay/D10/L0.6/I0.4/_pre/results.tex}
+\input{../results/7/512x512_Delaunay/D10/L0.6/I0.4/A0.1/J0.1/_pre/results.tex}
+\input{../results/7/512x512_Delaunay/D10/L0.6/I0.4/A0.1/J0.2/_pre/results.tex}
+\input{../results/7/512x512_Delaunay/D10/L0.6/I0.4/A1.0/J0.1/_pre/results.tex}
+\input{../results/7/512x512_Delaunay/D10/L0.6/I0.4/A1.0/J0.2/_pre/results.tex}
+\input{../results/7/512x512_Delaunay/D10/L0.6/I0.4/A10.0/J0.1/_pre/results.tex}
+\input{../results/7/512x512_Delaunay/D10/L0.6/I0.4/A10.0/J0.2/_pre/results.tex}
+\input{../results/6/512x512_Delaunay/D10/L0.9/I0.7/_pre/results.tex}
+\input{../results/6/512x512_Delaunay/D10/L0.9/I0.7/A0.1/J0.1/_pre/results.tex}
+\input{../results/6/512x512_Delaunay/D10/L0.9/I0.7/A0.1/J0.2/_pre/results.tex}
+\input{../results/6/512x512_Delaunay/D10/L0.9/I0.7/A1.0/J0.1/_pre/results.tex}
+\input{../results/6/512x512_Delaunay/D10/L0.9/I0.7/A1.0/J0.2/_pre/results.tex}
+\input{../results/6/512x512_Delaunay/D10/L0.9/I0.7/A10.0/J0.1/_pre/results.tex}
+\input{../results/6/512x512_Delaunay/D10/L0.9/I0.7/A10.0/J0.2/_pre/results.tex}
+\input{../results/7/512x512_Delaunay/D10/L0.9/I0.7/_pre/results.tex}
+\input{../results/7/512x512_Delaunay/D10/L0.9/I0.7/A0.1/J0.1/_pre/results.tex}
+\input{../results/7/512x512_Delaunay/D10/L0.9/I0.7/A0.1/J0.2/_pre/results.tex}
+\input{../results/7/512x512_Delaunay/D10/L0.9/I0.7/A1.0/J0.1/_pre/results.tex}
+\input{../results/7/512x512_Delaunay/D10/L0.9/I0.7/A1.0/J0.2/_pre/results.tex}
+\input{../results/7/512x512_Delaunay/D10/L0.9/I0.7/A10.0/J0.1/_pre/results.tex}
+\input{../results/7/512x512_Delaunay/D10/L0.9/I0.7/A10.0/J0.2/_pre/results.tex}
+
+\input{../results/6/512x512_Delaunay/D9/L0.6/I0.4/_pre/results.tex}
+\input{../results/6/512x512_Delaunay/D9/L0.6/I0.4/A0.1/J0.1/_pre/results.tex}
+\input{../results/6/512x512_Delaunay/D9/L0.6/I0.4/A0.1/J0.2/_pre/results.tex}
+\input{../results/6/512x512_Delaunay/D9/L0.6/I0.4/A1.0/J0.1/_pre/results.tex}
+\input{../results/6/512x512_Delaunay/D9/L0.6/I0.4/A1.0/J0.2/_pre/results.tex}
+\input{../results/6/512x512_Delaunay/D9/L0.6/I0.4/A10.0/J0.1/_pre/results.tex}
+\input{../results/6/512x512_Delaunay/D9/L0.6/I0.4/A10.0/J0.2/_pre/results.tex}
+\input{../results/7/512x512_Delaunay/D9/L0.6/I0.4/_pre/results.tex}
+\input{../results/7/512x512_Delaunay/D9/L0.6/I0.4/A0.1/J0.1/_pre/results.tex}
+\input{../results/7/512x512_Delaunay/D9/L0.6/I0.4/A0.1/J0.2/_pre/results.tex}
+\input{../results/7/512x512_Delaunay/D9/L0.6/I0.4/A1.0/J0.1/_pre/results.tex}
+\input{../results/7/512x512_Delaunay/D9/L0.6/I0.4/A1.0/J0.2/_pre/results.tex}
+\input{../results/7/512x512_Delaunay/D9/L0.6/I0.4/A10.0/J0.1/_pre/results.tex}
+\input{../results/7/512x512_Delaunay/D9/L0.6/I0.4/A10.0/J0.2/_pre/results.tex}
+\input{../results/6/512x512_Delaunay/D9/L0.9/I0.7/_pre/results.tex}
+\input{../results/6/512x512_Delaunay/D9/L0.9/I0.7/A0.1/J0.1/_pre/results.tex}
+\input{../results/6/512x512_Delaunay/D9/L0.9/I0.7/A0.1/J0.2/_pre/results.tex}
+\input{../results/6/512x512_Delaunay/D9/L0.9/I0.7/A1.0/J0.1/_pre/results.tex}
+\input{../results/6/512x512_Delaunay/D9/L0.9/I0.7/A1.0/J0.2/_pre/results.tex}
+\input{../results/6/512x512_Delaunay/D9/L0.9/I0.7/A10.0/J0.1/_pre/results.tex}
+\input{../results/6/512x512_Delaunay/D9/L0.9/I0.7/A10.0/J0.2/_pre/results.tex}
+\input{../results/7/512x512_Delaunay/D9/L0.9/I0.7/_pre/results.tex}
+\input{../results/7/512x512_Delaunay/D9/L0.9/I0.7/A0.1/J0.1/_pre/results.tex}
+\input{../results/7/512x512_Delaunay/D9/L0.9/I0.7/A0.1/J0.2/_pre/results.tex}
+\input{../results/7/512x512_Delaunay/D9/L0.9/I0.7/A1.0/J0.1/_pre/results.tex}
+\input{../results/7/512x512_Delaunay/D9/L0.9/I0.7/A1.0/J0.2/_pre/results.tex}
+\input{../results/7/512x512_Delaunay/D9/L0.9/I0.7/A10.0/J0.1/_pre/results.tex}
+\input{../results/7/512x512_Delaunay/D9/L0.9/I0.7/A10.0/J0.2/_pre/results.tex}
+
+\input{../results/6/512x512_Delaunay/D8/L0.6/I0.4/_pre/results.tex}
+\input{../results/6/512x512_Delaunay/D8/L0.6/I0.4/A0.1/J0.1/_pre/results.tex}
+\input{../results/6/512x512_Delaunay/D8/L0.6/I0.4/A0.1/J0.2/_pre/results.tex}
+\input{../results/6/512x512_Delaunay/D8/L0.6/I0.4/A1.0/J0.1/_pre/results.tex}
+\input{../results/6/512x512_Delaunay/D8/L0.6/I0.4/A1.0/J0.2/_pre/results.tex}
+\input{../results/6/512x512_Delaunay/D8/L0.6/I0.4/A10.0/J0.1/_pre/results.tex}
+\input{../results/6/512x512_Delaunay/D8/L0.6/I0.4/A10.0/J0.2/_pre/results.tex}
+\input{../results/7/512x512_Delaunay/D8/L0.6/I0.4/_pre/results.tex}
+\input{../results/7/512x512_Delaunay/D8/L0.6/I0.4/A0.1/J0.1/_pre/results.tex}
+\input{../results/7/512x512_Delaunay/D8/L0.6/I0.4/A0.1/J0.2/_pre/results.tex}
+\input{../results/7/512x512_Delaunay/D8/L0.6/I0.4/A1.0/J0.1/_pre/results.tex}
+\input{../results/7/512x512_Delaunay/D8/L0.6/I0.4/A1.0/J0.2/_pre/results.tex}
+\input{../results/7/512x512_Delaunay/D8/L0.6/I0.4/A10.0/J0.1/_pre/results.tex}
+\input{../results/7/512x512_Delaunay/D8/L0.6/I0.4/A10.0/J0.2/_pre/results.tex}
+\input{../results/6/512x512_Delaunay/D8/L0.9/I0.7/_pre/results.tex}
+\input{../results/6/512x512_Delaunay/D8/L0.9/I0.7/A0.1/J0.1/_pre/results.tex}
+\input{../results/6/512x512_Delaunay/D8/L0.9/I0.7/A0.1/J0.2/_pre/results.tex}
+\input{../results/6/512x512_Delaunay/D8/L0.9/I0.7/A1.0/J0.1/_pre/results.tex}
+\input{../results/6/512x512_Delaunay/D8/L0.9/I0.7/A1.0/J0.2/_pre/results.tex}
+\input{../results/6/512x512_Delaunay/D8/L0.9/I0.7/A10.0/J0.1/_pre/results.tex}
+\input{../results/6/512x512_Delaunay/D8/L0.9/I0.7/A10.0/J0.2/_pre/results.tex}
+\input{../results/7/512x512_Delaunay/D8/L0.9/I0.7/_pre/results.tex}
+\input{../results/7/512x512_Delaunay/D8/L0.9/I0.7/A0.1/J0.1/_pre/results.tex}
+\input{../results/7/512x512_Delaunay/D8/L0.9/I0.7/A0.1/J0.2/_pre/results.tex}
+\input{../results/7/512x512_Delaunay/D8/L0.9/I0.7/A1.0/J0.1/_pre/results.tex}
+\input{../results/7/512x512_Delaunay/D8/L0.9/I0.7/A1.0/J0.2/_pre/results.tex}
+\input{../results/7/512x512_Delaunay/D8/L0.9/I0.7/A10.0/J0.1/_pre/results.tex}
+\input{../results/7/512x512_Delaunay/D8/L0.9/I0.7/A10.0/J0.2/_pre/results.tex}
+
 \input{../results/6/512x512_Delaunay/T1.0/G1.0/results.tex}
+\input{../results/6/512x512_Delaunay/T0.9/G0.9/results.tex}
+\input{../results/6/512x512_Delaunay/T0.8/G0.8/results.tex}
 \input{../results/6/512x512_Delaunay/T0.7/G0.7/results.tex}
+\input{../results/6/512x512_Delaunay/T0.6/G0.6/results.tex}
 \input{../results/6/512x512_Delaunay/T0.5/G0.5/results.tex}
+\input{../results/6/512x512_Delaunay/T0.4/G0.4/results.tex}
+\input{../results/6/512x512_Delaunay/T0.3/G0.3/results.tex}
+\input{../results/6/512x512_Delaunay/T0.2/G0.2/results.tex}
+\input{../results/6/512x512_Delaunay/T0.1/G0.1/results.tex}
+\input{../results/6/512x512_Delaunay/T0.0/G0.0/results.tex}
+
 \input{../results/7/512x512_Delaunay/T1.0/G1.0/results.tex}
+\input{../results/7/512x512_Delaunay/T0.9/G0.9/results.tex}
+\input{../results/7/512x512_Delaunay/T0.8/G0.8/results.tex}
 \input{../results/7/512x512_Delaunay/T0.7/G0.7/results.tex}
+\input{../results/7/512x512_Delaunay/T0.6/G0.6/results.tex}
 \input{../results/7/512x512_Delaunay/T0.5/G0.5/results.tex}
+\input{../results/7/512x512_Delaunay/T0.4/G0.4/results.tex}
+\input{../results/7/512x512_Delaunay/T0.3/G0.3/results.tex}
+\input{../results/7/512x512_Delaunay/T0.2/G0.2/results.tex}
+\input{../results/7/512x512_Delaunay/T0.1/G0.1/results.tex}
+\input{../results/7/512x512_Delaunay/T0.0/G0.0/results.tex}
 
 \input{../results/s_6_D10.tex}
 \input{../results/s_6_D9.tex}
@@ -260,7 +382,7 @@ Dieser wertet die Daten aus und erzeugt darauf hin ein mit JPEG komprimiertes Bi
 Dieser kann das Bild nativ mit Hilfe eines HTML5 Canvas dekodieren und darstellen.
 Ihr System wird zur Grundlage dieser Arbeit.
 
-Auch wenn die Kompression und kompakte Darstellung der Dreiecksnetze nicht teil dieser Arbeit sind,
+Auch wenn die Kompression und kompakte Kodierung der Dreiecksnetze nicht teil dieser Arbeit sind,
 sollen die folgenden Arbeiten einen Überblick über mögliche Techniken geben.
 Gabriel Taubin und Jarek Rossignac haben ein Algorithmus zur Erzeugung und effizienten Kodierung von Dreiecksstreifen aus Dreiecksnetzen entwickelt \cite{Taubin:1998:GCT:274363.274365}.
 Dazu konstruiert ihr Algorithmus Spannbäume über dem Netz, die zur Erzeugung möglichst großer
@@ -1035,9 +1157,11 @@ Zudem wird der Binärisierung resultierende Quantisierungsfehler, des Pixels $d \
 Dadurch lässt sich Verteilung von dem Quantisierungsfehler, ohne einen zusätzlichen Puffer, in einem einzigen Durchlauf berechnen.
 Das Folgende Pseudocodebeispiel \ref{lst:floyd_steinberg} verdeutlicht das Verfahren:
 
-\newpage
-
-\begin{lstlisting}[numbers=left,mathescape=true,xleftmargin=0.1\textwidth,captionpos=b,caption={Floyd-Steinberg Algorithmus \cite{wiki:001}},label={lst:floyd_steinberg}]
+\begin{lstlisting}[numbers=left,
+				   mathescape=true,
+				   xleftmargin=0.1\textwidth,
+				   captionpos=b,
+				   caption={Floyd-Steinberg Algorithmus \cite{wiki:001}},label={lst:floyd_steinberg}]
 for each y
 	for each x
 	   oldpixel        := pixel[x][y]
@@ -1302,20 +1426,25 @@ um eine Hardware beschleunigte Bildsynthese zu ermöglichen.
 Der Vorteil dieser Technologie ist die Unabhängigkeit der Anwendung im Bezug,
 zur Plattform und dem Gerät, in Kombination mit einer hohen Rechengeschwindigkeit.
 
+Diese Kapitel wird dabei in zwei Hauptbereiche unterteilt.
+Im ersten, werden Details über die Kommunikation zwischen Klient und Server behandelt.
+Der zweite Abschnitt beschäftigt sich mit Implementierungsspezifischen Details der
+Algorithmen.
+
+\section{Details zur Kommunikation}
+
 Die Server-Anwendung wurde mit der Sprache c++ entwickelt.
 Dabei wird auf die Implementierung der WebSocket-Serverkomponente
 aus dem QT-Framework zurückgegriffen.
 Der Server-Prozess besteht aus einem Thread.
-Zur Verwaltung der Anfragen wird auf das Event-Managementsystem von QT verwendet. 
+Zur Verwaltung der Anfragen wird das Event-Managementsystem von QT verwendet. 
 Beim Start der Serveranwendung werden die Szenen geladen.
-Aus diesen wird eine \textit{Playlist} erstellt, die die Informationen aller Szenen
-vereint.
+Aus diesen wird eine \textit{Playlist} erstellt, diese vereint die Informationen aller Szenen.
 Im Anschluss daran wird Standardparameterkonfiguration geladen
 und der Server wartet darauf, dass sich ein Klient verbindet.
 
 Die Kommunikation zwischen Server- und die Klient-Komponente basiert auf dem
 JSON-RPC 2.0 Protokoll.
-
 Die Abkürzung JSON-RPC steht für \textit{JavaScript Object Notation Remote Procedure Call}.
 Es handelt sich dabei, um ein Protokoll, das den Aufbau und die Nominatur von Nachrichten beschreibt. 
 Im speziellen um Nachrichten, die dazu dienen, dass der Kommunikationsteilnehmer bestimmte 
@@ -1330,21 +1459,14 @@ Im Gegensatz dazu, entfällt bei einer \textit{Notification} die $id$, weil keine
 Der \textit{Batch Request} fast eine Menge von \textit{Requests} und \textit{Notifications} in
 eine einzige Anfrage zusammen.
 
-Die in dieser Arbeit implementierte Variante von JSON-RPC 2.0, 
+In dieser Arbeit implementierte Variante von JSON-RPC 2.0, 
 wird auf Anfragen vom Typ \textit{Request} beschränkt,
-weilt die gesamte Kommunikation synchronisiert stattfindet.
+weil die gesamte Kommunikation synchronisiert stattfindet.
 
 Eine JSON-RPC-Anfrage ist ein JSON-Objekt, das sich aus vier Teilen zusammensetzt.
 Der erste ist ein String mit der JSON-RPC Version, gefolgt vom Namen der aufzurufenden Methode.
 Im Anschluss folgt ein JSON-Objekt, das die Parameter der Aufzurufenden Methode enthält
 und zum Schluss kommt die $id$ der Anfrage.
-
-Wurde die Anfrage empfangen und die Methode ausgeführt, wird eine Antwort zurückgesendet.
-Eine JSON-RPC-Antwort ist ebenfalls ein JSON-Objekt, dass aus drei Teilen besteht.
-Der erste Teil ist ebenfalls die JSON-RPC Version als String kodiert.
-Der zweite Teil enthält den Rückgabewert in Form eines JSON-Objektes
-und zum Schluss folgt die $id$ der Anfrage.
- 
 Als Beispielanfrage soll der Aufruf der Methode \textit{resize} dienen.
 Möchte der Klient die Auflösung ändern schickt er die Anfrage, dem Beispiel \ref{lst:jsonrpc_request_resize}
 entsprechend zum Server.
@@ -1359,8 +1481,13 @@ entsprechend zum Server.
 \end{lstlisting}
 
 Hat der Server die Anfrage empfangen, ruft dieser darauf hin die Methode \textit{resize} mit den entsprechenden Parametern aus der Anfrage auf.
-Anschließend schickt er eine Antwort an den Klient zurück, wie im Beispiel \ref{lst:jsonrpc_response_resize} demonstriert.
-
+Im Anschluss daran, wird eine Antwort zurückgesendet.
+Eine JSON-RPC-Antwort ist ebenfalls ein JSON-Objekt, dass aus drei Teilen besteht.
+Der erste Teil ist ebenfalls die JSON-RPC Version als String kodiert.
+Der zweite Teil enthält den Rückgabewert in Form eines JSON-Objektes
+und zum Schluss folgt die $id$ der Anfrage, 
+wie im Beispiel \ref{lst:jsonrpc_response_resize} demonstriert
+ 
 \begin{lstlisting}[numbers=left,mathescape=true,xleftmargin=0.1\textwidth,captionpos=b,caption={RPC-Response},label={lst:jsonrpc_response_resize}]
 {
 	"jsonrpc" 	: "2.0",
@@ -1422,14 +1549,16 @@ den Remote-Aufruf verschiedener Methoden.
 \end{figure}
 
 Kann sich der Klient erfolgreich mit dem Server verbinden, fragt er die \textit{Playlist} ab.
-Nachdem alle Szenen bekannt sind, wird eine Szene geladen.
+Diese liefert dem Klient alle Informationen über die zur Verfügung stehenden Szenen.
+Sie enthält für jeden Frame einer Szene, dessen Kamerainformationen.
+Nachdem der Klient alle Szenen kennt, kann er den Server mitteilen, welche dieser laden soll.
 Anschließend wird mit der Methode \textit{setConfig} eine gewählte Parameterkonfiguration gesetzt.
-Mit Hilfe der \textit{Playlist} kann ein beliebiger Frame, der geladenen Szene angefordert werden.
-Der empfangene Frame, kann vom Klient beliebig extrapoliert werden.
+Mit Hilfe der \textit{Playlist}, kann ein beliebiger Frame der geladenen Szene, angefordert werden.
+Wird der Frame empfangen, kann dieser vom Klient anschließend extrapoliert werden.
 Neben den Vorgestellten, stehen zusätzliche Methoden, zum Starten einer Messung beziehungsweise zum 
 Speichern eines Bildes durch den Server zur Verfügung.
 
-\section{Implentierung der Algorithmen}
+\section{Details zur Implementierung der Algorithmen}
 
 In diesem Abschnitt werden Details zur Implementierung, der vorgestellten Algorithmen
 genauer betrachtet.
@@ -1510,252 +1639,261 @@ Der Farbwert des roten Farbkanals wird mit (1/257) multipliziert und der des grü
 Im Anschluss daran werden die beiden Werte aufsummiert und der Wert der 16 Bit Zahl steht im Shader zur Verfügung.
 
 Im Fall der Vollvernetzung, werden alle Dreiecke, die zum Hintergrund gehören transparent gezeichnet.
-Es ist möglich eine Schwellwert zu bestimmen, der mit den Gradienten im Tiefenbild vergleichen wird.
-Wird der Schwellwert überschritten, dann werden die entsprechenden Fragmente ebenfalls durchsichtig.
+Zusätzlich wird im Vertex-Shader, der Gradient des bearbeiteten Vertice berechnet.
+Der x- und y-Anteil des Gradienten, wird mit einem Schwellwert verglichen.
+Ist einer dieser beiden Gradientkomponenten größer als der Schwellwert, 
+wird der Alphakanal an dieser Stelle ebenfalls auf 0 gesetzt.
+
+\subsection{Delaunay-Triangulierung}
+
+Beim \textit{Quadtree}, wird der Bildbereich sukzessiv in vier gleichgroße Regionen aufgeteilt,
+deren Eckpunkte in der Punktmenge $P$ landen können.
+Die Abbildung \ref{fig:qt_points} veranschaulicht die Aufteilung.
+
+\begin{figure}[h]
+	\centering
+	\begin{tikzpicture}
+		\draw (0,0) -- (8,0) -- (8,6) -- (0,6) -- cycle;
+		\draw (4,0) -- (4,6);
+		\draw (0,3) -- (8,3);
+		\node at (2, 4.5) {$R_1$};
+		\node at (6, 4.5) {$R_2$};
+		\node at (2, 1.5) {$R_3$};
+		\node at (6, 1.5) {$R_4$};
+		\node[circle, minimum width=1em,fill=OliveGreen] at (4,0) {};
+		\node[circle, minimum width=1em,fill=OliveGreen] at (8,3) {};
+		\node[circle, minimum width=1em,fill=OliveGreen] at (0,3) {};
+		\node[circle, minimum width=1em,fill=OliveGreen] at (4,6) {};
+		\node[circle, minimum width=1em,fill=OliveGreen] at (4,3) {};
+	\end{tikzpicture}
+	\caption{Unterteilung eines Rechtecks, in vier Teilflächen. 
+			 An den grünen markierten Positionen, gibt es mehrere Möglichkeiten, wie die
+			 Eckpunkte der betreffenden Rechtecke gesetzt werden können.}
+	\label{fig:qt_points}
+\end{figure}
+
+Dabei gibt es mehrere Möglichkeiten, wie die Eckpunkte der Teilfenster gewählt werden können.
+Einerseits können die Flächen, exakt gleich groß gewählt werden. 
+Mit dem Effekt, das viele kleine Dreiecke dadurch entstehen, 
+dass die grün markierten Punkte sich aus mindestens zwei Eckpunkten zusammensetzten, 
+die sich jeweils nur um eine Pixeleinheit voneinander unterscheiden. 
+
+Die zweite Möglichkeit besteht darin, für derartige Eckpunkte dieselbe Koordinate
+zu wählen. 
+Auf diese Weise lässt sich die Anzahl der in der Punktmenge $P$ enthaltenen Punkte,
+bei gleichbleibender Bildqualität senken.
+In dieser Arbeit wird die zweite Variante verwendet.
+
+Bei der Erzeugung der Gradientenbilder, mit dem Sobel-operator, entsteht ein Rand
+mit der Breite von einem Pixel.
+Dieser wird auch bei der Binärisierung von dem Merkmalsbild $\sigma$ ausgelassen.
+
+Um die Netzoptimierung durchführen zu können, müssen die Punkte $p_1', p_1'', p_2', _2''$,
+sowie $p_3'$ und $p_3''$ bestimmt werden.
+Diese Aufgabe wird mit Hilfe einer Linienrasterisierung gelöst.
+Dabei wird nicht zwischen den Pixeln interpoliert.
 
 \chapter{Ergebnisse}
 
+Zu Beginn dieses Kapitels wird beschrieben, wie die Ergebnisse erhoben werden
+und es werden die Resultate der getesteten Parameterkonfigurationen werden vorgestellt.
+Zusätzlich werden auftretende Besonderheiten kenntlich gemacht.
+
+Um die Vollvernetzung und die Delaunay-Triangulierung auswerten zu können stehen,
+wie bereits erwähnt zwei Szenen zur Verfügung, \textit{TestSpheres} und \textit{CoolRandom}.
+Von diesen wird der jeweils erste Frame als Referenz für die Extrapolation gewählt.
+Aus dessen Tiefenbild, wird mit den jeweiligen Verfahren ein Dreiecksnetz erzeugt,
+welches zusammen mit dem dazugehörigen Farbbild, zum Klient gesendet wird.
+Der Klient rendert das Dreiecksnetz aus allen Kameraperspektiven der Szene und
+sendet die Ergebnisse zurück Server.
+Die Qualität der Ergebisse, wird mit dem PSNR und dem SSIM bestimmt.
+Es wird gemessen, wie lange der Server zur Kodierung des ersten Frames benötigt.
+Die Kompressionszeit des Farbbildes wird aufgezeichnet
+und im Fall der Vollvernetzung, die Kompressionszeit des Tiefenbildes.
+Für die Algorithmen die auf der Delaunay-Triangulation basieren,
+wird die Erzeugungszeit des Dreiecksnetzes, in drei Teile unterteilt.
+Erstens, die Erzeugung der Punktmenge $P$.
+Zweitens die Vernetzung mit der Delaunay-Triangulierung.
+Und drittens, die Zeit die für die Nachbearbeitung und die Dekodierung des
+Netzes in das JSON-Objekt benötigt wird.
+Klientseitig wurde die Zeit gemessen, die für die Extrapolation benötigt wird.
+
+Für die Vollvernetzung wurde das Tiefenbild, mit 8 und 16 Bit kodiert. 
+Es wurde ein 3 Pass und ein 5 Pass Verfahren verwendet, um die Transparenz zu realisieren.
+Und schließlich wurden die Schwellwerte $1, 0.9, 0.8$ für den
+Vergleich mit dem Gradienten getestet.
+Die besten Ergebnisse werden mit 16 Bit und dem 5 Pass
+Verfahren erzielt werden, wobei der Gradientenschwellwert 1 beträgt.
+Diese Konfiguration wird als Basis zum Auswertung der Delaunay-Verfahren verwendet.
+Je kleiner der Schwellwert für den Gradienten wird, umso schlechter
+ist das Ergebnis bei kleinen Kamerawinkelunterschieden, während
+das Ergebnis bei großen Winkelunterschieden besser wird.
+Die Unterschiede zwischen den verschiedenen Konfigurationen sind marginal
+und werden deshalb nicht gesondert präsentiert.  
+
+Im Fall der Delaunay-Triangulation, wird zwischen den beiden Punktgenerierungsverfahren
+\textit{Quadtree} und \textit{Floyd-Steinberg} unterschieden.
+Für den \textit{Quadtree}-Ansatz werden generell alle Hintergrundpixel verworfen.
+Und die Bäume mit den maximalen Baumtiefen von $10, 9$ und $8$ erzeugt.
+Für jede Baumtiefe wurden die Schwellwertkonfigurationen
+$l \in \{0.1,0.2, ..., 1.0\}$ und $i \in \{0.1, ..., l\}$ gemessen.
+Für alle $l > 0.3$ und $i > 0.3$, wurden zusätzlich die Netzverfeinerung durchgeführt. 
+Mit den Schwellwerten $\alpha \in \{0.1, 1, 10\}$ und $\beta \in \{0.1, 0.2\}$.
+Die Erzeugung der Punktemenge, erhoben mit dem \textit{Floyd-Steinberg}-Fehlerdiffusionsverfahren,
+wird mit den Parametern $t,g \in \{0.1,0.2, ..., 1.0 \}$ evaluiert.
+Bei diesem Ansatz wurde die Netzverfeinerung für Konfigurationen $t > 0.8$ und $g > 0.8$
+durchgeführt.
+
+Die folgenden Diagramme zeigen die erhobenen Daten, in den Legenden,
+wird \textit{Quadtree} mit QT und \textit{FloydSteinberg} mit FS abgekürzt.
+
 \begin{figure}[H]
 	\subfigure[]{
 	\begin{tikzpicture}
-	\begin{axis}[axis lines = middle, enlargelimits = true, ylabel={in \%}, xlabel={in Grad}, xtick={0,5,10,20,...,90},
+		\begin{axis}[axis lines = middle, enlargelimits = true, ylabel={in \%}, xlabel={in Grad}, xtick={0,5,10,20,...,90},
+			 every axis y label/.style={at={(ticklabel* cs:1.05)}, anchor=east},
+			 every axis x label/.style={at={(ticklabel* cs:1.05)}, anchor=south}]
+			 
+		\addplot[red, only marks, mark=x] table [x=a, y=m, col sep=comma] {div_data_mean_7_512x512Fd1651.0.csv};
+		\addplot[blue, only marks, mark=x] table [x=a, y=m, col sep=comma] {div_data_mean_7_512x512D10L0.1I0.1pre.csv};
+		\addplot[green, only marks, mark=x] table [x=a, y=m, col sep=comma] {div_data_mean_7_512x512T0.3G0.3.csv};	
+	
+		\end{axis}
+		%legend
+		\begin{scope}[shift={(3,4)}] 
+		\draw (0,0) -- 
+			plot[mark=*, mark options={fill=red}] (0,0) node[right]{Full, 16Bit, 5Pass, G1.0};
+		\draw[yshift=\baselineskip] (0,0) -- 
+			plot[mark=*, mark options={fill=blue}] (0,0) node[right]{QT, $D_{MAX} = 10$, $i,l = 0$};
+		\draw[yshift=2\baselineskip] (0,0) -- 
+			plot[mark=*, mark options={fill=green}] (0,0) node[right]{FS, $t,g = 0.3$};
+		\end{scope}
+	\end{tikzpicture}}
+	\subfigure[]{
+	\begin{tikzpicture}
+		\begin{axis}[axis lines = middle, enlargelimits = true, ylabel={in dB}, xlabel={in Grad}, xtick={0,5,10,20,...,90},
 		 every axis y label/.style={at={(ticklabel* cs:1.05)}, anchor=east},
 		 every axis x label/.style={at={(ticklabel* cs:1.05)}, anchor=south}]
-	\addplot[red, only marks, mark=x] table [x=a, y=m, col sep=comma] {div_data_mean_6_512x512Fd1651.0.csv};
-	\addplot[green, only marks, mark=x] table [x=a, y=m, col sep=comma] {div_data_mean_6_512x512D10L0.1I0.1pre.csv};
-	\addplot[blue, only marks, mark=x] table [x=a, y=m, col sep=comma] {div_data_mean_6_512x512T1.0G1.0.csv};
-	\end{axis}
+		 
+		\addplot[red, only marks, mark=x] table [x=a, y=p, col sep=comma] {div_data_mean_7_512x512Fd1651.0.csv};
+		\addplot[blue, only marks, mark=x] table [x=a, y=p, col sep=comma] {div_data_mean_7_512x512D10L0.1I0.1pre.csv};
+		\addplot[green, only marks, mark=x] table [x=a, y=p, col sep=comma] {div_data_mean_7_512x512T0.3G0.3.csv};	
+		\end{axis}
 	\end{tikzpicture}}
+	
 	\subfigure[]{
 	\begin{tikzpicture}
-	\begin{axis}[axis lines = middle, enlargelimits = true, ylabel={in dB}, xlabel={in Grad}, xtick={0,5,10,20,...,90},
-				 every axis y label/.style={at={(ticklabel* cs:1.05)}, anchor=east},
-				 every axis x label/.style={at={(ticklabel* cs:1.05)}, anchor=south}]
-	\addplot[red, only marks, mark=x] table [x=a, y=p, col sep=comma] {div_data_mean_6_512x512Fd1651.0.csv};
-	\addplot[green, only marks, mark=x] table [x=a, y=p, col sep=comma] {div_data_mean_6_512x512D10L0.1I0.1pre.csv};
-	\addplot[blue, only marks, mark=x] table [x=a, y=p, col sep=comma] {div_data_mean_6_512x512T1.0G1.0.csv};
-	\end{axis}
-	\end{tikzpicture}}
-	\caption{\textit{CoolRandom} FULL, FLOYD, QUAD}
-\end{figure}
-
-\begin{figure}[H]
-	\subfigure[]{
-	\begin{tikzpicture}
-	\begin{axis}[axis lines = middle, enlargelimits = true, ylabel={in \%}, xlabel={in Grad}, xtick={0,5,10,20,...,90},
+		\begin{axis}[axis lines = middle, enlargelimits = true, ylabel={in \%}, xlabel={in Grad}, xtick={0,5,10,20,...,90},
 		 every axis y label/.style={at={(ticklabel* cs:1.05)}, anchor=east},
 		 every axis x label/.style={at={(ticklabel* cs:1.05)}, anchor=south}]
-	\addplot[red, only marks, mark=x] table [x=a, y=m, col sep=comma] {div_data_mean_7_512x512Fd1651.0.csv};
-	\addplot[green, only marks, mark=x] table [x=a, y=m, col sep=comma] {div_data_mean_7_512x512D10L0.1I0.1pre.csv};
-	\addplot[blue, only marks, mark=x] table [x=a, y=m, col sep=comma] {div_data_mean_7_512x512T1.0G1.0.csv};
-	\end{axis}
-	\end{tikzpicture}}
-	\subfigure[]{
-	\begin{tikzpicture}
-	\begin{axis}[axis lines = middle, enlargelimits = true, ylabel={in dB}, xlabel={in Grad}, xtick={0,5,10,20,...,90},
-				 every axis y label/.style={at={(ticklabel* cs:1.05)}, anchor=east},
-				 every axis x label/.style={at={(ticklabel* cs:1.05)}, anchor=south}]
-	\addplot[red, only marks, mark=x] table [x=a, y=p, col sep=comma] {div_data_mean_7_512x512Fd1651.0.csv};
-	\addplot[green, only marks, mark=x] table [x=a, y=p, col sep=comma] {div_data_mean_7_512x512D10L0.1I0.1pre.csv};
-	\addplot[blue, only marks, mark=x] table [x=a, y=p, col sep=comma] {div_data_mean_7_512x512T1.0G1.0.csv};
-	\end{axis}
-	\end{tikzpicture}}
-	\caption{\textit{TestSpheres} FULL, FLOYD, QUAD}
-\end{figure}
-
-\begin{figure}[H]
-	\subfigure[]{
-	\begin{tikzpicture}
-	\begin{axis}[axis lines = middle, enlargelimits = true, ylabel={in \%}, xlabel={in Grad}, xtick={0,5,10,20,...,90},
-		 every axis y label/.style={at={(ticklabel* cs:1.05)}, anchor=east},
-		 every axis x label/.style={at={(ticklabel* cs:1.05)}, anchor=south}]
-	\addplot[green, only marks, mark=x] table [x=a, y=m, col sep=comma] {div_data_mean_7_512x512D10L0.1I0.1pre.csv};
-	\addplot[darkgray, only marks, mark=x] table [x=a, y=m, col sep=comma] {div_data_mean_7_512x512D9L0.1I0.1pre.csv};
-	\addplot[red, only marks, mark=x] table [x=a, y=m, col sep=comma] {div_data_mean_7_512x512D8L0.1I0.1pre.csv};
+		 
+		\addplot[red, only marks, mark=x] table [x=a, y=m, col sep=comma] {div_data_mean_6_512x512Fd1651.0.csv};
+		\addplot[blue, only marks, mark=x] table [x=a, y=m, col sep=comma] {div_data_mean_6_512x512D10L0.1I0.1pre.csv};
+		\addplot[green, only marks, mark=x] table [x=a, y=m, col sep=comma] {div_data_mean_6_512x512T0.3G0.3.csv};	
 	
-	\addplot[blue, only marks, mark=x] table [x=a, y=m, col sep=comma] {div_data_mean_7_512x512T0.7G0.7.csv};
-	\addplot[violet, only marks, mark=x] table [x=a, y=m, col sep=comma] {div_data_mean_7_512x512T0.5G0.5.csv};
-	\end{axis}
+		\end{axis}
 	\end{tikzpicture}}
 	\subfigure[]{
 	\begin{tikzpicture}
-	\begin{axis}[axis lines = middle, enlargelimits = true, ylabel={in dB}, xlabel={in Grad}, xtick={0,5,10,20,...,90},
-				 every axis y label/.style={at={(ticklabel* cs:1.05)}, anchor=east},
-				 every axis x label/.style={at={(ticklabel* cs:1.05)}, anchor=south}]
-	\addplot[green, only marks, mark=x] table [x=a, y=p, col sep=comma] {div_data_mean_7_512x512D10L0.1I0.1pre.csv};
-	\addplot[gray, only marks, mark=x] table [x=a, y=p, col sep=comma] {div_data_mean_7_512x512D9L0.1I0.1pre.csv};
-	\addplot[red, only marks, mark=x] table [x=a, y=p, col sep=comma] {div_data_mean_7_512x512D8L0.1I0.1pre.csv};
-	
-	\addplot[blue, only marks, mark=x] table [x=a, y=p, col sep=comma] {div_data_mean_7_512x512T0.7G0.7.csv};
-	\addplot[violet, only marks, mark=x] table [x=a, y=p, col sep=comma] {div_data_mean_7_512x512T0.5G0.5.csv};
-	\end{axis}
-	\end{tikzpicture}}
-	\caption{\textit{TestSpheres} D10, D9, D8}
+		\begin{axis}[axis lines = middle, enlargelimits = true, ylabel={in dB}, xlabel={in Grad}, xtick={0,5,10,20,...,90},
+	 every axis y label/.style={at={(ticklabel* cs:1.05)}, anchor=east},
+	 every axis x label/.style={at={(ticklabel* cs:1.05)}, anchor=south}]
+	 
+		\addplot[red, only marks, mark=x] table [x=a, y=p, col sep=comma] {div_data_mean_6_512x512Fd1651.0.csv};
+		\addplot[blue, only marks, mark=x] table [x=a, y=p, col sep=comma] {div_data_mean_6_512x512D10L0.1I0.1pre.csv};
+		\addplot[green, only marks, mark=x] table [x=a, y=p, col sep=comma] {div_data_mean_6_512x512T0.3G0.3.csv};	
+		\end{axis}
+	\end{tikzpicture}} 
+	\caption{Die Diagramme a und b zeigen die Ergebnisse des Datensatzes \textit{TestSpheres},
+			 während c und d die Resultate des Datensatzes \textit{CoolRandom} abtragen.
+			 Dabei zeigen a und c die Ergebnisse des SSIM, während in b und d
+			 die Ergebnisse des PSNR gezeigt werden.}
+	\label{fig:Daten_best_cases}
 \end{figure}
 
+Die Abbildung \ref{fig:Daten_best_cases} zeigt die besten Resultate, der Vollvernetzung,
+vom \textit{Quadtree}, sowie von der \textit{FloydSteinberg} Variante der Delaunay-Triangulierung.
+Dabei liefert die Vollvernetzung insgesamt die besten Ergebnisse, gefolgt vom \textit{Quadtree}
+und das Schlusslicht bildet der \textit{FloydSteinberg} Ansatz.
+Interessant ist dabei, dass die Ergebnisse des \textit{CoolRandom} Datensatzes wesentlich
+schlechter ausfallen, insbesondere beim PSNR.
+
+% % % % % % % % % % % % % % % % % % % % % % % % % % %
 \begin{figure}[H]
 	\subfigure[]{
 	\begin{tikzpicture}
-	\begin{axis}[axis lines = middle, enlargelimits = true, ylabel={in \%}, xlabel={in Grad}, xtick={0,5,10,20,...,90},
-		 every axis y label/.style={at={(ticklabel* cs:1.05)}, anchor=east},
-		 every axis x label/.style={at={(ticklabel* cs:1.05)}, anchor=south}]
-	\addplot[green, only marks, mark=x] table [x=a, y=m, col sep=comma] {div_data_mean_6_512x512D10L0.1I0.1pre.csv};
-	\addplot[gray, only marks, mark=x] table [x=a, y=m, col sep=comma] {div_data_mean_6_512x512D9L0.1I0.1pre.csv};
-	\addplot[red, only marks, mark=x] table [x=a, y=m, col sep=comma] {div_data_mean_6_512x512D8L0.1I0.1pre.csv};
+		\begin{axis}[axis lines = middle, enlargelimits = true, ylabel={in \%}, xlabel={in Grad}, xtick={0,5,10,20,...,90},
+		every axis y label/.style={at={(ticklabel* cs:1.05)}, anchor=east},
+		every axis x label/.style={at={(ticklabel* cs:1.05)}, anchor=south}]
+			 
+		\addplot[red, only marks, mark=x] table [x=a, y=m, col sep=comma] {div_data_mean_7_512x512D10L0.1I0.1pre.csv};	
+		\addplot[blue, only marks, mark=x] table [x=a, y=m, col sep=comma] {div_data_mean_7_512x512D9L0.1I0.1pre.csv};
+		\addplot[green, only marks, mark=x] table [x=a, y=m, col sep=comma] {div_data_mean_7_512x512D8L0.1I0.1pre.csv};
 	
-	\addplot[blue, only marks, mark=x] table [x=a, y=m, col sep=comma] {div_data_mean_6_512x512T0.7G0.7.csv};
-	\addplot[violet, only marks, mark=x] table [x=a, y=m, col sep=comma] {div_data_mean_6_512x512T0.5G0.5.csv};
-	\end{axis}
+		\end{axis}
+		%legend
+		\begin{scope}[shift={(3,4)}] 
+		\draw (0,0) -- 
+			plot[mark=*, mark options={fill=red}] (0,0) node[right]{Quadtree, $D_{MAX} = 10$};
+		\draw[yshift=\baselineskip] (0,0) -- 
+			plot[mark=*, mark options={fill=blue}] (0,0) node[right]{Quadtree, $D_{MAX} = 9$};
+		\draw[yshift=2\baselineskip] (0,0) -- 
+			plot[mark=*, mark options={fill=green}] (0,0) node[right]{Quadtree, $D_{MAX} = 8$};
+		\end{scope}
 	\end{tikzpicture}}
 	\subfigure[]{
 	\begin{tikzpicture}
-	\begin{axis}[axis lines = middle, enlargelimits = true, ylabel={in dB}, xlabel={in Grad}, xtick={0,5,10,20,...,90},
-				 every axis y label/.style={at={(ticklabel* cs:1.05)}, anchor=east},
-				 every axis x label/.style={at={(ticklabel* cs:1.05)}, anchor=south}]
-	\addplot[green, only marks, mark=x] table [x=a, y=p, col sep=comma] {div_data_mean_6_512x512D10L0.1I0.1pre.csv};
-	\addplot[gray, only marks, mark=x] table [x=a, y=p, col sep=comma] {div_data_mean_6_512x512D9L0.1I0.1pre.csv};
-	\addplot[red, only marks, mark=x] table [x=a, y=p, col sep=comma] {div_data_mean_6_512x512D8L0.1I0.1pre.csv};
+		\begin{axis}[axis lines = middle, enlargelimits = true, ylabel={in dB}, xlabel={in Grad}, xtick={0,5,10,20,...,90},
+		every axis y label/.style={at={(ticklabel* cs:1.05)}, anchor=east},
+		every axis x label/.style={at={(ticklabel* cs:1.05)}, anchor=south}]
+		 
+		\addplot[red, only marks, mark=x] table [x=a, y=p, col sep=comma] {div_data_mean_7_512x512D10L0.1I0.1pre.csv};	
+		\addplot[blue, only marks, mark=x] table [x=a, y=p, col sep=comma] {div_data_mean_7_512x512D9L0.1I0.1pre.csv};
+		\addplot[green, only marks, mark=x] table [x=a, y=p, col sep=comma] {div_data_mean_7_512x512D8L0.1I0.1pre.csv};
+		\end{axis}
+	\end{tikzpicture}}
 	
-	\addplot[blue, only marks, mark=x] table [x=a, y=p, col sep=comma] {div_data_mean_7_512x512T0.7G0.7.csv};
-	\addplot[violet, only marks, mark=x] table [x=a, y=p, col sep=comma] {div_data_mean_7_512x512T0.5G0.5.csv};
-	\end{axis}
+	\subfigure[]{
+	\begin{tikzpicture}
+		\begin{axis}[axis lines = middle, enlargelimits = true, ylabel={in \%}, xlabel={in Grad}, xtick={0,5,10,20,...,90},
+		every axis y label/.style={at={(ticklabel* cs:1.05)}, anchor=east},
+		every axis x label/.style={at={(ticklabel* cs:1.05)}, anchor=south}]
+		 
+		\addplot[red, only marks, mark=x] table [x=a, y=m, col sep=comma] {div_data_mean_6_512x512D10L0.1I0.1pre.csv};	
+		\addplot[blue, only marks, mark=x] table [x=a, y=m, col sep=comma] {div_data_mean_6_512x512D9L0.1I0.1pre.csv};
+		\addplot[green, only marks, mark=x] table [x=a, y=m, col sep=comma] {div_data_mean_6_512x512D8L0.1I0.1pre.csv};
+	
+		\end{axis}
 	\end{tikzpicture}}
-	\caption{\textit{CoolRandom} D10, D9, D8}
+	\subfigure[]{
+	\begin{tikzpicture}
+		\begin{axis}[axis lines = middle, enlargelimits = true, ylabel={in dB}, xlabel={in Grad}, xtick={0,5,10,20,...,90},
+		every axis y label/.style={at={(ticklabel* cs:1.05)}, anchor=east},
+		every axis x label/.style={at={(ticklabel* cs:1.05)}, anchor=south}]
+	 
+		\addplot[red, only marks, mark=x] table [x=a, y=p, col sep=comma] {div_data_mean_6_512x512D10L0.1I0.1pre.csv};	
+		\addplot[blue, only marks, mark=x] table [x=a, y=p, col sep=comma] {div_data_mean_6_512x512D9L0.1I0.1pre.csv};
+		\addplot[green, only marks, mark=x] table [x=a, y=p, col sep=comma] {div_data_mean_6_512x512D8L0.1I0.1pre.csv};
+		\end{axis}
+	\end{tikzpicture}} 
+	\caption{Die Diagramme a und b zeigen die Ergebnisse des Datensatzes \textit{TestSpheres},
+				 während c und d die Resultate des Datensatzes \textit{CoolRandom} abtragen.
+				 Dabei zeigen a und c die Ergebnisse des SSIM, während in b und d
+				 die Ergebnisse des PSNR gezeigt werden.}
+	\label{fig:Daten_QT_1098}
 \end{figure}
 
-\begin{figure}[H]
-	\centering
-	\subfigure[]{
-	\begin{tikzpicture}[scale=0.8]
-		\begin{axis}[view={0}{90}, grid=major,
-		 			 xlabel=$i$,
-		 			 ylabel=$l$,
-		 			 ylabel style={rotate=-90},
-		 			 point meta min=0.7, point meta max=0.8,
-		 			 colormap={greenyellow}{
-		   			 	rgb255(0cm)	 =(128,0,0)
-		   			 	rgb255(0.5cm) =(255,255,0) 
-		   			 	rgb255(1cm) =(0,200,0)
-		 			 }, 
-		 			 colorbar, enlargelimits=true, 
-		 			 xtick={0.0,0.1,...,1.1},
-		     		 ytick={0.0,0.1,...,1.1},
-		     		 xmajorgrids=true, ymajorgrids=true]
-			\addplot3[only marks, mark=square*, mark size=7, ycomb, scatter] file {div_s_6_D10.csv};      
-		\end{axis}
-	\end{tikzpicture}}
-	\subfigure[]{
-	\begin{tikzpicture}[scale=0.8]
-			\begin{axis}[view={0}{90}, grid=major,
-			 			 xlabel=$i$,
-			 			 ylabel=$l$,
-			 			 ylabel style={rotate=-90},
-			 			 point meta min=20.0,
-			 			 point meta max=120.0,
-			 			 colormap={greenyellow}{
-			   			 	rgb255(0cm)	 =(0,200,0)
-			   			 	rgb255(0.5cm) =(128,128,128) 
-			   			 	rgb255(1cm) =(128,0,0)
-			 			 }, 
-			 			 colorbar, colorbar style={y dir=reverse}, enlargelimits=true, 
-			 			 xtick={0.0,0.1,...,1.1},
-			     		 ytick={0.0,0.1,...,1.1},
-			     		 xmajorgrids=true, ymajorgrids=true]
-			 \addplot3[only marks, mark=square*, mark size=7, ycomb, scatter] file {div_s_6_D10_cost.csv};      
-		\end{axis}
-	\end{tikzpicture}}
-	\caption{\textit{CoolRandom} D10}
-\end{figure}
+Die Diagramme \ref{fig:Daten_QT_1098} tragen die Ergebnisse des \textit{Quadtree}
+Ansatzes ab. Dabei wird nur die Maximaltiefe des Baumes variiert.
+Es zeigt sich die klare Tendenz, dass größere Maximaltiefen zu besseren Ergebnissen führen.
 
-\begin{figure}[H]
-	\centering
-	\subfigure[]{
-	\begin{tikzpicture} [scale=0.8]
-		\begin{axis}[view={0}{90}, grid=major,
-		 			 xlabel=$i$,
-		 			 ylabel=$l$,
-		 			 ylabel style={rotate=-90},
-		 			 point meta min=0.7, point meta max=0.8,
-		 			 colormap={greenyellow}{
-		   			 	rgb255(0cm)	 =(128,0,0)
-		   			 	rgb255(0.5cm) =(255,255,0) 
-		   			 	rgb255(1cm) =(0,200,0)
-		 			 }, 
-		 			 colorbar, enlargelimits=true, 
-		 			 xtick={0.0,0.1,...,1.1},
-		     		 ytick={0.0,0.1,...,1.1},
-		     		 xmajorgrids=true, ymajorgrids=true]
-			\addplot3[only marks, mark=square*, mark size=7, ycomb, scatter] file {div_s_6_D9.csv};      
-		\end{axis}
-	\end{tikzpicture}}
-	\subfigure[]{
-	\begin{tikzpicture} [scale=0.8]
-			\begin{axis}[view={0}{90}, grid=major,
-			 			 xlabel=$i$,
-			 			 ylabel=$l$,
-			 			 ylabel style={rotate=-90},
-			 			 point meta min=20.0,
-			 			 point meta max=120.0,
-			 			 colormap={greenyellow}{
-			   			 	rgb255(0cm)	 =(0,200,0)
-			   			 	rgb255(0.5cm) =(128,128,128) 
-			   			 	rgb255(1cm) =(128,0,0)
-			 			 }, 
-			 			 colorbar, colorbar style={y dir=reverse}, enlargelimits=true, 
-			 			 xtick={0.0,0.1,...,1.1},
-			     		 ytick={0.0,0.1,...,1.1},
-			     		 xmajorgrids=true, ymajorgrids=true]
-			 \addplot3[only marks, mark=square*, mark size=7, ycomb, scatter] file {div_s_6_D9_cost.csv};      
-		\end{axis}
-	\end{tikzpicture}}
-	\caption{\textit{CoolRandom} D9}
-\end{figure}
+Um die Schwellwerte $l$ und $i$ zu untersuchen, 
+wird der SSIM von einem konstanten Kamerawinkelunterschied betrachtet.
+Zu diesem Zweck wird der 20 Grad Winkel gewählt, weil wie in der Abbildung \ref{fig:Daten_QT_1098}
+zu erkennen, eine höhere Streuung der Werte zu erwarten ist.
+Und die Qualitätsunterschiede, der Parameterkonfigurationen besonders deutlich werden.
 
-\begin{figure}[H]
-	\centering
-	\subfigure[]{
-	\begin{tikzpicture} [scale=0.8]
-		\begin{axis}[view={0}{90}, grid=major,
-		 			 xlabel=$i$,
-		 			 ylabel=$l$,
-		 			 ylabel style={rotate=-90},
-		 			 point meta min=0.7, point meta max=0.8,
-		 			 colormap={greenyellow}{
-		   			 	rgb255(0cm)	 =(128,0,0)
-		   			 	rgb255(0.5cm) =(255,255,0) 
-		   			 	rgb255(1cm) =(0,200,0)
-		 			 }, 
-		 			 colorbar, enlargelimits=true, 
-		 			 xtick={0.0,0.1,...,1.1},
-		     		 ytick={0.0,0.1,...,1.1},
-		     		 xmajorgrids=true, ymajorgrids=true]
-			\addplot3[only marks, mark=square*, mark size=7, ycomb, scatter] file {div_s_6_D8.csv};      
-		\end{axis}
-	\end{tikzpicture}}
-	\subfigure[]{
-	\begin{tikzpicture} [scale=0.8]
-			\begin{axis}[view={0}{90}, grid=major,
-			 			 xlabel=$i$,
-			 			 ylabel=$l$,
-			 			 ylabel style={rotate=-90},
-			 			 point meta min=20.0,
-			 			 point meta max=120.0,
-			 			 colormap={greenyellow}{
-			   			 	rgb255(0cm)	 =(0,200,0)
-			   			 	rgb255(0.5cm) =(128,128,128) 
-			   			 	rgb255(1cm) =(128,0,0)
-			 			 }, 
-			 			 colorbar, colorbar style={y dir=reverse}, enlargelimits=true, 
-			 			 xtick={0.0,0.1,...,1.1},
-			     		 ytick={0.0,0.1,...,1.1},
-			     		 xmajorgrids=true, ymajorgrids=true]
-			 \addplot3[only marks, mark=square*, mark size=7, ycomb, scatter] file {div_s_6_D8_cost.csv};      
-		\end{axis}
-	\end{tikzpicture}}
-	\caption{\textit{CoolRandom} D8}
-\end{figure}
-
-\begin{figure}[H]
+\begin{figure}
 	\centering
 	\subfigure[]{
 	\begin{tikzpicture} [scale=0.8]
@@ -1763,7 +1901,7 @@ Wird der Schwellwert überschritten, dann werden die entsprechenden Fragmente ebe
 		 			 xlabel=$i$,
 		 			 ylabel=$l$,
 		 			 ylabel style={rotate=-90},
-		 			 point meta min=0.7, point meta max=0.8,
+		 			 point meta min=0.7, point meta max=0.9,
 		 			 colormap={greenyellow}{
 		   			 	rgb255(0cm)	 =(128,0,0)
 		   			 	rgb255(0.5cm) =(255,255,0) 
@@ -1796,18 +1934,14 @@ Wird der Schwellwert überschritten, dann werden die entsprechenden Fragmente ebe
 			 \addplot3[only marks, mark=square*, mark size=7, ycomb, scatter] file {div_s_7_D10_cost.csv};      
 		\end{axis}
 	\end{tikzpicture}}
-	\caption{\textit{TestSpheres} D10}
-\end{figure}
 
-\begin{figure}[H]
-	\centering
 	\subfigure[]{
 	\begin{tikzpicture} [scale=0.8]
 		\begin{axis}[view={0}{90}, grid=major,
 		 			 xlabel=$i$,
 		 			 ylabel=$l$,
 		 			 ylabel style={rotate=-90},
-		 			 point meta min=0.7, point meta max=0.8,
+		 			 point meta min=0.7, point meta max=0.9,
 		 			 colormap={greenyellow}{
 		   			 	rgb255(0cm)	 =(128,0,0)
 		   			 	rgb255(0.5cm) =(255,255,0) 
@@ -1840,18 +1974,14 @@ Wird der Schwellwert überschritten, dann werden die entsprechenden Fragmente ebe
 			 \addplot3[only marks, mark=square*, mark size=7, ycomb, scatter] file {div_s_7_D9_cost.csv};      
 		\end{axis}
 	\end{tikzpicture}}
-	\caption{\textit{TestSpheres} D9}
-\end{figure}
 
-\begin{figure}[H]
-	\centering
 	\subfigure[]{
 	\begin{tikzpicture} [scale=0.8]
 		\begin{axis}[view={0}{90}, grid=major,
 		 			 xlabel=$i$,
 		 			 ylabel=$l$,
 		 			 ylabel style={rotate=-90},
-		 			 point meta min=0.7, point meta max=0.8,
+		 			 point meta min=0.7, point meta max=0.9,
 		 			 colormap={greenyellow}{
 		   			 	rgb255(0cm)	 =(128,0,0)
 		   			 	rgb255(0.5cm) =(255,255,0) 
@@ -1884,18 +2014,24 @@ Wird der Schwellwert überschritten, dann werden die entsprechenden Fragmente ebe
 			 \addplot3[only marks, mark=square*, mark size=7, ycomb, scatter] file {div_s_7_D8_cost.csv};      
 		\end{axis}
 	\end{tikzpicture}}
-	\caption{\textit{TestSpheres} D8}
+	\caption{Ergebnisse des \textit{Quadtree}-Ansatz mit \textit{TestSpheres},
+			 bei einem konstanten Kamerawinkelunterschied von 20 Grad.
+			 Dabei liegt die maximale Baumtiefe in a,b bei 10,
+			 in c,d bei 9 und in e,f bei 8. Die Diagramme auf der linken Seite
+			 zeigen die Güte mit Hilfe des SSIM Wertes. 
+			 Auf der rechten Seite wird die Gesamtkompressionszeit des Netzes abgetragen.}
+	\label{fig:qt_}
 \end{figure}
 
 \begin{figure}[H]
 	\centering
 	\subfigure[]{
-	\begin{tikzpicture} [scale=0.8]
+	\begin{tikzpicture}[scale=0.8]
 		\begin{axis}[view={0}{90}, grid=major,
 		 			 xlabel=$i$,
 		 			 ylabel=$l$,
 		 			 ylabel style={rotate=-90},
-		 			 point meta min=0.7, point meta max=0.8,
+		 			 point meta min=0.7, point meta max=0.9,
 		 			 colormap={greenyellow}{
 		   			 	rgb255(0cm)	 =(128,0,0)
 		   			 	rgb255(0.5cm) =(255,255,0) 
@@ -1905,14 +2041,14 @@ Wird der Schwellwert überschritten, dann werden die entsprechenden Fragmente ebe
 		 			 xtick={0.0,0.1,...,1.1},
 		     		 ytick={0.0,0.1,...,1.1},
 		     		 xmajorgrids=true, ymajorgrids=true]
-			\addplot3[only marks, mark=square*, mark size=7, ycomb, scatter] file {div_s_6floydSteinberg.csv};      
+			\addplot3[only marks, mark=square*, mark size=7, ycomb, scatter] file {div_s_6_D10.csv};      
 		\end{axis}
 	\end{tikzpicture}}
 	\subfigure[]{
-	\begin{tikzpicture} [scale=0.8]
+	\begin{tikzpicture}[scale=0.8]
 			\begin{axis}[view={0}{90}, grid=major,
-			 			 xlabel=$g$,
-			 			 ylabel=$t$,
+			 			 xlabel=$i$,
+			 			 ylabel=$l$,
 			 			 ylabel style={rotate=-90},
 			 			 point meta min=20.0,
 			 			 point meta max=120.0,
@@ -1925,57 +2061,370 @@ Wird der Schwellwert überschritten, dann werden die entsprechenden Fragmente ebe
 			 			 xtick={0.0,0.1,...,1.1},
 			     		 ytick={0.0,0.1,...,1.1},
 			     		 xmajorgrids=true, ymajorgrids=true]
-			 \addplot3[only marks, mark=square*, mark size=7, ycomb, scatter] file {div_s_6floydSteinberg_cost.csv};      
+			 \addplot3[only marks, mark=square*, mark size=7, ycomb, scatter] file {div_s_6_D10_cost.csv};      
 		\end{axis}
 	\end{tikzpicture}}
-	\caption{\textit{CoolRandom} FloydSteinberg}
-\end{figure}
-
-	\begin{figure}[H]
-		\centering
-		\subfigure[]{
-		\begin{tikzpicture} [scale=0.8]
+	
+	\subfigure[]{
+	\begin{tikzpicture} [scale=0.8]
+		\begin{axis}[view={0}{90}, grid=major,
+		 			 xlabel=$i$,
+		 			 ylabel=$l$,
+		 			 ylabel style={rotate=-90},
+		 			 point meta min=0.7, point meta max=0.9,
+		 			 colormap={greenyellow}{
+		   			 	rgb255(0cm)	 =(128,0,0)
+		   			 	rgb255(0.5cm) =(255,255,0) 
+		   			 	rgb255(1cm) =(0,200,0)
+		 			 }, 
+		 			 colorbar, enlargelimits=true, 
+		 			 xtick={0.0,0.1,...,1.1},
+		     		 ytick={0.0,0.1,...,1.1},
+		     		 xmajorgrids=true, ymajorgrids=true]
+			\addplot3[only marks, mark=square*, mark size=7, ycomb, scatter] file {div_s_6_D9.csv};      
+		\end{axis}
+	\end{tikzpicture}}
+	\subfigure[]{
+	\begin{tikzpicture} [scale=0.8]
 			\begin{axis}[view={0}{90}, grid=major,
-			 			 xlabel=$g$,
-			 			 ylabel=$t$,
+			 			 xlabel=$i$,
+			 			 ylabel=$l$,
 			 			 ylabel style={rotate=-90},
-			 			 point meta min=0.7, point meta max=0.8,
+			 			 point meta min=20.0,
+			 			 point meta max=120.0,
 			 			 colormap={greenyellow}{
-			   			 	rgb255(0cm)	 =(128,0,0)
-			   			 	rgb255(0.5cm) =(255,255,0) 
-			   			 	rgb255(1cm) =(0,200,0)
+			   			 	rgb255(0cm)	 =(0,200,0)
+			   			 	rgb255(0.5cm) =(128,128,128) 
+			   			 	rgb255(1cm) =(128,0,0)
 			 			 }, 
-			 			 colorbar, enlargelimits=true, 
+			 			 colorbar, colorbar style={y dir=reverse}, enlargelimits=true, 
 			 			 xtick={0.0,0.1,...,1.1},
 			     		 ytick={0.0,0.1,...,1.1},
 			     		 xmajorgrids=true, ymajorgrids=true]
-				\addplot3[only marks, mark=square*, mark size=7, ycomb, scatter] file {div_s_7floydSteinberg.csv};      
-			\end{axis}
-		\end{tikzpicture}}
-		\subfigure[]{
-		\begin{tikzpicture} [scale=0.8]
-				\begin{axis}[view={0}{90}, grid=major,
-				 			 xlabel=$g$,
-				 			 ylabel=$t$,
-				 			 ylabel style={rotate=-90},
-				 			 point meta min=20.0,
-				 			 point meta max=120.0,
-				 			 colormap={greenyellow}{
-				   			 	rgb255(0cm)	 =(0,200,0)
-				   			 	rgb255(0.5cm) =(128,128,128) 
-				   			 	rgb255(1cm) =(128,0,0)
-				 			 }, 
-				 			 colorbar, colorbar style={y dir=reverse}, enlargelimits=true, 
-				 			 xtick={0.0,0.1,...,1.1},
-				     		 ytick={0.0,0.1,...,1.1},
-				     		 xmajorgrids=true, ymajorgrids=true]
-				 \addplot3[only marks, mark=square*, mark size=7, ycomb, scatter] file {div_s_7floydSteinberg_cost.csv};      
-			\end{axis}
-		\end{tikzpicture}}
-		\caption{\textit{TestSpheres} FloydSteinberg}
-	\end{figure}
+			 \addplot3[only marks, mark=square*, mark size=7, ycomb, scatter] file {div_s_6_D9_cost.csv};      
+		\end{axis}
+	\end{tikzpicture}}
+
+	\subfigure[]{
+	\begin{tikzpicture} [scale=0.8]
+		\begin{axis}[view={0}{90}, grid=major,
+		 			 xlabel=$i$,
+		 			 ylabel=$l$,
+		 			 ylabel style={rotate=-90},
+		 			 point meta min=0.7, point meta max=0.9,
+		 			 colormap={greenyellow}{
+		   			 	rgb255(0cm)	 =(128,0,0)
+		   			 	rgb255(0.5cm) =(255,255,0) 
+		   			 	rgb255(1cm) =(0,200,0)
+		 			 }, 
+		 			 colorbar, enlargelimits=true, 
+		 			 xtick={0.0,0.1,...,1.1},
+		     		 ytick={0.0,0.1,...,1.1},
+		     		 xmajorgrids=true, ymajorgrids=true]
+			\addplot3[only marks, mark=square*, mark size=7, ycomb, scatter] file {div_s_6_D8.csv};      
+		\end{axis}
+	\end{tikzpicture}}
+	\subfigure[]{
+	\begin{tikzpicture} [scale=0.8]
+			\begin{axis}[view={0}{90}, grid=major,
+			 			 xlabel=$i$,
+			 			 ylabel=$l$,
+			 			 ylabel style={rotate=-90},
+			 			 point meta min=20.0,
+			 			 point meta max=120.0,
+			 			 colormap={greenyellow}{
+			   			 	rgb255(0cm)	 =(0,200,0)
+			   			 	rgb255(0.5cm) =(128,128,128) 
+			   			 	rgb255(1cm) =(128,0,0)
+			 			 }, 
+			 			 colorbar, colorbar style={y dir=reverse}, enlargelimits=true, 
+			 			 xtick={0.0,0.1,...,1.1},
+			     		 ytick={0.0,0.1,...,1.1},
+			     		 xmajorgrids=true, ymajorgrids=true]
+			 \addplot3[only marks, mark=square*, mark size=7, ycomb, scatter] file {div_s_6_D8_cost.csv};      
+		\end{axis}
+	\end{tikzpicture}}
+	\caption{Ergebnisse des \textit{Quadtree}-Ansatz mit \textit{CoolRandom},
+			 bei einem konstanten Kamerawinkelunterschied von 20 Grad.
+			 Dabei liegt die maximale Baumtiefe in a,b bei 10,
+			 in c,d bei 9 und in e,f bei 8. Die Diagramme auf der linken Seite
+			 zeigen die Güte mit Hilfe des SSIM Wertes. 
+			 Auf der rechten Seite wird die Gesamtkompressionszeit des Netzes abgetragen.}
+\end{figure}
+
+Analog zu den Schwellwerten der \textit{Quadtree}-Methode, werden die Parameter $t$ und $g$,
+vom \textit{FloydSteinberg}-Verfahren abgebildet.
+
+\begin{figure}[H]
+	\centering
+	\subfigure[]{
+	\begin{tikzpicture} [scale=0.8]
+		\begin{axis}[view={0}{90}, grid=major,
+	 			 xlabel=$g$,
+	 			 ylabel=$t$,
+	 			 ylabel style={rotate=-90},
+	 			 point meta min=0.7, point meta max=0.9,
+	 			 colormap={greenyellow}{
+		   			 	rgb255(0cm)	 =(128,0,0)
+		   			 	rgb255(0.5cm) =(255,255,0) 
+		   			 	rgb255(1cm) =(0,200,0)
+	 			 }, 
+	 			 colorbar, enlargelimits=true, 
+	 			 xtick={0.0,0.1,...,1.1},
+	     		 ytick={0.0,0.1,...,1.1},
+	     		 xmajorgrids=true, ymajorgrids=true]
+			\addplot3[only marks, mark=square*, mark size=7, ycomb, scatter] file {div_s_7floydSteinberg.csv};      
+		\end{axis}
+	\end{tikzpicture}}
+	\subfigure[]{
+	\begin{tikzpicture} [scale=0.8]
+			\begin{axis}[view={0}{90}, grid=major,
+		 			 xlabel=$g$,
+		 			 ylabel=$t$,
+		 			 ylabel style={rotate=-90},
+		 			 point meta min=20.0,
+		 			 point meta max=120.0,
+		 			 colormap={greenyellow}{
+			   			 	rgb255(0cm)	 =(0,200,0)
+			   			 	rgb255(0.5cm) =(128,128,128) 
+			   			 	rgb255(1cm) =(128,0,0)
+		 			 }, 
+		 			 colorbar, colorbar style={y dir=reverse}, enlargelimits=true, 
+		 			 xtick={0.0,0.1,...,1.1},
+		     		 ytick={0.0,0.1,...,1.1},
+		     		 xmajorgrids=true, ymajorgrids=true]
+		 \addplot3[only marks, mark=square*, mark size=7, ycomb, scatter] file {div_s_7floydSteinberg_cost.csv};      
+		\end{axis}
+	\end{tikzpicture}}
+	\subfigure[]{
+	\begin{tikzpicture} [scale=0.8]
+		\begin{axis}[view={0}{90}, grid=major,
+	 			 xlabel=$i$,
+	 			 ylabel=$l$,
+	 			 ylabel style={rotate=-90},
+	 			 point meta min=0.7, point meta max=0.9,
+	 			 colormap={greenyellow}{
+		   			 	rgb255(0cm)	 =(128,0,0)
+		   			 	rgb255(0.5cm) =(255,255,0) 
+		   			 	rgb255(1cm) =(0,200,0)
+	 			 }, 
+	 			 colorbar, enlargelimits=true, 
+	 			 xtick={0.0,0.1,...,1.1},
+	     		 ytick={0.0,0.1,...,1.1},
+	     		 xmajorgrids=true, ymajorgrids=true]
+			\addplot3[only marks, mark=square*, mark size=7, ycomb, scatter] file {div_s_6floydSteinberg.csv};      
+		\end{axis}
+	\end{tikzpicture}}
+	\subfigure[]{
+	\begin{tikzpicture} [scale=0.8]
+			\begin{axis}[view={0}{90}, grid=major,
+		 			 xlabel=$g$,
+		 			 ylabel=$t$,
+		 			 ylabel style={rotate=-90},
+		 			 point meta min=20.0,
+		 			 point meta max=120.0,
+		 			 colormap={greenyellow}{
+			   			 	rgb255(0cm)	 =(0,200,0)
+			   			 	rgb255(0.5cm) =(128,128,128) 
+			   			 	rgb255(1cm) =(128,0,0)
+		 			 }, 
+		 			 colorbar, colorbar style={y dir=reverse}, enlargelimits=true, 
+		 			 xtick={0.0,0.1,...,1.1},
+		     		 ytick={0.0,0.1,...,1.1},
+		     		 xmajorgrids=true, ymajorgrids=true]
+		 \addplot3[only marks, mark=square*, mark size=7, ycomb, scatter] file {div_s_6floydSteinberg_cost.csv};      
+		\end{axis}
+	\end{tikzpicture}}
+	\caption{Die Diagramme a, b stellen die Ergebnisse von dem \textit{CoolRandom} Datensatz
+			 und c, d die des \textit{TestSpheres} Datensatzes erhoben mit FloydSteinberg Ansatz dar.
+			 Die Diagramme auf der linken Seite zeigen die Güte mit Hilfe des SSIM und die
+			 Diagramme auf der rechte Seite bilden die Gesamtkompressionszeit des Netzes ab.}
+	\label{fig:data_floydSteinberg}
+\end{figure}
+
+
+% % % % % % % % % % %hjasdhkjashdjkashdsajdhjkashdhj
+
+\begin{figure}[H]
+	\subfigure[]{
+	\begin{tikzpicture}
+		\begin{axis}[axis lines = middle, enlargelimits = true, ylabel={in \%}, xlabel={in Grad}, xtick={0,5,10,20,...,90},
+			 every axis y label/.style={at={(ticklabel* cs:1.05)}, anchor=east},
+			 every axis x label/.style={at={(ticklabel* cs:1.05)}, anchor=south}]
+		
+		\axispath\draw
+		    (40.0em, 0.7) --  (40.0,1.0)
+		node[near start,left] {$\frac{dy}{dx} = -1.58$};
+		
+		\addplot[red, only marks, mark=x] table [x=a, y=m, col sep=comma] {div_data_mean_7_512x512D10L0.6I0.4pre.csv};
+	%	\addlegendentry{Case 1}	 
+		\addplot[blue, only marks, mark=x] table [x=a, y=m, col sep=comma] {div_data_mean_7_512x512D10L0.6I0.4A0.1J0.1pre.csv};
+		\addplot[green, only marks, mark=x] table [x=a, y=m, col sep=comma] {div_data_mean_7_512x512D10L0.6I0.4A1.0J0.2pre.csv};
+		\end{axis}
+		%legend
+		\begin{scope}[shift={(3,4)}] 
+		\draw (0,0) -- 
+			plot[mark=*, mark options={fill=green}] (0,0) node[right]{$\alpha = 0.1$, $\beta = 0.2$};
+		\draw[yshift=\baselineskip] (0,0) -- 
+			plot[mark=*, mark options={fill=blue}] (0,0) node[right]{$\alpha = 0.1$, $\beta = 0.1$};
+		\draw[yshift=2\baselineskip] (0,0) -- 
+			plot[mark=*, mark options={fill=red}] (0,0) node[right]{ohne Nachbearbeitung};
+		\end{scope}
+	\end{tikzpicture}}
+	\subfigure[]{
+	\begin{tikzpicture}
+		\begin{axis}[axis lines = middle, enlargelimits = true, ylabel={in dB}, xlabel={in Grad}, xtick={0,5,10,20,...,90},
+		 every axis y label/.style={at={(ticklabel* cs:1.05)}, anchor=east},
+		 every axis x label/.style={at={(ticklabel* cs:1.05)}, anchor=south}]
+		 
+		\addplot[red, only marks, mark=x] table [x=a, y=p, col sep=comma] {div_data_mean_7_512x512D10L0.6I0.4pre.csv};	 
+		\addplot[blue, only marks, mark=x] table [x=a, y=p, col sep=comma] {div_data_mean_7_512x512D10L0.6I0.4A0.1J0.1pre.csv};
+		\addplot[green, only marks, mark=x] table [x=a, y=p, col sep=comma] {div_data_mean_7_512x512D10L0.6I0.4A0.1J0.2pre.csv};
+		\end{axis}
+	\end{tikzpicture}}
+	\subfigure[]{
+	\begin{tikzpicture}
+		\begin{axis}[axis lines = middle, enlargelimits = true, ylabel={in \%}, xlabel={in Grad}, xtick={0,5,10,20,...,90},
+		 every axis y label/.style={at={(ticklabel* cs:1.05)}, anchor=east},
+		 every axis x label/.style={at={(ticklabel* cs:1.05)}, anchor=south}]
+		
+		\addplot[red, only marks, mark=x] table [x=a, y=m, col sep=comma] {div_data_mean_7_512x512D9L0.6I0.4pre.csv};	 
+		\addplot[blue, only marks, mark=x] table [x=a, y=m, col sep=comma] {div_data_mean_7_512x512D9L0.6I0.4A0.1J0.1pre.csv};
+		\addplot[green, only marks, mark=x] table [x=a, y=m, col sep=comma] {div_data_mean_7_512x512D9L0.6I0.4A1.0J0.2pre.csv};
+	
+		\end{axis}
+	\end{tikzpicture}}
+	\subfigure[]{
+	\begin{tikzpicture}
+		\begin{axis}[axis lines = middle, enlargelimits = true, ylabel={in dB}, xlabel={in Grad}, xtick={0,5,10,20,...,90},
+	 every axis y label/.style={at={(ticklabel* cs:1.05)}, anchor=east},
+	 every axis x label/.style={at={(ticklabel* cs:1.05)}, anchor=south}]
+	 
+		\addplot[red, only marks, mark=x] table [x=a, y=p, col sep=comma] {div_data_mean_7_512x512D9L0.6I0.4pre.csv};	 
+		\addplot[blue, only marks, mark=x] table [x=a, y=p, col sep=comma] {div_data_mean_7_512x512D9L0.6I0.4A0.1J0.1pre.csv};
+		\addplot[green, only marks, mark=x] table [x=a, y=p, col sep=comma] {div_data_mean_7_512x512D9L0.6I0.4A0.1J0.2pre.csv};
+		\end{axis}
+	\end{tikzpicture}}
+	\subfigure[]{	
+	\begin{tikzpicture}
+		\begin{axis}[axis lines = middle, enlargelimits = true, ylabel={in \%}, xlabel={in Grad}, xtick={0,5,10,20,...,90},
+		 every axis y label/.style={at={(ticklabel* cs:1.05)}, anchor=east},
+		 every axis x label/.style={at={(ticklabel* cs:1.05)}, anchor=south}]
+		
+		\addplot[red, only marks, mark=x] table [x=a, y=m, col sep=comma] {div_data_mean_7_512x512D8L0.6I0.4pre.csv};	 
+		\addplot[blue, only marks, mark=x] table [x=a, y=m, col sep=comma] {div_data_mean_7_512x512D8L0.6I0.4A0.1J0.1pre.csv};
+		\addplot[green, only marks, mark=x] table [x=a, y=m, col sep=comma] {div_data_mean_7_512x512D8L0.6I0.4A1.0J0.2pre.csv};
+	
+		\end{axis}
+	\end{tikzpicture}}
+	\subfigure[]{
+	\begin{tikzpicture}
+		\begin{axis}[axis lines = middle, enlargelimits = true, ylabel={in dB}, xlabel={in Grad}, xtick={0,5,10,20,...,90},
+	 every axis y label/.style={at={(ticklabel* cs:1.05)}, anchor=east},
+	 every axis x label/.style={at={(ticklabel* cs:1.05)}, anchor=south}]
+	 
+		\addplot[red, only marks, mark=x] table [x=a, y=p, col sep=comma] {div_data_mean_7_512x512D8L0.6I0.4pre.csv};	 
+		\addplot[blue, only marks, mark=x] table [x=a, y=p, col sep=comma] {div_data_mean_7_512x512D8L0.6I0.4A0.1J0.1pre.csv};
+		\addplot[green, only marks, mark=x] table [x=a, y=p, col sep=comma] {div_data_mean_7_512x512D8L0.6I0.4A0.1J0.2pre.csv};
+		\end{axis}
+	\end{tikzpicture}}
+	\caption{Es wird der Datensatz \textit{TestSpheres} betrachtet.
+			 Die Diagramme zeigen die Güteentwicklung, in Abhängigkeit des Parameters j.
+			 Dabei liegt die maximale Baumtiefe in a,b bei 10, in c,d bei 9 und in e,f bei 8.}
+	\label{fig:data_refine1}
+\end{figure}
+
+\begin{figure}[H]
+	\subfigure[]{
+	\begin{tikzpicture}
+		\begin{axis}[axis lines = middle, enlargelimits = true, ylabel={in \%}, xlabel={in Grad}, xtick={0,5,10,20,...,90},
+			 every axis y label/.style={at={(ticklabel* cs:1.05)}, anchor=east},
+			 every axis x label/.style={at={(ticklabel* cs:1.05)}, anchor=south}]		
+		\addplot[red, only marks, mark=x] table [x=a, y=m, col sep=comma] {div_data_mean_6_512x512D10L0.6I0.4pre.csv};	 
+		\addplot[blue, only marks, mark=x] table [x=a, y=m, col sep=comma] {div_data_mean_6_512x512D10L0.6I0.4A0.1J0.1pre.csv};
+		\addplot[green, only marks, mark=x] table [x=a, y=m, col sep=comma] {div_data_mean_6_512x512D10L0.6I0.4A1.0J0.2pre.csv};
+	
+		\end{axis}
+		%legend
+		\begin{scope}[shift={(3,4)}] 
+		\draw (0,0) -- 
+			plot[mark=*, mark options={fill=green}] (0,0) node[right]{$\alpha = 0.1$, $\beta = 0.2$};
+		\draw[yshift=\baselineskip] (0,0) -- 
+			plot[mark=*, mark options={fill=blue}] (0,0) node[right]{$\alpha = 0.1$, $\beta = 0.1$};
+		\draw[yshift=2\baselineskip] (0,0) -- 
+			plot[mark=*, mark options={fill=red}] (0,0) node[right]{ohne Nachbearbeitung};
+		\end{scope}
+	\end{tikzpicture}}
+	\subfigure[]{
+	\begin{tikzpicture}
+		\begin{axis}[axis lines = middle, enlargelimits = true, ylabel={in dB}, xlabel={in Grad}, xtick={0,5,10,20,...,90},
+		 every axis y label/.style={at={(ticklabel* cs:1.05)}, anchor=east},
+		 every axis x label/.style={at={(ticklabel* cs:1.05)}, anchor=south}]
+		 
+		\addplot[red, only marks, mark=x] table [x=a, y=p, col sep=comma] {div_data_mean_6_512x512D10L0.6I0.4pre.csv};	 
+		\addplot[blue, only marks, mark=x] table [x=a, y=p, col sep=comma] {div_data_mean_6_512x512D10L0.6I0.4A0.1J0.1pre.csv};
+		\addplot[green, only marks, mark=x] table [x=a, y=p, col sep=comma] {div_data_mean_6_512x512D10L0.6I0.4A0.1J0.2pre.csv};
+		\end{axis}
+	\end{tikzpicture}}
+	\subfigure[]{
+	\begin{tikzpicture}
+		\begin{axis}[axis lines = middle, enlargelimits = true, ylabel={in \%}, xlabel={in Grad}, xtick={0,5,10,20,...,90},
+		 every axis y label/.style={at={(ticklabel* cs:1.05)}, anchor=east},
+		 every axis x label/.style={at={(ticklabel* cs:1.05)}, anchor=south}]
+		
+		\addplot[red, only marks, mark=x] table [x=a, y=m, col sep=comma] {div_data_mean_6_512x512D9L0.6I0.4pre.csv};	 
+		\addplot[blue, only marks, mark=x] table [x=a, y=m, col sep=comma] {div_data_mean_6_512x512D9L0.6I0.4A0.1J0.1pre.csv};
+		\addplot[green, only marks, mark=x] table [x=a, y=m, col sep=comma] {div_data_mean_6_512x512D9L0.6I0.4A1.0J0.2pre.csv};
+	
+		\end{axis}
+	\end{tikzpicture}}
+	\subfigure[]{
+	\begin{tikzpicture}
+		\begin{axis}[axis lines = middle, enlargelimits = true, ylabel={in dB}, xlabel={in Grad}, xtick={0,5,10,20,...,90},
+	 every axis y label/.style={at={(ticklabel* cs:1.05)}, anchor=east},
+	 every axis x label/.style={at={(ticklabel* cs:1.05)}, anchor=south}]
+	 
+		\addplot[red, only marks, mark=x] table [x=a, y=p, col sep=comma] {div_data_mean_6_512x512D9L0.6I0.4pre.csv};	 
+		\addplot[blue, only marks, mark=x] table [x=a, y=p, col sep=comma] {div_data_mean_6_512x512D9L0.6I0.4A0.1J0.1pre.csv};
+		\addplot[green, only marks, mark=x] table [x=a, y=p, col sep=comma] {div_data_mean_6_512x512D9L0.6I0.4A0.1J0.2pre.csv};
+		\end{axis}
+	\end{tikzpicture}}
+	\subfigure[]{	
+	\begin{tikzpicture}
+		\begin{axis}[axis lines = middle, enlargelimits = true, ylabel={in \%}, xlabel={in Grad}, xtick={0,5,10,20,...,90},
+		 every axis y label/.style={at={(ticklabel* cs:1.05)}, anchor=east},
+		 every axis x label/.style={at={(ticklabel* cs:1.05)}, anchor=south}]
+		
+		\addplot[red, only marks, mark=x] table [x=a, y=m, col sep=comma] {div_data_mean_6_512x512D8L0.6I0.4pre.csv};	 
+		\addplot[blue, only marks, mark=x] table [x=a, y=m, col sep=comma] {div_data_mean_6_512x512D8L0.6I0.4A0.1J0.1pre.csv};
+		\addplot[green, only marks, mark=x] table [x=a, y=m, col sep=comma] {div_data_mean_6_512x512D8L0.6I0.4A1.0J0.2pre.csv};
+	
+		\end{axis}
+	\end{tikzpicture}}
+	\subfigure[]{
+	\begin{tikzpicture}
+		\begin{axis}[axis lines = middle, enlargelimits = true, ylabel={in dB}, xlabel={in Grad}, xtick={0,5,10,20,...,90},
+	 every axis y label/.style={at={(ticklabel* cs:1.05)}, anchor=east},
+	 every axis x label/.style={at={(ticklabel* cs:1.05)}, anchor=south}]
+	 
+		\addplot[red, only marks, mark=x] table [x=a, y=p, col sep=comma] {div_data_mean_6_512x512D8L0.6I0.4pre.csv};	 
+		\addplot[blue, only marks, mark=x] table [x=a, y=p, col sep=comma] {div_data_mean_6_512x512D8L0.6I0.4A0.1J0.1pre.csv};
+		\addplot[green, only marks, mark=x] table [x=a, y=p, col sep=comma] {div_data_mean_6_512x512D8L0.6I0.4A0.1J0.2pre.csv};
+		\end{axis}
+	\end{tikzpicture}}
+	\caption{Es wird der Datensatz \textit{CoolRandom} betrachtet.
+			 Die Diagramme zeigen die Güteentwicklung, in Abhängigkeit des Parameters j.
+			 Dabei liegt die maximale Baumtiefe in a,b bei 10, in c,d bei 9 und in e,f bei 8.}
+	\label{fig:data_refine10}
+\end{figure}
+
 
 \chapter{Diskussion}
+
+In diesem Kapitel, werden die zuvor präsentierten Daten ausgewertet.
+Die besten Resultate, der verschieden Varianten liefern die in der Abbildung \ref{fig:Daten_best_cases} 
+abgebildeten Parameterkonfigurationen.
+Wobei diese auch die meisten Dreiecke produzieren.
 
 \chapter{Zusammenfassung}
 

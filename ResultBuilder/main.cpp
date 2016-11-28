@@ -159,9 +159,10 @@ void createDiagramQuadtree(uint s, uint d) {
 				sname += val;
 				sname += "pre.csv}";
 
-				entry.z = loadFromTex(name, sname)[12];
+				entry.z = loadFromTex(name, sname)[14];
 				// 10 = 40 grad
 				// 13 = 25 grad
+				// 14 = 20 grad
 			} else {
 				entry.z = -1.0;
 			}
@@ -289,7 +290,7 @@ void createDiagramFloydSteinberg(uint s) {
 			sname += val;
 			sname += ".csv}";
 
-			entry.z = loadFromTex(name, sname)[12];
+			entry.z = loadFromTex(name, sname)[14];
 			diagram.push_back(entry);
 		}
 	
