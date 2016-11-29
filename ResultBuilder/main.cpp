@@ -30,8 +30,10 @@ double	meanCol(const Col& col);
 
 void 	createDiagramQuadtree(uint s, uint d);
 void 	createDiagramQuadtreeCost(uint s, uint d);
+void 	createDiagramQuadtreeTriangle(uint s, uint d);
 void 	createDiagramFloydSteinberg(uint s);
 void 	createDiagramFloydSteinbergCost(uint s);
+void 	createDiagramFloydSteinbergTriangle(uint s);
 
 //double	getFromAngle(const Col& col, double a);
 
@@ -39,14 +41,15 @@ int main(int argc, char* argv[]) {
 	//loadFromTex("../results/4/512x512_Delaunay/D8/L0.2/I0.2/results.tex");
 	
 	for(uint s = 6; s <= 7; ++s) {
-		createDiagramQuadtree(s, 10);
-		createDiagramQuadtree(s, 9);
-		createDiagramQuadtree(s, 8);
-		createDiagramQuadtreeCost(s, 10);
-		createDiagramQuadtreeCost(s, 9);
-		createDiagramQuadtreeCost(s, 8);
+		for(uint d = 8; d <= 10; ++d) {
+			createDiagramQuadtree(s, d);
+			createDiagramQuadtreeCost(s, d);
+			createDiagramQuadtreeTriangle(s, d);
+		}
+		
 		createDiagramFloydSteinberg(s);
 		createDiagramFloydSteinbergCost(s);
+		createDiagramFloydSteinbergTriangle(s);
 	}
 
 	return 0;
@@ -259,6 +262,75 @@ void createDiagramQuadtreeCost(uint s, uint d) {
 	saveToTex(filename, shortname, diagram);
 }
 
+void createDiagramQuadtreeTriangle(uint s, uint d) {
+	char val[20];
+	char val_d[20];
+	sprintf(val_d, "%d", d);
+
+	Diagram diagram;
+	for(double l = 0.0; l <= 1.0; l += 0.1) {
+		for(double i = 0.0; i <= 1.0; i += 0.1) {
+		
+			Entry entry;
+			entry.x = l;
+			entry.y = i;
+			if(i <= l) {
+				sprintf(val, "%d", s);
+				string name = "../results/";
+				name += val;
+				name += "/512x512_Delaunay/D";
+				name += val_d;
+				name += "/L";
+				string sname = "\\begin{filecontents}{div_mesh_infos_";
+				sname += val;
+				sname += "_512x512D";
+				sname += val_d;
+				sname += "L";
+		
+				sprintf(val, "%.1f", l);
+				name += val;
+				name += "/I";
+				sname += val;
+				sname += "I";
+				sprintf(val, "%.1f", i);
+				name += val;
+				name += "/_pre/results.tex";
+				sname += val;
+				sname += "pre.csv}";
+
+				entry.z = loadFromTex(name, sname)[0];
+				// 10 = 40 grad
+				// 13 = 25 grad
+			} else {
+				entry.z = -1.0;
+			}
+			diagram.push_back(entry);
+		}
+	
+		Entry entry;
+		entry.x = -1.0;
+		entry.y = -1.0;
+		entry.z = -1.0;
+		diagram.push_back(entry);
+	}
+
+	string shortname;
+	sprintf(val, "%d", s);
+	shortname += "s_";
+	shortname += val;
+	shortname += "_D";
+	shortname += val_d;
+	shortname += "_triangle";
+
+	string filename;
+	filename += "../results/";
+	filename += shortname;
+	filename += ".tex";
+
+	saveToTex(filename, shortname, diagram);
+}
+
+
 
 void createDiagramFloydSteinberg(uint s) {
 	char val[20];
@@ -369,3 +441,59 @@ void createDiagramFloydSteinbergCost(uint s) {
 
 	saveToTex(filename, shortname, diagram);
 }
+
+void createDiagramFloydSteinbergTriangle(uint s) {
+	char val[20];
+
+	Diagram diagram;
+	for(double t = 0.0; t <= 1.0; t += 0.1) {
+		for(double g = 0.0; g <= 1.0; g += 0.1) {
+		
+			Entry entry;
+			entry.x = t;
+			entry.y = g;
+				
+			sprintf(val, "%d", s);
+			string name = "../results/";
+			name += val;
+			name += "/512x512_Delaunay/T";
+			string sname = "\\begin{filecontents}{div_mesh_infos_";
+			sname += val;
+			sname += "_512x512T";
+		
+			sprintf(val, "%.1f", t);
+			name += val;
+			name += "/G";
+			sname += val;
+			sname += "G";
+			sprintf(val, "%.1f", g);
+			name += val;
+			name += "/results.tex";
+			sname += val;
+			sname += ".csv}";
+
+			entry.z = loadFromTex(name, sname)[0];
+			diagram.push_back(entry);
+		}
+	
+		Entry entry;
+		entry.x = -1.0;
+		entry.y = -1.0;
+		entry.z = -1.0;
+		diagram.push_back(entry);
+	}
+
+	string shortname;
+	sprintf(val, "%d", s);
+	shortname += "s_";
+	shortname += val;
+	shortname += "floydSteinberg_triangle";
+
+	string filename;
+	filename += "../results/";
+	filename += shortname;
+	filename += ".tex";
+
+	saveToTex(filename, shortname, diagram);
+}
+

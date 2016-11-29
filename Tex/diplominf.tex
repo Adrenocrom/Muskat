@@ -106,7 +106,9 @@ Bild"ubernahmen zitieren.}
 \input{../results/6/512x512_Full/default/8bit/3Pass/G0.9/results.tex}
 \input{../results/6/512x512_Full/default/8bit/3Pass/G0.8/results.tex}
 
+\input{../results/6/512x512_Delaunay/D10/L1.0/I1.0/_pre/results.tex}
 \input{../results/6/512x512_Delaunay/D10/L0.1/I0.1/_pre/results.tex}
+\input{../results/6/512x512_Delaunay/D10/L0.0/I0.0/_pre/results.tex}
 \input{../results/6/512x512_Delaunay/D9/L0.1/I0.1/_pre/results.tex}
 \input{../results/6/512x512_Delaunay/D8/L0.1/I0.1/_pre/results.tex}
 \input{../results/7/512x512_Delaunay/D10/L0.1/I0.1/_pre/results.tex}
@@ -241,6 +243,15 @@ Bild"ubernahmen zitieren.}
 \input{../results/s_7_D8_cost.tex}
 \input{../results/s_6floydSteinberg_cost.tex}
 \input{../results/s_7floydSteinberg_cost.tex}
+
+\input{../results/s_6_D10_triangle.tex}
+\input{../results/s_6_D9_triangle.tex}
+\input{../results/s_6_D8_triangle.tex}
+\input{../results/s_7_D10_triangle.tex}
+\input{../results/s_7_D9_triangle.tex}
+\input{../results/s_7_D8_triangle.tex}
+\input{../results/s_6floydSteinberg_triangle.tex}
+\input{../results/s_7floydSteinberg_triangle.tex}
 
 %\newcommand{}[ANZAHL][OPTIONAL]{DEFINITION}
 
@@ -1752,7 +1763,7 @@ In den Legenden, wird \textit{Quadtree} mit QT und \textit{FloydSteinberg} mit F
 \begin{figure}[H]
 	\subfigure[]{
 	\begin{tikzpicture}
-		\begin{axis}[axis lines = middle, enlargelimits = true, ylabel={in \%}, xlabel={in Grad}, xtick={0,5,10,20,...,90},
+		\begin{axis}[axis lines = middle, enlargelimits = true, ylabel={SSIM}, xlabel={in Grad}, xtick={0,5,10,20,...,90},
 			 every axis y label/.style={at={(ticklabel* cs:1.05)}, anchor=east},
 			 every axis x label/.style={at={(ticklabel* cs:1.05)}, anchor=south}]
 			 
@@ -1785,7 +1796,7 @@ In den Legenden, wird \textit{Quadtree} mit QT und \textit{FloydSteinberg} mit F
 	
 	\subfigure[]{
 	\begin{tikzpicture}
-		\begin{axis}[axis lines = middle, enlargelimits = true, ylabel={in \%}, xlabel={in Grad}, xtick={0,5,10,20,...,90},
+		\begin{axis}[axis lines = middle, enlargelimits = true, ylabel={SSIM}, xlabel={in Grad}, xtick={0,5,10,20,...,90},
 		 every axis y label/.style={at={(ticklabel* cs:1.05)}, anchor=east},
 		 every axis x label/.style={at={(ticklabel* cs:1.05)}, anchor=south}]
 		 
@@ -1825,7 +1836,7 @@ Beim PSNR steigen die Werte, ab einem Winkel von 70 Grad wieder leicht an.
 \begin{figure}[H]
 	\subfigure[]{
 	\begin{tikzpicture}
-		\begin{axis}[axis lines = middle, enlargelimits = true, ylabel={in \%}, xlabel={in Grad}, xtick={0,5,10,20,...,90},
+		\begin{axis}[axis lines = middle, enlargelimits = true, ylabel={SSIM}, xlabel={in Grad}, xtick={0,5,10,20,...,90},
 		every axis y label/.style={at={(ticklabel* cs:1.05)}, anchor=east},
 		every axis x label/.style={at={(ticklabel* cs:1.05)}, anchor=south}]
 			 
@@ -1858,7 +1869,7 @@ Beim PSNR steigen die Werte, ab einem Winkel von 70 Grad wieder leicht an.
 	
 	\subfigure[]{
 	\begin{tikzpicture}
-		\begin{axis}[axis lines = middle, enlargelimits = true, ylabel={in \%}, xlabel={in Grad}, xtick={0,5,10,20,...,90},
+		\begin{axis}[axis lines = middle, enlargelimits = true, ylabel={SSIM}, xlabel={in Grad}, xtick={0,5,10,20,...,90},
 		every axis y label/.style={at={(ticklabel* cs:1.05)}, anchor=east},
 		every axis x label/.style={at={(ticklabel* cs:1.05)}, anchor=south}]
 		 
@@ -1908,11 +1919,11 @@ Und die Qualitätsunterschiede, der Parameterkonfigurationen besonders deutlich w
 		 			 xlabel=$i$,
 		 			 ylabel=$l$,
 		 			 ylabel style={rotate=-90},
-		 			 point meta min=0.7, point meta max=0.9,
+		 			 point meta min=0.85, point meta max=0.95,
 		 			 colormap={greenyellow}{
-		   			 	rgb255(0cm)	 =(128,0,0)
-		   			 	rgb255(0.5cm) =(255,255,0) 
-		   			 	rgb255(1cm) =(0,200,0)
+						rgb255(0cm)	 =(255,128,0)
+						rgb255(0.5cm) =(255,255,0)
+						rgb255(1cm) =(0,200,0)
 		 			 }, 
 		 			 colorbar, enlargelimits=true, 
 		 			 xtick={0.0,0.1,...,1.1},
@@ -1930,9 +1941,9 @@ Und die Qualitätsunterschiede, der Parameterkonfigurationen besonders deutlich w
 			 			 point meta min=20.0,
 			 			 point meta max=120.0,
 			 			 colormap={greenyellow}{
-			   			 	rgb255(0cm)	 =(0,200,0)
-			   			 	rgb255(0.5cm) =(128,128,128) 
-			   			 	rgb255(1cm) =(128,0,0)
+			   			 	rgb255(0cm)	 =(240,240,240)
+			   			 	rgb255(0.5cm) =(0,128,128) 
+			   			 	rgb255(1cm) =(0,0,80)
 			 			 }, 
 			 			 colorbar, colorbar style={y dir=reverse}, enlargelimits=true, 
 			 			 xtick={0.0,0.1,...,1.1},
@@ -1948,10 +1959,10 @@ Und die Qualitätsunterschiede, der Parameterkonfigurationen besonders deutlich w
 		 			 xlabel=$i$,
 		 			 ylabel=$l$,
 		 			 ylabel style={rotate=-90},
-		 			 point meta min=0.7, point meta max=0.9,
+		 			 point meta min=0.85, point meta max=0.95,
 		 			 colormap={greenyellow}{
-		   			 	rgb255(0cm)	 =(128,0,0)
-		   			 	rgb255(0.5cm) =(255,255,0) 
+		   			 	rgb255(0cm)	 =(255,128,0)
+		   			 	rgb255(0.5cm) =(255,255,0)
 		   			 	rgb255(1cm) =(0,200,0)
 		 			 }, 
 		 			 colorbar, enlargelimits=true, 
@@ -1970,9 +1981,9 @@ Und die Qualitätsunterschiede, der Parameterkonfigurationen besonders deutlich w
 			 			 point meta min=20.0,
 			 			 point meta max=120.0,
 			 			 colormap={greenyellow}{
-			   			 	rgb255(0cm)	 =(0,200,0)
-			   			 	rgb255(0.5cm) =(128,128,128) 
-			   			 	rgb255(1cm) =(128,0,0)
+			   			 	rgb255(0cm)	 =(240,240,240)
+			   			 	rgb255(0.5cm) =(0,128,128) 
+			   			 	rgb255(1cm) =(0,0,80)
 			 			 }, 
 			 			 colorbar, colorbar style={y dir=reverse}, enlargelimits=true, 
 			 			 xtick={0.0,0.1,...,1.1},
@@ -1988,10 +1999,10 @@ Und die Qualitätsunterschiede, der Parameterkonfigurationen besonders deutlich w
 		 			 xlabel=$i$,
 		 			 ylabel=$l$,
 		 			 ylabel style={rotate=-90},
-		 			 point meta min=0.7, point meta max=0.9,
+		 			 point meta min=0.85, point meta max=0.95,
 		 			 colormap={greenyellow}{
-		   			 	rgb255(0cm)	 =(128,0,0)
-		   			 	rgb255(0.5cm) =(255,255,0) 
+		   			 	rgb255(0cm)	 =(255,128,0)
+		   			 	rgb255(0.5cm) =(255,255,0)
 		   			 	rgb255(1cm) =(0,200,0)
 		 			 }, 
 		 			 colorbar, enlargelimits=true, 
@@ -2010,9 +2021,9 @@ Und die Qualitätsunterschiede, der Parameterkonfigurationen besonders deutlich w
 			 			 point meta min=20.0,
 			 			 point meta max=120.0,
 			 			 colormap={greenyellow}{
-			   			 	rgb255(0cm)	 =(0,200,0)
-			   			 	rgb255(0.5cm) =(128,128,128) 
-			   			 	rgb255(1cm) =(128,0,0)
+			   			 	rgb255(0cm)	 =(240,240,240)
+			   			 	rgb255(0.5cm) =(0,128,128) 
+			   			 	rgb255(1cm) =(0,0,80)
 			 			 }, 
 			 			 colorbar, colorbar style={y dir=reverse}, enlargelimits=true, 
 			 			 xtick={0.0,0.1,...,1.1},
@@ -2060,9 +2071,9 @@ Und die Qualitätsunterschiede, der Parameterkonfigurationen besonders deutlich w
 			 			 point meta min=20.0,
 			 			 point meta max=120.0,
 			 			 colormap={greenyellow}{
-			   			 	rgb255(0cm)	 =(0,200,0)
-			   			 	rgb255(0.5cm) =(128,128,128) 
-			   			 	rgb255(1cm) =(128,0,0)
+							rgb255(0cm)	 =(240,240,240)
+							rgb255(0.5cm) =(0,128,128) 
+							rgb255(1cm) =(0,0,80)
 			 			 }, 
 			 			 colorbar, colorbar style={y dir=reverse}, enlargelimits=true, 
 			 			 xtick={0.0,0.1,...,1.1},
@@ -2100,9 +2111,9 @@ Und die Qualitätsunterschiede, der Parameterkonfigurationen besonders deutlich w
 			 			 point meta min=20.0,
 			 			 point meta max=120.0,
 			 			 colormap={greenyellow}{
-			   			 	rgb255(0cm)	 =(0,200,0)
-			   			 	rgb255(0.5cm) =(128,128,128) 
-			   			 	rgb255(1cm) =(128,0,0)
+							rgb255(0cm)	 =(240,240,240)
+							rgb255(0.5cm) =(0,128,128) 
+							rgb255(1cm) =(0,0,80)
 			 			 }, 
 			 			 colorbar, colorbar style={y dir=reverse}, enlargelimits=true, 
 			 			 xtick={0.0,0.1,...,1.1},
@@ -2140,9 +2151,9 @@ Und die Qualitätsunterschiede, der Parameterkonfigurationen besonders deutlich w
 			 			 point meta min=20.0,
 			 			 point meta max=120.0,
 			 			 colormap={greenyellow}{
-			   			 	rgb255(0cm)	 =(0,200,0)
-			   			 	rgb255(0.5cm) =(128,128,128) 
-			   			 	rgb255(1cm) =(128,0,0)
+							rgb255(0cm)	 =(240,240,240)
+							rgb255(0.5cm) =(0,128,128) 
+							rgb255(1cm) =(0,0,80)
 			 			 }, 
 			 			 colorbar, colorbar style={y dir=reverse}, enlargelimits=true, 
 			 			 xtick={0.0,0.1,...,1.1},
@@ -2179,7 +2190,135 @@ $l$ und $i$ sinken.
 Bei einer Baumtiefe von 8 sind alle Konfigurationen schnell genug, für die 
 interaktive Visualisierung.
 Die Güte liegt dabei konstant für alle $l$ und $i$ unter $0.8$.
- 
+
+\begin{figure}[H]
+	\centering
+	\subfigure[]{
+	\begin{tikzpicture}[scale=0.8]
+		\begin{axis}[view={0}{90}, grid=major,
+		 			 xlabel=$i$,
+		 			 ylabel=$l$,
+		 			 ylabel style={rotate=-90},
+		 			 %point meta min=0.7, point meta max=0.9,
+		 			 colormap={greenyellow}{
+		   			 	rgb255(0cm)	 =(95,25,135)
+		   			% 	rgb255(0.5cm) =(255,255,255) 
+		   			 	rgb255(1cm) =(200,200,200)
+		 			 }, 
+		 			 colorbar, colorbar style={y dir=reverse}, enlargelimits=true, 
+		 			 xtick={0.0,0.1,...,1.1},
+		     		 ytick={0.0,0.1,...,1.1},
+		     		 xmajorgrids=true, ymajorgrids=true]
+			\addplot3[only marks, mark=square*, mark size=7, ycomb, scatter] file {div_s_7_D10_triangle.csv};      
+		\end{axis}
+	\end{tikzpicture}}
+	\subfigure[]{
+	\begin{tikzpicture}[scale=0.8]
+		\begin{axis}[view={0}{90}, grid=major,
+		 			 xlabel=$i$,
+		 			 ylabel=$l$,
+		 			 ylabel style={rotate=-90},
+		 			 %point meta min=0.7, point meta max=0.9,
+		 			 colormap={greenyellow}{
+		   			 	rgb255(0cm)	 =(95,25,135)
+		   			% 	rgb255(0.5cm) =(255,255,255) 
+		   			 	rgb255(1cm) =(200,200,200)
+		 			 }, 
+		 			 colorbar, colorbar style={y dir=reverse}, enlargelimits=true, 
+		 			 xtick={0.0,0.1,...,1.1},
+		     		 ytick={0.0,0.1,...,1.1},
+		     		 xmajorgrids=true, ymajorgrids=true]
+			\addplot3[only marks, mark=square*, mark size=7, ycomb, scatter] file {div_s_6_D10_triangle.csv};      
+		\end{axis}
+	\end{tikzpicture}}
+	
+	\subfigure[]{
+	\begin{tikzpicture}[scale=0.8]
+		\begin{axis}[view={0}{90}, grid=major,
+		 			 xlabel=$i$,
+		 			 ylabel=$l$,
+		 			 ylabel style={rotate=-90},
+		 			 %point meta min=0.7, point meta max=0.9,
+		 			 colormap={greenyellow}{
+		   			 	rgb255(0cm)	 =(95,25,135)
+		   			% 	rgb255(0.5cm) =(255,255,255) 
+		   			 	rgb255(1cm) =(200,200,200)
+		 			 }, 
+		 			 colorbar, colorbar style={y dir=reverse}, enlargelimits=true, 
+		 			 xtick={0.0,0.1,...,1.1},
+		     		 ytick={0.0,0.1,...,1.1},
+		     		 xmajorgrids=true, ymajorgrids=true]
+			\addplot3[only marks, mark=square*, mark size=7, ycomb, scatter] file {div_s_7_D9_triangle.csv};      
+		\end{axis}
+	\end{tikzpicture}}
+	\subfigure[]{
+	\begin{tikzpicture}[scale=0.8]
+		\begin{axis}[view={0}{90}, grid=major,
+	 			 xlabel=$i$,
+	 			 ylabel=$l$,
+	 			 ylabel style={rotate=-90},
+	 			 %point meta min=0.7, point meta max=0.9,
+	 			 colormap={greenyellow}{
+		   			 	rgb255(0cm)	 =(95,25,135)
+		   			% 	rgb255(0.5cm) =(255,255,255) 
+		   			 	rgb255(1cm) =(200,200,200)
+	 			 }, 
+	 			 colorbar, colorbar style={y dir=reverse}, enlargelimits=true, 
+	 			 xtick={0.0,0.1,...,1.1},
+	     		 ytick={0.0,0.1,...,1.1},
+	     		 xmajorgrids=true, ymajorgrids=true]
+			\addplot3[only marks, mark=square*, mark size=7, ycomb, scatter] file {div_s_6_D9_triangle.csv};      
+		\end{axis}
+	\end{tikzpicture}}
+
+	\subfigure[]{
+	\begin{tikzpicture}[scale=0.75]
+		\begin{axis}[view={0}{90}, grid=major,
+	 			 xlabel=$i$,
+	 			 ylabel=$l$,
+	 			 ylabel style={rotate=-90},
+	 			 %point meta min=0.7, point meta max=0.9,
+	 			 colormap={greenyellow}{
+		   			 	rgb255(0cm)	 =(95,25,135)
+		   			% 	rgb255(0.5cm) =(255,255,255) 
+		   			 	rgb255(1cm) =(200,200,200)
+	 			 }, 
+	 			 colorbar, colorbar style={y dir=reverse}, enlargelimits=true, 
+	 			 xtick={0.0,0.1,...,1.1},
+	     		 ytick={0.0,0.1,...,1.1},
+	     		 xmajorgrids=true, ymajorgrids=true]
+			\addplot3[only marks, mark=square*, mark size=7, ycomb, scatter] file {div_s_7_D8_triangle.csv};      
+		\end{axis}
+	\end{tikzpicture}}
+	\subfigure[]{
+	\begin{tikzpicture}[scale=0.75]
+		\begin{axis}[view={0}{90}, grid=major,
+		 			 xlabel=$i$,
+		 			 ylabel=$l$,
+		 			 ylabel style={rotate=-90},
+		 			 %point meta min=0.7, point meta max=0.9,
+		 			 colormap={greenyellow}{
+		   			 	rgb255(0cm)	 =(95,25,135)
+		   			% 	rgb255(0.5cm) =(255,255,255) 
+		   			 	rgb255(1cm) =(200,200,200)
+		 			 }, 
+		 			 colorbar, colorbar style={y dir=reverse}, enlargelimits=true, 
+		 			 xtick={0.0,0.1,...,1.1},
+		     		 ytick={0.0,0.1,...,1.1},
+		     		 xmajorgrids=true, ymajorgrids=true]
+			\addplot3[only marks, mark=square*, mark size=7, ycomb, scatter] file {div_s_6_D8_triangle.csv};      
+		\end{axis}
+	\end{tikzpicture}}
+	\caption{Ergebnisse des \textit{Quadtree}-Ansatz mit \textit{CoolRandom},
+			 bei einem konstanten Kamerawinkelunterschied von 20 Grad.
+			 Dabei liegt die maximale Baumtiefe in a,b bei 10,
+			 in c,d bei 9 und in e,f bei 8. Die Diagramme auf der linken Seite
+			 zeigen die Güte mit Hilfe des SSIM Wertes. 
+			 Auf der rechten Seite wird die Gesamtkompressionszeit des Netzes abgetragen.}
+	\label{fig:Daten_QT_1098_Tri}
+\end{figure}
+
+
 Analog zu den Schwellwerten der \textit{Quadtree}-Methode, werden die Parameter $t$ und $g$,
 vom \textit{FloydSteinberg}-Verfahren abgebildet.
 
@@ -2213,9 +2352,9 @@ vom \textit{FloydSteinberg}-Verfahren abgebildet.
 		 			 point meta min=20.0,
 		 			 point meta max=120.0,
 		 			 colormap={greenyellow}{
-			   			 	rgb255(0cm)	 =(0,200,0)
-			   			 	rgb255(0.5cm) =(128,128,128) 
-			   			 	rgb255(1cm) =(128,0,0)
+						rgb255(0cm)	 =(240,240,240)
+						rgb255(0.5cm) =(0,128,128) 
+						rgb255(1cm) =(0,0,80)
 		 			 }, 
 		 			 colorbar, colorbar style={y dir=reverse}, enlargelimits=true, 
 		 			 xtick={0.0,0.1,...,1.1},
@@ -2252,15 +2391,54 @@ vom \textit{FloydSteinberg}-Verfahren abgebildet.
 		 			 point meta min=20.0,
 		 			 point meta max=120.0,
 		 			 colormap={greenyellow}{
-			   			 	rgb255(0cm)	 =(0,200,0)
-			   			 	rgb255(0.5cm) =(128,128,128) 
-			   			 	rgb255(1cm) =(128,0,0)
+						rgb255(0cm)	 =(240,240,240)
+						rgb255(0.5cm) =(0,128,128) 
+						rgb255(1cm) =(0,0,80)
 		 			 }, 
 		 			 colorbar, colorbar style={y dir=reverse}, enlargelimits=true, 
 		 			 xtick={0.0,0.1,...,1.1},
 		     		 ytick={0.0,0.1,...,1.1},
 		     		 xmajorgrids=true, ymajorgrids=true]
 		 \addplot3[only marks, mark=square*, mark size=7, ycomb, scatter] file {div_s_6floydSteinberg_cost.csv};      
+		\end{axis}
+	\end{tikzpicture}}
+	
+	\subfigure[]{
+	\begin{tikzpicture}[scale=0.75]
+		\begin{axis}[view={0}{90}, grid=major,
+ 			 xlabel=$i$,
+ 			 ylabel=$l$,
+ 			 ylabel style={rotate=-90},
+ 			 %point meta min=0.7, point meta max=0.9,
+ 			 colormap={greenyellow}{
+		   			 	rgb255(0cm)	 =(95,25,135)
+		   			% 	rgb255(0.5cm) =(255,255,255) 
+		   			 	rgb255(1cm) =(200,200,200)
+ 			 }, 
+ 			 colorbar, colorbar style={y dir=reverse}, enlargelimits=true, 
+ 			 xtick={0.0,0.1,...,1.1},
+     		 ytick={0.0,0.1,...,1.1},
+     		 xmajorgrids=true, ymajorgrids=true]
+			\addplot3[only marks, mark=square*, mark size=7, ycomb, scatter] file {div_s_7floydSteinberg_triangle.csv};      
+		\end{axis}
+	\end{tikzpicture}}
+	\subfigure[]{
+	\begin{tikzpicture}[scale=0.75]
+		\begin{axis}[view={0}{90}, grid=major,
+	 			 xlabel=$i$,
+	 			 ylabel=$l$,
+	 			 ylabel style={rotate=-90},
+	 			 %point meta min=0.7, point meta max=0.9,
+	 			 colormap={greenyellow}{
+		   			 	rgb255(0cm)	 =(95,25,135)
+		   			% 	rgb255(0.5cm) =(255,255,255) 
+		   			 	rgb255(1cm) =(200,200,200)
+	 			 }, 
+	 			 colorbar, colorbar style={y dir=reverse}, enlargelimits=true, 
+	 			 xtick={0.0,0.1,...,1.1},
+	     		 ytick={0.0,0.1,...,1.1},
+	     		 xmajorgrids=true, ymajorgrids=true]
+			\addplot3[only marks, mark=square*, mark size=7, ycomb, scatter] file {div_s_6floydSteinberg_triangle.csv};      
 		\end{axis}
 	\end{tikzpicture}}
 	\caption{Die Diagramme a, b stellen die Ergebnisse von dem \textit{CoolRandom} Datensatz
@@ -2284,7 +2462,7 @@ für Konfigurationen mit $t > 0.6$ und $g > 0.5$.
 \begin{figure}[H]
 	\subfigure[]{
 	\begin{tikzpicture}
-		\begin{axis}[axis lines = middle, enlargelimits = true, ylabel={in \%}, xlabel={in Grad}, xtick={0,5,10,20,...,90},
+		\begin{axis}[axis lines = middle, enlargelimits = true, ylabel={in SSIM}, xlabel={in Grad}, xtick={0,5,10,20,...,90},
 			 every axis y label/.style={at={(ticklabel* cs:1.05)}, anchor=east},
 			 every axis x label/.style={at={(ticklabel* cs:1.05)}, anchor=south}]
 		
@@ -2320,7 +2498,7 @@ für Konfigurationen mit $t > 0.6$ und $g > 0.5$.
 	\end{tikzpicture}}
 	\subfigure[]{
 	\begin{tikzpicture}
-		\begin{axis}[axis lines = middle, enlargelimits = true, ylabel={in \%}, xlabel={in Grad}, xtick={0,5,10,20,...,90},
+		\begin{axis}[axis lines = middle, enlargelimits = true, ylabel={SSIM}, xlabel={in Grad}, xtick={0,5,10,20,...,90},
 		 every axis y label/.style={at={(ticklabel* cs:1.05)}, anchor=east},
 		 every axis x label/.style={at={(ticklabel* cs:1.05)}, anchor=south}]
 		
@@ -2343,7 +2521,7 @@ für Konfigurationen mit $t > 0.6$ und $g > 0.5$.
 	\end{tikzpicture}}
 	\subfigure[]{	
 	\begin{tikzpicture}
-		\begin{axis}[axis lines = middle, enlargelimits = true, ylabel={in \%}, xlabel={in Grad}, xtick={0,5,10,20,...,90},
+		\begin{axis}[axis lines = middle, enlargelimits = true, ylabel={SSIM}, xlabel={in Grad}, xtick={0,5,10,20,...,90},
 		 every axis y label/.style={at={(ticklabel* cs:1.05)}, anchor=east},
 		 every axis x label/.style={at={(ticklabel* cs:1.05)}, anchor=south}]
 		
@@ -2384,7 +2562,7 @@ Maximaltiefen des Baums bessere Ergebnisse liefert, als für große.
 \begin{figure}[H]
 	\subfigure[]{
 	\begin{tikzpicture}
-		\begin{axis}[axis lines = middle, enlargelimits = true, ylabel={in \%}, xlabel={in Grad}, xtick={0,5,10,20,...,90},
+		\begin{axis}[axis lines = middle, enlargelimits = true, ylabel={SSIM}, xlabel={in Grad}, xtick={0,5,10,20,...,90},
 			 every axis y label/.style={at={(ticklabel* cs:1.05)}, anchor=east},
 			 every axis x label/.style={at={(ticklabel* cs:1.05)}, anchor=south}]		
 		\addplot[red, only marks, mark=x] table [x=a, y=m, col sep=comma] {div_data_mean_6_512x512D10L0.6I0.4pre.csv};	 
@@ -2415,7 +2593,7 @@ Maximaltiefen des Baums bessere Ergebnisse liefert, als für große.
 	\end{tikzpicture}}
 	\subfigure[]{
 	\begin{tikzpicture}
-		\begin{axis}[axis lines = middle, enlargelimits = true, ylabel={in \%}, xlabel={in Grad}, xtick={0,5,10,20,...,90},
+		\begin{axis}[axis lines = middle, enlargelimits = true, ylabel={SSIM}, xlabel={in Grad}, xtick={0,5,10,20,...,90},
 		 every axis y label/.style={at={(ticklabel* cs:1.05)}, anchor=east},
 		 every axis x label/.style={at={(ticklabel* cs:1.05)}, anchor=south}]
 		
@@ -2438,7 +2616,7 @@ Maximaltiefen des Baums bessere Ergebnisse liefert, als für große.
 	\end{tikzpicture}}
 	\subfigure[]{	
 	\begin{tikzpicture}
-		\begin{axis}[axis lines = middle, enlargelimits = true, ylabel={in \%}, xlabel={in Grad}, xtick={0,5,10,20,...,90},
+		\begin{axis}[axis lines = middle, enlargelimits = true, ylabel={SSIM}, xlabel={in Grad}, xtick={0,5,10,20,...,90},
 		 every axis y label/.style={at={(ticklabel* cs:1.05)}, anchor=east},
 		 every axis x label/.style={at={(ticklabel* cs:1.05)}, anchor=south}]
 		
@@ -2463,6 +2641,43 @@ Maximaltiefen des Baums bessere Ergebnisse liefert, als für große.
 			 Die Diagramme zeigen die Güteentwicklung, in Abhängigkeit des Parameters j.
 			 Dabei liegt die maximale Baumtiefe in a,b bei 10, in c,d bei 9 und in e,f bei 8.}
 	\label{fig:data_refine10}
+\end{figure}
+
+\begin{figure}
+	\centering
+	\subfigure[]{
+	\begin{tikzpicture}[scale=0.9]
+	\begin{axis}[axis lines = middle, enlargelimits = true, ylabel={in ms}, xlabel={Frame}, % xtick={0,5,10,20,...,90},
+		 every axis y label/.style={at={(ticklabel* cs:1.05)}, anchor=east},
+		 every axis x label/.style={at={(ticklabel* cs:1.05)}, anchor=south}]
+	\addplot[black] table [x=i, y=d, col sep=comma]
+	{div_duration_info_7_512x512Fd1631.0.csv};
+	\addplot[green] table [x=i, y=min, col sep=comma]
+	{div_duration_info_7_512x512Fd1631.0.csv};
+	\addplot[red] table [x=i, y=max, col sep=comma]
+	{div_duration_info_7_512x512Fd1631.0.csv};
+	\addplot[blue] table [x=i, y=mean, col sep=comma]
+	{div_duration_info_7_512x512Fd1631.0.csv};
+	\end{axis}
+	\end{tikzpicture}}
+	\subfigure[]{
+	\begin{tikzpicture}[scale=0.9]
+	\begin{axis}[axis lines = middle, enlargelimits = true, ylabel={in ms}, xlabel={Frame}, % xtick={0,5,10,20,...,90},
+	 every axis y label/.style={at={(ticklabel* cs:1.05)}, anchor=east},
+	 every axis x label/.style={at={(ticklabel* cs:1.05)}, anchor=south}]
+	\addplot[black] table [x=i, y=d, col sep=comma]
+	{div_duration_info_6_512x512D10L0.0I0.0pre.csv};
+	\addplot[green] table [x=i, y=min, col sep=comma]
+	{div_duration_info_6_512x512D10L0.0I0.0pre.csv};
+	\addplot[red] table [x=i, y=max, col sep=comma]
+	{div_duration_info_6_512x512D10L0.0I0.0pre.csv};
+	\addplot[blue] table [x=i, y=mean, col sep=comma]
+	{div_duration_info_6_512x512D10L0.0I0.0pre.csv};
+	\end{axis}
+	\end{tikzpicture}}
+	\caption{Die Diagramme stellen die Zeit, die der Client, zur Extrapolation
+	der Frames benötigt grafisch dar. Dabei ist im Diagramm a die Vollvernetzung zu sehen und im Diagramm b die Delaunay-Triangulation.}
+	\label{fig:data_client_extrapolation_time}
 \end{figure}
 
 
