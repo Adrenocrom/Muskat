@@ -1,4 +1,4 @@
-\documentclass[hyperref,german,diplominf,final,lof,lot]{cgvpub}
+\documentclass[hyperref,german,diplominf,final,lof,lot,twoside]{cgvpub}
 %weitere Optionen zum Ergänzen (in eckigen Klammern):
 % 
 % bibnum	numerische Literaturschlüssel
@@ -70,11 +70,13 @@ Bild"ubernahmen zitieren.}
 \abstractde{ Zusammenfassung Text Deutsch}
 
 \usepackage[dvipsnames]{xcolor}
+\usepackage{listings}
 \usepackage{pgfplots}
 \usepackage{filecontents}
 \usepackage{subfigure}
 \usepackage{float}
 \usepackage{cancel}
+\lstset{aboveskip=20pt,belowskip=20pt,belowcaptionskip=20pt,abovecaptionskip=20pt}
 \tikzset{>=latex}
 
 \setcounter{tocdepth}{2}
@@ -1744,8 +1746,8 @@ wird mit den Parametern $t,g \in \{0.1,0.2, ..., 1.0 \}$ evaluiert.
 Bei diesem Ansatz wurde die Netzverfeinerung für Konfigurationen $t > 0.8$ und $g > 0.8$
 durchgeführt.
 
-Die folgenden Diagramme zeigen die erhobenen Daten, in den Legenden,
-wird \textit{Quadtree} mit QT und \textit{FloydSteinberg} mit FS abgekürzt.
+Die folgenden Diagramme zeigen ausgewählte Beispiele von den erhobenen Daten.
+In den Legenden, wird \textit{Quadtree} mit QT und \textit{FloydSteinberg} mit FS abgekürzt.
 
 \begin{figure}[H]
 	\subfigure[]{
@@ -1807,7 +1809,7 @@ wird \textit{Quadtree} mit QT und \textit{FloydSteinberg} mit FS abgekürzt.
 	\caption{Die Diagramme a und b zeigen die Ergebnisse des Datensatzes \textit{TestSpheres},
 			 während c und d die Resultate des Datensatzes \textit{CoolRandom} abtragen.
 			 Dabei zeigen a und c die Ergebnisse des SSIM, während in b und d
-			 die Ergebnisse des PSNR gezeigt werden.}
+			 die Ergebnisse des PSNR gezeigt werden. $l,i = 0$}
 	\label{fig:Daten_best_cases}
 \end{figure}
 
@@ -1817,6 +1819,7 @@ Dabei liefert die Vollvernetzung insgesamt die besten Ergebnisse, gefolgt vom \t
 und das Schlusslicht bildet der \textit{FloydSteinberg} Ansatz.
 Interessant ist dabei, dass die Ergebnisse des \textit{CoolRandom} Datensatzes wesentlich
 schlechter ausfallen, insbesondere beim PSNR.
+Beim PSNR steigen die Werte, ab einem Winkel von 70 Grad wieder leicht an.
 
 % % % % % % % % % % % % % % % % % % % % % % % % % % %
 \begin{figure}[H]
@@ -1885,7 +1888,11 @@ schlechter ausfallen, insbesondere beim PSNR.
 
 Die Diagramme \ref{fig:Daten_QT_1098} tragen die Ergebnisse des \textit{Quadtree}
 Ansatzes ab. Dabei wird nur die Maximaltiefe des Baumes variiert.
-Es zeigt sich die klare Tendenz, dass größere Maximaltiefen zu besseren Ergebnissen führen.
+Für den \textit{TestSphere}-Datensatz unterscheiden sich die Ergebnisse kaum.
+Während beim \textit{CoolRandom}-Datensatz eine klare Tendenz zu erkennen ist,
+größere Maximaltiefen führen zu besseren Ergebnissen. Der Unterschied ist bei einem Winkel
+vom 20 bis 30 Grad am größten.
+Auch hier steigen die Werte des PSNR ab einem Winkel von 70 Grad wieder leicht an.
 
 Um die Schwellwerte $l$ und $i$ zu untersuchen, 
 wird der SSIM von einem konstanten Kamerawinkelunterschied betrachtet.
@@ -2150,8 +2157,29 @@ Und die Qualitätsunterschiede, der Parameterkonfigurationen besonders deutlich w
 			 in c,d bei 9 und in e,f bei 8. Die Diagramme auf der linken Seite
 			 zeigen die Güte mit Hilfe des SSIM Wertes. 
 			 Auf der rechten Seite wird die Gesamtkompressionszeit des Netzes abgetragen.}
+	\label{fig:Daten_QT_1098_Cool}
 \end{figure}
 
+In der Abbildung \ref{fig:Daten_QT_1098_Cool} sind die Ergebnisse, von dem \textit{TestSphere} zu sehen.
+Dabei Fällt auf, dass bei einem Festen Winkel von 20 Grad, die Ergebnisse, hinsichtlich ihrer
+Qualität und in Abhängigkeit zur Baumtiefe kaum variieren.
+Bei einer Baumtiefe von 10, sind die Konstruktionszeiten für das Netz, bei einem Parameter 
+von $i = 0$ rot hervorgehoben und damit zu groß für eine interaktive Visualisierung.
+
+Die Gleichen Daten, dieses mal von der Szene \textit{CoolRandom} sind in Abbildung \ref{fig:Daten_QT_1098_Cool} zu sehen.
+Für eine maximale Baumtiefe von 10, liegen die Gütewerte in einem noch akzeptablen
+Bereich. 
+Zu sehen ist eine Verschlechterung, bei steigendem $l$ und $i$.
+Die Berechnungszeiten, sind für alle Konfigurationen zu langsam.
+Bei einer maximalen Baumtiefe von 9 dagegen sind die Gütewerte bereits deutlich
+geringer, als bei 10.
+Dafür über alle Parameterkonfigurationen konstant verlaufen.
+Mit Blick auf die Ausführungszeiten ist zu erkennen, dass diese mit abnehmenden
+$l$ und $i$ sinken.
+Bei einer Baumtiefe von 8 sind alle Konfigurationen schnell genug, für die 
+interaktive Visualisierung.
+Die Güte liegt dabei konstant für alle $l$ und $i$ unter $0.8$.
+ 
 Analog zu den Schwellwerten der \textit{Quadtree}-Methode, werden die Parameter $t$ und $g$,
 vom \textit{FloydSteinberg}-Verfahren abgebildet.
 
@@ -2241,6 +2269,14 @@ vom \textit{FloydSteinberg}-Verfahren abgebildet.
 			 Diagramme auf der rechte Seite bilden die Gesamtkompressionszeit des Netzes ab.}
 	\label{fig:data_floydSteinberg}
 \end{figure}
+
+Dabei sind die Ergebnisse \ref{fig:data_floydSteinberg}, für die Szene \textit{TestSphere} hinsichtlich der Güte, für alle Konfigurationen akzeptabel.
+Bei der Bereichnungszeit zeigt sich, dass erst ab den Konfigurationen $t > 0.6$ und $g > 0.5$,
+die Kompressionszeiten für eine interaktive Visualisierung klein genug sind.
+Anders sieht es bei dem Datensatz \textit{CoolRandom} aus.
+Hier erreicht keine Parameterkonfiguration eine ausreichend kleine Konstruktionszeit.
+Die Gütewerte liegen alle unterhalb von $0.8$. Dabei zeigt sich eine Verschlechterung,
+für Konfigurationen mit $t > 0.6$ und $g > 0.5$.
 
 
 % % % % % % % % % % %hjasdhkjashdjkashdsajdhjkashdhj
@@ -2334,6 +2370,17 @@ vom \textit{FloydSteinberg}-Verfahren abgebildet.
 	\label{fig:data_refine1}
 \end{figure}
 
+Die Diagramme aus der Abbildungen \ref{fig:data_refine1} und \ref{fig:data_refine10}
+stellen dar, wie sich der Netzoptimierungsschritt auf die Dreiecksnetze hinsichtlich
+der Güte auswirkt.
+Zu diesem Zweck wurde für die Szenen eine Parameterkonfiguration exemplarisch
+ausgewählt um den Sachverhalt zu verdeutlichen.
+Dabei ist zu sehen, dass die optimierten Netze bei kleinen Winkeln bis zu 10 Grad
+schlechtere Ergebnisse liefert, als die nicht optimierten Netze.
+Bei größeren Winkeln jedoch bessere.
+Weiterhin lässt sich erkennen, das die Netzoptimierung insbesondere für kleine
+Maximaltiefen des Baums bessere Ergebnisse liefert, als für große.
+
 \begin{figure}[H]
 	\subfigure[]{
 	\begin{tikzpicture}
@@ -2421,10 +2468,19 @@ vom \textit{FloydSteinberg}-Verfahren abgebildet.
 
 \chapter{Diskussion}
 
-In diesem Kapitel, werden die zuvor präsentierten Daten ausgewertet.
+Das Ziel bestand darin, ein Verfahren zu entwickeln, das den Werteverlauf von Tiefenbildern, mit Hilfe
+von Dreiecksnetzen approximiert und die Güte, in Abhängigkeit des Kamerawinkelunterschieds zum
+Originalbild, zu evaluieren.
+Zu diesem Zweck wurden mit einem \textit{Quadtree} beziehungsweise der Floyd-Steinberg Methode
+eine Menge von Punkten bestimmt. 
+Diese wird mit Hilfe der Delaunay-Triangulierung zu einem Dreiecksnetz verknüpft.
+In einen weiteren Schritt, kann die Triangulierung optimiert werden.
+
 Die besten Resultate, der verschieden Varianten liefern die in der Abbildung \ref{fig:Daten_best_cases} 
-abgebildeten Parameterkonfigurationen.
-Wobei diese auch die meisten Dreiecke produzieren.
+abgebildeten Parameterkonfigurationen. Wobei diese auch die meisten Dreiecke produzieren.
+Es zeigt sich sehr deutlich, das die Güte der Ergebnisse von der Szene und ihrem Inhalt abhängt.
+
+
 
 \chapter{Zusammenfassung}
 
