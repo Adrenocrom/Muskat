@@ -832,8 +832,8 @@
 \cleardoublestandardpage
 \ifx\@empty\@copyrighterklaerung
 \else
-  \@mkboth{\@copyrightlabel}{}
-  \copyrightinfo
+%  \@mkboth{\@copyrightlabel}{}
+%  \copyrightinfo
 \fi
 \cleardoublestandardpage
 \end{@altdoc}}
