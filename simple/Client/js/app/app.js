@@ -68,9 +68,8 @@ $(document).ready(function() {
 
 	$( "#select_scenes" ).change(function() {
 		setScene(g_playlist.scenes[this.selectedIndex]);
-		loadSceneMessage(this.selectedIndex);
 		g_scene_index = this.selectedIndex;
-		getFrameMessage(0);
+		loadSceneMessage(this.selectedIndex);
 	});
 
 	$( '#button_show_frame' ).click(function() {
@@ -92,11 +91,10 @@ $(document).ready(function() {
 	$( '#button_run_scene' ).click(function() {
 		g_scene_list_index = 0;
 
+		g_scene_index = g_scene_list[g_scene_list_index];
 		setScene(g_playlist.scenes[g_scene_list[g_scene_list_index]]);
 		loadSceneMessage(g_scene_list[g_scene_list_index]);
-		g_scene_index = g_scene_list[g_scene_list_index];
 
-		
 		$('fieldset').prop('disabled', true);
 		
 		g_evaluation_id = 0;
@@ -256,7 +254,7 @@ $(document).ready(function() {
 	var g_time_end;
 	var g_evaluator;
 	var g_evaluation_id		= 0;
-	var g_scene_list 		= [6,7];
+	var g_scene_list 		= [7];
 	var g_scene_list_index 	= 0;
 	var g_callback_cnt 		= 0;
 
@@ -381,6 +379,8 @@ $(document).ready(function() {
 	function callback_draw() {
 		drawFrame(0);
 		g_callback_cnt++;
+
+		debug(g_callback_cnt);
 
 		if(g_callback_cnt == -1) {
 			newMessureMessage(g_scene_index, g_evaluation_id, g_config.name, g_config.shortName);
@@ -627,8 +627,8 @@ $(document).ready(function() {
 				}
 				
 				if(typeof obj.result.sceneReady !== 'undefined') {
-					debug("test");
 					setConfigMessage();
+					debug(obj.id);
 				}
 
 				if(typeof obj.result.configReady !== 'undefined') {
@@ -643,6 +643,7 @@ $(document).ready(function() {
 					muGl.setTextureFromBase64(depthTexture, "png", obj.result.depth, callback_draw);
 				}
 				
+
 				if(typeof obj.result.indices !== 'undefined') {
 					var indices  = JSON.parse(obj.result.indices);
 					var vertices = JSON.parse(obj.result.vertices);

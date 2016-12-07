@@ -129,7 +129,7 @@ RPCResponse JsonRPC::saveFrame(RPCRequest& request) {
 
 	if(m_mainWindow->m_evaluator->hasResults()) {
 		m_mainWindow->m_evaluator->runEvaluation();
-
+		
 		QJsonObject jo;
 		jo["messureReady"] = m_mainWindow->m_evaluator->getEvaluationId();
 		response.result = jo;

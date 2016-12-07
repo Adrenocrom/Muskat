@@ -10,8 +10,8 @@ class MuskatEvaluator {
 		var gridTypes 		= ["default", "cookie_cutter", "isometric"];
 		var meshPrecision 	= ["16bit", "8bit"];
 		var gradients 		= [1.0, 0.9, 0.8];
-		var angles			= [0.1, 1, 10];
-		for(var m = 1; m <= 1; m += m) {
+		var angles			= [0.1, 1, 10, 100, 1000]; // 0.1, 1
+/*		for(var m = 1; m <= 1; m += m) {
 			for(var p = 0; p < meshPrecision.length; p++) {
 				for(var g = 0; g < gradients.length; g++) {
 					var c1 = new MuskatConfig(this.nullFunction);
@@ -65,12 +65,14 @@ class MuskatEvaluator {
 				}
 			}
 		}
-
+*/
 		// Delaunay Mesh QTree
 		for(var d = 8; d <= 10; d++) {
-			for(var l = 0.0; l <= 1.0; l += 0.1) {
-				for(var i = 0.0; i <= l; i += 0.1) {							
-					var c9 = new MuskatConfig(this.nullFunction);
+		//	for(var l = 0.8; l <= 0.9; l += 0.1) {
+				var l = 0.7;
+				var i = 0.6;
+		//		for(var i = 0.6; i < 0.8; i += 0.1) {							
+/*					var c9 = new MuskatConfig(this.nullFunction);
 					c9.meshMode  = "delaunay";
 					c9.maxDepth  = d;
 					c9.Tleaf	 = l;
@@ -79,10 +81,10 @@ class MuskatEvaluator {
 					c9.preBackgroundSubtraction = true;
 					c9.praBackgroundSubtraction = false;
 					this.add(c9);
-				
-					if(l >= 0.4 && i >= 0.4) {
+				*/
+					//if(l >= 0.4 && i >= 0.4) {
 						for(var a = 0; a < angles.length; a++) {
-							for(var j = 0.1; j <= 0.2; j += 0.1) {
+							for(var j = 0.1; j <= 0.1; j += 0.1) {
 								var d2 = new MuskatConfig(this.nullFunction);
 								d2.meshMode  = "delaunay";
 								d2.maxDepth  = d;
@@ -96,9 +98,9 @@ class MuskatEvaluator {
 								this.add(d2);
 							}
 						}
-					}
-				}
-			}
+				//	}
+			//	}
+//			}
 		}
 	}
 
