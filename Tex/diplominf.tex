@@ -10,7 +10,8 @@
 % twoside		zweiseitig
 
 \usepackage{lmodern}
-\usepackage[ngerman]{babel}
+%\usepackage[ngerman]{babel}
+\usepackage{microtype}
 
 \author{Josef Schulz}
 \title{Optimierung und Übertragung von Tiefengeometrie für Remote-Visualisierung}
@@ -65,7 +66,9 @@ und der Bildextrapolation im Klienten sind optional durchzuführen.
 Zustimmungen der Copyright-Besitzer angeben bzw. die in Web Press
 Rooms angegebenen generellen Konditionen seiner Text- und
 Bild"ubernahmen zitieren.}
-\acknowledgments{Die Danksagung...}
+
+\acknowledgments{An dieser Stelle möchte ich meinen Eltern und meinen Freunden für ihre Unterstützung bedanken.}
+
 \abstracten{abstract text english}
 \abstractde{ Zusammenfassung Text Deutsch}
 
@@ -476,17 +479,22 @@ die für die Evaluation verwendet werden.
 
 Zur Analyse der verwendeten Methoden stehen zwei Datensätze zur Verfügung.
 Jeder Datensatz besteht aus einer Sequenz von Tripeln.
-Dabei setzt sich jedes Tripel aus einem Farbbild $I$, einem Tiefenbild $D$ 
+Dabei setzt sich jedes Tripel aus einem Farbbild, einem Tiefenbild $D$ 
 sowie einem Satz von Kameraparametern zusammen.
 Die Auflösung der Farb- und Tiefenbilder beträgt für alle Datensätze $w \times h = 512 \times 512$.
 Die Tiefenbilder wurden mit 16 Bit und die Farbbilder mit 24 Bit quantisiert, dabei entfallen jeweils
 8 Bit auf die einzelnen Farbkanäle.
-In der Abbildung \ref{fig:testspheres_40_id} werden Farb- und Tiefenbild des ersten Tripels aus dem Datensatz \textit{TestSpheres} dargestellt.
+In der Abbildung \ref{fig:testspheres_40_id} werden Farb- und Tiefenbild des ersten Frames aus den beiden Datensätzen,
+\textit{TestSpheres} und \textit{CoolRandom} dargestellt.
 
 \begin{figure}[h]
-	\subfigure[]{\includegraphics[width=.49\textwidth]{../Scenes/TestSpheres/run_2/testspheres_00000.png}}
-	\subfigure[]{\includegraphics[width=.49\textwidth]{../Scenes/TestSpheres/run_2/testspheres_00000_depth.png}}
-	\caption{Farb- und Tiefenbild aus dem Datensatz \textit{TestSpheres}}
+	\centering
+	\subfigure[\textit{TestSpheres}]{\includegraphics[width=.4\textwidth]{../Scenes/TestSpheres/run_2/testspheres_00000.png}}
+	\subfigure[\textit{CoolRandom}]{\includegraphics[width=.4\textwidth]{../Scenes/CoolRandom/run_2/coolrandom_00000.png}}
+	
+	\subfigure[\textit{TestSpheres}]{\includegraphics[width=.4\textwidth]{../Scenes/TestSpheres/run_2/testspheres_00000_depth.png}}
+	\subfigure[\textit{CoolRandom}]{\includegraphics[width=.4\textwidth]{../Scenes/CoolRandom/run_2/coolrandom_00000_depth.png}}
+	\caption{Farb- und Tiefenbilder der ersten Frames, von beiden Datensätzen.}
 	\label{fig:testspheres_40_id}
 \end{figure}
 
@@ -516,6 +524,10 @@ Die Datensätze \textit{CoolRandom} und \textit{TestSpheres} wurden aus Partikeld
 \textit{TestSpheres} ist ein synthetisch erzeugter Datensatz, der aus wenigen Partikeln generiert wurde.
 Bei dem Datensatz \textit{CoolRandom} handelt es sich dagegen um einen komplexen Datensatz,
 der mit Molekül-Datensätzen vergleichbar ist, welche in existierenden Anwendungen visualisiert werden.
+
+Weiterhin zu beachten ist, dass das Tiefenbild des ersten Frames, aus dem \textit{TestSpheres}-Datensatz ein Fehler aufweist.
+Die vorderste Kugel, in der Abbildung \ref{fig:testspheres_40_id}, als die dunkelste Kugel zu sehen ist im Tiefenbild 
+nicht vollständig repräsentiert. Sie weist nur an den Seiten Krümmungen auf, ist im inneren jedoch vollkommen flach.
 
 \section{Extrapolation}
 
@@ -813,6 +825,9 @@ Mittelwert über allen $x \in X$ und $y \in Y$ berechnet:
 \begin{equation}
 	MSSIM(X, Y) = \frac{1}{M} \sum\limits_{j=1}^{M} SSIM(x_j, y_j).
 \end{equation}
+
+Die Evaluation wird mit beiden Metriken durchgeführt um eine bessere Vergleichbarkeit
+mit anderen Arbeiten zu gewährleisten.
 
 \chapter{Methodik}
 
@@ -1124,14 +1139,14 @@ Ausmaßen des Tiefenbildes $D$ entspricht.
 Im Anschluss wird die Region des Wurzelknotens in vier gleichgroße Teilregionen zerlegt.
 Diese Teilregionen sind die Kindknoten des Wurzelknotens.
 Alle Kindknoten werden auf diese Weise sukzessive weiter unterteilt, bis die Tiefe des erzeugten Baumes
-eine maximale Baumtiefe $d_{max}$ erreicht.
-Die Kindknoten der Baumtiefe $d_{max}$ enthalten selbst keine weiteren Kindknoten und
+eine maximale Baumtiefe $t_{max}$ erreicht.
+Die Kindknoten der Baumtiefe $t_{max}$ enthalten selbst keine weiteren Kindknoten und
 werden als Blattknoten bezeichnet, die Regionen die sie repräsentieren als Blattregionen.
 Die maximale Tiefe des Quadtrees ist dabei invers proportional zur Breite der Blattregionen.
-Mit dem Parameter $d_{max}$ kann die Qualität und die Kompression des erzeugten Netzes
+Mit dem Parameter $t_{max}$ kann die Qualität und die Kompression des erzeugten Netzes
 sowie der Berechnungsaufwand skaliert werden.
 Die erzeugte Baumdatenstruktur hängt von der Auflösung der Tiefenbilder ab
-und muss nur neu erzeugt werden, wenn sich die Auflösung oder der Parameter $d_{max}$ ändert.
+und muss nur neu erzeugt werden, wenn sich die Auflösung oder der Parameter $t_{max}$ ändert.
 
 Im nächsten Schritt wird mit Hilfe der Baumdatenstruktur die Punktmenge $P$ erzeugt.
 Zu diesem Zweck wird der Baum, beginnend mit den Blattknoten, zum Wurzelknoten traversiert.
@@ -1465,19 +1480,42 @@ Zu beachten ist, dass jedes neu erzeugte Dreieck auf Kollinearität zu überprüfen
 und gegebenenfalls zu verwerfen.
 
 Die Pixelpositionen, in den Gleichungen \ref{eq:EDGE_VALID} und \ref{eq:EDGE_JOIN} werden in Texturkoordinaten angegeben und die Farbwerte der Pixel auf das Intervall $[0,1]$ transformiert.
+Zu beachten ist, dass der Parameter $\alpha$ von der Baumtiefe abhängt.
 
-Die Abbildung \ref{fig:refined_mesh_1} zeigt ein nachbearbeitetes Dreiecksnetz.
+\begin{figure}
+	\centering
+	\subfigure[$\alpha = 0.1, \beta = 0.1$]{\includegraphics[width=.3\textwidth]{img/delaunay_A01_J01.png} }
+	\subfigure[$\alpha = 1, \beta = 0.1$]{\includegraphics[width=.3\textwidth]{img/delaunay_A10_J01.png} }
+	\subfigure[$\alpha = 10, \beta = 0.1$]{\includegraphics[width=.3\textwidth]{img/delaunay_A100_J01.png} }
+	
+	\subfigure[$\alpha = 10, \beta = 0.3$]{\includegraphics[width=.3\textwidth]{img/delaunay_A100_J03.png} }
+	\subfigure[$\alpha = 10, \beta = 0.4$]{\includegraphics[width=.3\textwidth]{img/delaunay_A100_J04.png} }
+	\subfigure[$\alpha = 10, \beta = 1.0$]{\includegraphics[width=.3\textwidth]{img/delaunay_A100_J10.png} }
+	\caption{Auswirkung der Parameter auf die Nachbearbeitung. Das Netz wurde mit der \textit{Quadtree}-Methode erzeugt, 
+	dazu wurde $t_{max} = 8, l = 0.7, i = 0.6$ gewählt.}
+	\label{fig:param_env}
+\end{figure}
+
+Dabei zeigt die Abbildung \ref{fig:param_env} den Einfluss von $\alpha$ und $\beta$ bei der Nachbearbeitung.
 Rot markierte Kanten sind nicht valide und werden nicht zum endgültigen Netz hinzugefügt.
 Alle grünen Kanten, gehören zu Dreiecken die aus einem Dreieck, ohne valide Kante erzeugt wurden.
 Analog dazu wurden Dreiecke, hervorgehoben durch blaue Kanten aus Dreiecken erzeugt mit nur einer
 validen Kante.
 Kollineare Dreiecke fallen zu Schwarzen Kanten oder Punkten zusammen.
 
+Wenn die Parameter $\alpha = 0$ und $\beta = 0$ gewählt werden, degeneriert das Netz.
+Es ist zu erkennen, das mit größer werden $\alpha$ der Einfluss auf gekrümmte Oberflächen abnimmt.
+Mit dem Parameter $\beta$ lässt sich die Verbindungsneigung beeinflussen.
+
+Die Abbildung \ref{fig:refined_mesh_1} zeigt ein komplettes nachbearbeitetes Dreiecksnetz.
+
 \begin{figure}
 	\includegraphics[width=\textwidth]{../results/7/512x512_Delaunay/D9/L0.5/I0.4/A1.0/J0.1/_pre/delaunay.png}
-	\caption{Nachbearbeites Netz des ersten Frames aus dem \textit{TestSpheres}-Datensatz.}
+	\caption{Nachbearbeites Netz des ersten Frames aus dem \textit{TestSpheres}-Datensatz.
+			 Das Netz wurde mit der \textit{Quadtree}-Methode erzeugt, dazu wurde $t_{max} = 9, l = 0.5, i = 0.4, \alpha = 1.0, \beta = 0.1$ gewählt.}
 	\label{fig:refined_mesh_1}
 \end{figure}
+
 
 \chapter{Implementierung}
 
@@ -1791,8 +1829,8 @@ Diese Konfiguration dient als Basis für den Vergleich mit den Delaunay-Verfahren
 Im Fall der Delaunay-Triangulation, wird zwischen den beiden Punktgenerierungsverfahren
 \textit{Quadtree} und \textit{Floyd-Steinberg} unterschieden.
 Für den \textit{Quadtree}-Ansatz werden generell alle Hintergrundpixel verworfen.
-Die Bäume werden mit den maximalen Baumtiefen $d_{max} \in \{10, 9, 8\}$ erzeugt.
-Für jede Baumtiefe $d_{max}$ wurden die Schwellwertkonfigurationen
+Die Bäume werden mit den maximalen Baumtiefen $t_{max} \in \{10, 9, 8\}$ erzeugt.
+Für jede Baumtiefe $t_{max}$ wurden die Schwellwertkonfigurationen
 $l \in \{0.1,0.2, ..., 1.0\}$ und $i \in \{0.1, ..., l\}$ gemessen.
 Für alle $l > 0.6$ und $i = 0.6$, wurden zusätzlich die Netzverfeinerung durchgeführt. 
 Mit den Schwellwerten $\alpha \in \{0.1, 1, 10, 100, 1000\}$ und $\beta \in \{0.1, 0.2, ..., 1.0\}$.
@@ -1818,7 +1856,7 @@ Dabei wird mit den besten Ergebnissen begonnen:
 		\draw (0,0) -- 
 			plot[mark=*, mark options={fill=red}] (0,0) node[right]{Full, 16Bit, 5Pass, G1.0};
 		\draw[yshift=\baselineskip] (0,0) -- 
-			plot[mark=*, mark options={fill=blue}] (0,0) node[right]{QT, $d_{max} = 10$, $i,l = 0$};
+			plot[mark=*, mark options={fill=blue}] (0,0) node[right]{QT, $t_{max} = 10$, $i,l = 0$};
 		\draw[yshift=2\baselineskip] (0,0) -- 
 			plot[mark=*, mark options={fill=green}] (0,0) node[right]{FS, $\delta, \gamma = 0.3$};
 		\end{scope}
@@ -1892,7 +1930,7 @@ Außerdem fällt beim PSNR auf, dass die Werte, ab einem Winkel von 70 Grad wieder
 		\draw (0,0) -- 
 			plot[mark=*, mark options={fill=red}] (0,0) node[right]{Full, 16Bit, 5Pass, G1.0};
 		\draw[yshift=\baselineskip] (0,0) -- 
-			plot[mark=*, mark options={fill=blue}] (0,0) node[right]{QT, $d_{max} = 10$, $i,l = 0$};
+			plot[mark=*, mark options={fill=blue}] (0,0) node[right]{QT, $t_{max} = 10$, $i,l = 0$};
 		\draw[yshift=2\baselineskip] (0,0) -- 
 			plot[mark=*, mark options={fill=green}] (0,0) node[right]{FS, $\delta, \gamma = 0.3$};
 		\end{scope}
@@ -1965,11 +2003,11 @@ Vollvernetzung.
 		%legend
 		\begin{scope}[shift={(3,4)}] 
 		\draw (0,0) -- 
-			plot[mark=*, mark options={fill=red}] (0,0) node[right]{Quadtree, $d_{max} = 10$};
+			plot[mark=*, mark options={fill=red}] (0,0) node[right]{Quadtree, $t_{max} = 10$};
 		\draw[yshift=\baselineskip] (0,0) -- 
-			plot[mark=*, mark options={fill=blue}] (0,0) node[right]{Quadtree, $d_{max} = 9$};
+			plot[mark=*, mark options={fill=blue}] (0,0) node[right]{Quadtree, $t_{max} = 9$};
 		\draw[yshift=2\baselineskip] (0,0) -- 
-			plot[mark=*, mark options={fill=green}] (0,0) node[right]{Quadtree, $d_{max} = 8$};
+			plot[mark=*, mark options={fill=green}] (0,0) node[right]{Quadtree, $t_{max} = 8$};
 		\end{scope}
 	\end{tikzpicture}}
 	\subfigure[]{
@@ -2020,7 +2058,7 @@ Dabei zeigt sich das der unterschied in der Szene \textit{TestSpheres} nur gerin
 Anders fallen die Ergebnisse für die \textit{CoolRandom} Szene aus.
 Hier zeigt sich ein deutlicher Unterschied zwischen drei Varianten,
 insbesondere im Intervall von 5 bis 50 Grad.
-Die Gütewerte für die Baumtiefe $d_{max} = 8$, liegen dabei deutlich unterhalb der anderen.
+Die Gütewerte für die Baumtiefe $t_{max} = 8$, liegen dabei deutlich unterhalb der anderen.
 Im Fall der \textit{CoolRandom} Szene zeigt sich bei der Messung mit dem PSNR eine erneute 
 Verbesserung bei Winkelunterschieden, die größer als 70 Grad sind. 
 
@@ -2042,11 +2080,11 @@ Verbesserung bei Winkelunterschieden, die größer als 70 Grad sind.
 		%legend
 		\begin{scope}[shift={(5,4)}] 
 		\draw (0,0) -- 
-			plot[mark=*, mark options={fill=red}] (0,0) node[right]{$d_{max} = 10$};
+			plot[mark=*, mark options={fill=red}] (0,0) node[right]{$t_{max} = 10$};
 		\draw[yshift=\baselineskip] (0,0) -- 
-			plot[mark=*, mark options={fill=blue}] (0,0) node[right]{$d_{max} = 9$};
+			plot[mark=*, mark options={fill=blue}] (0,0) node[right]{$t_{max} = 9$};
 		\draw[yshift=2\baselineskip] (0,0) -- 
-			plot[mark=*, mark options={fill=green}] (0,0) node[right]{$d_{max} = 8$};
+			plot[mark=*, mark options={fill=green}] (0,0) node[right]{$t_{max} = 8$};
 		\end{scope}
 	\end{tikzpicture}}
 	\subfigure[\textit{TestSpheres}]{
@@ -2110,7 +2148,7 @@ Dadurch werden die Qualitätsunterschiede zwischen den Parameterkonfigurationen b
 
 \begin{figure}
 	\centering
-	\subfigure[\textit{TestSpheres}, $d_{max} = 10$]{
+	\subfigure[\textit{TestSpheres}, $t_{max} = 10$]{
 	\begin{tikzpicture} [scale=0.8]
 		\begin{axis}[view={0}{90}, grid=major,
 		 			 xlabel=$i$,
@@ -2129,7 +2167,7 @@ Dadurch werden die Qualitätsunterschiede zwischen den Parameterkonfigurationen b
 			\addplot3[only marks, mark=square*, mark size=7, ycomb, scatter] file {div_s_7_D10.csv};      
 		\end{axis}
 	\end{tikzpicture}}
-	\subfigure[\textit{TestSpheres}, $d_{max} = 10$]{
+	\subfigure[\textit{TestSpheres}, $t_{max} = 10$]{
 	\begin{tikzpicture} [scale=0.8]
 			\begin{axis}[view={0}{90}, grid=major,
 			 			 xlabel=$i$,
@@ -2150,7 +2188,7 @@ Dadurch werden die Qualitätsunterschiede zwischen den Parameterkonfigurationen b
 		\end{axis}
 	\end{tikzpicture}}
 
-	\subfigure[\textit{TestSpheres}, $d_{max} = 9$]{
+	\subfigure[\textit{TestSpheres}, $t_{max} = 9$]{
 	\begin{tikzpicture} [scale=0.8]
 		\begin{axis}[view={0}{90}, grid=major,
 		 			 xlabel=$i$,
@@ -2169,7 +2207,7 @@ Dadurch werden die Qualitätsunterschiede zwischen den Parameterkonfigurationen b
 			\addplot3[only marks, mark=square*, mark size=7, ycomb, scatter] file {div_s_7_D9.csv};      
 		\end{axis}
 	\end{tikzpicture}}
-	\subfigure[\textit{TestSpheres}, $d_{max} = 9$]{
+	\subfigure[\textit{TestSpheres}, $t_{max} = 9$]{
 	\begin{tikzpicture} [scale=0.8]
 			\begin{axis}[view={0}{90}, grid=major,
 			 			 xlabel=$i$,
@@ -2190,7 +2228,7 @@ Dadurch werden die Qualitätsunterschiede zwischen den Parameterkonfigurationen b
 		\end{axis}
 	\end{tikzpicture}}
 
-	\subfigure[\textit{TestSpheres}, $d_{max} = 8$]{
+	\subfigure[\textit{TestSpheres}, $t_{max} = 8$]{
 	\begin{tikzpicture} [scale=0.8]
 		\begin{axis}[view={0}{90}, grid=major,
 		 			 xlabel=$i$,
@@ -2209,7 +2247,7 @@ Dadurch werden die Qualitätsunterschiede zwischen den Parameterkonfigurationen b
 			\addplot3[only marks, mark=square*, mark size=7, ycomb, scatter] file {div_s_7_D8.csv};      
 		\end{axis}
 	\end{tikzpicture}}
-	\subfigure[\textit{TestSpheres}, $d_{max} = 8$]{
+	\subfigure[\textit{TestSpheres}, $t_{max} = 8$]{
 	\begin{tikzpicture} [scale=0.8]
 			\begin{axis}[view={0}{90}, grid=major,
 			 			 xlabel=$i$,
@@ -2240,18 +2278,18 @@ Dadurch werden die Qualitätsunterschiede zwischen den Parameterkonfigurationen b
 
 In der Abbildung \ref{fig:qt_TestSpheres_gc} sind die Güte und die Netzkonstruktionszeit
 des \textit{TestSpheres}-Datensatzes abgebildet.
-Es ist zu erkennen, dass die Güte mit der maximalen Baumtiefe $d_{max}$ abnimmt.
+Es ist zu erkennen, dass die Güte mit der maximalen Baumtiefe $t_{max}$ abnimmt.
 Der Güteunterschied zwischen den einzelnen Konfigurationen von $l$ und $i$,
 ist bei konstanter Baumtiefe allerdings gering.
 Anders sieht es mit der Konstruktionszeit aus, hier zeigt sich deutliche Unterschiede.
-Bei $d_{max} = 10$ und für $i = 0$ ist die Konstruktionszeit für alle $l$ größer
+Bei $t_{max} = 10$ und für $i = 0$ ist die Konstruktionszeit für alle $l$ größer
 als 120 ms. 
-Für die maximale Baumtiefe $d_{max} = 9$ überschreitet die Konfiguration $l,i = 0$ die Marke
+Für die maximale Baumtiefe $t_{max} = 9$ überschreitet die Konfiguration $l,i = 0$ die Marke
 von 120 ms.
 
 \begin{figure}[H]
 	\centering
-	\subfigure[\textit{CoolRandom}, $d_{max} = 10$]{
+	\subfigure[\textit{CoolRandom}, $t_{max} = 10$]{
 	\begin{tikzpicture}[scale=0.8]
 		\begin{axis}[view={0}{90}, grid=major,
 		 			 xlabel=$i$,
@@ -2270,7 +2308,7 @@ von 120 ms.
 			\addplot3[only marks, mark=square*, mark size=7, ycomb, scatter] file {div_s_6_D10.csv};      
 		\end{axis}
 	\end{tikzpicture}}
-	\subfigure[\textit{CoolRandom}, $d_{max} = 10$]{
+	\subfigure[\textit{CoolRandom}, $t_{max} = 10$]{
 	\begin{tikzpicture}[scale=0.8]
 			\begin{axis}[view={0}{90}, grid=major,
 			 			 xlabel=$i$,
@@ -2291,7 +2329,7 @@ von 120 ms.
 		\end{axis}
 	\end{tikzpicture}}
 	
-	\subfigure[\textit{CoolRandom}, $d_{max} = 9$]{
+	\subfigure[\textit{CoolRandom}, $t_{max} = 9$]{
 	\begin{tikzpicture} [scale=0.8]
 		\begin{axis}[view={0}{90}, grid=major,
 		 			 xlabel=$i$,
@@ -2310,7 +2348,7 @@ von 120 ms.
 			\addplot3[only marks, mark=square*, mark size=7, ycomb, scatter] file {div_s_6_D9.csv};      
 		\end{axis}
 	\end{tikzpicture}}
-	\subfigure[\textit{CoolRandom}, $d_{max} = 9$]{
+	\subfigure[\textit{CoolRandom}, $t_{max} = 9$]{
 	\begin{tikzpicture} [scale=0.8]
 			\begin{axis}[view={0}{90}, grid=major,
 			 			 xlabel=$i$,
@@ -2331,7 +2369,7 @@ von 120 ms.
 		\end{axis}
 	\end{tikzpicture}}
 
-	\subfigure[\textit{CoolRandom}, $d_{max} = 8$]{
+	\subfigure[\textit{CoolRandom}, $t_{max} = 8$]{
 	\begin{tikzpicture} [scale=0.8]
 		\begin{axis}[view={0}{90}, grid=major,
 		 			 xlabel=$i$,
@@ -2350,7 +2388,7 @@ von 120 ms.
 			\addplot3[only marks, mark=square*, mark size=7, ycomb, scatter] file {div_s_6_D8.csv};      
 		\end{axis}
 	\end{tikzpicture}}
-	\subfigure[\textit{CoolRandom}, $d_{max} = 8$]{
+	\subfigure[\textit{CoolRandom}, $t_{max} = 8$]{
 	\begin{tikzpicture} [scale=0.8]
 			\begin{axis}[view={0}{90}, grid=major,
 			 			 xlabel=$i$,
@@ -2383,21 +2421,21 @@ Vergleichbar zur Abbildung \ref{fig:qt_TestSpheres_gc}, werden Güte und Konstruk
 in der Abbildung \ref{fig:qt_CoolRandom_gc} für den \textit{CoolRandom}-Datensatz dargestellt.
 Die Güte variiert wesentlich stärker, als im \textit{TestSpheres}-Datensatz.
 Zu erkennen ist eine Abnahme der Güte mit steigenden $l$ und $i$, wenn die maximale
-Baumtiefe $d_{max} = 10$ beträgt.
+Baumtiefe $t_{max} = 10$ beträgt.
 Für die anderen beiden maximalen Baumtiefen $8$ und $9$, ist die Güte für alle $i$ und $l$
 relativ konstant.
-Auch bei dieser Szene zeigt sich das bei $d_{max} = 10$ die Konstruktionszeiten am größten sind.
+Auch bei dieser Szene zeigt sich das bei $t_{max} = 10$ die Konstruktionszeiten am größten sind.
 Unabhängig von $l$ und $i$ überschreiten alle die Marke von 120 ms.
 
 \begin{figure}[H]
 	\centering
-	\subfigure[]{
+	\subfigure[\textit{TestSpheres}, $t_{max} = 10$]{
 	\begin{tikzpicture}[scale=0.8]
 		\begin{axis}[view={0}{90}, grid=major,
 		 			 xlabel=$i$,
 		 			 ylabel=$l$,
 		 			 ylabel style={rotate=-90},
-		 			 %point meta min=0.7, point meta max=0.9,
+		 			 point meta min=60000, point meta max=120000,
 		 			 colormap={greenyellow}{
 		   			 	rgb255(0cm)	 = (200,200,200)
 		   			% 	rgb255(0.5cm) =(255,255,255) 
@@ -2410,13 +2448,13 @@ Unabhängig von $l$ und $i$ überschreiten alle die Marke von 120 ms.
 			\addplot3[only marks, mark=square*, mark size=7, ycomb, scatter] file {div_s_7_D10_triangle.csv};      
 		\end{axis}
 	\end{tikzpicture}}
-	\subfigure[]{
+	\subfigure[\textit{CoolRandom}, $t_{max} = 10$]{
 	\begin{tikzpicture}[scale=0.8]
 		\begin{axis}[view={0}{90}, grid=major,
 		 			 xlabel=$i$,
 		 			 ylabel=$l$,
 		 			 ylabel style={rotate=-90},
-		 			 %point meta min=0.7, point meta max=0.9,
+		 			 point meta min=60000, point meta max=120000,
 		 			 colormap={greenyellow}{
 		   			 	rgb255(0cm)	 =(200,200,200)
 		   			% 	rgb255(0.5cm) =(255,255,255) 
@@ -2430,13 +2468,13 @@ Unabhängig von $l$ und $i$ überschreiten alle die Marke von 120 ms.
 		\end{axis}
 	\end{tikzpicture}}
 	
-	\subfigure[]{
+	\subfigure[\textit{TestSpheres}, $t_{max} = 9$]{
 	\begin{tikzpicture}[scale=0.8]
 		\begin{axis}[view={0}{90}, grid=major,
 		 			 xlabel=$i$,
 		 			 ylabel=$l$,
 		 			 ylabel style={rotate=-90},
-		 			 %point meta min=0.7, point meta max=0.9,
+		 			 point meta min=10000, point meta max=40000,
 		 			 colormap={greenyellow}{
 		   			 	rgb255(0cm)	 =(200,200,200)
 		   			% 	rgb255(0.5cm) =(255,255,255) 
@@ -2449,13 +2487,13 @@ Unabhängig von $l$ und $i$ überschreiten alle die Marke von 120 ms.
 			\addplot3[only marks, mark=square*, mark size=7, ycomb, scatter] file {div_s_7_D9_triangle.csv};      
 		\end{axis}
 	\end{tikzpicture}}
-	\subfigure[]{
+	\subfigure[\textit{CoolRandom}, $t_{max} = 9$]{
 	\begin{tikzpicture}[scale=0.8]
 		\begin{axis}[view={0}{90}, grid=major,
 	 			 xlabel=$i$,
 	 			 ylabel=$l$,
 	 			 ylabel style={rotate=-90},
-	 			 %point meta min=0.7, point meta max=0.9,
+	 			 point meta min=10000, point meta max=40000,
 	 			 colormap={greenyellow}{
 		   			 	rgb255(0cm)	 =(200,200,200)
 		   			% 	rgb255(0.5cm) =(255,255,255) 
@@ -2469,13 +2507,13 @@ Unabhängig von $l$ und $i$ überschreiten alle die Marke von 120 ms.
 		\end{axis}
 	\end{tikzpicture}}
 
-	\subfigure[]{
+	\subfigure[\textit{TestSpheres}, $t_{max} = 8$]{
 	\begin{tikzpicture}[scale=0.8]
 		\begin{axis}[view={0}{90}, grid=major,
 	 			 xlabel=$i$,
 	 			 ylabel=$l$,
 	 			 ylabel style={rotate=-90},
-	 			 %point meta min=0.7, point meta max=0.9,
+	 			 point meta min=5000, point meta max=10000,
 	 			 colormap={greenyellow}{
 		   			 	rgb255(0cm)	 =(200,200,200)
 		   			% 	rgb255(0.5cm) =(255,255,255) 
@@ -2488,14 +2526,13 @@ Unabhängig von $l$ und $i$ überschreiten alle die Marke von 120 ms.
 			\addplot3[only marks, mark=square*, mark size=7, ycomb, scatter] file {div_s_7_D8_triangle.csv};      
 		\end{axis}
 	\end{tikzpicture}}
-	\subfigure[]{
+	\subfigure[\textit{CoolRandom}, $t_{max} = 8$]{
 	\begin{tikzpicture}[scale=0.8]
 		\begin{axis}[view={0}{90}, grid=major,
 		 			 xlabel=$i$,
 		 			 ylabel=$l$,
 		 			 ylabel style={rotate=-90},
-		 		%	 zticklabel style={/pgf/number format/sci},
-		 			 %point meta min=0.7, point meta max=0.9,
+		 			 point meta min=5000, point meta max=10000,
 		 			 colormap={greenyellow}{
 		   			 	rgb255(0cm)	 =(200,200,200)
 		   			% 	rgb255(0.5cm) =(255,255,255) 
@@ -2510,7 +2547,7 @@ Unabhängig von $l$ und $i$ überschreiten alle die Marke von 120 ms.
 	\end{tikzpicture}}
 	\caption{Die Diagramme zeigen für den \textit{Quadtree}-Ansatz,
 			 bei einem konstanten Kamerawinkelunterschied von 20 Grad die Anzahl der Dreiecke
-			 in Abhängigkeit der Parameter $l,i$ und $d_{max}$.
+			 in Abhängigkeit der Parameter $l,i$ und $t_{max}$.
 			 Dabei liegt die maximale Baumtiefe in a,b bei 10,
 			 in c,d bei 9 und in e,f bei 8. 
 			 Die Diagramme auf der linken Seite zeigen die Anzahl der Dreiecke von der \textit{TestSpheres} Szene. 
@@ -2614,7 +2651,7 @@ Wenn sowohl $l$, als auch $i$ kleiner werden, steigt die Anzahl der Dreiecke.
  			 xlabel=$\gamma$,
 			 ylabel=$\delta$,
  			 ylabel style={rotate=-90},
- 			 %point meta min=0.7, point meta max=0.9,
+ 			 point meta min=100000, point meta max=500000,
  			 colormap={greenyellow}{
 		   			 	rgb255(0cm)	 =(200,200,200)
 		   			% 	rgb255(0.5cm) =(255,255,255) 
@@ -2633,7 +2670,7 @@ Wenn sowohl $l$, als auch $i$ kleiner werden, steigt die Anzahl der Dreiecke.
 	 			 xlabel=$\gamma$,
 	 			 ylabel=$\delta$,
 	 			 ylabel style={rotate=-90},
-	 			 %point meta min=0.7, point meta max=0.9,
+	 			 point meta min=100000, point meta max=500000,
 	 			 colormap={greenyellow}{
 		   			 	rgb255(0cm)	 =(200,200,200)
 		   			% 	rgb255(0.5cm) =(255,255,255) 
@@ -2673,7 +2710,7 @@ werden $l$ und $i$ konstant auf einen Wert fixiert.
 Zu diesem Zweck wurde $l = 0.7$ und $i = 0.6$ gewählt. 
 
 \begin{figure}[H]
-	\subfigure[\textit{TestSpheres}, $d_{max} = 10$]{
+	\subfigure[\textit{TestSpheres}, $t_{max} = 10$]{
 	\begin{tikzpicture}
 		\begin{axis}[axis lines = middle, enlargelimits = true, ylabel={in SSIM}, xlabel={in Grad}, xtick={0,5,10,20,...,90},
 			 every axis y label/.style={at={(ticklabel* cs:1.05)}, anchor=east},
@@ -2694,7 +2731,7 @@ Zu diesem Zweck wurde $l = 0.7$ und $i = 0.6$ gewählt.
 			plot[mark=*, mark options={fill=red}] (0,0) node[right]{ohne Nachbearbeitung};
 		\end{scope}
 	\end{tikzpicture}}
-	\subfigure[\textit{TestSpheres}, $d_{max} = 10$]{
+	\subfigure[\textit{TestSpheres}, $t_{max} = 10$]{
 	\begin{tikzpicture}
 		\begin{axis}[axis lines = middle, enlargelimits = true, ylabel={in dB}, xlabel={in Grad}, xtick={0,5,10,20,...,90},
 		 every axis y label/.style={at={(ticklabel* cs:1.05)}, anchor=east},
@@ -2705,7 +2742,7 @@ Zu diesem Zweck wurde $l = 0.7$ und $i = 0.6$ gewählt.
 		\addplot[green, only marks, mark=x] table [x=a, y=p, col sep=comma] {div_data_mean_7_512x512D10L0.7I0.6A10.0J0.2pre.csv};
 		\end{axis}
 	\end{tikzpicture}}
-	\subfigure[\textit{TestSpheres}, $d_{max} = 9$]{
+	\subfigure[\textit{TestSpheres}, $t_{max} = 9$]{
 	\begin{tikzpicture}
 		\begin{axis}[axis lines = middle, enlargelimits = true, ylabel={SSIM}, xlabel={in Grad}, xtick={0,5,10,20,...,90},
 		 every axis y label/.style={at={(ticklabel* cs:1.05)}, anchor=east},
@@ -2717,7 +2754,7 @@ Zu diesem Zweck wurde $l = 0.7$ und $i = 0.6$ gewählt.
 	
 		\end{axis}
 	\end{tikzpicture}}
-	\subfigure[\textit{TestSpheres}, $d_{max} = 9$]{
+	\subfigure[\textit{TestSpheres}, $t_{max} = 9$]{
 	\begin{tikzpicture}
 		\begin{axis}[axis lines = middle, enlargelimits = true, ylabel={in dB}, xlabel={in Grad}, xtick={0,5,10,20,...,90},
 	 every axis y label/.style={at={(ticklabel* cs:1.05)}, anchor=east},
@@ -2728,7 +2765,7 @@ Zu diesem Zweck wurde $l = 0.7$ und $i = 0.6$ gewählt.
 		\addplot[green, only marks, mark=x] table [x=a, y=p, col sep=comma] {div_data_mean_7_512x512D9L0.7I0.6A10.0J0.2pre.csv};
 		\end{axis}
 	\end{tikzpicture}}
-	\subfigure[\textit{TestSpheres}, $d_{max} = 8$]{	
+	\subfigure[\textit{TestSpheres}, $t_{max} = 8$]{	
 	\begin{tikzpicture}
 		\begin{axis}[axis lines = middle, enlargelimits = true, ylabel={SSIM}, xlabel={in Grad}, xtick={0,5,10,20,...,90},
 		 every axis y label/.style={at={(ticklabel* cs:1.05)}, anchor=east},
@@ -2740,7 +2777,7 @@ Zu diesem Zweck wurde $l = 0.7$ und $i = 0.6$ gewählt.
 	
 		\end{axis}
 	\end{tikzpicture}}
-	\subfigure[\textit{TestSpheres}, $d_{max} = 8$]{
+	\subfigure[\textit{TestSpheres}, $t_{max} = 8$]{
 	\begin{tikzpicture}
 		\begin{axis}[axis lines = middle, enlargelimits = true, ylabel={in dB}, xlabel={in Grad}, xtick={0,5,10,20,...,90},
 	 every axis y label/.style={at={(ticklabel* cs:1.05)}, anchor=east},
@@ -2758,7 +2795,7 @@ Zu diesem Zweck wurde $l = 0.7$ und $i = 0.6$ gewählt.
 \end{figure}
 
 \begin{figure}[H]
-	\subfigure[\textit{CoolRandom}, $d_{max} = 10$]{
+	\subfigure[\textit{CoolRandom}, $t_{max} = 10$]{
 	\begin{tikzpicture}
 		\begin{axis}[axis lines = middle, enlargelimits = true, ylabel={SSIM}, xlabel={in Grad}, xtick={0,5,10,20,...,90},
 			 every axis y label/.style={at={(ticklabel* cs:1.05)}, anchor=east},
@@ -2778,7 +2815,7 @@ Zu diesem Zweck wurde $l = 0.7$ und $i = 0.6$ gewählt.
 			plot[mark=*, mark options={fill=red}] (0,0) node[right]{ohne Nachbearbeitung};
 		\end{scope}
 	\end{tikzpicture}}
-	\subfigure[\textit{CoolRandom}, $d_{max} = 10$]{
+	\subfigure[\textit{CoolRandom}, $t_{max} = 10$]{
 	\begin{tikzpicture}
 		\begin{axis}[axis lines = middle, enlargelimits = true, ylabel={in dB}, xlabel={in Grad}, xtick={0,5,10,20,...,90},
 		 every axis y label/.style={at={(ticklabel* cs:1.05)}, anchor=east},
@@ -2789,7 +2826,7 @@ Zu diesem Zweck wurde $l = 0.7$ und $i = 0.6$ gewählt.
 		\addplot[green, only marks, mark=x] table [x=a, y=p, col sep=comma] {div_data_mean_6_512x512D10L0.7I0.6A10.0J0.2pre.csv};
 		\end{axis}
 	\end{tikzpicture}}
-	\subfigure[\textit{CoolRandom}, $d_{max} = 9$]{
+	\subfigure[\textit{CoolRandom}, $t_{max} = 9$]{
 	\begin{tikzpicture}
 		\begin{axis}[axis lines = middle, enlargelimits = true, ylabel={SSIM}, xlabel={in Grad}, xtick={0,5,10,20,...,90},
 		 every axis y label/.style={at={(ticklabel* cs:1.05)}, anchor=east},
@@ -2801,7 +2838,7 @@ Zu diesem Zweck wurde $l = 0.7$ und $i = 0.6$ gewählt.
 	
 		\end{axis}
 	\end{tikzpicture}}
-	\subfigure[\textit{CoolRandom}, $d_{max} = 9$]{
+	\subfigure[\textit{CoolRandom}, $t_{max} = 9$]{
 	\begin{tikzpicture}
 		\begin{axis}[axis lines = middle, enlargelimits = true, ylabel={in dB}, xlabel={in Grad}, xtick={0,5,10,20,...,90},
 	 every axis y label/.style={at={(ticklabel* cs:1.05)}, anchor=east},
@@ -2812,7 +2849,7 @@ Zu diesem Zweck wurde $l = 0.7$ und $i = 0.6$ gewählt.
 		\addplot[green, only marks, mark=x] table [x=a, y=p, col sep=comma] {div_data_mean_6_512x512D9L0.7I0.6A10.0J0.2pre.csv};
 		\end{axis}
 	\end{tikzpicture}}
-	\subfigure[\textit{CoolRandom}, $d_{max} = 8$]{	
+	\subfigure[\textit{CoolRandom}, $t_{max} = 8$]{	
 	\begin{tikzpicture}
 		\begin{axis}[axis lines = middle, enlargelimits = true, ylabel={SSIM}, xlabel={in Grad}, xtick={0,5,10,20,...,90},
 		 every axis y label/.style={at={(ticklabel* cs:1.05)}, anchor=east},
@@ -2824,7 +2861,7 @@ Zu diesem Zweck wurde $l = 0.7$ und $i = 0.6$ gewählt.
 	
 		\end{axis}
 	\end{tikzpicture}}
-	\subfigure[\textit{CoolRandom}, $d_{max} = 8$]{
+	\subfigure[\textit{CoolRandom}, $t_{max} = 8$]{
 	\begin{tikzpicture}
 		\begin{axis}[axis lines = middle, enlargelimits = true, ylabel={in dB}, xlabel={in Grad}, xtick={0,5,10,20,...,90},
 	 every axis y label/.style={at={(ticklabel* cs:1.05)}, anchor=east},
@@ -2843,18 +2880,18 @@ Zu diesem Zweck wurde $l = 0.7$ und $i = 0.6$ gewählt.
 
 \begin{figure}
 	\centering
-	\subfigure[\textit{TestSpheres}, $d_{max} = 10$]{
+	\subfigure[\textit{TestSpheres}, $t_{max} = 10$]{
 	\begin{tikzpicture} [scale=0.79]
 		\begin{axis}[view={0}{90}, grid=major,
  			 xlabel=$\alpha$,
  			 ylabel=$\beta$,
  			 ylabel style={rotate=-90},
- 			 %point meta min=0.7, point meta max=0.9,
+ 			 point meta min=0.89, point meta max=0.91,
  			 colormap={greenyellow}{
-		   			 	rgb255(0cm)	 =(128,0,0)
-		   			 	rgb255(0.5cm) =(255,255,0) 
-		   			 	rgb255(1cm) =(0,200,0)
- 			 }, 
+ 		   			 	rgb255(0cm)	 =(255,128,0)
+ 		   			 	rgb255(0.5cm) =(255,255,0)
+ 		   			 	rgb255(1cm) =(0,200,0)
+			 }, 
  			 colorbar, colorbar style={xlabel={SSIM}}, enlargelimits=true,
  			 xmode=log,
  			 log ticks with fixed point,
@@ -2864,7 +2901,7 @@ Zu diesem Zweck wurde $l = 0.7$ und $i = 0.6$ gewählt.
 			\addplot3[only marks, mark=square*, mark size=7, ycomb, scatter] file {div_s_7_D10_L0.7_I0.6.csv};      
 		\end{axis}
 	\end{tikzpicture}}
-	\subfigure[\textit{TestSpheres}, $d_{max} = 10$]{
+	\subfigure[\textit{TestSpheres}, $t_{max} = 10$]{
 	\begin{tikzpicture} [scale=0.8]
 			\begin{axis}[view={0}{90}, grid=major,
 			 xlabel=$\alpha$,
@@ -2887,18 +2924,18 @@ Zu diesem Zweck wurde $l = 0.7$ und $i = 0.6$ gewählt.
 		\end{axis}
 	\end{tikzpicture}}
 	
-	\subfigure[\textit{TestSpheres}, $d_{max} = 9$]{
+	\subfigure[\textit{TestSpheres}, $t_{max} = 9$]{
 	\begin{tikzpicture} [scale=0.79]
 		\begin{axis}[view={0}{90}, grid=major,
  			 xlabel=$\alpha$,
  			 ylabel=$\beta$,
  			 ylabel style={rotate=-90},
- 			 %point meta min=0.7, point meta max=0.9,
+ 			 point meta min=0.89, point meta max=0.91,
  			 colormap={greenyellow}{
-		   			 	rgb255(0cm)	 =(128,0,0)
-		   			 	rgb255(0.5cm) =(255,255,0) 
-		   			 	rgb255(1cm) =(0,200,0)
- 			 }, 
+ 		   			 	rgb255(0cm)	 =(255,128,0)
+ 		   			 	rgb255(0.5cm) =(255,255,0)
+ 		   			 	rgb255(1cm) =(0,200,0)
+			 }, 
  			 colorbar, colorbar style={xlabel={SSIM}}, enlargelimits=true,
  			 xmode=log,
  			 log ticks with fixed point,
@@ -2908,7 +2945,7 @@ Zu diesem Zweck wurde $l = 0.7$ und $i = 0.6$ gewählt.
 			\addplot3[only marks, mark=square*, mark size=7, ycomb, scatter] file {div_s_7_D9_L0.7_I0.6.csv};      
 		\end{axis}
 	\end{tikzpicture}}
-	\subfigure[\textit{TestSpheres}, $d_{max} = 9$]{
+	\subfigure[\textit{TestSpheres}, $t_{max} = 9$]{
 	\begin{tikzpicture} [scale=0.8]
 			\begin{axis}[view={0}{90}, grid=major,
 			 xlabel=$\alpha$,
@@ -2931,18 +2968,18 @@ Zu diesem Zweck wurde $l = 0.7$ und $i = 0.6$ gewählt.
 		\end{axis}
 	\end{tikzpicture}}
 	
-	\subfigure[\textit{TestSpheres}, $d_{max} = 8$]{
+	\subfigure[\textit{TestSpheres}, $t_{max} = 8$]{
 	\begin{tikzpicture} [scale=0.79]
 		\begin{axis}[view={0}{90}, grid=major,
 	 			 xlabel=$\alpha$,
 	 			 ylabel=$\beta$,
 	 			 ylabel style={rotate=-90},
-	 			 %point meta min=0.7, point meta max=0.9,
-	 			 colormap={greenyellow}{
-		   			 	rgb255(0cm)	 =(128,0,0)
-		   			 	rgb255(0.5cm) =(255,255,0) 
-		   			 	rgb255(1cm) =(0,200,0)
-	 			 }, 
+	 			 point meta min=0.89, point meta max=0.91,
+				colormap={greenyellow}{
+				 	rgb255(0cm)	 =(255,128,0)
+				 	rgb255(0.5cm) =(255,255,0)
+				 	rgb255(1cm) =(0,200,0)
+				}, 
 	 			 colorbar, colorbar style={xlabel={SSIM}}, enlargelimits=true,
 	 			 xmode=log,
 	 			 log ticks with fixed point,
@@ -2952,7 +2989,7 @@ Zu diesem Zweck wurde $l = 0.7$ und $i = 0.6$ gewählt.
 			\addplot3[only marks, mark=square*, mark size=7, ycomb, scatter] file {div_s_7_D8_L0.7_I0.6.csv};      
 		\end{axis}
 	\end{tikzpicture}}
-	\subfigure[\textit{TestSpheres}, $d_{max} = 8$]{
+	\subfigure[\textit{TestSpheres}, $t_{max} = 8$]{
 	\begin{tikzpicture} [scale=0.8]
 			\begin{axis}[view={0}{90}, grid=major,
  			 xlabel=$\alpha$,
@@ -2989,13 +3026,13 @@ Dabei
 
 \begin{figure}
 	\centering
-	\subfigure[\textit{CoolRandom}, $d_{max} = 10$]{
+	\subfigure[\textit{CoolRandom}, $t_{max} = 10$]{
 	\begin{tikzpicture} [scale=0.79]
 		\begin{axis}[view={0}{90}, grid=major,
  			 xlabel=$\alpha$,
  			 ylabel=$\beta$,
  			 ylabel style={rotate=-90},
- 			 %point meta min=0.7, point meta max=0.9,
+ 			 point meta min=0.75, point meta max=0.82,
  			 colormap={greenyellow}{
 		   			 	rgb255(0cm)	 =(128,0,0)
 		   			 	rgb255(0.5cm) =(255,255,0) 
@@ -3010,7 +3047,7 @@ Dabei
 			\addplot3[only marks, mark=square*, mark size=7, ycomb, scatter] file {div_s_6_D10_L0.7_I0.6.csv};      
 		\end{axis}
 	\end{tikzpicture}}
-	\subfigure[\textit{CoolRandom}, $d_{max} = 10$]{
+	\subfigure[\textit{CoolRandom}, $t_{max} = 10$]{
 	\begin{tikzpicture} [scale=0.8]
 			\begin{axis}[view={0}{90}, grid=major,
 			 xlabel=$\alpha$,
@@ -3033,13 +3070,13 @@ Dabei
 		\end{axis}
 	\end{tikzpicture}}
 	
-	\subfigure[\textit{CoolRandom}, $d_{max} = 9$]{
+	\subfigure[\textit{CoolRandom}, $t_{max} = 9$]{
 	\begin{tikzpicture} [scale=0.79]
 		\begin{axis}[view={0}{90}, grid=major,
  			 xlabel=$\alpha$,
  			 ylabel=$\beta$,
  			 ylabel style={rotate=-90},
- 			 %point meta min=0.7, point meta max=0.9,
+ 			 point meta min=0.75, point meta max=0.82,
  			 colormap={greenyellow}{
 		   			 	rgb255(0cm)	 =(128,0,0)
 		   			 	rgb255(0.5cm) =(255,255,0) 
@@ -3054,7 +3091,7 @@ Dabei
 			\addplot3[only marks, mark=square*, mark size=7, ycomb, scatter] file {div_s_6_D9_L0.7_I0.6.csv};      
 		\end{axis}
 	\end{tikzpicture}}
-	\subfigure[\textit{CoolRandom}, $d_{max} = 9$]{
+	\subfigure[\textit{CoolRandom}, $t_{max} = 9$]{
 	\begin{tikzpicture} [scale=0.8]
 			\begin{axis}[view={0}{90}, grid=major,
 			 xlabel=$\alpha$,
@@ -3077,13 +3114,13 @@ Dabei
 		\end{axis}
 	\end{tikzpicture}}
 	
-	\subfigure[\textit{CoolRandom}, $d_{max} = 8$]{
+	\subfigure[\textit{CoolRandom}, $t_{max} = 8$]{
 	\begin{tikzpicture} [scale=0.79]
 		\begin{axis}[view={0}{90}, grid=major,
 	 			 xlabel=$\alpha$,
 	 			 ylabel=$\beta$,
 	 			 ylabel style={rotate=-90},
-	 			 %point meta min=0.7, point meta max=0.9,
+	 			 point meta min=0.75, point meta max=0.82,
 	 			 colormap={greenyellow}{
 		   			 	rgb255(0cm)	 =(128,0,0)
 		   			 	rgb255(0.5cm) =(255,255,0) 
@@ -3098,7 +3135,7 @@ Dabei
 			\addplot3[only marks, mark=square*, mark size=7, ycomb, scatter] file {div_s_6_D8_L0.7_I0.6.csv};      
 		\end{axis}
 	\end{tikzpicture}}
-	\subfigure[\textit{CoolRandom}, $d_{max} = 8$]{
+	\subfigure[\textit{CoolRandom}, $t_{max} = 8$]{
 	\begin{tikzpicture} [scale=0.8]
 			\begin{axis}[view={0}{90}, grid=major,
  			 xlabel=$\alpha$,
@@ -3125,12 +3162,13 @@ Dabei
 
 \begin{figure}
 	\centering
-	\subfigure[\textit{TestSpheres}, $d_{max} = 10$]{
+	\subfigure[\textit{TestSpheres}, $t_{max} = 10$]{
 	\begin{tikzpicture} [scale=0.8]
 		\begin{axis}[view={0}{90}, grid=major,
 		xlabel=$\alpha$,
 		ylabel=$\beta$,
 		ylabel style={rotate=-90},
+		point meta min=20000, point meta max=30000,
 		colormap={greenyellow}{
 		 	rgb255(0cm)	 =(200,200,200)
 		% 	rgb255(0.5cm) =(255,255,255) 
@@ -3145,12 +3183,13 @@ Dabei
 		\addplot3[only marks, mark=square*, mark size=7, ycomb, scatter] file {div_s_7_D10_L0.7_I0.6_triangle.csv};      
 		\end{axis}
 	\end{tikzpicture}}
-	\subfigure[\textit{CoolRandom}, $d_{max} = 10$]{
+	\subfigure[\textit{CoolRandom}, $t_{max} = 10$]{
 	\begin{tikzpicture} [scale=0.8]
 		\begin{axis}[view={0}{90}, grid=major,
 		xlabel=$\alpha$,
 		ylabel=$\beta$,
 		ylabel style={rotate=-90},
+		point meta min=50000, point meta max=80000,
 		colormap={greenyellow}{
 		 	rgb255(0cm)	 =(200,200,200)
 		% 	rgb255(0.5cm) =(255,255,255) 
@@ -3166,12 +3205,13 @@ Dabei
 		\end{axis}
 	\end{tikzpicture}}
 		
-	\subfigure[\textit{TestSpheres}, $d_{max} = 9$]{
+	\subfigure[\textit{TestSpheres}, $t_{max} = 9$]{
 	\begin{tikzpicture} [scale=0.8]
 		\begin{axis}[view={0}{90}, grid=major,
 		xlabel=$\alpha$,
 		ylabel=$\beta$,
 		ylabel style={rotate=-90},
+		point meta min=10000, point meta max=20000,
 		colormap={greenyellow}{
 			rgb255(0cm)	 =(200,200,200)
 		% 	rgb255(0.5cm) =(255,255,255) 
@@ -3186,12 +3226,13 @@ Dabei
 		\addplot3[only marks, mark=square*, mark size=7, ycomb, scatter] file {div_s_7_D9_L0.7_I0.6_triangle.csv};      
 		\end{axis}
 	\end{tikzpicture}}
-	\subfigure[\textit{CoolRandom}, $d_{max} = 9$]{
+	\subfigure[\textit{CoolRandom}, $t_{max} = 9$]{
 	\begin{tikzpicture} [scale=0.8]
 		\begin{axis}[view={0}{90}, grid=major,
 		xlabel=$\alpha$,
 		ylabel=$\beta$,
 		ylabel style={rotate=-90},
+		point meta min=30000, point meta max=50000,
 		colormap={greenyellow}{
 		 	rgb255(0cm)	 =(200,200,200)
 		% 	rgb255(0.5cm) =(255,255,255) 
@@ -3207,18 +3248,19 @@ Dabei
 		\end{axis}
 	\end{tikzpicture}}
 				
-	\subfigure[\textit{TestSpheres}, $d_{max} = 8$]{
+	\subfigure[\textit{TestSpheres}, $t_{max} = 8$]{
 	\begin{tikzpicture} [scale=0.8]
 		\begin{axis}[view={0}{90}, grid=major,
 		xlabel=$\alpha$,
 		ylabel=$\beta$,
 		ylabel style={rotate=-90},
+		point meta min=5000, point meta max=10000,
 		colormap={greenyellow}{
 		 	rgb255(0cm)	 =(200,200,200)
 		% 	rgb255(0.5cm) =(255,255,255) 
 		 	rgb255(1cm) =(95,25,135)
 		}, 
-		colorbar, colorbar style={xlabel={\#Dreiecke}, y dir=reverse}, enlargelimits=true, 
+		colorbar, colorbar style={xlabel={\#Dreiecke}, y dir=reverse, scaled y ticks=base 10:-4}, enlargelimits=true, 
 		xmode=log,
 			log ticks with fixed point,
 			% xtick={0.0,0.1,...,1.1},
@@ -3227,12 +3269,13 @@ Dabei
 		\addplot3[only marks, mark=square*, mark size=7, ycomb, scatter] file {div_s_7_D8_L0.7_I0.6_triangle.csv};      
 		\end{axis}
 	\end{tikzpicture}}
-	\subfigure[\textit{CoolRandom}, $d_{max} = 8$]{
+	\subfigure[\textit{CoolRandom}, $t_{max} = 8$]{
 	\begin{tikzpicture} [scale=0.8]
 		\begin{axis}[view={0}{90}, grid=major,
 		xlabel=$\alpha$,
 		ylabel=$\beta$,
 		ylabel style={rotate=-90},
+		point meta min=10000, point meta max=30000,
 		colormap={greenyellow}{
 		 	rgb255(0cm)	 =(200,200,200)
 		% 	rgb255(0.5cm) =(255,255,255) 
@@ -3248,6 +3291,53 @@ Dabei
 		\end{axis}
 	\end{tikzpicture}}
 \end{figure}
+
+
+\begin{figure}
+	\subfigure[\textit{TestSpheres}]{
+	\begin{tikzpicture}
+		\begin{axis}[axis lines = middle, enlargelimits = true, ylabel={SSIM}, xlabel={in Grad}, xtick={0,5,10,20,...,90},
+		 every axis y label/.style={at={(ticklabel* cs:1.05)}, anchor=east},
+		 every axis x label/.style={at={(ticklabel* cs:1.05)}, anchor=south}]		
+		\addplot[red, only marks, mark=x] table [x=a, y=m, col sep=comma] {div_data_mean_7_512x512D9L0.7I0.6pre.csv};
+		\addplot[blue, only marks, mark=x] table [x=a, y=m, col sep=comma] {div_data_mean_7_512x512D8L0.7I0.6pre.csv};		 
+		\addplot[green, only marks, mark=x] table [x=a, y=m, col sep=comma] {div_data_mean_7_512x512D8L0.7I0.6A10.0J0.2pre.csv};
+	
+		\end{axis}
+		%legend
+		\begin{scope}[shift={(2.5,4)}] 
+		\draw (0,0) -- 
+			plot[mark=*, mark options={fill=green}] (0,0) node[right]{$\alpha = 10$, $\beta = 0.2$};
+		\draw[yshift=\baselineskip] (0,0) -- 
+			plot[mark=*, mark options={fill=blue}] (0,0) node[right]{$t_{max} = 9$, ohne Optimierung};
+		\draw[yshift=2\baselineskip] (0,0) -- 
+			plot[mark=*, mark options={fill=red}] (0,0) node[right]{$t_{max} = 9$, ohne Optimierung};
+		\end{scope}
+	\end{tikzpicture}}
+	\subfigure[\textit{CoolRandom}]{
+	\begin{tikzpicture}
+			\begin{axis}[axis lines = middle, enlargelimits = true, ylabel={SSIM}, xlabel={in Grad}, xtick={0,5,10,20,...,90},
+			 every axis y label/.style={at={(ticklabel* cs:1.05)}, anchor=east},
+			 every axis x label/.style={at={(ticklabel* cs:1.05)}, anchor=south}]		
+			\addplot[red, only marks, mark=x] table [x=a, y=m, col sep=comma] {div_data_mean_6_512x512D9L0.7I0.6pre.csv};
+			\addplot[blue, only marks, mark=x] table [x=a, y=m, col sep=comma] {div_data_mean_6_512x512D8L0.7I0.6pre.csv};		 
+			\addplot[green, only marks, mark=x] table [x=a, y=m, col sep=comma] {div_data_mean_6_512x512D8L0.7I0.6A10.0J0.2pre.csv};
+		
+			\end{axis}
+	\end{tikzpicture}}
+	\caption{Vergleich zwischen nicht optimierten und einem optimiertem Netz.}
+	\label{fig:eq_nvso}
+\end{figure}
+
+Die Abbildung \ref{fig:eq_nvso} zeigt die Güte von nicht nachbearbeiteten Netzen
+im Vergleich zu einem optimierten Netz.
+Dabei wurden die Parameter $l = 0.7$ und $i = 0.6$ für alle Netze gewählt.
+Am Beispiel der \textit{TestSpheres}-Szene wird die Anzahl der erzeugten Dreiecke
+verglichen.
+Für $i_{max} = 9$ besteht das nicht optimierte Netz aus 7320 Dreiecken.
+Wenn $i_{max} = 8$ ist, besteht das nicht nachbearbeitete Netz aus 3003 Dreiecken
+und das optimierte Netz aus 17997 Dreiecken.
+
 
 \begin{figure}
 	\centering
@@ -3286,25 +3376,46 @@ Dabei
 	\label{fig:data_client_extrapolation_time}
 \end{figure}
 
+
+
 \chapter{Diskussion}
 
-Das Ziel bestand darin, ein Verfahren zu entwickeln, das den Werteverlauf von Tiefenbildern, mit Hilfe
-von Dreiecksnetzen approximiert und die Güte, in Abhängigkeit des Kamerawinkelunterschieds zum
-Originalbild, zu evaluieren.
-Zu diesem Zweck wurden mit einem \textit{Quadtree} beziehungsweise der Floyd-Steinberg Methode
-eine Menge von Punkten bestimmt. 
-Diese wird mit Hilfe der Delaunay-Triangulierung zu einem Dreiecksnetz verknüpft.
-In einen weiteren Schritt, kann die Triangulierung optimiert werden.
+Das Ziel dieser Arbeit bestand darin, ein Verfahren zu entwickeln, das den Werteverlauf von Tiefenbildern, 
+mit Hilfe von Dreiecksnetzen approximiert.
 
-Die besten Resultate, der verschieden Varianten liefern die in der Abbildung \ref{fig:Daten_best_cases} 
-abgebildeten Parameterkonfigurationen. Wobei diese auch die meisten Dreiecke produzieren.
-Es zeigt sich sehr deutlich, das die Güte der Ergebnisse von der Szene und ihrem Inhalt abhängt.
+Zu diesen Zweck wurde die Vollvernetzung als Vergleichsmethode implementiert. 
+Bei diesem Ansatz, werden die Tiefeninformationen aus dem Tiefenbild unverändert und 
+unkomprimiert für die Bildextrapolation genutzt.
+Sie liefert, wie es zu erwarten war die besten Ergebnisse für beide Szenen.
+
+Zur Erfüllung der eigentlichen Aufgabe wurden zwei Verfahren, 
+die auf der Delaunay-Triangulierung basieren, umgesetzt.
+Die zur Vernetzung benötigte Punktmenge $P$, wird im ersten Ansatz mit einem \textit{Quadtree} erzeugt
+und im Zweite nutzt wird die Floyd-Steinberg-Methode verwendet. 
+
+Dabei liefert der \textit{Quadtree} weitaus bessere Resultate, als die FloydSteinberg-Methode.
+Das Problem der FloydSteinberg-Methode besteht darin, das extrem viele Punkte vorwiegend in der Nähe von Kanten platziert werden.
+Gekrümmte Oberflächen sind dagegen unterrepräsentiert.
+Es werden aber insgesamt zu viele Punkte erzeugt, dadurch wird die Vernetzung langsam.
+Außerdem enthält das resultierende Dreiecksnetz zu viele Dreiecke.
+
+Im Vergleich dazu schneidet der \textit{Quadtree}-Ansatz weitaus besser ab.
+Weiterhin lässt sich die Qualität des resultierenden
+Dreiecknetzes, mit dem Parameter $t_{max}$, adaptiv anpassen.
+Große Werte für $t_{max}$ bedeuten in erster Linie,
+das die Bereiche stärker unterteilt werden, sodass an markanten stellen, wie Kanten 
+viele Punkte für die Vernetzung zur Verfügung stehen.
+Das hat aber einen direkten Einfluss auf die Anzahl der Dreiecke und die Konstruktionsgeschwindigkeit.
+Die Variablen $l$ und $i$ beeinflussen die Güte kaum, haben jedoch einen starken Einfluss auf die Anzahl der Dreiecke.
+Nehmen $l$ und $i$ große Werte an, dann wird die Anzahl der Dreiecke reduziert.
+
+
 
 
 
 \chapter{Zusammenfassung}
 
-\chapter{Ausblick}
+
 
 \nocite{*}
 \end{document}
