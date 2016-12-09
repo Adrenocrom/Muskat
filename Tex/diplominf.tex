@@ -3462,6 +3462,21 @@ Gekrümmte Oberflächen sind dagegen unterrepräsentiert.
 Es werden aber insgesamt zu viele Punkte erzeugt, dadurch wird die Vernetzung langsam.
 Außerdem enthält das resultierende Dreiecksnetz zu viele Dreiecke.
 
+\begin{figure}
+	\subfigure[]{\includegraphics[width=.3\textwidth]{img/delaunay_L06_I03.png}}
+	\subfigure[]{\includegraphics[width=.3\textwidth]{img/delaunay9_L06_I03.png}}
+	\subfigure[]{\includegraphics[width=.3\textwidth]{img/delaunay8_L06_I03.png}}
+	
+	\subfigure[]{\includegraphics[width=.3\textwidth]{img/delaunay_L07_I06.png}}
+	\subfigure[]{\includegraphics[width=.3\textwidth]{img/delaunay9_L07_I06.png}}
+	\subfigure[]{\includegraphics[width=.3\textwidth]{img/delaunay8_L07_I06.png}}
+\end{figure}
+
+\begin{figure}
+	\includegraphics[width=\textwidth]{../results/6/512x512_Delaunay/T0.8/G0.8/delaunay.png}
+	\caption{$\delta = 0.8, \gamma = 0.8$}
+\end{figure}
+
 Im Vergleich dazu schneidet der \textit{Quadtree}-Ansatz weitaus besser ab.
 Weiterhin lässt sich die Qualität des resultierenden
 Dreiecknetzes, mit dem Parameter $t_{max}$, adaptiv anpassen.
@@ -3524,16 +3539,27 @@ Objekte die hinter diesen Oberflächen liegen, werden im Tiefenbild nicht repräse
 Es entsteht auch hier ein Fehler bei der Extrapolation.
 
 
-\chapter{Zusammenfassung}
+\chapter{Zusammenfassung und Ausblick}
 
 In Rahmen dieser Arbeit wurde ein Remote-Visualisierungssystem konstruiert.
-Dabei werden dem Client zusätzlich zum Farbbild weitere Tiefeninformationen in Form von Dreiecksnetzen übermittelt.
-Die Dreiecksnetze werden vom Server durch die vorgestellten Methoden erzeugt.
-Dabei repräsentieren die Dreiecksnetze die Grauwertverläufe, der bei der Bildsynthese
-anfallenden Tiefenbilder.
-Der Browser-basierte Client erzeugt mit Hilfe der Netze und dem Farbbild als Textur,
-approximierte Versionen 
+Mit diesem wurde untersucht, inwieweit die clientseitige Bildextrapolation,
+mit Hilfe der Rückprojektion genutzt werden kann,
+um die Latenzzeit vor dem Nutzer zu verbergen.
+Zu diesem Zweck wurde das bei der Bildsynthese entstehende Tiefenbild
+durch ein Dreiecksnetz approximiert und es wurde mit Hilfe
+von \textit{Ground-Truth}-Datensätzen überprüft, 
+bis zu welchem Kamerawinkelunterschied die Approximation akzeptable Ergebnisse
+liefert. 
+Das Hauptaugenmerk lag dabei in der Konstruktion der Dreiecksnetze.
+Es hat sich gezeigt, dass die Delaunay-Triangulierung in Verbindung
+mit einem \textit{Quadtree}-Ansatz diese Aufgabe erfüllt.
+Die Komplexität des Dreiecknetzes lässt sich adaptiv anpassen.
+Der Client ist in dadurch in der Lage Bilder bis zu einem Kamerawinkelunterschied
+bis zu 20 Grad gut zu approximieren.
 
+Im nächsten Schritt, kann die weitere Kompression der erzeugten Dreiecksnetze untersucht werden.
+Desweiteren kann analysiert werden, inwiefern die extrapolierten Bilder zur Differenzbildkompression
+genutzt werden können.
 
 \nocite{*}
 \end{document}
