@@ -3463,19 +3463,29 @@ Es werden aber insgesamt zu viele Punkte erzeugt, dadurch wird die Vernetzung la
 Auﬂerdem enth‰lt das resultierende Dreiecksnetz zu viele Dreiecke.
 
 \begin{figure}
-	\subfigure[]{\includegraphics[width=.3\textwidth]{img/delaunay_L06_I03.png}}
-	\subfigure[]{\includegraphics[width=.3\textwidth]{img/delaunay9_L06_I03.png}}
-	\subfigure[]{\includegraphics[width=.3\textwidth]{img/delaunay8_L06_I03.png}}
+	\subfigure[$d_{max} = 10, l = 0.6, i = 0.3$]{\includegraphics[width=.3\textwidth]{img/delaunay_L06_I03.png}}
+	\subfigure[$d_{max} = 9, l = 0.6, i = 0.3$]{\includegraphics[width=.3\textwidth]{img/delaunay9_L06_I03.png}}
+	\subfigure[$d_{max} = 8, l = 0.6, i = 0.3$]{\includegraphics[width=.3\textwidth]{img/delaunay8_L06_I03.png}}
 	
-	\subfigure[]{\includegraphics[width=.3\textwidth]{img/delaunay_L07_I06.png}}
-	\subfigure[]{\includegraphics[width=.3\textwidth]{img/delaunay9_L07_I06.png}}
-	\subfigure[]{\includegraphics[width=.3\textwidth]{img/delaunay8_L07_I06.png}}
+	\subfigure[$d_{max} = 10, l = 0.7, i = 0.6$]{\includegraphics[width=.3\textwidth]{img/delaunay_L07_I06.png}}
+	\subfigure[$d_{max} = 9, l = 0.7, i = 0.6$]{\includegraphics[width=.3\textwidth]{img/delaunay9_L07_I06.png}}
+	\subfigure[$d_{max} = 8, l = 0.7, i = 0.6$]{\includegraphics[width=.3\textwidth]{img/delaunay8_L07_I06.png}}
+	\caption{Vergleich von Dreiecksnetzen, die mit dem \textit{Quadtree}-Ansatz erzeugt wurden.}
 \end{figure}
 
 \begin{figure}
-	\includegraphics[width=\textwidth]{../results/6/512x512_Delaunay/T0.8/G0.8/delaunay.png}
-	\caption{$\delta = 0.8, \gamma = 0.8$}
+	\subfigure[$d_{max} = 10, l = 0.7, i = 0.6$]{\includegraphics[width=.3\textwidth]{img/delaunay_L07_I06_100_02.png}}
+	\subfigure[$d_{max} = 9, l = 0.7, i = 0.6$]{\includegraphics[width=.3\textwidth]{img/delaunay9_L07_I06_100_02.png}}
+	\subfigure[$d_{max} = 8, l = 0.7, i = 0.6$]{\includegraphics[width=.3\textwidth]{img/delaunay8_L07_I06_100_02.png}}
+	
+	\subfigure[$d_{max} = 10, l = 0.7, i = 0.6$]{\includegraphics[width=.3\textwidth]{img/delaunay_L07_I06_100_02_f.png}}
+	\subfigure[$d_{max} = 9, l = 0.7, i = 0.6$]{\includegraphics[width=.3\textwidth]{img/delaunay9_L07_I06_100_02_f.png}}
+	\subfigure[$d_{max} = 8, l = 0.7, i = 0.6$]{\includegraphics[width=.3\textwidth]{img/delaunay8_L07_I06_100_02_f.png}}
+	\caption{Vergleich von nachbearbeiteten Dreiecksnetzen, die mit dem \textit{Quadtree}-Ansatz erzeugt wurden. 
+			 Dabei wurde $\alpha = 10$ und $\beta = 0.2$ gew‰hlt.}
 \end{figure}
+
+
 
 Im Vergleich dazu schneidet der \textit{Quadtree}-Ansatz weitaus besser ab.
 Weiterhin l‰sst sich die Qualit‰t des resultierenden
@@ -3538,6 +3548,10 @@ Desweiteren sind transparente Oberfl‰chen problematisch.
 Objekte die hinter diesen Oberfl‰chen liegen, werden im Tiefenbild nicht repr‰sentiert.
 Es entsteht auch hier ein Fehler bei der Extrapolation.
 
+\begin{figure}
+	\includegraphics[width=\textwidth]{../results/6/512x512_Delaunay/T0.8/G0.8/delaunay.png}
+	\caption{FloydSteinberg-Ansatz mit den Parametern $\delta = 0.8, \gamma = 0.8$.}
+\end{figure}
 
 \chapter{Zusammenfassung und Ausblick}
 
