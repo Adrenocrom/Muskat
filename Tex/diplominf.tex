@@ -24,7 +24,7 @@
 \problem{
 In Big-Data-Szenarien in der Visualisierung spielt der Ansatz der Remote-Visualisierung eine zunehmende Rolle.  
 Moderne Netzwerktechnologien bieten große Datenübertragungsraten und niedrige Latenzzeiten. Für die 
-interaktive Visualisierung sind aber selbst kleinste Latenzzeiten problematisch. Um diese vor dem Benutzer maskieren zu können, kann eine Extrapolation der Darstellung durchgeführt. 
+interaktive Visualisierung sind aber selbst kleinste Latenzzeiten problematisch. Um diese vor dem Benutzer maskieren zu können, kann eine Extrapolation der Darstellung durchgeführt werden. 
 Diese Berechnungen erfordern zusätzlich zum normalen Farbbild weitere Daten, beispielsweise 
 ein Tiefenbild und die Daten der verwendeten Kameraeinstellung.
 Für die Darstellungsextrapolation werden Farb- und Tiefenbild zusammen interpretiert, beispielsweise als Punktwolke oder Höhenfeldgeometrie. 
@@ -321,11 +321,11 @@ Der Server-Prozess erzeugt und kodiert jedes Bild zu einem kompakten Datenpaket,
 welches an den Client-Prozess gesendet wird.
 Der Client empfängt und dekodiert das Datenpaket und gibt das Bild auf einem Bildschirm aus.
 
-Remote-Visualisierung, ist ein insbesondere für mobile Endgeräte interessantes Konzept,
+Remote-Visualisierung ist ein insbesondere für mobile Endgeräte interessantes Konzept,
 weil es die Visualisierung von komplexen Szenen auch auf leistungsarmen Geräten ermöglicht.
 Neben Computerspielen, ist die wissenschaftliche Visualisierung ein wichtiges Anwendungsgebiet,
 da Datensätze Größenordnungen erreichen können, 
-die den Speicher herkömmlicher Desktops, Laptops, Smartphones etc. bei weitem übersteigen. 
+die den Speicher herkömmlicher Desktops, Laptops, Smartphones etc. bei Weitem übersteigen. 
 Auch wenn ausreichend Speicher zur Verfügung steht, 
 kann die Übertragung dieser Daten viel Zeit in Anspruch nehmen.
 
@@ -370,6 +370,16 @@ Beide Komponenten tauschen Informationen über das auf TCP basierende Websocket-P
 Der Client ist ein Browser-basierter Web-Client, damit die implementierten Algorithmen
 mit den Einschränkungen durch JavaScript und WebGl evaluiert werden können.
 
+Im Folgenden werden Arbeiten vorgestellt, 
+die sich mit dieser Thematik bereits auseinander gesetzt haben.
+Anschließend werden die Grundlagen dieser Arbeit erläutert.
+In diesen Zusammenhang, werden die Datensätze vorgestellt.
+Es wird gezeigt wie die Rückprojektion durchgeführt wird und 
+wie die Gütemetriken funktionieren.
+Danach werden die Algorithmen konzeptionell vorgestellt, gefolgt von Implementierungsdetails.
+Als Nächstes folgt die Präsentation der Ergebnisse, die im darauf folgenden Kapitel ausgewertet werden.
+Zum Schluss wird die gesamte Arbeit zusammengefasst und ein Ausblick
+gegeben, wie die Ergebnisse weiter verbessert werden könnten.
 
 \chapter{Verwandte Arbeiten}
 
@@ -378,14 +388,14 @@ Zum zentralen Problem ihrer Arbeit wird die Latenz und die effiziente Übertragun
 Lösungen hängen vom Anwendungsfall ab.
 Sie definieren \textit{THIN}-Systeme als eine Klasse von Remote-Visualisierungssystemen,
 die auf die Übertragung von 2D Informationen beschränkt sind und die Bildwiederholfrequenz weitaus geringer sein kann, als es in interaktiven 3D-Anwendungen erforderlich ist. 
-Das Ziel von \textit{THIN}-Systemen besteht, im darin Desktop-Anwendungen fernsteuern zu können.
+Das Ziel von \textit{THIN}-Systemen besteht darin Desktop-Anwendungen fernsteuern zu können.
 Beispiele für existierende Architekturen sind \textit{SLIM} \cite{Schmidt:1999:IPS:319344.319154} und \textit{THiNC} \cite{Baratto:2005:TVD:1095809.1095837}. 
 Sie sind für die Übertragung von 2D-Daten optimiert und profitieren davon, dass die meisten Änderungen nur Teilbereiche der eigentlichen Oberfläche betreffen.
 Ein anderes Extrem der Remote-Visualisierung ist die Aufteilung der Bildsynthese
-auf verschiedene Host-Systeme, wie bei dem Cluster-basierten System WireGL \cite{Humphreys:2001:WSG:383259.383272}.
+auf verschiedene Host-Systeme wie bei dem Cluster-basierten System WireGL \cite{Humphreys:2001:WSG:383259.383272}.
 Jin Zhefan stellt in diesem Kontext Kompressionsmethoden für Zeicheninstruktionen, Vektoren, Normalen und Texturinformationen vor \cite{Jin:2006:RRI:1128923.1128927}.
 Peter Eisert und Philipp Fechteler haben ein Remote-Visualisierungssystem für Computerspiele entwickelt \cite{Eisert07remoterendering}.
-Ihr System überträgt bei kleinen Auflösungen, für Endgeräte ohne GPU die Bilder
+Ihr System überträgt bei kleinen Auflösungen für Endgeräte ohne GPU die Bilder
 kodiert mit H.264 oder wahlweise MPEG-4.
 Bei größeren Auflösungen werden Zeicheninstruktionen gesendet, und die Bilder werden
 vom Client synthetisiert.
@@ -2426,6 +2436,11 @@ Für die anderen beiden maximalen Baumtiefen $8$ und $9$, ist die Güte für alle $
 relativ konstant.
 Auch bei dieser Szene zeigt sich das bei $t_{max} = 10$ die Konstruktionszeiten am größten sind.
 Unabhängig von $l$ und $i$ überschreiten alle die Marke von 120 ms.
+Bei der maximalen Baumtiefe $t_{max} = 9$ zeigt sich eine deutliche Veränderung 
+der Konstruktionszeiten bezüglich $l$ und $i$.
+Je kleiner $l$ und $i$ umso größer ist die Berechnungszeit.
+Anders sieht es bei $t_{max} = 8$ aus. In diesem Fall sind alle Berechnungszeiten
+unterhalb von 40 ms.
 
 \begin{figure}[H]
 	\centering
@@ -2555,14 +2570,14 @@ Unabhängig von $l$ und $i$ überschreiten alle die Marke von 120 ms.
 	\label{fig:Daten_QT_1098_Tri}
 \end{figure}
 
-In der Abbildung \ref{fig:Daten_QT_1098_Tri} ist zu sehen, dass die Anzahl der Dreiecke
-mit der kleiner werdender Baumtiefe sinkt.
-Die Dreiecksanzahl von Netzkonfigurationen des \textit{TestSpheres}-Datensatzes 
-ist dabei für $i = 0$ größer als für alle anderen.
-Am größten ist diese, wenn auch $l = 0$ ist.
-Ein Ähnliches Bild ergibt sich für den \textit{CoolRandom}-Datensatz.
-Hier ist der Unterschied zwischen den verschieden $l$ und $i$ gleichmäßiger.
-Wenn sowohl $l$, als auch $i$ kleiner werden, steigt die Anzahl der Dreiecke.
+In der Abbildung \ref{fig:Daten_QT_1098_Tri} ist die Anzahl der Dreiecke,
+in Abhängigkeit von $l$ und $i$, sowie der maximalen Baumtiefe $t_{max}$ abgebildet.
+Wird der Datensatz \textit{TestSpheres} betrachtet,
+zeigt sich für alle $t_{max}$, dass bei der Parameterkonfiguration $l = 0, i = 0$
+wesentlich mehr Dreiecke erzeugt werden als bei allen anderen Konfigurationen von $l$ und $i$.
+Für den Datensatz \textit{CoolRandom} sieht es etwas anders aus,
+hier zeigt sich, dass die Anzahl der Dreiecke sinkt, wenn $l$ und $i$ größer werden,
+vor allem wenn $t_{max} = 10$ ist.
 
 \begin{figure}[H]
 	\centering
@@ -2690,18 +2705,19 @@ Wenn sowohl $l$, als auch $i$ kleiner werden, steigt die Anzahl der Dreiecke.
 	\label{fig:data_floydSteinberg}
 \end{figure}
 
-Analog zu den Schwellwerten der \textit{Quadtree}-Methode, werden die Parameter $t$ und $g$,
-vom \textit{FloydSteinberg}-Verfahren abgebildet \ref{fig:data_floydSteinberg}.
-Dabei sind die Ergebnisse \ref{fig:data_floydSteinberg}, für die Szene \textit{TestSpheres} hinsichtlich der Güte, für alle Konfigurationen sehr gut.
-Bei der Bereichnungszeit zeigt sich, dass erst ab den Konfigurationen $\delta > 0.6$ und $\gamma > 0.5$,
-die Konstruktionszeiten für eine interaktive Visualisierung klein genug sind.
-Die Anzahl der Dreiecke ist bei kleinen Werten für $\gamma$ oder für $\delta$ am Höchsten.
+Analog zu den Schwellwerten der \textit{Quadtree}-Methode, werden die Parameter $\delta$ und $\gamma$,
+vom \textit{FloydSteinberg}-Verfahren in der Abbildung \ref{fig:data_floydSteinberg} dargestellt.
+Dabei sind die Ergebnisse, für die Szene \textit{TestSpheres} hinsichtlich der Güte, für alle Konfigurationen größer als $0.9$.
+Bei der Berechnungszeit zeigt sich, dass erst ab den Konfigurationen $\delta > 0.5$ und $\gamma > 0.5$,
+die Konstruktionszeiten kleiner als 100 ms werden.
+Die Anzahl der Dreiecke ist bei den Konfigurationen $\gamma = 0$ oder für $\delta = 0$ am Höchsten.
 Anders sieht es bei dem Datensatz \textit{CoolRandom} aus.
 Die Gütewerte liegen alle unterhalb von $0.8$,
 dabei zeigt sich eine zunehmende Verschlechterung für Konfigurationen 
-mit $\delta > 0.6$ und $\gamma > 0.5$.
-Die Konstruktionszeiten des Netzes sind für alle Parameterkonfigurationen zu groß. 
-Mit der Anzahl der Dreiecke ist dabei ähnlich verteilt wie für die Szene \textit{TestSpheres}.
+mit $\delta > 0.6$ und $\gamma > 0.6$.
+Die Konstruktionszeiten des Netzes sind für alle Parameterkonfigurationen größer als 120 ms,
+bis auf die Konfiguration $\gamma = 1$ und $\delta = 0.9$.
+Mit der Anzahl der Dreiecke verhält es sich ähnlich, wie für die Szene \textit{TestSpheres}.
 
 Der Netzoptimierungsschritt wird ausschließlich mit dem \textit{Quadtree}-Ansatz untersucht,
 da dessen Ergebnisse weitaus besser sind, als die der FloydSteinberg-Methode.
@@ -2878,6 +2894,25 @@ Zu diesem Zweck wurde $l = 0.7$ und $i = 0.6$ gewählt.
 	\label{fig:data_refine10}
 \end{figure}
 
+Die Diagramme aus der Abbildungen \ref{fig:data_refine1} und \ref{fig:data_refine10}
+stellen dar, wie sich der Netzoptimierungsschritt auf die Dreiecksnetze hinsichtlich
+der Güte auswirkt.
+Zum Vergleich dient das nicht nachbearbeitete Netz.
+Dabei wird $\alpha = 10$ gesetzt und $\beta \in \{0.1, 0.2\}$ gewählt.
+
+Deutlich zu sehen ist, dass bei kleinen Winkeln die nachbearbeiteten Netze 
+schlechter abschneiden, als die nicht optimierten.
+In allen Fällen existiert ein Kipppunkt,
+ab dem die optimierten Netze hinsichtlich der Güte bessere Ergebnisse liefern.
+Bei kleineren $t_{max}$ wird dieser Kipppunkt schneller erreicht.
+Beim PSNR zeigt sich dieser Kipppunkt erst bei größeren Winkeln.
+Außerdem steigt beim PSNR die Güte oberhalb von 60 Grad wieder an.
+
+Die Parameter des Netzoptimierungsschrittes werden ähnlich ausgewertet,
+wie zuvor $l$ und $i$.
+Zu diesen Zweck werden $l = 0.7$ und $i = 0.6$ gesetzt.
+Getestet werden die Parameter $\alpha \in \{0.1, 1, 10, 100, 1000\}$ und $\beta \in \{0.1, 0.2, ..., 1.0\}$
+
 \begin{figure}
 	\centering
 	\subfigure[\textit{TestSpheres}, $t_{max} = 10$]{
@@ -3011,18 +3046,16 @@ Zu diesem Zweck wurde $l = 0.7$ und $i = 0.6$ gewählt.
 			\addplot3[only marks, mark=square*, mark size=7, ycomb, scatter] file {div_s_7_D8_L0.7_I0.6_cost.csv};      
 		\end{axis}
 	\end{tikzpicture}}
+	\caption{}
+	\label{fig:nnt}
 \end{figure}
 
-Die Diagramme aus der Abbildungen \ref{fig:data_refine1} und \ref{fig:data_refine10}
-stellen dar, wie sich der Netzoptimierungsschritt auf die Dreiecksnetze hinsichtlich
-der Güte auswirkt.
-Zum Vergleich dient das nicht nachbearbeitete Netz.
-Dabei wird $\alpha = 10$ gesetzt und $\beta \in \{0.1, 0.2\}$ gewählt.
-Deutlich zu sehen ist, dass beim SSIM und bei dem PSNR, dass bei kleinen 
-Winkeln das nicht nachbearbeitete Netz besser ist als die nachbearbeiteten.
-Dabei ist zu sehen, das für jede Konfiguration ein Kipppunkt existiert, 
-bei dem das optimierte Netz bessere Ergebnisse liefert.
-Dabei 
+In der Abbildung \ref{fig:nnt}, wird der Datensatz \textit{TestSpheres} betrachtet,es zeigt sich für $t_{max} = 10$,
+das die Güte ab $\alpha > 1$ größer als $0.9$ ist.
+Im Vergleich dazu ist eine Verbesserung der Güte bei $t_{max} < 10$ auch bei $\alpha < 10$
+zu erkennen.
+Es lässt sich feststellen, dass für alle $t_{max}$ die besten Konstruktionszeiten für $\beta < 0.3$
+erreicht werden.
 
 \begin{figure}
 	\centering
@@ -3158,7 +3191,16 @@ Dabei
 		\end{axis}
 	\end{tikzpicture}}
 	\caption{SSIM und Netzkonstruktionszeit, bei einem konstanten Winkelunterschied von 20 Grad.}
+	\label{fig:nnc}
 \end{figure}
+
+In der Abbildung \ref{fig:nnc}, sind die Parameter für den Datensatz \textit{CoolRandom}
+abgebildet.
+Hinsichtlich der Güte lässt sich kein Unterschied im Bezug auf $\alpha$ erkennen.
+Die besten Ergebnisse werden für $\beta < 0.3$ erreicht.
+Mit steigenden $t_{max}$ steigt die Güte.
+Die Konstruktionszeiten sind bei $t_{max} > 0.8$ für alle Parameterkonfigurationen größer als 120 ms.
+Für $t_{max} = 8$ liegen alle unterhalb von 70 ms.
 
 \begin{figure}
 	\centering
@@ -3290,7 +3332,16 @@ Dabei
 		\addplot3[only marks, mark=square*, mark size=7, ycomb, scatter] file {div_s_6_D8_L0.7_I0.6_triangle.csv};      
 		\end{axis}
 	\end{tikzpicture}}
+	\caption{}
+	\label{fig:nnd}
 \end{figure}
+
+In der Abbildung \ref{fig:nnd}, wird die Anzahl der Dreiecke in Abhängigkeit von
+$\alpha, \beta$ und $t_{max}$ dargestellt.
+Zu erkennen ist für die Szene \textit{TestSpheres}, dass die Anzahl der Dreiecke
+für die Konfigurationen $\alpha > 1$ am kleinsten ist.
+In der Szene \textit{CoolRandom}, zeigt sich diese Tendenz sehr schwach.
+Für beide Szenen fällt die Anzahl der Dreiecke mit $\beta$, jedoch nur sehr gering.
 
 
 \begin{figure}
@@ -3307,9 +3358,9 @@ Dabei
 		%legend
 		\begin{scope}[shift={(2.5,4)}] 
 		\draw (0,0) -- 
-			plot[mark=*, mark options={fill=green}] (0,0) node[right]{$\alpha = 10$, $\beta = 0.2$};
+			plot[mark=*, mark options={fill=green}] (0,0) node[right]{$t_{max} = 8$, $\alpha = 10$, $\beta = 0.2$};
 		\draw[yshift=\baselineskip] (0,0) -- 
-			plot[mark=*, mark options={fill=blue}] (0,0) node[right]{$t_{max} = 9$, ohne Optimierung};
+			plot[mark=*, mark options={fill=blue}] (0,0) node[right]{$t_{max} = 8$, ohne Optimierung};
 		\draw[yshift=2\baselineskip] (0,0) -- 
 			plot[mark=*, mark options={fill=red}] (0,0) node[right]{$t_{max} = 9$, ohne Optimierung};
 		\end{scope}
@@ -3331,13 +3382,15 @@ Dabei
 
 Die Abbildung \ref{fig:eq_nvso} zeigt die Güte von nicht nachbearbeiteten Netzen
 im Vergleich zu einem optimierten Netz.
-Dabei wurden die Parameter $l = 0.7$ und $i = 0.6$ für alle Netze gewählt.
+Dabei wurden die Parameter, wie zuvor $l = 0.7$ und $i = 0.6$ für alle Netze gewählt.
+Es ist zu sehen, dass in der Szene \textit{TestSpheres} ein Kipppunkt existiert, 
+bei dem das optimierte Netz besser als die anderen Netze abschneidet.
+Ein solcher Kipppunkt existiert für \textit{CoolRandom} nicht.
 Am Beispiel der \textit{TestSpheres}-Szene wird die Anzahl der erzeugten Dreiecke
 verglichen.
 Für $i_{max} = 9$ besteht das nicht optimierte Netz aus 7320 Dreiecken.
 Wenn $i_{max} = 8$ ist, besteht das nicht nachbearbeitete Netz aus 3003 Dreiecken
-und das optimierte Netz aus 17997 Dreiecken.
-
+und das optimierte Netz aus 4279 Dreiecken.
 
 \begin{figure}
 	\centering
@@ -3376,7 +3429,11 @@ und das optimierte Netz aus 17997 Dreiecken.
 	\label{fig:data_client_extrapolation_time}
 \end{figure}
 
+Die Abbildung \ref{fig:data_client_extrapolation_time}, zeigt repräsentativ die Zeit die der Client für die Extrapolation benötigt.
+Diese liegen sowohl für die Vollvernetzung als auch für die Delaunay-Triangulierung, im Schnitt unter einer Millisekunde.
+Es gibt ein paar Ausreißer, die eine Zeit von 1.5 ms auch nicht überschreiten.
 
+Im Folgenden werden die vorgestellten Ergebnisse diskutiert.
 
 \chapter{Diskussion}
 
@@ -3387,6 +3444,12 @@ Zu diesen Zweck wurde die Vollvernetzung als Vergleichsmethode implementiert.
 Bei diesem Ansatz, werden die Tiefeninformationen aus dem Tiefenbild unverändert und 
 unkomprimiert für die Bildextrapolation genutzt.
 Sie liefert, wie es zu erwarten war die besten Ergebnisse für beide Szenen.
+Zu erwähnen ist, dass die Ergebnisse in Abhängigkeit der gewählten Szene stark variieren.
+Dies hängt damit zusammen, das die Szenen unterschiedlich beschaffen sind:
+Die Szene \textit{TestSpheres} besteht aus wenigen großen Kugeln, mit großen Oberflächen
+und wenigen Kanten,
+wohingegen die Szene \textit{CoolRandom} aus vielen kleinen Kugeln, mit kleinen Oberflächen
+und vielen Kanten besteht.
 
 Zur Erfüllung der eigentlichen Aufgabe wurden zwei Verfahren, 
 die auf der Delaunay-Triangulierung basieren, umgesetzt.
@@ -3409,12 +3472,67 @@ Das hat aber einen direkten Einfluss auf die Anzahl der Dreiecke und die Konstru
 Die Variablen $l$ und $i$ beeinflussen die Güte kaum, haben jedoch einen starken Einfluss auf die Anzahl der Dreiecke.
 Nehmen $l$ und $i$ große Werte an, dann wird die Anzahl der Dreiecke reduziert.
 
+Die Nachbearbeitung der Netze bringt grundsätzlich einen Gütezuwachs,
+zulasten einer erhöhten Dreiecksanzahl.
+Gleichzeitig entstehen Artefakte an den Rändern der Kugeln, 
+wie in der Abbildung \ref{fig:refinementArtefakt} beispielhaft
+zu erkennen ist.
+Diese Artefakte in Form von Schnittkanten sorgen dafür, das die Güte
+bei kleinen Kamerawinkelunterschieden im Vergleich zu nicht nachbearbeiteten Netzen
+geringer ausfällt.
+Wenn $\alpha$ Werte annimmt, die größer gleich als 10 sind, dann hat die Formel \ref{eq:EDGE_VALID}
+keinen Einfluss auf das Ergebnisnetz.
+Nimmt $\alpha$ Werte kleiner 10 an, dann werden Dreiecke innerhalb der Kugeln zusätzlich
+unterteilt, was die Anzahl der Dreiecke insgesamt erhöht.
+Allerdings gibt es in diesen Bereich bereits ausreichend viele Dreiecke um die Krümmung der Flächen
+zu repräsentieren, sodass deren Unterteilung keinen messbaren Güteunterschied bewirkt.
 
+Insgesamt, ist der beobachtete Geschwindigkeitsverlust, bei der Konstruktion der optimierten
+Netze zu vernachlässigen, da die Nachbearbeitung für alle Dreiecke unabhängig voneinander berechnet
+werden kann.
+Diese Parallelisierung wurde in dieser Arbeit jedoch nicht implementiert.
 
+\begin{figure}
+	%\subfigure[]{\includegraphics[width=.3\textwidth]{img/frame_00002_A10_J01.png}}
+	\subfigure[]{\includegraphics[width=.49\textwidth]{img/frame_00002_A10_J01_n1.png}}
+	\subfigure[]{\includegraphics[width=.49\textwidth]{img/frame_00002_A10_J01_n2.png}}
+	\caption{Extrapolation des zweiten Frames, der Szene \textit{TestSpheres}.}
+	\label{fig:refinementArtefakt}
+\end{figure}
+
+Aubfgrund der Messergebisse vom SSIM und dem PSNR lässt sich sagen, 
+dass das Verfahren der Extrapolation durch die Rückprojektion
+durchaus geeignet ist, um Bilder für kleine Kamerawinkelunterschiede von 5 bis 10 Grad ausreichend gut zu approximieren.
+Dabei sind die Ergebnisse gemessen durch SSIM weitaus besser als die des PSNR,
+sodass hier eine gute Approximation bis zu 20 Grad Winkelunterschied gewährleistet wird.
+Dies ist positiv zu bewerten, da der SSIM im Gegensatz zum PSNR die menschliche Wahrnehmung mit einbezieht.
+
+Ein grundsätzliches Problem der Extrapolation mit Hilfe der Rückprojektion, ist die Beleuchtung.
+Insbesondere spekulare Lichtanteile sind ein Problem, weil diese von der Position der
+Kamera abhängen.
+Da das Farbbild als Textur dient und keine zusätzliche Beleuchtungsberechnung stattfindet,
+entsteht zwangsläufig ein Fehler.
+Dieser könnte dadurch reduziert werden, dass Informationen zu Lichtquellen mit übertragen
+werden und eine clientseitige Nachbeleuchtung durchgeführt wird.
+Das führt auf seiten des Clients zu erhöhten Berechnungskosten.
+Ein anderer Ausweg könnte eine von der Kameraperspektive abhängigen Texturierung 
+des Dreiecksnetzes sein. 
+Zu diesem Zweck müssen aber zusätzliche Texturinformationen vom Server zum Client
+übermittelt werden.
+Desweiteren sind transparente Oberflächen problematisch.
+Objekte die hinter diesen Oberflächen liegen, werden im Tiefenbild nicht repräsentiert.
+Es entsteht auch hier ein Fehler bei der Extrapolation.
 
 
 \chapter{Zusammenfassung}
 
+In Rahmen dieser Arbeit wurde ein Remote-Visualisierungssystem konstruiert.
+Dabei werden dem Client zusätzlich zum Farbbild weitere Tiefeninformationen in Form von Dreiecksnetzen übermittelt.
+Die Dreiecksnetze werden vom Server durch die vorgestellten Methoden erzeugt.
+Dabei repräsentieren die Dreiecksnetze die Grauwertverläufe, der bei der Bildsynthese
+anfallenden Tiefenbilder.
+Der Browser-basierte Client erzeugt mit Hilfe der Netze und dem Farbbild als Textur,
+approximierte Versionen 
 
 
 \nocite{*}
