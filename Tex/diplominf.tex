@@ -84,12 +84,17 @@ and mesh complexity
 \abstractde{
 Remote-Visualisierung ist eine Technik, welche die Bildsynthese und die Darstellung der Bilder
 auf zwei Komponenten aufteilt.
+In dieser Arbeit wurde ein solches System auf Basis des WebSocket-Protokolls entwickelt.
 Um die Latenzzeit der Kommunikation beider Komponenten vor dem Nutzer verbergen zu können,
 kann mit Hilfe zusätzlicher geometrischer Informationen eine Bildextrapolation durchgeführt werden. 
-Für diesen Zweck kann das bei Bildsynthese entstehende Tiefenbild genutzt werden.
-Dessen Tiefeninformationen lassen sich durch ein Dreiecksnetz approximieren.
-In dieser Arbeit werden mehrere Verfahren, hinsichtlich der Güte und der Anzahl der dabei entstehenden
-Dreiecke, zur adaptiven Konstruktion solcher Netze untersucht.
+Dazu kann das bei Bildsynthese entstehende Tiefenbild genutzt werden.
+Dessen Tiefeninformationen werden, im Rahmen dieser Arbeit, für die Übertragung durch ein Dreiecksnetz approximiert.
+Es werden zwei Verfahren verglichen, die auf der Delaunay-Triangulierung basieren.
+Die zur Vernetzung benötigte Punktmenge wird zum einem mit dem \textit{FloydSteinberg}-Fehlerdiffusionsverfahren und zum anderen durch ein \textit{Quadtree}-Ansatz generiert.
+Kriterien für den Vergleich sind neben der optischen Qualität der extrapolierten Bilder, in Abhängigkeit des Kamerawinkels,
+die Netzkomplexität sowie der Rechenzeit. 
+Die optische Qualität wird mit dem SSIM und dem PSNR gemessen und die Netzkomplexität entspricht dabei der Anzahl der Dreiecke im Netz. 
+Dabei hat sich der \textit{Quadtree}, im Bezug auf alle Kriterien, als der deutlich bessere Ansatz erwiesen.
 }
 
 \usepackage[dvipsnames]{xcolor}
@@ -3648,51 +3653,53 @@ Es entsteht auch hier ein Fehler bei der Extrapolation.
 
 \chapter{Zusammenfassung und Ausblick}
 
-In Rahmen dieser Arbeit wurde ein Remote-Visualisierungssystem konstruiert,
-in dem Server zusätzlich zum Farbbild ein adaptives Dreiecksnetz
-aus dem dazugehörigen Tiefenbild erzeugt.
-Das Farbbild und das Dreiecksnetz wird anschließend zum Client gesendet,
+In Rahmen dieser Arbeit wurde ein Remote-Visualisierungssystem konstruiert.
+Der Server erzeugt in diesem, zusätzlich zum Farbbild, ein adaptives Dreiecksnetz
+aus dem dazugehörigen Tiefenbild.
+Das Farbbild und das Dreiecksnetz werden anschließend zum Client gesendet,
 der eine Extrapolation auf Basis der Rückprojektion durchführt.
 Mit Hilfe von zwei \textit{Ground-Truth}-Datensätzen wurde
 untersucht, wie sich die Güte in Abbhängigkeit des Kamerawinkelunterschiedes
 verhält.
-Dabei haben die Dreiecksnetze, die Aufgabe die Grauwertverläufe der Tiefenbilder
+Dabei haben die Dreiecksnetze die Aufgabe, die Grauwertverläufe der Tiefenbilder
 zu approximieren.
-Konstruiert werden die Dreiecksnetze wird mit Hilfe der Delaunay-Triangulierung.
-Die für die Vernetzung notwendige Menge von ausgewählten Punkten,
+Konstruiert werden die Dreiecksnetze mit Hilfe der Delaunay-Triangulierung.
+Die für die Vernetzung notwendige Menge von ausgewählten Punkten
 wird anhand von Gradientenbildern bestimmt.
-Zu diesem Zweck wurde ein Fehlerdiffusionsverfahren, 
-das auf dem FloydSteinberg-Algorithmus basiert und ein \textit{Quadtree}-Ansatz
+Zu diesem Zweck wurde ein Fehlerdiffusionsverfahren angewendet, 
+welches auf dem FloydSteinberg-Algorithmus basiert, und ein \textit{Quadtree}-Ansatz
 implementiert.
 Beide wurden hinsichtlich der Konstruktionszeiten, der Anzahl von Dreiecken und 
 der erzielten Güte untersucht.
 Dabei hat sich gezeigt, dass der \textit{Quadtree}-Ansatz hinsichtlich aller
-Kriterien bessere Ergebnisse erzielt.
+Kriterien bessere Ergebnisse hervorbringt.
 Weiterhin wurde ein Nachbearbeitungsschritt implementiert, mit dem
-die Qualität der Netze hinsichtlich der Güte insbesondere bei großen Winkeln
-deutlich verbessert wird, allerdings zu lasten der Dreicksanzahl und der Konstruktionszeit.
+die Qualität der Netze hinsichtlich der Güte, insbesondere bei großen Winkeln,
+deutlich verbessert wird, allerdings zulasten der Dreiecksanzahl und der Konstruktionszeit.
 Dabei treten jedoch bei sehr kleinen Kamerawinkelunterschieden Artefakte in der
 Nähe von großen Tiefensprüngen im Tiefenbild auf.
 
-Die Extrapolation, auf Basis der Rückprojektion von Dreicksnetzen, ist durchaus ein geeignetes Verfahren um neue Ansichten einer Szene durch den Client zu approximieren,
+Die Extrapolation, auf Basis der Rückprojektion von Dreicksnetzen, ist durchaus ein geeignetes Verfahren, um neue Ansichten einer Szene durch den Client zu approximieren,
 vorausgesetzt, der Kamerawinkelunterschied wird nicht zu groß.
 Die Dreiecksnetze, erzeugt mit dem \textit{Quadtree}, lassen sich mit beliebiger
-Genauigkeit erzeugen und sind eine gute Grundlage um diese Verlustbehaftet komprimieren
+Genauigkeit generieren und sind eine gute Grundlage, um diese verlustbehaftet komprimieren
 zu können.
 
 Der Nachbearbeitungschritt führt zu einer deutlichen Verbesserung hinsichtlich
-der Güte, lässt sich sicherlich noch Verbessern.
-Insbesondere, im Bezug auf die Anzahl der erzeugten Dreiecke.
+der Güte, lässt sich aber sicherlich noch verbessern;
+insbesondere im Bezug auf die Anzahl der erzeugten Dreiecke.
 Im nächsten Schritt, könnten die Dreiecksnetze durch Valenz-basierte Kodierung
 weiter komprimiert werden.
-Weiterhin sollte eine Binäre-Datenbeschreibungssprache gewählt werden um
+Weiterhin sollte eine binäre-Datenbeschreibungssprache gewählt werden, um
 die Größe der Nachrichtenpakete zu verkleinern.
 Durch Verdeckung bedingte Fehler könnten mit Hilfe des Kameramodells von Popescu und Aliaga \cite{Popescu:2006:DDO:1111411.1111436} weiter reduziert werden.
 Desweiteren sollte untersucht werden, inwieweit die extrapolierten Bilder
 genutzt werden können, um Informationen bei der Übertragung des Farbbildes
 mit dem Differenzbildansatz zu reduzieren.
-Progressive Übertragung der Dreiecksnetze könnte ebenso interessanter Ansatz für
-die Extrapolation sein.
+
+Progressive Übertragung der Dreiecksnetze könnte genutzt werden,
+könnte in Verbindung mit verschiedenen Detailstufen 
+
 Außerdem kann der Client in Abhängigkeit seiner Ressourcen ein eigenes Modell
 der Szene, aus den übertragenen Dreiecksnetzen konstruieren.
 
