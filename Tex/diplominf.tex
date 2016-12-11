@@ -69,8 +69,28 @@ Bild"ubernahmen zitieren.}
 
 \acknowledgments{An dieser Stelle möchte ich meinen Eltern, meinen Freunden und meinen Betreuer für ihre Unterstützung bedanken.}
 
-\abstracten{abstract text english}
-\abstractde{ Zusammenfassung Text Deutsch}
+\abstracten{
+Remote-visualization is a technique, which seperates the rendering and displaying of images
+into two components.
+In order to hide the latenz of the communication of both components of the user,
+it is possible to use additional information about geometry to extrapolate the image.
+The depth image, which will be produced in the rendering step can be used as the necessary
+geometric inforamtion.
+Triangle-meshes can be used to approximate the depth image.
+In this work, some methods to produce such meshes are tested with respect to image qualtity
+and mesh complexity
+}
+
+\abstractde{
+Remote-Visualisierung ist eine Technik, welche die Bildsynthese und die Darstellung der Bilder
+auf zwei Komponenten aufteilt.
+Um die Latenzzeit der Kommunikation beider Komponenten vor dem Nutzer verbergen zu können,
+kann mit Hilfe zusätzlicher geometrischer Informationen eine Bildextrapolation durchgeführt werden. 
+Für diesen Zweck kann das bei Bildsynthese entstehende Tiefenbild genutzt werden.
+Dessen Tiefeninformationen lassen sich durch ein Dreiecksnetz approximieren.
+In dieser Arbeit werden mehrere Verfahren, hinsichtlich der Güte und der Anzahl der dabei entstehenden
+Dreiecke, zur adaptiven Konstruktion solcher Netze untersucht.
+}
 
 \usepackage[dvipsnames]{xcolor}
 \usepackage{listings}
@@ -3593,12 +3613,11 @@ Dabei sind die Ergebnisse gemessen durch SSIM weitaus besser als die des PSNR,
 so dass hier eine gute Approximation bis zu 20 Grad Winkelunterschied möglich ist.
 Dies ist positiv zu bewerten, da der SSIM im Gegensatz zum PSNR die menschliche Wahrnehmung mit einbezieht.
 
-
 Ein grundsätzliches Problem der Extrapolation mit Hilfe der Rückprojektion ist die Beleuchtung.
 Insbesondere spekulare Lichtanteile sind ein Problem, weil diese von der Position der
 Kamera abhängen.
 Da das Farbbild als Textur dient und keine zusätzliche Beleuchtungsberechnung stattfindet,
-entsteht zwangsläufig ein Fehler.
+entsteht bei größeren Kamerawinkelunterschieden zwangsläufig ein Fehler, wie in Abbildung \ref{fig:beleuchtung_fehler}.
 Dieser steigt mit der Größe des Kamerawinkelunterschiedes und taucht in den getesteten Datensätzen nur bei sehr großen Winkeln auf
 und ist im Verhältnis zu den anderen entstehenden Artefakten jedoch zu vernachlässigen.
 Dieser könnte dadurch reduziert werden, dass Informationen zu Lichtquellen mit übertragen
@@ -3613,6 +3632,8 @@ Zu diesem Zweck müssen aber zusätzliche Texturinformationen vom Server zum Clien
 	\centering	
 	\subfigure[$t_{max} = 6$]{\includegraphics[width=.49\textwidth]{img/testspheres_00189.png}}
 	\subfigure[$t_{max} = 8$]{\includegraphics[width=.49\textwidth]{img/frameFULL_00490.png}}
+	\caption{title}
+	\label{fig:beleuchtung_fehler}
 \end{figure}
 
 Desweiteren sind transparente Oberflächen problematisch.
