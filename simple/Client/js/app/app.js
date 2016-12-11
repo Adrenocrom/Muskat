@@ -254,7 +254,7 @@ $(document).ready(function() {
 	var g_time_end;
 	var g_evaluator;
 	var g_evaluation_id		= 0;
-	var g_scene_list 		= [7];
+	var g_scene_list 		= [6,7];
 	var g_scene_list_index 	= 0;
 	var g_callback_cnt 		= 0;
 
