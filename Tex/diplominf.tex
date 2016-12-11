@@ -70,23 +70,29 @@ Bild"ubernahmen zitieren.}
 \acknowledgments{An dieser Stelle möchte ich meinen Eltern, meinen Freunden und meinen Betreuer für ihre Unterstützung bedanken.}
 
 \abstracten{
-Remote-visualization is a technique, which seperates the rendering and displaying of images
+Remote-visualization is a technique, which seperates rendering and displaying of images
 into two components.
-In order to hide the latenz of the communication of both components of the user,
-it is possible to use additional information about geometry to extrapolate the image.
-The depth image, which will be produced in the rendering step can be used as the necessary
+In this paper, such a system was developed, based on the WebSocket-protokol.
+In order to hide the latency, as a result of the communication between both components, from the user,
+it is possible to use additional geometric information to extrapolate the image on the client side.
+The depth image, produced in the rendering step, are used as the necessary
 geometric inforamtion.
-Triangle-meshes can be used to approximate the depth image.
-In this work, some methods to produce such meshes are tested with respect to image qualtity
-and mesh complexity
+Triangle-meshes can be used to approximate the depth image to transfer the information.
+Two methods were compared, both use the Delaunay-triangulation.
+One produces the point set needed for meshing with Floyd?Steinberg dithering
+and the second one with a quadtree.
+Critera for the evaluation are the optical quality, which depends on the camera angle differences,
+mesh complexity and construction time.
+Optical quality is messured by SSIM and PSNR and the mesh complexity is equal to number of triangles.
+Result of the comparison is, that the best method with respect to all critera is the quadtree.
 }
 
 \abstractde{
 Remote-Visualisierung ist eine Technik, welche die Bildsynthese und die Darstellung der Bilder
-auf zwei Komponenten aufteilt.
+auf zwei Komponenten, Server und Client, aufteilt.
 In dieser Arbeit wurde ein solches System auf Basis des WebSocket-Protokolls entwickelt.
 Um die Latenzzeit der Kommunikation beider Komponenten vor dem Nutzer verbergen zu können,
-kann mit Hilfe zusätzlicher geometrischer Informationen eine Bildextrapolation durchgeführt werden. 
+kann clientseitig mit Hilfe zusätzlicher geometrischer Informationen eine Bildextrapolation durchgeführt werden. 
 Dazu kann das bei Bildsynthese entstehende Tiefenbild genutzt werden.
 Dessen Tiefeninformationen werden, im Rahmen dieser Arbeit, für die Übertragung durch ein Dreiecksnetz approximiert.
 Es werden zwei Verfahren verglichen, die auf der Delaunay-Triangulierung basieren.
@@ -94,7 +100,7 @@ Die zur Vernetzung benötigte Punktmenge wird zum einem mit dem \textit{FloydStei
 Kriterien für den Vergleich sind neben der optischen Qualität der extrapolierten Bilder, in Abhängigkeit des Kamerawinkels,
 die Netzkomplexität sowie der Rechenzeit. 
 Die optische Qualität wird mit dem SSIM und dem PSNR gemessen und die Netzkomplexität entspricht dabei der Anzahl der Dreiecke im Netz. 
-Dabei hat sich der \textit{Quadtree}, im Bezug auf alle Kriterien, als der deutlich bessere Ansatz erwiesen.
+Es hat sich gezeigt, dass der \textit{Quadtree}, im Bezug auf alle Kriterien, der deutlich bessere Ansatz ist.
 }
 
 \usepackage[dvipsnames]{xcolor}
