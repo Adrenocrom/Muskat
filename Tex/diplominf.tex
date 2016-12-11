@@ -316,16 +316,16 @@ Bild"ubernahmen zitieren.}
 
 \chapter{Einleitung}
 
-Bei der Remote-Visualisierung, wird die Bildsynthese und die eigentliche Darstellung voneinander getrennt.
+Bei der Remote-Visualisierung wird die Bildsynthese und die eigentliche Darstellung voneinander getrennt.
 Der Server-Prozess erzeugt und kodiert jedes Bild zu einem kompakten Datenpaket, 
 welches an den Client-Prozess gesendet wird.
 Der Client empfängt und dekodiert das Datenpaket und gibt das Bild auf einem Bildschirm aus.
 
 Remote-Visualisierung ist ein insbesondere für mobile Endgeräte interessantes Konzept,
 weil es die Visualisierung von komplexen Szenen auch auf leistungsarmen Geräten ermöglicht.
-Neben Computerspielen, ist die wissenschaftliche Visualisierung ein wichtiges Anwendungsgebiet,
+Neben Computerspielen ist die wissenschaftliche Visualisierung ein wichtiges Anwendungsgebiet,
 da Datensätze Größenordnungen erreichen können, 
-die den Speicher herkömmlicher Desktops, Laptops, Smartphones etc. bei Weitem übersteigen. 
+die den Speicher herkömmlicher Desktops, Laptops, Smartphones etc. bei weitem übersteigen. 
 Auch wenn ausreichend Speicher zur Verfügung steht, 
 kann die Übertragung dieser Daten viel Zeit in Anspruch nehmen.
 
@@ -342,40 +342,40 @@ Ein möglicher Ausweg besteht darin, dass der Client-Prozess ein bereits empfange
 Das bedeutet, dass das noch nicht empfangene Bild aus den vorhanden Informationen approximiert
 wird, wodurch die Bildwiederholfrequenz akzeptabel bleibt.
 
-Bei der Bildsynthese des Server-Prozesses lässt sich, aus dem Tiefenpuffer ein Tiefenbild erzeugen, zusätzlich zum Farbbild.
-Geometrisch entspricht das Tiefenbild einer 2.5D Ansicht der Szene.
+Bei der Bildsynthese des Server-Prozesses lässt sich aus dem Tiefenpuffer ein Tiefenbild erzeugen, zusätzlich zum Farbbild.
+Geometrisch entspricht das Tiefenbild einer 2.5D-Ansicht der Szene.
 Wird es zum Client gesendet, kann dieser das Tiefenbild als Punktwolke interpretieren.
 Das approximierte Bild entsteht, indem die Punktwolke aus einer neuen Kameraperspektive gezeichnet wird.
-Mit zunehmendem Winkelunterschied, zwischen der alten und der neuen Kameraperspektive,
-werden die Lücken zwischen den Punkten, der Punktwolke, immer größer.
-Durch die Erzeugung eines Dreiecksnetzes, aus dem Tiefenbild, lassen sich die Lücken
+Mit zunehmendem Winkelunterschied zwischen der alten und der neuen Kameraperspektive
+werden die Lücken zwischen den Punkten der Punktwolke, immer größer.
+Durch die Erzeugung eines Dreiecksnetzes aus dem Tiefenbild lassen sich die Lücken
 schließen.
 Das Farbbild wird dabei als Textur über das Netz gelegt.
 
 \begin{figure}[H]
 	\subfigure[]{\includegraphics[width=.49\textwidth]{../Scenes/TestSpheres/run_1/testspheres_00000.png}}
 	\subfigure[]{\includegraphics[width=.49\textwidth]{../results/7/512x512_Full/default/16bit/5Pass/G1.0/frame_00277.png}}
-\caption{Die Abbildungen zeigen die Extrapolation des ersten Bildes a, aus dem Datensatz \textit{TestSpheres}. Der Winkelunterschied zum Bild b beträgt 8 Grad.}
+\caption{Die Abbildungen zeigen die Extrapolation des ersten Bildes a aus dem Datensatz \textit{TestSpheres}. Der Winkelunterschied zum Bild b beträgt 8 Grad.}
 \label{fig:firstframes}
 \end{figure}
 
-Die Zentrale Aufgabe dieser Arbeit, ist die Optimierung und die Übertragung der 
-Tiefeninformationen, vom Server zum Client.
-Zu diesem Zweck erzeugt der Server, aus dem Tiefenbild ein adaptives Dreiecksnetz.
+Die zentrale Aufgabe dieser Arbeit ist die Optimierung und die Übertragung der 
+Tiefeninformationen vom Server zum Client.
+Zu diesem Zweck erzeugt der Server aus dem Tiefenbild ein adaptives Dreiecksnetz.
 Dieses wird an den Client übertragen und extrapoliert. 
-Mit Ground-Truth Datensätzen werden, in Abhängigkeit des Kamerawinkels, verschiedene
+Mit Ground-Truth-Datensätzen werden in Abhängigkeit des Kamerawinkels verschiedene
 Ansätze hinsichtlich ihrer Güte evaluiert. 
 Um die Algorithmen zu testen, wurde eine Server- und eine Client-Komponente entwickelt.
-Beide Komponenten tauschen Informationen über das auf TCP basierende Websocket-Protokoll aus.
+Beide Komponenten tauschen Informationen über das auf TCP-basierende Websocket-Protokoll aus.
 Der Client ist ein Browser-basierter Web-Client, damit die implementierten Algorithmen
 mit den Einschränkungen durch JavaScript und WebGl evaluiert werden können.
 
 Im Folgenden werden Arbeiten vorgestellt, 
 die sich mit dieser Thematik bereits auseinander gesetzt haben.
 Anschließend werden die Grundlagen dieser Arbeit erläutert.
-In diesen Zusammenhang, werden die Datensätze vorgestellt.
-Es wird gezeigt wie die Rückprojektion durchgeführt wird und 
-wie die Gütemetriken funktionieren.
+In diesen Zusammenhang werden die Datensätze vorgestellt.
+Es wird gezeigt, wie die Rückprojektion und 
+die Gütemetriken funktionieren.
 Danach werden die Algorithmen konzeptionell vorgestellt, gefolgt von Implementierungsdetails.
 Als Nächstes folgt die Präsentation der Ergebnisse, die im darauf folgenden Kapitel ausgewertet werden.
 Zum Schluss wird die gesamte Arbeit zusammengefasst und ein Ausblick
@@ -384,20 +384,20 @@ gegeben, wie die Ergebnisse weiter verbessert werden könnten.
 \chapter{Verwandte Arbeiten}
 
 Einen Überblick über Architekturen und Methoden der interaktiven Remote-Visualisierung geben Shu Shi \textit{et al.} \cite{Shi:2015:SIR:2775083.2719921}.
-Zum zentralen Problem ihrer Arbeit wird die Latenz und die effiziente Übertragung der Daten vom Server zum Client.
+Das zentrale Problem ihrer Arbeit ist die Latenz und die effiziente Übertragung der Daten vom Server zum Client.
 Lösungen hängen vom Anwendungsfall ab.
 Sie definieren \textit{THIN}-Systeme als eine Klasse von Remote-Visualisierungssystemen,
 die auf die Übertragung von 2D Informationen beschränkt sind und die Bildwiederholfrequenz weitaus geringer sein kann, als es in interaktiven 3D-Anwendungen erforderlich ist. 
-Das Ziel von \textit{THIN}-Systemen besteht darin Desktop-Anwendungen fernsteuern zu können.
+Das Ziel von \textit{THIN}-Systemen besteht darin, Desktop-Anwendungen fernsteuern zu können.
 Beispiele für existierende Architekturen sind \textit{SLIM} \cite{Schmidt:1999:IPS:319344.319154} und \textit{THiNC} \cite{Baratto:2005:TVD:1095809.1095837}. 
 Sie sind für die Übertragung von 2D-Daten optimiert und profitieren davon, dass die meisten Änderungen nur Teilbereiche der eigentlichen Oberfläche betreffen.
-Ein anderes Extrem der Remote-Visualisierung ist die Aufteilung der Bildsynthese
+Eine allgemeinere Form der Remote-Visualisierung ist die Aufteilung der Bildsynthese
 auf verschiedene Host-Systeme wie bei dem Cluster-basierten System WireGL \cite{Humphreys:2001:WSG:383259.383272}.
 Jin Zhefan stellt in diesem Kontext Kompressionsmethoden für Zeicheninstruktionen, Vektoren, Normalen und Texturinformationen vor \cite{Jin:2006:RRI:1128923.1128927}.
 Peter Eisert und Philipp Fechteler haben ein Remote-Visualisierungssystem für Computerspiele entwickelt \cite{Eisert07remoterendering}.
 Ihr System überträgt bei kleinen Auflösungen für Endgeräte ohne GPU die Bilder
 kodiert mit H.264 oder wahlweise MPEG-4.
-Bei größeren Auflösungen werden Zeicheninstruktionen gesendet, und die Bilder werden
+Bei größeren Auflösungen werden Zeicheninstruktionen gesendet, die Bilder werden
 vom Client synthetisiert.
 Auch wenn ihr System ausschließlich für den Einsatz in lokalen Netzwerken konzipiert wurde,
 ist die Latenz zu hoch, um vom Benutzer nicht registriert zu werden.
@@ -407,7 +407,7 @@ zusätzliche Referenz-Kamerapositionen und erzeugen zusätzlich zum Farbbild der o
 Kameraposition weitere Tiefenbilder.
 Durch Warping werden die Farbinformationen unter Zuhilfenahme der Tiefenbilder
 in die neue Kameraperspektive überführt. 
-Dabei lassen sich durch Verdeckung bedingte Lücken, durch Pixel aus den Referenztiefenbilder schließen.
+Dabei lassen sich durch Verdeckung bedingte Lücken durch Pixel aus den Referenztiefenbilder schließen.
 Das Farbbild wird mit JPEG komprimiert und die Tiefenbilder mit ZLIB.
 Ein ähnlicher Ansatz wurde im VR-Bereich von Smit \textit{et al.} erprobt \cite{4810995}.
 Auch in diesem System werden Lücken mit Hilfe von Tiefenbildern aus Referenz-Kamerapositionen
@@ -424,7 +424,7 @@ da von diesen nur wenige Pixel tatsächlich benötigt werden, um die verdeckungsbe
 zu füllen.
 Popescu und Aliaga haben zu diesen Zweck ein spezielles Kameramodell entworfen, dass verdeckte
 Bildbereiche mit Hilfe gekrümmter Sichtstrahlen mitberechnen kann \cite{Popescu:2006:DDO:1111411.1111436}.
-Die bisher vorgestellten Ansätze werden in dieser Arbeit nicht aufgegriffen; sie sollen
+Die bisher vorgestellten Ansätze werden in dieser Arbeit nicht aufgegriffen; sie sollen lediglich
 verdeutlichen, welche alternativen Möglichkeiten existieren.
   
 Die effiziente Übertragung und Visualisierung von Tiefenbildern
@@ -434,8 +434,8 @@ Dreicksnetze mit Hilfe der Delaunay-Triangulierung \cite{Banno:2012:RCD:2407516.
 Ausgangspunkt für die Vernetzung ist eine Menge von Punkten, die Kanten und Krümmungen
 im Tiefenbild repräsentieren.
 Zur Erzeugung dieser Punkte kommt ein Quadtree zum Einsatz.
-Zusätzlich haben sie ein Verfahren entwickelt, um das erzeugte Netz in einem weiteren Schritt,
-hinsichtlich der optischen Qualität, zu verbessern.
+Zusätzlich haben sie ein Verfahren entwickelt, um das erzeugte Netz in einem weiteren Schritt
+hinsichtlich der optischen Qualität zu verbessern.
 Einen alternativen Ansatz für die Erzeugung der zur Vernetzung benötigten Punktmenge
 wird von Lee \textit{et al.} vorgestellt \cite{900943}.
 Sie nutzen ein Fehlerdiffusionsverfahren, um in der Nähe von Kanten Punkte zu platzieren.
@@ -443,7 +443,7 @@ In beiden Arbeiten wird die Extrapolation der Bilder durch die Rückprojektion de
 Diese beiden Ansätze bilden den Kern dieser Arbeit.
 
 Um die Latenz bei der Übertragung zu verbessern, können mehrere Qualitätsstufen von einem Dreiecksnetz
-erzeugt werden, wie in der Arbeit von Chai \textit{et al.} \cite{1024050},
+erzeugt werden, wie zum Beispiel in der Arbeit von Chai \textit{et al.} \cite{1024050},
 die auf dem Verfahren von Lindstrom \textit{et al.} basiert \cite{Lindstrom:1996:RCL:237170.237217}.
 Mwalongo \textit{et al.} haben einen hybriden Ansatz entwickelt, der zusätzlich
 zu einzelnen Vertices des Netzes Parameter für Kugeln übermittelt, die anschließend vom
@@ -471,15 +471,15 @@ Die Kompression kann wahlweise verlustfrei oder verlustbehaftet
 durchgeführt werden. 
 Typische Kompressionsraten werden mit 1:50 angegeben.
 Eine weitere Arbeit, die sich mit der Kompression von Dreiecksnetzen und einer kompakten Repräsentation
-von diesen beschäftigt, wurde Stefan Gumhold und Wolfgang Straßer geschrieben \cite{Gumhold:1998:RTC:280814.280836}.
+von diesen beschäftigt, wurde von Stefan Gumhold und Wolfgang Straßer geschrieben \cite{Gumhold:1998:RTC:280814.280836}.
 Kompression und Dekompression sind echtzeitfähig.
 Weitere geometrische Kompressionsverfahren für Vertices, Indices und Normalen, sind in der Arbeit von
-Michael Deering zu finden \cite{Deering:1995:GC:218380.218391}.
-Sowie in der Arbeit \cite{gotsman-touma-gi98} von den Autoren Touma und Gotsman.
+Michael Deering zu finden \cite{Deering:1995:GC:218380.218391}
+sowie in der Arbeit \cite{gotsman-touma-gi98} von den Autoren Touma und Gotsman.
 
 \chapter{Grundlagen}
 
-In diesem Kapitel werden die Datensätze im Detail vorgestellt und es wird gezeigt,
+In diesem Kapitel werden die Datensätze im Detail vorgestellt, und es wird gezeigt,
 wie die Bildextrapolation anhand der zur Verfügung stehenden Informationen 
 durchgeführt wird.
 Anschließend werden die zwei Metriken PSNR und SSIM zum Vergleich von Bildern vorgestellt,
@@ -492,7 +492,7 @@ Jeder Datensatz besteht aus einer Sequenz von Tripeln.
 Dabei setzt sich jedes Tripel aus einem Farbbild, einem Tiefenbild $D$ 
 sowie einem Satz von Kameraparametern zusammen.
 Die Auflösung der Farb- und Tiefenbilder beträgt für alle Datensätze $w \times h = 512 \times 512$.
-Die Tiefenbilder wurden mit 16 Bit und die Farbbilder mit 24 Bit quantisiert, dabei entfallen jeweils
+Die Tiefenbilder wurden mit 16 Bit und die Farbbilder mit 24 Bit quantisiert. Dabei entfallen jeweils
 8 Bit auf die einzelnen Farbkanäle.
 In der Abbildung \ref{fig:testspheres_40_id} werden Farb- und Tiefenbild des ersten Frames aus den beiden Datensätzen,
 \textit{TestSpheres} und \textit{CoolRandom} dargestellt.
@@ -504,13 +504,13 @@ In der Abbildung \ref{fig:testspheres_40_id} werden Farb- und Tiefenbild des ers
 	
 	\subfigure[\textit{TestSpheres}]{\includegraphics[width=.4\textwidth]{../Scenes/TestSpheres/run_2/testspheres_00000_depth.png}}
 	\subfigure[\textit{CoolRandom}]{\includegraphics[width=.4\textwidth]{../Scenes/CoolRandom/run_2/coolrandom_00000_depth.png}}
-	\caption{Farb- und Tiefenbilder der ersten Frames, von beiden Datensätzen.}
+	\caption{Farb- und Tiefenbilder der ersten Frames von beiden Datensätzen.}
 	\label{fig:testspheres_40_id}
 \end{figure}
 
 Die Kameraparameter setzen sich aus einem Vektor für die Kameraposition, einem \textit{lookAt}-Vektor, der Punkt, auf den die Kamera schaut und dem \textit{up}-Vektor zusammen.
 Für die Projektion werden die Positionen der Clippingebenen durch die Werte $z_{near}$ und $z_{far}$ beschrieben.
-Des Weiteren wird der Öffnungswinkel der Kamera benötigt.
+Des weiteren wird der Öffnungswinkel der Kamera benötigt.
 
 Von beiden Szenen stehen 493 Bilder zur Verfügung.
 Beide Datensätze lassen sich in Abhängigkeit der Winkelschrittweite in 3 Sequenzen unterteilen.
@@ -535,9 +535,10 @@ Die Datensätze \textit{CoolRandom} und \textit{TestSpheres} wurden aus Partikeld
 Bei dem Datensatz \textit{CoolRandom} handelt es sich dagegen um einen komplexen Datensatz,
 der mit Molekül-Datensätzen vergleichbar ist, welche in existierenden Anwendungen visualisiert werden.
 
-Weiterhin zu beachten ist, dass das Tiefenbild des ersten Frames, aus dem \textit{TestSpheres}-Datensatz ein Fehler aufweist.
-Die vorderste Kugel, in der Abbildung \ref{fig:testspheres_40_id}, als die dunkelste Kugel zu sehen ist im Tiefenbild 
-nicht vollständig repräsentiert. Sie weist nur an den Seiten Krümmungen auf, ist im inneren jedoch vollkommen flach.
+Weiterhin zu beachten ist, dass das Tiefenbild des ersten Frames, aus dem \textit{TestSpheres}-Datensatz einen Fehler aufweist.
+Die vorderste Kugel, in der Abbildung \ref{fig:testspheres_40_id} als die dunkelste Kugel zu sehen, ist im Tiefenbild 
+nicht vollständig repräsentiert. Sie weist nur an den Seiten Krümmungen auf, ist im Inneren jedoch vollkommen flach.
+Was dazu führt, dass diese Kugel bei der Extrapolation nicht richtig rekonstruiert werden kann.
 
 \section{Extrapolation}
 
@@ -598,7 +599,7 @@ Projektionsmatrix $P_i$ zusammen:
 \end{equation}
 
 Um die Punktwolke des Tiefenbildes $D_i$ mit der Transformationsmatrix $T_j$ auf das Tiefenbild $D_j$
-abzubilden, muss zunächst für jeden Pixel $d_i \in D_i$ ein Vertex $v_i$ erzeugt werden, mit $i,j \in \{0,1, ..., N \}$.
+abzubilden, muss zunächst für jeden Pixel $d_i \in D_i$ ein Vertex $v_i$ erzeugt werden mit $i,j \in \{0,1, ..., N \}$.
 Zunächst liegt $v_i$ in Bildschirmkoordinaten des Pixels $d_i$ vor und muss in normalisierte Gerätekoordinaten übersetzt werden. 
 Zu diesem Zweck werden zuerst die x- und y-Kompontenten durch $w-1$ beziehungsweise $h-1$ geteilt.
 Anschließend müssen alle drei Komponenten des Vektors $v_i$ aus dem Werteintervall $[0, 1]$
@@ -633,10 +634,10 @@ Dabei wird für jedes Dreieck ein Umkreis erzeugt, innerhalb dessen keine Punkte 
 Dreiecks enthalten sein dürfen.
 Jedes Dreieck des zu erzeugenden Netzes muss diese Bedingung erfüllen.
 Das Resultat dieser Forderung ist die maximierte Innenwinkelsumme aller Dreiecke.
-Für eine gegebene Punktmenge ist die Lösung nicht eindeutig, es kann verschiedene
+Für eine gegebene Punktmenge ist die Lösung nicht eindeutig. Es kann verschiedene
 Netzkonfigurationen geben, welche die Forderung erfüllen.
 
-Es existieren verschiedene Algorithmen die Delaunay-Triangulierung durchzuführen.
+Es existieren verschiedene Algorithmen, die Delaunay-Triangulierung durchzuführen.
 Die schnellsten erreichen eine Laufzeit von $O(n \log n)$ und sind damit
 für den Einsatz in Echtzeitanwendungen tauglich.
 Beispiele hierfür sind der Sweep-Algorithmus und die inkrementelle Konstruktion.
@@ -673,7 +674,7 @@ PSNR &= 10 \times \log_{10} \left( \frac{MAX^2_I}{MSE} \right) \\
 	 &= 20 \times \log_{10} (MAX_I) - 10 \times \log_{10} (MSE)
 \end{align}
 
-Bei einer Farbtiefe von 8 Bit pro Kanal, stehen Werte von 30 - 40 dB für ein
+Bei einer Farbtiefe von 8 Bit pro Kanal stehen Werte von 30 - 40 dB für ein
 geringes Störsignal und gleichzeitig für eine höhere Übereinstimmung der Bilder.
 Der PSNR ist ein häufig genutztes Maß, 
 um die Ähnlichkeit zweier Bilder zu bestimmen.
@@ -682,7 +683,7 @@ um die Ähnlichkeit zweier Bilder zu bestimmen.
 
 Im Gegensatz zum PSNR ist die von Wang \textit{et al.} entwickelte Metrik
 \textit{structural similarity index} ein auf die menschliche Wahrnehmung angepasstes Modell\cite{Wang04imagequality}.
-Die Metrik basiert auf der Idee auf, dass die Struktur der abgebildeten Objekte
+Die Metrik basiert auf der Idee, dass die Struktur der abgebildeten Objekte
 unabhängig von Beleuchtung und Kontrast gemessen werden kann.
 
 Die mittlere Intensität des diskreten Signals $x$ lässt sich in
@@ -806,10 +807,10 @@ Kontrast und Strukturvergleich kombiniert werden:
 
 Mit den Parametern $\alpha > 0, \beta > 0, \gamma > 0$ kann die
 Gewichtung zwischen den Vergleichsfunktionen variiert werden.
-Im Rahmen dieser Arbeit gilt $\alpha = \beta = \gamma = 1$ und
+Im Rahmen dieser Arbeit gilt $\alpha = \beta = \gamma = 1$, und
 es gilt für die Konstanten:
 $C_3 = C_2 / 2$, mit $C_1 = 6.5025$ und $C_2 = 58.5225$.
-Der $SSIM$ wird lokal, berechnet.
+Der $SSIM$ wird lokal berechnet.
 Dabei werden die Signalwerte $x_i$ und $y_i$ mit einer Gaussianfunktion
 gewichtet.
 Damit lassen sich die mittlere Intensität, die Standardabweichung
@@ -836,7 +837,7 @@ Mittelwert über allen $x \in X$ und $y \in Y$ berechnet:
 	MSSIM(X, Y) = \frac{1}{M} \sum\limits_{j=1}^{M} SSIM(x_j, y_j).
 \end{equation}
 
-Die Evaluation wird mit beiden Metriken durchgeführt um eine bessere Vergleichbarkeit
+Die Evaluation wird mit beiden Metriken durchgeführt, um eine bessere Vergleichbarkeit
 mit anderen Arbeiten zu gewährleisten.
 
 \chapter{Methodik}
@@ -850,7 +851,7 @@ der Delaunay-Triangulierung vom Server konstruiert und an den Client übertragen.
 
 Die Erzeugung von adaptiven Dreiecksnetzen lässt sich als eine Form der 
 verlustbehafteten geometrischen Kompression bezeichnen.
-Die zu übertragende Informationsmenge lässt sich durch Valenz-basierte Kodierung weiter verringern.
+Die zu übertragende Informationsmenge kann durch Valenz-basierte Kodierung weiter verringern werden.
 
 Weil die Tiefenwerte des Tiefenbildes komplett und ohne Informationsverlust
 im voll vernetzen Dreiecksnetz enthalten sind, liefert dieses Verfahren Ergebnisse,
@@ -1098,7 +1099,7 @@ abhängt und der Rechenaufwand der clientseitigen Bildsynthese linear mit der Auf
 
 Die zweite in dieser Arbeit untersuchte Variante zur Erzeugung eines Dreiecksnetzes aus einem Tiefenbild $D$,
 besteht in der serverseitigen Erzeugung einer adaptiven Vernetzung.
-Prinzipiell, lässt sich die Vorgehensweise in drei Schritte unterteilen:
+Prinzipiell lässt sich die Vorgehensweise in drei Schritte unterteilen:
 Im ersten Schritt wird eine Menge von Punkten $P \subset D$ definiert.
 Dabei muss die Menge $P$ so gewählt werden, 
 dass die Werteverläufe des Tiefenbildes möglichst optimal wiedergegeben werden.
@@ -1122,7 +1123,7 @@ Mit Hilfe einer Faltungsmatrix der Größe $3 \times 3$ lassen sich die Gradienten
 \label{eq:SOBEL_GRAD}
 \end{align*}
 
-Auf diese Weise entstehen für ein Tiefenbild zwei Gradientenbilder, wie in Abbildung \ref{fig:gradient_images}
+Auf diese Weise entstehen für ein Tiefenbild zwei Gradientenbilder wie in Abbildung \ref{fig:gradient_images}
 dargestellt.
 Zur Erzeugung der Punktmenge $P$ wurden zwei Verfahren untersucht, die im Folgenden näher betrachtet werden. 
 
@@ -1138,10 +1139,9 @@ Zur Erzeugung der Punktmenge $P$ wurden zwei Verfahren untersucht, die im Folgen
 
 \subsection{Quadtree}
 
-Die erste in dieser Arbeit vorgestellte Methode, zur Erzeugung der Punktmenge $P$,
+Die erste in dieser Arbeit vorgestellte Methode zur Erzeugung der Punktmenge $P$
 basiert auf einer Quadtree-Datenstruktur.
-Ein Quadtree ist eine Baumdatenstruktur, in der die Anzahl der Kindknoten, eines Knotens auf vier Kindknoten
-beschränkt wird.
+Ein Quadtree ist eine Baumdatenstruktur, in der jeder Knoten maximal vier Kindknoten hat.
 Im Rahmen dieser Arbeit repräsentiert jeder Knoten eine rechteckige Region $R$ des Tiefenbildes $D$.
 Eine Region $R$ wird durch seine Eckpunkte definiert.
 Um die Baumdatenstruktur zu erzeugen, wird ein Wurzelknoten definiert, dessen Region $R = (0, 0, w-1, h-1)$ den
@@ -1151,7 +1151,7 @@ Diese Teilregionen sind die Kindknoten des Wurzelknotens.
 Alle Kindknoten werden auf diese Weise sukzessive weiter unterteilt, bis die Tiefe des erzeugten Baumes
 eine maximale Baumtiefe $t_{max}$ erreicht.
 Die Kindknoten der Baumtiefe $t_{max}$ enthalten selbst keine weiteren Kindknoten und
-werden als Blattknoten bezeichnet, die Regionen die sie repräsentieren als Blattregionen.
+werden als Blattknoten bezeichnet, die Regionen, die sie repräsentieren, als Blattregionen.
 Die maximale Tiefe des Quadtrees ist dabei invers proportional zur Breite der Blattregionen.
 Mit dem Parameter $t_{max}$ kann die Qualität und die Kompression des erzeugten Netzes
 sowie der Berechnungsaufwand skaliert werden.
@@ -1160,11 +1160,11 @@ und muss nur neu erzeugt werden, wenn sich die Auflösung oder der Parameter $t_{
 
 Im nächsten Schritt wird mit Hilfe der Baumdatenstruktur die Punktmenge $P$ erzeugt.
 Zu diesem Zweck wird der Baum, beginnend mit den Blattknoten, zum Wurzelknoten traversiert.
-Mit Hilfe der Gradienten kann die Region $R$ eines Knoten auf planarität getestet werden.
+Mit Hilfe der Gradienten kann die Region $R$ eines Knoten auf Planarität getestet werden.
 Ist eine Region $R$ nicht planar, dann werden die Eckpunkte von $R$ zur Menge $P$ hinzugefügt.
 
 Um zu überprüfen, ob eine Region $R$ als planar bezeichnet werden kann, lässt sich
-mit Hilfe der Differenz zwischen dem maximalen und dem minimalen Wert der Gradienten innerhalb von $R$ bestimmten:
+mit Hilfe der Differenz zwischen dem maximalen und dem minimalen Wert der Gradienten innerhalb von $R$ bestimmen:
 
 \begin{align}
 c_x &= \max\limits_{R} \nabla_x - \min\limits_{R} \nabla_x \\
@@ -1172,7 +1172,7 @@ c_y &= \max\limits_{R} \nabla_y - \min\limits_{R} \nabla_y .
 \end{align}
 
 Wenn entweder $c_x$ oder $c_y$ größer als ein zuvor definierter Schwellwert ist, dann
-ist die Region $R$ nicht planar und die Eckpunkte werden der Menge $P$ hinzugefügt.
+ist die Region $R$ nicht planar, und die Eckpunkte werden der Menge $P$ hinzugefügt.
 Die Werte für $c_x$ und $c_y$ der inneren Konten lassen sich effizient aus den bereits berechneten
 maximalen und minimalen Gradienten seiner Kindknoten berechnen.
 
@@ -1180,9 +1180,9 @@ Die Wahl des Schwellwerts ist entscheidend für die Anzahl der eingefügten Punkte
 Dieser kann adaptiv gewählt werden, um die Komplexität des Dreiecksnetzes anzupassen.
 
 Für den eigentlichen Planaritätstest unterscheidet sich dieser Schwellwert
-in Abhängigkeit, ob es sich um einen inneren oder einen Blattknoten handelt.
+in Abhängigkeit, ob es sich um einen inneren Knoten oder einen Blattknoten handelt.
 Der Schwellwert für die Blattknoten wird mit $l$ bezeichnet und der für die inneren Knoten mit $i$.
-Blattknoten sollten vorrangig Tiefenuntersprünge, Kanten detektieren und somit die Kontur der dargestellten Objekte
+Blattknoten sollten vorrangig Tiefenuntersprünge, also Kanten detektieren und somit die Kontur der dargestellten Objekte
 kennzeichnen.
 Innere Knoten dagegen repräsentieren die Oberfläche der Objekte und werden gesetzt, um Verläufe von nicht planaren
 Flächen abzubilden zu können. 
@@ -1191,7 +1191,7 @@ sollte der Schwellwert $i$ für die inneren Knoten kleiner sein als der Schwellwe
 Die Werte von $i$ und $l$ liegen im Intervall $[0,1]$.
 
 Das Ergebnis der Traversierung des Baums ist eine Menge von Punkten $P$, die sich aus den Eckpunkten der getesteten
-Regionen zusammensetzt, in denen die Gradientdifferenzen den entsprechenden Schwellwert überschreitet.
+Regionen zusammensetzt, in denen die Gradientdifferenzen den entsprechenden Schwellwert überschreiten.
 
 \begin{figure}
 	\subfigure[]{\includegraphics[width=.49\textwidth]{img/seed_7_D9_5_4.png}}
@@ -1206,7 +1206,7 @@ dass dieser nahe der Bildschirmebene liegt.
 
 \subsection{Floyd-Steinberg}
 
-Der zweite in dieser Arbeit vorgestellte Ansatz, zur Erzeugung der Punktmenge $P$ basiert auf einem Fehler-Diffusionsverfahren.
+Der zweite in dieser Arbeit vorgestellte Ansatz zur Erzeugung der Punktmenge $P$ basiert auf einem Fehler-Diffusionsverfahren.
 Im ersten Schritt wird aus den beiden Gradientenbildern $\nabla_x, \nabla_y$ ein 
 Merkmalsbild $\sigma$ erzeugt:
 
@@ -1294,7 +1294,7 @@ In dieser Arbeit wird zu diesem Zweck die Delaunay-Triangulierung aus dem opencv
 
 \subsection{Netzoptimierung}
 
-Das auf diese Weise entstandene Netze können, in Abhängigkeit der Eingabedaten, zwei arten von Artefakten enthalten.
+Die auf diese Weise entstandene Netze können in Abhängigkeit der Eingabedaten zwei Arten von Artefakten enthalten.
 Zum einen können Dreiecke falsche Tiefenregionen approximieren, weil nur
 die Eckpunkte der jeweiligen Regionen $R$ zur Konstruktion der Dreiecke genutzt werden.
 Zum anderen können Dreiecke über Tiefensprüngen liegen, wodurch Kanten nicht korrekt vom Netz abgebildet werden.
@@ -1303,17 +1303,17 @@ Um die Artefakte zu reduzieren, werden nicht valide Dreiecke nochmals unterteilt
 
 Die Validität eines Dreiecks wird anhand seiner Kanten bestimmt.
 Eine Kante wird als nicht valide Kante bezeichnet, wenn die Tiefenwerte
-einiger von ihr überspannten Pixel abweicht, oder die 3D Richtung der Kante
-sich dem Lot der Bildebene nährt, während gleichzeitig eine bestimmte Länge in der xy-Ebene überschritten wird.
+einiger von ihr überspannten Pixel abweicht oder die 3D Richtung der Kante
+sich dem Lot der Bildebene nähert, während gleichzeitig eine bestimmte Länge in der xy-Ebene überschritten wird.
 
-Die Eckpunkte der zu prüfenden Kante, werden im folgenden mit $p_1$ und $p_2$ bezeichnet.
+Die Eckpunkte der zu prüfenden Kante werden im folgenden mit $p_1$ und $p_2$ bezeichnet.
 Der Punkt $p_m$ bezeichnet dabei den Mittelpunkt der Kante $p_1 p_2$.
 
 \begin{equation}
 	\frac{d_{p_1} + d_{p_2}}{2} - d_{p_m} < \varepsilon
 \end{equation}
 
-Eine Kante ist nicht valide, wenn der eigentliche Tiefenwert $D(p_m)$ 
+Eine Kante ist nicht valide, wenn der eigentliche Tiefenwert $D(p_m)$. 
 In der Gleichung \ref{eq:EDGE_VALID} approximiert der erste Term das Verhältnis,
 zwischen dem Betrag des Tiefenunterschieds von $p_1$ und $p_2$
 zu der Länge der Kante projiziert auf die $xy$-Ebene.
@@ -1325,9 +1325,9 @@ zu der Länge der Kante projiziert auf die $xy$-Ebene.
 
 Ist der Wert des ersten Terms der Gleichung \ref{eq:EDGE_VALID} einer Kannte größer 
 als der Schwellwert $T_{angle}$, dann steht diese Kante nahezu senkrecht auf der
-Bildebene und sie liegt mit hoher Wahrscheinlich über einen Tiefensprung. 
-Eine Kante auf die das zutrifft wird als nicht valide bezeichnet.
-Enthält ein Dreieck mindestens zwei Kanten die valide sind, wird es direkt zum
+Bildebene, und sie liegt mit hoher Wahrscheinlich über einen Tiefensprung. 
+Eine Kante, auf die das zutrifft wird, als nicht valide bezeichnet.
+Enthält ein Dreieck mindestens zwei Kanten, die valide sind, wird es direkt zum
 endgültigen Dreiecksnetz hinzugefügt.
 Wenn ein Dreieck dagegen mehr als zwei nicht valide Kanten enthält,
 wird es weiter unterteilt.
@@ -1335,9 +1335,9 @@ wird es weiter unterteilt.
 Zwei Bildpunkte $p_1$ und $p_2$ werden als verbindbar bezeichnet,
 wenn alle Bildpunkte zwischen $p_1$ und $p_2$ valide Tiefenwerte
 besitzen und ihre Tiefe sich zum größten Teil linear ändert.
-Um Rechenzeit zu sparen wird empfohlen nur den Median $p_m$ zwischen
+Um Rechenzeit zu sparen, wird empfohlen, nur den Median $p_m$ zwischen
 $p_1$ und $p_2$ zu testen.
-Eine Strecke wird als Verbindbar bezeichnet, wenn sie die folgende Gleichung
+Eine Strecke wird als verbindbar bezeichnet, wenn sie die folgende Gleichung
 erfüllt:
 
 \begin{equation}
@@ -1345,9 +1345,9 @@ erfüllt:
 \label{eq:EDGE_JOIN}
 \end{equation}.
 
-Um ein Dreieck zu unterteilen muss eine Fallunterscheidung durchgeführt werden.
+Um ein Dreieck zu unterteilen, muss eine Fallunterscheidung durchgeführt werden.
 Hat das Dreieck nur eine valide Kante $p_1 p_2$, dann müssen die anderen beiden
-Kanten wie in der Abbildung \ref{fig:1VALID_EDGES} geteilt werden und es entstehen
+Kanten wie in der Abbildung \ref{fig:1VALID_EDGES} geteilt werden, und es entstehen
 aus dem ursprünglichen Dreieck drei neue Dreiecke.
 
 \begin{figure}[th]
@@ -1416,14 +1416,14 @@ Der Vertex $p_3''$ ist der von Punkt auf der Strecke $p_3 p_2$, der am weitesten
 entfernt liegt und mit dem Punkt $p_3$ verbindbar ist.
 
 Anschließend wird das Dreieck $p_3 p_3' p_3''$ zum endgültigen Dreiecksnetz hinzugefügt.
-Um die anderen beiden Dreiecke einzufügen muss eine weitere Fallunterscheidung durchgeführt
+Um die anderen beiden Dreiecke einzufügen, muss eine weitere Fallunterscheidung durchgeführt
 werden.
 Wenn die Strecke $p_1 p_2'$ kleiner ist als $p_2 p_1'$, dann werden die Dreiecke $p_1 p_2 p_2'$,
 $p_1 p_2' p_1'$ zu dem finalen Netz hinzugefügt,
 andernfalls die beiden Dreiecke $p_1 p_2 p_1'$ und $p_2 p_2' p_1'$.
 
-In dem Fall, das alle drei Kanten nicht valide sind, werden sechs neue Vertices eingefügt,
-die Abbildung \ref{fig:0VALID_EDGES} verdeutlicht diesen Fall. 
+In dem Fall, dass alle drei Kanten nicht valide sind, werden sechs neue Vertices eingefügt.
+Die Abbildung \ref{fig:0VALID_EDGES} verdeutlicht diesen Fall. 
 Die Berechnung aller Vertices geschieht analog zu dem Vertex $p_3'$ aus dem vorhergehenden Betrachtung mit
 einer validen Kante.
 
@@ -1486,10 +1486,10 @@ einer validen Kante.
 	\label{fig:0VALID_EDGES}
 \end{figure}
 
-Zu beachten ist, dass jedes neu erzeugte Dreieck auf Kollinearität zu überprüfen
+Es muss beachtet werden, dass jedes neu erzeugte Dreieck auf Kollinearität zu überprüfen
 und gegebenenfalls zu verwerfen.
 
-Die Pixelpositionen, in den Gleichungen \ref{eq:EDGE_VALID} und \ref{eq:EDGE_JOIN} werden in Texturkoordinaten angegeben und die Farbwerte der Pixel auf das Intervall $[0,1]$ transformiert.
+Die Pixelpositionen in den Gleichungen \ref{eq:EDGE_VALID} und \ref{eq:EDGE_JOIN} werden in Texturkoordinaten angegeben und die Farbwerte der Pixel auf das Intervall $[0,1]$ transformiert.
 Zu beachten ist, dass der Parameter $\alpha$ von der Baumtiefe abhängt.
 
 \begin{figure}
@@ -1501,20 +1501,20 @@ Zu beachten ist, dass der Parameter $\alpha$ von der Baumtiefe abhängt.
 	\subfigure[$\alpha = 10, \beta = 0.3$]{\includegraphics[width=.3\textwidth]{img/delaunay_A100_J03.png} }
 	\subfigure[$\alpha = 10, \beta = 0.4$]{\includegraphics[width=.3\textwidth]{img/delaunay_A100_J04.png} }
 	\subfigure[$\alpha = 10, \beta = 1.0$]{\includegraphics[width=.3\textwidth]{img/delaunay_A100_J10.png} }
-	\caption{Auswirkung der Parameter auf die Nachbearbeitung. Das Netz wurde mit der \textit{Quadtree}-Methode erzeugt, 
-	dazu wurde $t_{max} = 8, l = 0.7, i = 0.6$ gewählt.}
+	\caption{Auswirkung der Parameter auf die Nachbearbeitung. Das Netz wurde mit der \textit{Quadtree}-Methode erzeugt. 
+	Dazu wurde $t_{max} = 8, l = 0.7, i = 0.6$ gewählt.}
 	\label{fig:param_env}
 \end{figure}
 
 Dabei zeigt die Abbildung \ref{fig:param_env} den Einfluss von $\alpha$ und $\beta$ bei der Nachbearbeitung.
 Rot markierte Kanten sind nicht valide und werden nicht zum endgültigen Netz hinzugefügt.
-Alle grünen Kanten, gehören zu Dreiecken die aus einem Dreieck, ohne valide Kante erzeugt wurden.
-Analog dazu wurden Dreiecke, hervorgehoben durch blaue Kanten aus Dreiecken erzeugt mit nur einer
+Alle grünen Kanten gehören zu Dreiecken, die aus einem Dreieck ohne valide Kante erzeugt wurden.
+Analog dazu wurden Dreiecke, hervorgehoben durch blaue Kanten, aus Dreiecken erzeugt mit nur einer
 validen Kante.
-Kollineare Dreiecke fallen zu Schwarzen Kanten oder Punkten zusammen.
+Kollineare Dreiecke fallen zu schwarzen Kanten oder Punkten zusammen.
 
 Wenn die Parameter $\alpha = 0$ und $\beta = 0$ gewählt werden, degeneriert das Netz.
-Es ist zu erkennen, das mit größer werden $\alpha$ der Einfluss auf gekrümmte Oberflächen abnimmt.
+Es ist zu erkennen, dass mit größer werden $\alpha$ der Einfluss auf gekrümmte Oberflächen abnimmt.
 Mit dem Parameter $\beta$ lässt sich die Verbindungsneigung beeinflussen.
 
 Die Abbildung \ref{fig:refined_mesh_1} zeigt ein komplettes nachbearbeitetes Dreiecksnetz.
@@ -1522,7 +1522,7 @@ Die Abbildung \ref{fig:refined_mesh_1} zeigt ein komplettes nachbearbeitetes Dre
 \begin{figure}
 	\includegraphics[width=\textwidth]{../results/7/512x512_Delaunay/D9/L0.5/I0.4/A1.0/J0.1/_pre/delaunay.png}
 	\caption{Nachbearbeites Netz des ersten Frames aus dem \textit{TestSpheres}-Datensatz.
-			 Das Netz wurde mit der \textit{Quadtree}-Methode erzeugt, dazu wurde $t_{max} = 9, l = 0.5, i = 0.4, \alpha = 1.0, \beta = 0.1$ gewählt.}
+			 Das Netz wurde mit der \textit{Quadtree}-Methode erzeugt. Dazu wurde $t_{max} = 9, l = 0.5, i = 0.4, \alpha = 1.0, \beta = 0.1$ gewählt.}
 	\label{fig:refined_mesh_1}
 \end{figure}
 
@@ -1531,18 +1531,18 @@ Die Abbildung \ref{fig:refined_mesh_1} zeigt ein komplettes nachbearbeitetes Dre
 
 Die Client-Anwendung ist eine Browser basierte Web-Anwendung, die mit dem Server
 über das WebSocket-Protokoll kommuniziert.
-Dabei handelt es sich um ein auf TCP basierendes Netzwerkprotokoll,
-das eine Bidirektionale Verbindung zwischen den Verbindungsteilnehmern erlaubt,
+Dabei handelt es sich um ein auf TCP-basierendes Netzwerkprotokoll,
+das eine bidirektionale Verbindung zwischen den Verbindungsteilnehmern erlaubt,
 ohne auf Methoden wie Long Polling zurückgreifen zu müssen.
-Die klientseitge Extrapolation der Bilddaten wird mit Hilfe von WebGL durchgeführt wird.
-Bei WebGL handelt es sich um eine Bibliothek die von modernen Browsern zur Verfügung gestellt wird,
+Die clientseitige Extrapolation der Bilddaten wird mit Hilfe von WebGL durchgeführt.
+Bei WebGL handelt es sich um eine Bibliothek, die von modernen Browsern zur Verfügung gestellt wird,
 um eine Hardware beschleunigte Bildsynthese zu ermöglichen.
-Der Vorteil dieser Technologie ist die Unabhängigkeit der Anwendung im Bezug,
-zur Plattform und dem Gerät, in Kombination mit einer hohen Rechengeschwindigkeit.
+Der Vorteil dieser Technologie ist die Unabhängigkeit der Anwendung im Bezug
+zur Plattform und dem Gerät in Kombination mit einer hohen Rechengeschwindigkeit.
 
-Diese Kapitel wird dabei in zwei Hauptbereiche unterteilt.
-Im ersten, werden Details über die Kommunikation zwischen Client und Server behandelt.
-Der zweite Abschnitt beschäftigt sich mit Implementierungsspezifischen Details der
+Dieses Kapitel wird dabei in zwei Hauptbereiche unterteilt.
+Im ersten werden Details über die Kommunikation zwischen Client und Server behandelt.
+Der zweite Abschnitt beschäftigt sich mit implementierungsspezifischen Details der
 Algorithmen.
 
 \section{Details zur Kommunikation}
@@ -1554,35 +1554,35 @@ Der Server-Prozess besteht aus einem Thread.
 Zur Verwaltung der Anfragen wird das Event-Managementsystem von QT verwendet. 
 Beim Start der Serveranwendung werden die Szenen geladen.
 Aus diesen wird eine \textit{Playlist} erstellt, diese vereint die Informationen aller Szenen.
-Im Anschluss daran wird Standardparameterkonfiguration geladen
+Im Anschluss daran wird die Standardparameterkonfiguration geladen,
 und der Server wartet darauf, dass sich ein Client verbindet.
 
 Die Kommunikation zwischen Server- und die Client-Komponente basiert auf dem
 JSON-RPC 2.0 Protokoll.
 Die Abkürzung JSON-RPC steht für \textit{JavaScript Object Notation Remote Procedure Call}.
-Es handelt sich dabei, um ein Protokoll, das den Aufbau und die Nominatur von Nachrichten beschreibt. 
-Im speziellen um Nachrichten, die dazu dienen, dass der Kommunikationsteilnehmer bestimmte 
-Methoden mit bestimmten Parameterkonfigurationen zu starten.
-Es basiert auf dem Textbasierten Datenformat JSON.
+Es handelt sich dabei um ein Protokoll, das den Aufbau und die Nominatur von Nachrichten beschreibt. 
+Im Speziellen geht es dabei um Nachrichten, die dazu dienen, dass der Kommunikationsteilnehmer bestimmte 
+Methoden mit bestimmten Parameterkonfigurationen startet.
+Es basiert auf dem textbasierten Datenformat JSON.
 Nachrichten werden in Anfragen und Antworten unterteilt.
 Mit Hilfe einer $id$ lassen sich Nachrichten bei asynchroner Kommunikation zuordnen.
 Es werden drei verschiedene Typen von Anfragen unterschieden, \textit{Request}, \textit{Notification}  und \textit{Batch Request}.
 Ein \textit{Request} ist eine Anfrage, welche die Antwort eines Kommunikationsteilnehmers verlangt.
-Diese Form der Anfragen, kann zu Synchronisierten Nachrichtenübertragung genutzt werden. 
-Im Gegensatz dazu, entfällt bei einer \textit{Notification} die $id$, weil keine Antwort verlangt wird.
-Der \textit{Batch Request} fast eine Menge von \textit{Requests} und \textit{Notifications} in
-eine einzige Anfrage zusammen.
+Diese Form der Anfragen kann zur Synchronisierung der Nachrichtenübertragung genutzt werden. 
+Im Gegensatz dazu entfällt bei einer \textit{Notification} die $id$, weil keine Antwort verlangt wird.
+Der \textit{Batch Request} fasst eine Menge von \textit{Requests} und \textit{Notifications} in
+einer einzigen Anfrage zusammen.
 
-In dieser Arbeit implementierte Variante von JSON-RPC 2.0, 
+Die in dieser Arbeit implementierte Variante von JSON-RPC 2.0 
 wird auf Anfragen vom Typ \textit{Request} beschränkt,
 weil die gesamte Kommunikation synchronisiert stattfindet.
 
 Eine JSON-RPC-Anfrage ist ein JSON-Objekt, das sich aus vier Teilen zusammensetzt.
-Der erste ist ein String mit der JSON-RPC Version, gefolgt vom Namen der aufzurufenden Methode.
-Im Anschluss folgt ein JSON-Objekt, das die Parameter der Aufzurufenden Methode enthält
+Der erste ist ein String mit der JSON-RPC Version gefolgt vom Namen der aufzurufenden Methode.
+Im Anschluss folgt ein JSON-Objekt, das die Parameter der aufzurufenden Methode enthält,
 und zum Schluss kommt die $id$ der Anfrage.
 Als Beispielanfrage soll der Aufruf der Methode \textit{resize} dienen.
-Möchte der Client die Auflösung ändern schickt er die Anfrage, dem Beispiel \ref{lst:jsonrpc_request_resize}
+Möchte der Client die Auflösung ändern, schickt er die Anfrage dem Beispiel \ref{lst:jsonrpc_request_resize}
 entsprechend zum Server.
 
 \begin{lstlisting}[numbers=left,mathescape=true,xleftmargin=0.1\textwidth,captionpos=b,caption={RPC-Request},label={lst:jsonrpc_request_resize}]
@@ -1595,12 +1595,12 @@ entsprechend zum Server.
 \end{lstlisting}
 
 Hat der Server die Anfrage empfangen, ruft dieser darauf hin die Methode \textit{resize} mit den entsprechenden Parametern aus der Anfrage auf.
-Im Anschluss daran, wird eine Antwort zurückgesendet.
-Eine JSON-RPC-Antwort ist ebenfalls ein JSON-Objekt, dass aus drei Teilen besteht.
-Der erste Teil ist ebenfalls die JSON-RPC Version als String kodiert.
-Der zweite Teil enthält den Rückgabewert in Form eines JSON-Objektes
+Im Anschluss daran wird eine Antwort zurückgesendet.
+Eine JSON-RPC-Antwort ist ebenfalls ein JSON-Objekt, das aus drei Teilen besteht.
+Der erste Teil ist ebenfalls die JSON-RPC-Version als String kodiert.
+Der zweite Teil enthält den Rückgabewert in Form eines JSON-Objektes,
 und zum Schluss folgt die $id$ der Anfrage, 
-wie im Beispiel \ref{lst:jsonrpc_response_resize} demonstriert
+wie im Beispiel \ref{lst:jsonrpc_response_resize} demonstriert.
  
 \begin{lstlisting}[numbers=left,mathescape=true,xleftmargin=0.1\textwidth,captionpos=b,caption={RPC-Response},label={lst:jsonrpc_response_resize}]
 {
@@ -1610,10 +1610,10 @@ wie im Beispiel \ref{lst:jsonrpc_response_resize} demonstriert
 }
 \end{lstlisting}
 
-Der Server stellt eine Menge von Methoden zur Verfügung, die durch den Client initiiert,
+Der Server stellt eine Menge von Methoden zur Verfügung, die durch den Client initiiert und 
 von dem Serverprozess ausführt werden.
 
-Eine Beispielkommunikation, dargestellt im Sequenzdiagramm \ref{fig:Squenzdiagram} veranschaulicht
+Eine Beispielkommunikation, dargestellt im Sequenzdiagramm \ref{fig:Squenzdiagram}, veranschaulicht
 den Remote-Aufruf verschiedener Methoden.
 
 \begin{figure}[H]
@@ -1664,19 +1664,19 @@ den Remote-Aufruf verschiedener Methoden.
 
 Kann sich der Client erfolgreich mit dem Server verbinden, fragt er die \textit{Playlist} ab.
 Diese liefert dem Client alle Informationen über die zur Verfügung stehenden Szenen.
-Sie enthält für jeden Frame einer Szene, dessen Kamerainformationen.
+Sie enthält für jeden Frame einer Szene dessen Kamerainformationen.
 Nachdem der Client alle Szenen kennt, kann er den Server mitteilen, welche dieser laden soll.
 Anschließend wird mit der Methode \textit{setConfig} eine gewählte Parameterkonfiguration gesetzt.
-Mit Hilfe der \textit{Playlist}, kann ein beliebiger Frame der geladenen Szene, angefordert werden.
+Mit Hilfe der \textit{Playlist} kann ein beliebiger Frame der geladenen Szene angefordert werden.
 Wird der Frame empfangen, kann dieser vom Client anschließend extrapoliert werden.
-Neben den Vorgestellten, stehen zusätzliche Methoden, zum Starten einer Messung beziehungsweise zum 
+Neben den Vorgestellten stehen zusätzliche Methoden zum Starten einer Messung beziehungsweise zum 
 Speichern eines Bildes durch den Server zur Verfügung.
 
 \section{Details zur Implementierung der Algorithmen}
 
-In diesem Abschnitt werden Details zur Implementierung, der vorgestellten Algorithmen
+In diesem Abschnitt werden Details zur Implementierung der vorgestellten Algorithmen
 genauer betrachtet.
-Begonnen wird mit den Farbbildern.
+Begonnen wird hier mit den Farbbildern.
 Um eine verlustbehaftete Komprimierung ermöglichen zu können,
 kommt das JPEG-Format zum Einsatz.  
 Anschließend müssen die Bildinformationen mit Base64 kodiert werden, 
@@ -1684,20 +1684,20 @@ damit diese als String in ein JSON-Objekt integriert werden können.
 
 \subsection{Vollvernetzung}
 
-Im Fall der Vollvernetzung, wird neben dem Farbbild auch das Tiefenbild mit Base64 kodiert
+Im Fall der Vollvernetzung wird neben dem Farbbild auch das Tiefenbild mit Base64 kodiert
 und als String in ein JSON-Objekt eingebettet.
-Im Gegensatz zu den Farbbildern, werden die Tiefenbilder verlustfrei als PNG komprimiert.
+Im Gegensatz zu den Farbbildern werden die Tiefenbilder verlustfrei als PNG komprimiert.
 
 Die Dekodierung von Farb- und Tiefenbilder kann mit Hilfe des Bildcontainers nativ durch
 vom Browser durchgeführt werden.
 Im Bezug auf das Tiefenbild ergibt sich ein Problem.
 Dieser Bildcontainer erlaubt für jeden Farbkanal ausschließlich eine Farbtiefe von 8 Bit.
-Damit ein Shaderprogramm trotzdem auf 16 Bit Informationen aus einer Textur zurückgreifen 
-kann, muss der 16 Bit Wert auf zwei Farbkanäle aufgeteilt werden und die Rekonstruktion
+Damit ein Shaderprogramm trotzdem auf 16 Bit-Informationen aus einer Textur zurückgreifen 
+kann, muss der 16 Bit-Wert auf zwei Farbkanäle aufgeteilt werden, und die Rekonstruktion
 erfolgt im Shader.
 Diese Aufteilung findet auf dem Server statt, bevor das Bild mit Base64 kodiert wird.
-Auf den roten-Farbkanal entfallen die ersten 8 Bit und 
-die zweiten 8 Bit, der 16 Bit Zahl werden auf den grünen Farbkanal ausgelagert.
+Auf den roten Farbkanal entfallen die ersten 8 Bit und 
+die zweiten 8 Bit, der 16 Bit-Zahl werden auf den grünen Farbkanal ausgelagert.
 Die Abbildung \ref{fig:use2channels} verdeutlicht die Aufteilung.
 
 \begin{figure}[h]
@@ -1714,11 +1714,11 @@ Die Abbildung \ref{fig:use2channels} verdeutlicht die Aufteilung.
 		\draw (0.5, -1.5) -- (0.5, -0.5);
 	\end{tikzpicture}
 	\centering
-	\caption{Hier wird die Aufteilung einer 16 Bit Zahl auf die Farbkanäle, links rot und rechts grün, visuell verdeutlicht. Das Schlüsselwort $d_{up}$ bezeichnet die ersten 8 Bit und $d_{low}$ die zweiten 8 Bit.}
+	\caption{Hier wird die Aufteilung einer 16 Bit-Zahl auf die Farbkanäle, links rot und rechts grün, visuell verdeutlicht. Das Schlüsselwort $d_{up}$ bezeichnet die ersten 8 Bit und $d_{low}$ die zweiten 8 Bit.}
 	\label{fig:use2channels}
 \end{figure}
 
-Um aus $d_{up}$ und $d_{low}$ die 16 Bit $d$ Zahl zu erhalten, genügt es den Wert von $d_{up}$
+Um aus $d_{up}$ und $d_{low}$ die 16 Bit-Zahl $d$ zu erhalten, genügt es, den Wert von $d_{up}$
 zuerst mit 255 zu multiplizieren und den Wert von $d_{low}$ zu addieren,
 wie in der Gleichung \ref{eq:reconstruct1} beschrieben.
 
@@ -1727,11 +1727,11 @@ wie in der Gleichung \ref{eq:reconstruct1} beschrieben.
 	\label{eq:reconstruct1}
 \end{equation}
 
-Die rekonstruierte Zahl $d$ aus der Gleichung \ref{eq:reconstruct1} liegt im Ganzzahligem Intervall $[0,65535]$.
-Beim Zugriff auf die Farbwerte einer Textur im Shader, werden die jedoch normiert.
-Das bedeutet, im Fall eines 8 Bit Farbkanals, wird jeder Wert durch den Maximalwert 255 geteilt.
-Auf diese weise werden die Werte eines Pixels in das Intervall $[0, 1]$ überführt.
-Um eine 16 Bit Zahl in dieses Intervall zu überführen, muss sie durch den Wert $65535$ geteilt werden.
+Die rekonstruierte Zahl $d$ aus der Gleichung \ref{eq:reconstruct1} liegt im ganzzahligem Intervall $[0,65535]$.
+Beim Zugriff auf die Farbwerte einer Textur im Shader werden diese jedoch normiert.
+Das bedeutet im Fall eines 8 Bit-Farbkanals wird jeder Wert durch den Maximalwert 255 geteilt.
+Auf diese Weise werden die Werte eines Pixels in das Intervall $[0, 1]$ überführt.
+Um eine 16 Bit-Zahl in dieses Intervall zu überführen, muss sie durch den Wert $65535$ geteilt werden.
 Aus diesem Zusammenhang ergibt sich die folgende Gleichung zur Rekonstruktion der Zahl $d$:
 
 \begin{equation}
@@ -1740,7 +1740,7 @@ Aus diesem Zusammenhang ergibt sich die folgende Gleichung zur Rekonstruktion de
 \end{equation}
 
 Die Zahl $65535$ lässt sich in das Produkt $65535 = 255 \cdot 257$ umschreiben
-und dadurch Gleichung \ref{eq:reconstruct2} kann weiter vereinfacht werden:
+und dadurch kann die Gleichung \ref{eq:reconstruct2} weiter vereinfacht werden:
 
 \begin{align}
 	d &= \frac{ \cancel{255} \cdot \left( \frac{d_{low}}{255} + \frac{d_{up}}{255} \cdot 265 \right)}{\cancel{255} \cdot 257} \\
@@ -1748,23 +1748,23 @@ und dadurch Gleichung \ref{eq:reconstruct2} kann weiter vereinfacht werden:
 		\label{eq:reconstruct3}
 \end{align}
 
-Im Shader kann die 16 Bit zahl deshalb einfach entsprechend der Gleichung \ref{eq:reconstruct3} rekonstruieren.
+Im Shader kann die 16 Bit-Zahl deshalb einfach entsprechend der Gleichung \ref{eq:reconstruct3} rekonstruieren.
 Der Farbwert des roten Farbkanals wird mit (1/257) multipliziert und der des grünen mit (256/257).
-Im Anschluss daran werden die beiden Werte aufsummiert und der Wert der 16 Bit Zahl steht im Shader zur Verfügung.
+Im Anschluss daran werden die beiden Werte aufsummiert, und der Wert der 16 Bit Zahl steht im Shader zur Verfügung.
 
-Im Fall der Vollvernetzung, werden alle Dreiecke, die zum Hintergrund gehören transparent gezeichnet.
-Zusätzlich wird im Vertex-Shader, der Gradient des bearbeiteten Vertice berechnet.
-Der x- und y-Anteil des Gradienten, wird mit dem Schwellwert $g$ verglichen.
+Im Fall der Vollvernetzung werden alle Dreiecke, die zum Hintergrund gehören, transparent gezeichnet.
+Zusätzlich wird im Vertex-Shader der Gradient des bearbeiteten Vertice berechnet.
+Der x- und y-Anteil des Gradienten wird mit dem Schwellwert $g$ verglichen.
 Ist einer dieser beiden Gradientkomponenten größer als der Schwellwert $g$, 
 wird der Alphakanal an dieser Stelle ebenfalls auf 0 gesetzt.
 
 Damit verdeckte Fragmente durch die transparenten sichtbar werden,
-kommt ein 3 und ein 5 Pass \textit{depth peeling}-Verfahren zum Einsatz.
+kommt ein 3- und ein 5-Pass \textit{depth peeling}-Verfahren zum Einsatz.
 
 \subsection{Delaunay-Triangulierung}
 
-Beim \textit{Quadtree}, wird der Bildbereich sukzessiv in vier gleichgroße Regionen aufgeteilt,
-deren Eckpunkte in der Punktmenge $P$ landen können.
+Beim \textit{Quadtree} wird der Bildbereich sukzessiv in vier gleichgroße Regionen aufgeteilt,
+deren Eckpunkte in der Punktmenge $P$ auftauchen können.
 Die Abbildung \ref{fig:qt_points} veranschaulicht die Aufteilung.
 
 \begin{figure}[h]
@@ -1783,25 +1783,25 @@ Die Abbildung \ref{fig:qt_points} veranschaulicht die Aufteilung.
 		\node[circle, minimum width=1em,fill=OliveGreen] at (4,6) {};
 		\node[circle, minimum width=1em,fill=OliveGreen] at (4,3) {};
 	\end{tikzpicture}
-	\caption{Unterteilung eines Rechtecks, in vier Teilflächen. 
-			 An den grünen markierten Positionen, gibt es mehrere Möglichkeiten, wie die
+	\caption{Unterteilung eines Rechtecks in vier Teilflächen. 
+			 An den grünen markierten Positionen gibt es mehrere Möglichkeiten, wie die
 			 Eckpunkte der betreffenden Rechtecke gesetzt werden können.}
 	\label{fig:qt_points}
 \end{figure}
 
 Dabei gibt es mehrere Möglichkeiten, wie die Eckpunkte der Teilfenster gewählt werden können.
-Einerseits können die Flächen, exakt gleich groß gewählt werden. 
-Mit dem Effekt, das viele kleine Dreiecke dadurch entstehen, 
-dass die grün markierten Punkte sich aus mindestens zwei Eckpunkten zusammensetzten, 
+Einerseits können die Flächen exakt gleich groß gewählt werden. 
+Mit dem Effekt, dass dadurch viele kleine Dreiecke entstehen, 
+dass die grün markierten Punkte sich aus mindestens zwei Eckpunkten zusammensetzen, 
 die sich jeweils nur um eine Pixeleinheit voneinander unterscheiden. 
 
 Die zweite Möglichkeit besteht darin, für derartige Eckpunkte dieselbe Koordinate
 zu wählen. 
-Auf diese Weise lässt sich die Anzahl der in der Punktmenge $P$ enthaltenen Punkte,
+Auf diese Weise lässt sich die Anzahl der in der Punktmenge $P$ enthaltenen Punkte
 bei gleichbleibender Bildqualität senken.
 In dieser Arbeit wird die zweite Variante verwendet.
 
-Bei der Erzeugung der Gradientenbilder, mit dem Sobel-operator, entsteht ein Rand
+Bei der Erzeugung der Gradientenbilder mit dem Sobel-operator entsteht ein Rand
 mit der Breite von einem Pixel.
 Dieser wird auch bei der Binärisierung von dem Merkmalsbild $\sigma$ ausgelassen.
 
@@ -1816,35 +1816,35 @@ Zu Beginn dieses Kapitels wird beschrieben, wie die Ergebnisse erhoben werden.
 Anschließend werden die Parameterkonfigurationen und deren Resultate vorgestellt.
 Dabei auftretende Besonderheiten werden kenntlich gemacht.
 
-Die Vollvernetzung und die beiden Varianten der Delaunay-Triangulierung werden,
+Die Vollvernetzung und die beiden Varianten der Delaunay-Triangulierung werden
 mit den beiden \textit{Ground-Truth}-Datensätzen, \textit{TestSpheres} und \textit{CoolRandom}, evaluiert.
 Der erste Frame einer Szene dient als Referenz für die Extrapolation.
 Aus dessen Tiefenbild wird mit dem gewählten Alogithmus ein Dreiecksnetz erzeugt.
 Zusammen mit dem dazugehörigen Farbbild wird es zum Client gesendet.
-Anschließend wird Dreiecksnetz, texturiert mit dem Farbbild, 
-aus allen Kameraperspektiven der Szene gezeichnet und
+Anschließend wird das Dreiecksnetz, texturiert mit dem Farbbild, 
+aus allen Kameraperspektiven der Szene gezeichnet, und
 die dabei entstandenen Bilder werden zurück zum Server gesendet.
 Die Qualität aller extrapolierten Bilder wird durch den PSNR und den SSIM bestimmt.
-Zusätzlich wird gemessen wie lange der Server für die Kodierung benötigt
+Zusätzlich wird gemessen, wie lange der Server für die Kodierung benötigt
 und wie lange der Client für die Extrapolation eines Bildes braucht.
 
 Für die Vollvernetzung wurde das Tiefenbild mit 8 und 16 Bit kodiert. 
-Es wurde ein 3 Pass und ein 5 Pass Verfahren verwendet, 
+Es wurde ein 3-Pass und ein 5-Pass Verfahren verwendet, 
 um die Transparenz mit \textit{depth peeling} zu realisieren.
 Und schließlich wurden die Schwellwerte $g \in \{1, 0.9, 0.8\}$ für den
 Vergleich mit dem Gradienten getestet.
-Die besten Ergebnisse werden mit 16 Bit, $g = 1$ und dem 5 Pass Verfahren erzielt.
+Die besten Ergebnisse werden mit 16 Bit, $g = 1$, und dem 5-Pass Verfahren erzielt.
 Diese Konfiguration dient als Basis für den Vergleich mit den Delaunay-Verfahren.
 
-Im Fall der Delaunay-Triangulation, wird zwischen den beiden Punktgenerierungsverfahren
+Im Fall der Delaunay-Triangulation wird zwischen den beiden Punktgenerierungsverfahren
 \textit{Quadtree} und \textit{Floyd-Steinberg} unterschieden.
 Für den \textit{Quadtree}-Ansatz werden generell alle Hintergrundpixel verworfen.
 Die Bäume werden mit den maximalen Baumtiefen $t_{max} \in \{10, 9, 8\}$ erzeugt.
 Für jede Baumtiefe $t_{max}$ wurden die Schwellwertkonfigurationen
 $l \in \{0.1,0.2, ..., 1.0\}$ und $i \in \{0.1, ..., l\}$ gemessen.
-Für alle $l > 0.6$ und $i = 0.6$, wurden zusätzlich die Netzverfeinerung durchgeführt. 
+Für alle $l > 0.6$ und $i = 0.6$ wurde zusätzlich die Netzverfeinerung durchgeführt. 
 Mit den Schwellwerten $\alpha \in \{0.1, 1, 10, 100, 1000\}$ und $\beta \in \{0.1, 0.2, ..., 1.0\}$.
-Die Erzeugung der Punktemenge erhoben mit dem \textit{Floyd-Steinberg}-Fehlerdiffusionsverfahren,
+Die Erzeugung der Punktemenge, erhoben mit dem \textit{Floyd-Steinberg}-Fehlerdiffusionsverfahren,
 wird mit den Parametern $\delta, \gamma \in \{0.1,0.2, ..., 1.0 \}$ evaluiert.
 Die folgenden Diagramme zeigen ausgewählte Beispiele von den erhobenen Daten.
 Dabei wird mit den besten Ergebnissen begonnen:
@@ -1913,13 +1913,14 @@ Dabei wird mit den besten Ergebnissen begonnen:
 	\label{fig:Daten_best_cases}
 \end{figure}
 
-Die Abbildung \ref{fig:Daten_best_cases} zeigt die besten Resultate, der Vollvernetzung,
-vom \textit{Quadtree}, sowie von der \textit{FloydSteinberg} Variante der Delaunay-Triangulierung.
-Für beide Szenen gemessen mit dem SSIM liefert die Vollvernetzung insgesamt die besten Ergebnisse,
-dicht gefolgt vom \textit{Quadtree}-Ansatz und die schlechtesten Ergebnisse liefert der \textit{FloydSteinberg} Ansatz.
+Die Abbildung \ref{fig:Daten_best_cases} zeigt die besten Resultate der Vollvernetzung
+vom \textit{Quadtree} sowie von der \textit{FloydSteinberg}-Variante der Delaunay-Triangulierung.
+Für beide Szenen, gemessen mit dem SSIM, liefert die Vollvernetzung insgesamt die besten Ergebnisse
+dicht gefolgt vom \textit{Quadtree}-Ansatz.
+Die schlechtesten Ergebnisse liefert der \textit{FloydSteinberg}-Ansatz.
 Interessant ist, dass die Güte der Ergebnisse von dem \textit{CoolRandom}-Datensatz,
 gemessen mit dem PSNR, schon bei den ersten extrapolierten Frames unter 25 $dB$ liegt.
-Außerdem fällt beim PSNR auf, dass die Werte, ab einem Winkel von 70 Grad wieder leicht ansteigen.
+Außerdem fällt beim PSNR auf, dass die Werte ab einem Winkel von 70 Grad wieder leicht ansteigen.
 
 \begin{figure}[H]
 	\subfigure[\textit{TestSpheres}]{
@@ -1990,10 +1991,10 @@ Außerdem fällt beim PSNR auf, dass die Werte, ab einem Winkel von 70 Grad wieder
 	\label{fig:Daten_best_cases_zoom}
 \end{figure}
 
-Die Abbildung \ref{fig:Daten_best_cases_zoom} zeigt die gleichen Parameterkonfigurationen,
+Die Abbildung \ref{fig:Daten_best_cases_zoom} zeigt die gleichen Parameterkonfigurationen
 wie die Abbildung \ref{fig:Daten_best_cases},
-dieses mal jedoch beschränkt auf die Kamerawinkelunterschiede von 0 bis 10 Grad.
-Hier zeigt sich sowohl mit dem SSIM, als auch beim PSNR, ein signifikanter unterschied
+dieses Mal jedoch beschränkt auf die Kamerawinkelunterschiede von 0 bis 10 Grad.
+Hier zeigt sich sowohl mit dem SSIM als auch beim PSNR ein signifikanter Unterschied
 zwischen dem FloydSteinberg-Ansatz und den anderen beiden Methoden. 
 Der \textit{Quadtree}-Ansatz ist in den ersten Frames sogar besser als die
 Vollvernetzung.
@@ -2062,13 +2063,13 @@ Vollvernetzung.
 	\label{fig:Daten_QT_1098}
 \end{figure}
 
-Die Abbildung \ref{fig:Daten_QT_1098} zeigt die Ergebnisse \textit{Quadtrees}-Ansatzes, 
+Die Abbildung \ref{fig:Daten_QT_1098} zeigt die Ergebnisse \textit{Quadtrees}-Ansatzes 
 mit unterschiedlichen maximalen Baumtiefen.
-Dabei zeigt sich das der unterschied in der Szene \textit{TestSpheres} nur gering ist.
+Dabei zeigt sich, das der Unterschied in der Szene \textit{TestSpheres} nur gering ist.
 Anders fallen die Ergebnisse für die \textit{CoolRandom} Szene aus.
 Hier zeigt sich ein deutlicher Unterschied zwischen drei Varianten,
 insbesondere im Intervall von 5 bis 50 Grad.
-Die Gütewerte für die Baumtiefe $t_{max} = 8$, liegen dabei deutlich unterhalb der anderen.
+Die Gütewerte für die Baumtiefe $t_{max} = 8$ liegen dabei deutlich unterhalb der anderen.
 Im Fall der \textit{CoolRandom} Szene zeigt sich bei der Messung mit dem PSNR eine erneute 
 Verbesserung bei Winkelunterschieden, die größer als 70 Grad sind. 
 
@@ -2145,15 +2146,15 @@ Verbesserung bei Winkelunterschieden, die größer als 70 Grad sind.
 	\label{fig:Daten_QT_1098_zoom}
 \end{figure}
 
-Die Diagramme aus der Abbildung \ref{fig:Daten_QT_1098_zoom},
-zeigen die gleichen Graphen, wie die Abbildung \ref{fig:Daten_QT_1098},
+Die Diagramme aus der Abbildung \ref{fig:Daten_QT_1098_zoom}
+zeigen die gleichen Graphen wie die Abbildung \ref{fig:Daten_QT_1098},
 allerdings im Intervall von 0 bis 10 Grad.
-Der Unterschied der Güte zwischen den Parameterkonfigurationen, wird hierbei noch deutlicher.
+Der Unterschied der Güte zwischen den Parameterkonfigurationen wird hierbei noch deutlicher.
 
 Um die Schwellwerte $l$ und $i$ zu untersuchen, 
 wird der SSIM von einem konstanten Kamerawinkelunterschied betrachtet.
-Zu diesem Zweck wird der 20 Grad Winkel gewählt, weil wie in der Abbildung \ref{fig:Daten_QT_1098}
-zu erkennen, eine höhere Streuung der Werte zu erwarten ist.
+Zu diesem Zweck wird der 20 Grad-Winkel gewählt, weil wie in der Abbildung \ref{fig:Daten_QT_1098}
+zu erkennen ist, eine höhere Streuung der Werte zu erwarten ist.
 Dadurch werden die Qualitätsunterschiede zwischen den Parameterkonfigurationen besonders deutlich.
 
 \begin{figure}
@@ -2289,9 +2290,9 @@ Dadurch werden die Qualitätsunterschiede zwischen den Parameterkonfigurationen b
 In der Abbildung \ref{fig:qt_TestSpheres_gc} sind die Güte und die Netzkonstruktionszeit
 des \textit{TestSpheres}-Datensatzes abgebildet.
 Es ist zu erkennen, dass die Güte mit der maximalen Baumtiefe $t_{max}$ abnimmt.
-Der Güteunterschied zwischen den einzelnen Konfigurationen von $l$ und $i$,
+Der Güteunterschied zwischen den einzelnen Konfigurationen von $l$ und $i$
 ist bei konstanter Baumtiefe allerdings gering.
-Anders sieht es mit der Konstruktionszeit aus, hier zeigt sich deutliche Unterschiede.
+Anders sieht es mit der Konstruktionszeit aus; hier zeigen sich deutliche Unterschiede.
 Bei $t_{max} = 10$ und für $i = 0$ ist die Konstruktionszeit für alle $l$ größer
 als 120 ms. 
 Für die maximale Baumtiefe $t_{max} = 9$ überschreitet die Konfiguration $l,i = 0$ die Marke
@@ -2422,23 +2423,23 @@ von 120 ms.
 			 bei einem konstanten Kamerawinkelunterschied von 20 Grad.
 			 Dabei liegt die maximale Baumtiefe in a,b bei 10,
 			 in c,d bei 9 und in e,f bei 8. Die Diagramme auf der linken Seite
-			 zeigen die Güte mit Hilfe des SSIM Wertes. 
+			 zeigen die Güte mit Hilfe des SSIM-Wertes. 
 			 Auf der rechten Seite wird die Gesamtkonstruktionszeit des Netzes abgetragen.}
 	\label{fig:qt_CoolRandom_gc}
 \end{figure}
 
-Vergleichbar zur Abbildung \ref{fig:qt_TestSpheres_gc}, werden Güte und Konstruktionszeit,
+Vergleichbar zur Abbildung \ref{fig:qt_TestSpheres_gc} werden Güte und Konstruktionszeit
 in der Abbildung \ref{fig:qt_CoolRandom_gc} für den \textit{CoolRandom}-Datensatz dargestellt.
-Die Güte variiert wesentlich stärker, als im \textit{TestSpheres}-Datensatz.
+Die Güte variiert wesentlich stärker als im \textit{TestSpheres}-Datensatz.
 Zu erkennen ist eine Abnahme der Güte mit steigenden $l$ und $i$, wenn die maximale
 Baumtiefe $t_{max} = 10$ beträgt.
-Für die anderen beiden maximalen Baumtiefen $8$ und $9$, ist die Güte für alle $i$ und $l$
+Für die anderen beiden maximalen Baumtiefen $8$ und $9$ ist die Güte für alle $i$ und $l$
 relativ konstant.
 Auch bei dieser Szene zeigt sich das bei $t_{max} = 10$ die Konstruktionszeiten am größten sind.
 Unabhängig von $l$ und $i$ überschreiten alle die Marke von 120 ms.
 Bei der maximalen Baumtiefe $t_{max} = 9$ zeigt sich eine deutliche Veränderung 
 der Konstruktionszeiten bezüglich $l$ und $i$.
-Je kleiner $l$ und $i$ umso größer ist die Berechnungszeit.
+Je kleiner $l$ und $i$ ist, umso größer ist die Berechnungszeit.
 Anders sieht es bei $t_{max} = 8$ aus. In diesem Fall sind alle Berechnungszeiten
 unterhalb von 40 ms.
 
@@ -2560,7 +2561,7 @@ unterhalb von 40 ms.
 			\addplot3[only marks, mark=square*, mark size=7, ycomb, scatter] file {div_s_6_D8_triangle.csv};      
 		\end{axis}
 	\end{tikzpicture}}
-	\caption{Die Diagramme zeigen für den \textit{Quadtree}-Ansatz,
+	\caption{Die Diagramme zeigen für den \textit{Quadtree}-Ansatz
 			 bei einem konstanten Kamerawinkelunterschied von 20 Grad die Anzahl der Dreiecke
 			 in Abhängigkeit der Parameter $l,i$ und $t_{max}$.
 			 Dabei liegt die maximale Baumtiefe in a,b bei 10,
@@ -2570,14 +2571,14 @@ unterhalb von 40 ms.
 	\label{fig:Daten_QT_1098_Tri}
 \end{figure}
 
-In der Abbildung \ref{fig:Daten_QT_1098_Tri} ist die Anzahl der Dreiecke,
-in Abhängigkeit von $l$ und $i$, sowie der maximalen Baumtiefe $t_{max}$ abgebildet.
+In der Abbildung \ref{fig:Daten_QT_1098_Tri} ist die Anzahl der Dreiecke
+in Abhängigkeit von $l$ und $i$ sowie der maximalen Baumtiefe $t_{max}$ abgebildet.
 Wird der Datensatz \textit{TestSpheres} betrachtet,
 zeigt sich für alle $t_{max}$, dass bei der Parameterkonfiguration $l = 0, i = 0$
 wesentlich mehr Dreiecke erzeugt werden als bei allen anderen Konfigurationen von $l$ und $i$.
-Für den Datensatz \textit{CoolRandom} sieht es etwas anders aus,
-hier zeigt sich, dass die Anzahl der Dreiecke sinkt, wenn $l$ und $i$ größer werden,
-vor allem wenn $t_{max} = 10$ ist.
+Für den Datensatz \textit{CoolRandom} sieht es etwas anders aus.
+Hier zeigt sich, dass die Anzahl der Dreiecke sinkt, wenn $l$ und $i$ größer werden,
+vor allem, wenn $t_{max} = 10$ ist.
 
 \begin{figure}[H]
 	\centering
@@ -2699,28 +2700,28 @@ vor allem wenn $t_{max} = 10$ ist.
 		\end{axis}
 	\end{tikzpicture}}
 	\caption{Die Diagramme a, b stellen die Ergebnisse von dem \textit{CoolRandom} Datensatz
-			 und c, d die des \textit{TestSpheres} Datensatzes erhoben mit FloydSteinberg Ansatz dar.
-			 Die Diagramme auf der linken Seite zeigen die Güte mit Hilfe des SSIM und die
+			 und c, d die des \textit{TestSpheres}-Datensatzes, erhoben mit \textit{FloydSteinberg}-Ansatz dar.
+			 Die Diagramme auf der linken Seite zeigen die Güte mit Hilfe des SSIM, und die
 			 Diagramme auf der rechte Seite bilden die Gesamtkompressionszeit des Netzes ab.}
 	\label{fig:data_floydSteinberg}
 \end{figure}
 
-Analog zu den Schwellwerten der \textit{Quadtree}-Methode, werden die Parameter $\delta$ und $\gamma$,
+Analog zu den Schwellwerten der \textit{Quadtree}-Methode werden die Parameter $\delta$ und $\gamma$
 vom \textit{FloydSteinberg}-Verfahren in der Abbildung \ref{fig:data_floydSteinberg} dargestellt.
-Dabei sind die Ergebnisse, für die Szene \textit{TestSpheres} hinsichtlich der Güte, für alle Konfigurationen größer als $0.9$.
-Bei der Berechnungszeit zeigt sich, dass erst ab den Konfigurationen $\delta > 0.5$ und $\gamma > 0.5$,
+Dabei sind die Ergebnisse für die Szene \textit{TestSpheres} hinsichtlich der Güte für alle Konfigurationen größer als $0.9$.
+Bei der Berechnungszeit zeigt sich, dass erst ab den Konfigurationen $\delta > 0.5$ und $\gamma > 0.5$
 die Konstruktionszeiten kleiner als 100 ms werden.
 Die Anzahl der Dreiecke ist bei den Konfigurationen $\gamma = 0$ oder für $\delta = 0$ am Höchsten.
 Anders sieht es bei dem Datensatz \textit{CoolRandom} aus.
-Die Gütewerte liegen alle unterhalb von $0.8$,
-dabei zeigt sich eine zunehmende Verschlechterung für Konfigurationen 
+Die Gütewerte liegen alle unterhalb von $0.8$.
+Dabei zeigt sich eine zunehmende Verschlechterung für Konfigurationen 
 mit $\delta > 0.6$ und $\gamma > 0.6$.
-Die Konstruktionszeiten des Netzes sind für alle Parameterkonfigurationen größer als 120 ms,
+Die Konstruktionszeiten des Netzes sind für alle Parameterkonfigurationen größer als 120 ms
 bis auf die Konfiguration $\gamma = 1$ und $\delta = 0.9$.
-Mit der Anzahl der Dreiecke verhält es sich ähnlich, wie für die Szene \textit{TestSpheres}.
+Mit der Anzahl der Dreiecke verhält es sich ähnlich wie bei der Szene \textit{TestSpheres}.
 
 Der Netzoptimierungsschritt wird ausschließlich mit dem \textit{Quadtree}-Ansatz untersucht,
-da dessen Ergebnisse weitaus besser sind, als die der FloydSteinberg-Methode.
+da dessen Ergebnisse weitaus besser sind als die der FloydSteinberg-Methode.
 Um die Parameter $\alpha$ und $\beta$ auszuwerten, 
 werden $l$ und $i$ konstant auf einen Wert fixiert. 
 Zu diesem Zweck wurde $l = 0.7$ und $i = 0.6$ gewählt. 
@@ -2805,7 +2806,7 @@ Zu diesem Zweck wurde $l = 0.7$ und $i = 0.6$ gewählt.
 		\end{axis}
 	\end{tikzpicture}}
 	\caption{Es wird der Datensatz \textit{TestSpheres} betrachtet.
-			 Die Diagramme zeigen die Güteentwicklung, in Abhängigkeit des Parameters j.
+			 Die Diagramme zeigen die Güteentwicklung in Abhängigkeit des Parameters j.
 			 Dabei liegt die maximale Baumtiefe in a,b bei 10, in c,d bei 9 und in e,f bei 8.}
 	\label{fig:data_refine1}
 \end{figure}
@@ -2889,7 +2890,7 @@ Zu diesem Zweck wurde $l = 0.7$ und $i = 0.6$ gewählt.
 		\end{axis}
 	\end{tikzpicture}}
 	\caption{Es wird der Datensatz \textit{CoolRandom} betrachtet.
-			 Die Diagramme zeigen die Güteentwicklung, in Abhängigkeit des Parameters j.
+			 Die Diagramme zeigen die Güteentwicklung in Abhängigkeit des Parameters j.
 			 Dabei liegt die maximale Baumtiefe in a,b bei 10, in c,d bei 9 und in e,f bei 8.}
 	\label{fig:data_refine10}
 \end{figure}
@@ -2901,17 +2902,17 @@ Zum Vergleich dient das nicht nachbearbeitete Netz.
 Dabei wird $\alpha = 10$ gesetzt und $\beta \in \{0.1, 0.2\}$ gewählt.
 
 Deutlich zu sehen ist, dass bei kleinen Winkeln die nachbearbeiteten Netze 
-schlechter abschneiden, als die nicht optimierten.
+schlechter abschneiden als die nicht optimierten.
 In allen Fällen existiert ein Kipppunkt,
 ab dem die optimierten Netze hinsichtlich der Güte bessere Ergebnisse liefern.
 Bei kleineren $t_{max}$ wird dieser Kipppunkt schneller erreicht.
 Beim PSNR zeigt sich dieser Kipppunkt erst bei größeren Winkeln.
 Außerdem steigt beim PSNR die Güte oberhalb von 60 Grad wieder an.
 
-Die Parameter des Netzoptimierungsschrittes werden ähnlich ausgewertet,
+Die Parameter des Netzoptimierungsschrittes werden ähnlich ausgewertet
 wie zuvor $l$ und $i$.
 Zu diesen Zweck werden $l = 0.7$ und $i = 0.6$ gesetzt.
-Getestet werden die Parameter $\alpha \in \{0.1, 1, 10, 100, 1000\}$ und $\beta \in \{0.1, 0.2, ..., 1.0\}$
+Getestet werden die Parameter $\alpha \in \{0.1, 1, 10, 100, 1000\}$ und $\beta \in \{0.1, 0.2, ..., 1.0\}$.
 
 \begin{figure}
 	\centering
@@ -3056,8 +3057,8 @@ Getestet werden die Parameter $\alpha \in \{0.1, 1, 10, 100, 1000\}$ und $\beta 
 	\label{fig:nnt}
 \end{figure}
 
-In der Abbildung \ref{fig:nnt}, wird der Datensatz \textit{TestSpheres} betrachtet,es zeigt sich für $t_{max} = 10$,
-das die Güte ab $\alpha > 1$ größer als $0.9$ ist.
+In der Abbildung \ref{fig:nnt} wird der Datensatz \textit{TestSpheres} betrachtet. Es zeigt sich für $t_{max} = 10$,
+dass die Güte ab $\alpha > 1$ größer als $0.9$ ist.
 Im Vergleich dazu ist eine Verbesserung der Güte bei $t_{max} < 10$ auch bei $\alpha < 10$
 zu erkennen.
 Es lässt sich feststellen, dass für alle $t_{max}$ die besten Konstruktionszeiten für $\beta < 0.3$
@@ -3202,11 +3203,11 @@ erreicht werden.
 			\addplot3[only marks, mark=square*, mark size=7, ycomb, scatter] file {div_s_6_D8_L0.7_I0.6_cost.csv};      
 		\end{axis}
 	\end{tikzpicture}}
-	\caption{SSIM und Netzkonstruktionszeit, bei einem konstanten Winkelunterschied von 20 Grad.}
+	\caption{SSIM und Netzkonstruktionszeit bei einem konstanten Winkelunterschied von 20 Grad.}
 	\label{fig:nnc}
 \end{figure}
 
-In der Abbildung \ref{fig:nnc}, sind die Parameter für den Datensatz \textit{CoolRandom}
+In der Abbildung \ref{fig:nnc} sind die Parameter für den Datensatz \textit{CoolRandom}
 abgebildet.
 Hinsichtlich der Güte lässt sich kein Unterschied im Bezug auf $\alpha$ erkennen.
 Die besten Ergebnisse werden für $\beta < 0.3$ erreicht.
@@ -3354,13 +3355,13 @@ Für $t_{max} = 8$ liegen alle unterhalb von 70 ms.
 	\label{fig:nnd}
 \end{figure}
 
-In der Abbildung \ref{fig:nnd}, wird die Anzahl der Dreiecke in Abhängigkeit von
+In der Abbildung \ref{fig:nnd} wird die Anzahl der Dreiecke in Abhängigkeit von
 $\alpha, \beta$ und $t_{max}$ dargestellt.
 Zu erkennen ist für die Szene \textit{TestSpheres}, dass die Anzahl der Dreiecke
 für die Konfigurationen $\alpha > 1$ am kleinsten ist.
-In der Szene \textit{CoolRandom}, zeigt sich diese Tendenz sehr schwach.
-Für beide Szenen fällt die Anzahl der Dreiecke mit $\beta$, jedoch nur sehr gering.
-
+In der Szene \textit{CoolRandom} zeigt sich diese Tendenz nicht ganz so stark.
+Weiterhin fällt auf, dass bei kleinen Werten für $beta$ weniger Dreiecke entstehen als bei großen Werten.
+Dieser Zusammenhang zeigt sich für beide Szenen.
 
 \begin{figure}
 	\subfigure[\textit{TestSpheres}]{
@@ -3400,7 +3401,7 @@ Für beide Szenen fällt die Anzahl der Dreiecke mit $\beta$, jedoch nur sehr geri
 
 Die Abbildung \ref{fig:eq_nvso} zeigt die Güte von nicht nachbearbeiteten Netzen
 im Vergleich zu einem optimierten Netz.
-Dabei wurden die Parameter, wie zuvor $l = 0.7$ und $i = 0.6$ für alle Netze gewählt.
+Dabei wurden die Parameter, wie zuvor $l = 0.7$ und $i = 0.6$, für alle Netze gewählt.
 Es ist zu sehen, dass in der Szene \textit{TestSpheres} ein Kipppunkt existiert, 
 bei dem das optimierte Netz besser als die anderen Netze abschneidet.
 Ein solcher Kipppunkt existiert für \textit{CoolRandom} nicht.
@@ -3447,67 +3448,66 @@ und das optimierte Netz aus 4279 Dreiecken.
 	\label{fig:data_client_extrapolation_time}
 \end{figure}
 
-Die Abbildung \ref{fig:data_client_extrapolation_time}, zeigt repräsentativ die Zeit die der Client für die Extrapolation benötigt.
-Diese liegen sowohl für die Vollvernetzung als auch für die Delaunay-Triangulierung, im Schnitt unter einer Millisekunde.
-Es gibt ein paar Ausreißer, die eine Zeit von 1.5 ms auch nicht überschreiten.
+Die Abbildung \ref{fig:data_client_extrapolation_time} zeigt repräsentativ die Zeit, die der Client für die Extrapolation benötigt.
+Diese liegen sowohl für die Vollvernetzung als auch für die Delaunay-Triangulierung im Schnitt unter einer Millisekunde.
+Es gibt ein paar Ausreißer, die eine Zeit von 1.5 ms nicht überschreiten.
 
 Im Folgenden werden die vorgestellten Ergebnisse diskutiert.
 
 \chapter{Diskussion}
 
-In diesem Kapitel, werden die zuvor präsentierten Ergebnisse diskutiert.
-Dabei werden in dem Vollvernetzungsansatz, die Tiefeninformationen aus dem Tiefenbild unverändert und 
+In diesem Kapitel werden die zuvor präsentierten Ergebnisse diskutiert.
+Dabei werden in dem Vollvernetzungsansatz die Tiefeninformationen aus dem Tiefenbild unverändert und 
 unkomprimiert für die Bildextrapolation genutzt.
-Sie liefert, wie es zu erwarten war die besten Ergebnisse, hinsichtlich der Qualität für beide Szenen.
+Sie liefert, wie es zu erwarten war, die besten Ergebnisse hinsichtlich der Qualität für beide Szenen.
 Zu erwähnen ist, dass die Ergebnisse in Abhängigkeit der gewählten Szene stark variieren.
-Dies hängt damit zusammen, das die Szenen unterschiedlich beschaffen sind:
-Die Szene \textit{TestSpheres} besteht aus wenigen großen Kugeln, mit großen Oberflächen
+Dies hängt damit zusammen, dass die Szenen unterschiedlich beschaffen sind:
+Die Szene \textit{TestSpheres} besteht aus wenigen großen Kugeln mit großen Oberflächen
 und wenigen Kanten,
-wohingegen die Szene \textit{CoolRandom} aus vielen kleinen Kugeln, mit kleinen Oberflächen
+wohingegen die Szene \textit{CoolRandom} aus vielen kleinen Kugeln mit kleinen Oberflächen
 und vielen Kanten besteht.
-Das führt dazu, das die Dreiecksnetze der Szene \textit{CoolRandom} aus vielmehr Dreiecken
+Das führt dazu, dass die Dreiecksnetze der Szene \textit{CoolRandom} aus vielmehr Dreiecken
 bestehen als in die der \textit{TestSpheres}-Szene.
 Aus diesem Grund ist die Erzeugung der Dreiecksnetze für die \textit{CoolRandom} Szene mit
 weit aus mehr Rechenaufwand verbunden.
 Zusätzlich steigt der Fehler hinsichtlich der Qualität deutlich schneller als in der Szene \textit{TestSpheres}.
-Das resultiert daraus, dass in dem \textit{CoolRandom}-Datensatz,
+Das resultiert daraus, dass in dem \textit{CoolRandom}-Datensatz
 weitaus mehr Kugeln existieren als in der \textit{TestSpheres}-Szene, die im Tiefenbild
-des ersten Frames nicht abgebildet werden, aus dem die Netze erzeugt werden.
-Und deshalb in den extrapolierten Bildern nicht existieren.
+des ersten Frames nicht abgebildet werden, aus dem die Netze erzeugt werden
+und deshalb in den extrapolierten Bildern nicht existieren.
 
-Insgesamt liefert der \textit{Quadtree} weitaus bessere Resultate, als die FloydSteinberg-Methode.
+Insgesamt liefert der \textit{Quadtree} weitaus bessere Resultate als die FloydSteinberg-Methode.
 Das Problem der FloydSteinberg-Methode besteht darin, das extrem viele Punkte vorwiegend in der Nähe von Kanten platziert werden.
-Dabei gibt es einen Unterschied, zwischen äußeren und inneren Kanten.
+Dabei gibt es einen Unterschied zwischen äußeren und inneren Kanten.
 Während die äußeren Kanten die Kontur des Objektes abbilden und sehr dicht
 besetzt sind, werden innere Kanten nicht ausreichend repräsentiert.
-Planaren Flächen bestehen ebenso aus zu vielen Dreiecken.
+Planare Flächen bestehen ebenso aus zu vielen Dreiecken.
 Das führt dazu, dass auch bei einer sehr hohen Zahl von Dreiecken die
 Qualität der extrapolierten Bilder schon bei geringen Kamerawinkelunterschieden
-um einiges schlechter ausfällt, als bei den anderen Methoden.
+um einiges schlechter ausfällt als bei den anderen Methoden.
 Weil insgesamt zu viele Punkte erzeugt werden, wird auch die Vernetzung langsam.
 Die Abbildungen \ref{fig:nettings} und \ref{fig:floyd_steinberg_nett}
 verdeutlichen diesen Zusammenhang.
 
-Im Vergleich dazu schneidet der \textit{Quadtree}-Ansatz, im Bezug auf Qualität,
+Im Vergleich dazu schneidet der \textit{Quadtree}-Ansatz im Bezug auf Qualität,
 Rechenaufwand weitaus besser ab.
 Weiterhin lässt sich die Qualität des resultierenden
-Dreiecknetzes, mit dem Parameter $t_{max}$, adaptiv anpassen.
+Dreiecknetzes mit dem Parameter $t_{max}$, adaptiv anpassen.
 Große Werte für $t_{max}$ bedeuten in erster Linie,
-das die Bereiche stärker unterteilt werden, sodass an markanten stellen, wie Kanten 
+dass die Bereiche stärker unterteilt werden, so dass an markanten Stellen, wie Kanten 
 viele Punkte für die Vernetzung zur Verfügung stehen.
 Das hat aber einen direkten Einfluss auf die Anzahl der Dreiecke und die Konstruktionsgeschwindigkeit.
-Bei kleinen Werten für $t_{max}$, werden aufgrund der großen \textit{Quadtree}-Regionen
+Bei kleinen Werten für $t_{max}$, werden aufgrund der großen \textit{Quadtree}-Regionen,
 wie in der Abbildung \ref{fig:smalltmax} zu sehen ist, ganze Bereiche nicht
 vom Dreiecksnetz repräsentiert.
-Außerdem werden bei der Extrapolation einzelne Regionen deutlich Sichtbar.
+Außerdem werden bei der Extrapolation einzelne Regionen deutlich sichtbar.
 Die Variablen $l$ und $i$ beeinflussen die Güte kaum, haben jedoch einen starken Einfluss auf die Anzahl der Dreiecke.
 Nehmen $l$ und $i$ große Werte an, dann wird die Anzahl der Dreiecke reduziert.
-Die Güte wird durch $l$ und $i$ deshalb kaum beeinflusst, weil sowohl äußere, als auch innere Kanten auch für große Werte von $l$ ausreichend abgebildet werden.
-Wobei der Parameter $i$ vorwiegend die Unterteilung gekrümmter
-Flächen bestimmt, bei kleinen Winkeln wird die Güte selbst bei einer gröberen Unterteilung kaum verschlechtert.
-Es sind große Werte für $l$ zum Empfehlen, beispielsweise $0.7$.
-Der Parameter $i$ sollte nicht mit $0$ gewählt werden, sollte jedoch kleiner
-oder gleich $l$ sein. 
+Die Güte wird durch $l$ und $i$ deshalb kaum beeinflusst, weil sowohl äußere als auch innere Kanten auch für große Werte von $l$ ausreichend abgebildet werden.
+Der Parameter $i$ bestimmt vorwiegend die Unterteilung gekrümmter
+Flächen; bei kleinen Winkeln wird die Güte selbst bei einer gröberen Unterteilung kaum verschlechtert.
+Es sind große Werte für $l$ zu empfehlen, beispielsweise $0.7$.
+Der Parameter $i$ sollte kleiner oder gleich $l$ sein. 
 
 \begin{figure}[H]
 	\centering
@@ -3523,21 +3523,21 @@ oder gleich $l$ sein.
 	\label{fig:smalltmax}
 \end{figure}
 
-Die Nachbearbeitung der Netze bringt grundsätzlich einen Gütezuwachs,
+Die Nachbearbeitung der Netze bewirkt grundsätzlich einen Gütezuwachs
 zulasten einer erhöhten Dreiecksanzahl.
 Gleichzeitig entstehen Artefakte an den Rändern der Kugeln, 
 wie in der Abbildung \ref{fig:refinementArtefakt} beispielhaft
 zu erkennen ist.
-Diese Artefakte in Form von Schnittkanten sorgen dafür, das die Güte
+Diese Artefakte in Form von Schnittkanten sorgen dafür, dass die Güte
 bei kleinen Kamerawinkelunterschieden im Vergleich zu nicht nachbearbeiteten Netzen
 geringer ausfällt.
 Wenn $\alpha$ Werte annimmt, die größer gleich als 10 sind, dann hat die Formel \ref{eq:EDGE_VALID}
 keinen Einfluss auf das Ergebnisnetz.
 Nimmt $\alpha$ Werte kleiner 10 an, dann werden Dreiecke innerhalb der Kugeln zusätzlich
 unterteilt, was die Anzahl der Dreiecke insgesamt erhöht.
-Allerdings gibt es in diesen Bereich bereits ausreichend viele Dreiecke um die Krümmung der Flächen
+Allerdings gibt es in diesen Bereich bereits ausreichend viele Dreiecke, um die Krümmung der Flächen
 zu repräsentieren, sodass deren Unterteilung keinen messbaren Güteunterschied bewirkt.
-Dieser Effekt wird in der Szene \textit{CoolRandom} besonders deutliche.
+Dieser Effekt wird in der Szene \textit{CoolRandom} besonders deutlich.
 
 \begin{figure}
 	\subfigure[$\delta = 0.5, \gamma = 0.5$]{\includegraphics[width=.3\textwidth]{img/delaunay_T5G5.png}}
@@ -3569,7 +3569,7 @@ Dieser Effekt wird in der Szene \textit{CoolRandom} besonders deutliche.
 
 Da die Nachbearbeitung für alle Dreiecke unabhängig voneinander berechnet
 werden kann, lässt sich dieser Schritt gut parallelisieren.
-Auf diese Weise kann der Nachbearbeitungsschritt um ein vielfaches beschleunigt werden.
+Auf diese Weise kann der Nachbearbeitungsschritt um ein Vielfaches beschleunigt werden.
 Diese Parallelisierung wurde in dieser Arbeit jedoch nicht implementiert.
 
 \begin{figure}[H]
@@ -3586,15 +3586,15 @@ Diese Parallelisierung wurde in dieser Arbeit jedoch nicht implementiert.
 	\label{fig:refinementArtefakt}
 \end{figure}
 
-Aubfgrund der Messergebisse vom SSIM und dem PSNR lässt sich sagen, 
+Aufgrund der Messergebisse vom SSIM und dem PSNR lässt sich sagen, 
 dass das Verfahren der Extrapolation durch die Rückprojektion
 durchaus geeignet ist, um Bilder für kleine Kamerawinkelunterschiede von 5 bis 10 Grad ausreichend gut zu approximieren.
 Dabei sind die Ergebnisse gemessen durch SSIM weitaus besser als die des PSNR,
-sodass hier eine gute Approximation bis zu 20 Grad Winkelunterschied möglich ist.
+so dass hier eine gute Approximation bis zu 20 Grad Winkelunterschied möglich ist.
 Dies ist positiv zu bewerten, da der SSIM im Gegensatz zum PSNR die menschliche Wahrnehmung mit einbezieht.
 
 
-Ein grundsätzliches Problem der Extrapolation mit Hilfe der Rückprojektion, ist die Beleuchtung.
+Ein grundsätzliches Problem der Extrapolation mit Hilfe der Rückprojektion ist die Beleuchtung.
 Insbesondere spekulare Lichtanteile sind ein Problem, weil diese von der Position der
 Kamera abhängen.
 Da das Farbbild als Textur dient und keine zusätzliche Beleuchtungsberechnung stattfindet,
@@ -3603,7 +3603,7 @@ Dieser steigt mit der Größe des Kamerawinkelunterschiedes und taucht in den gete
 und ist im Verhältnis zu den anderen entstehenden Artefakten jedoch zu vernachlässigen.
 Dieser könnte dadurch reduziert werden, dass Informationen zu Lichtquellen mit übertragen
 werden und eine clientseitige Nachbeleuchtung durchgeführt wird.
-Das führt auf seiten des Clients zu erhöhten Berechnungskosten.
+Das führt auf Seiten des Clients zu erhöhten Berechnungskosten.
 Ein anderer Ausweg könnte eine von der Kameraperspektive abhängigen Texturierung 
 des Dreiecksnetzes sein. 
 Zu diesem Zweck müssen aber zusätzliche Texturinformationen vom Server zum Client
@@ -3616,7 +3616,7 @@ Zu diesem Zweck müssen aber zusätzliche Texturinformationen vom Server zum Clien
 \end{figure}
 
 Desweiteren sind transparente Oberflächen problematisch.
-Objekte die hinter diesen Oberflächen liegen, werden im Tiefenbild nicht repräsentiert.
+Objekte, die hinter diesen Oberflächen liegen, werden im Tiefenbild nicht repräsentiert.
 Es entsteht auch hier ein Fehler bei der Extrapolation.
 
 \begin{figure}[H]
