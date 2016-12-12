@@ -67,24 +67,25 @@ Zustimmungen der Copyright-Besitzer angeben bzw. die in Web Press
 Rooms angegebenen generellen Konditionen seiner Text- und
 Bild"ubernahmen zitieren.}
 
-\acknowledgments{An dieser Stelle möchte ich meinen Eltern, meinen Freunden und meinen Betreuer für ihre Unterstützung bedanken.}
+\acknowledgments{An dieser Stelle möchte ich meiner Familie, meinen Freunden und meinen Betreuer für ihre Unterstützung bedanken.}
 
 \abstracten{
-Remote-visualization is a technique, which seperates rendering and displaying of images
-into two components.
-In this paper, such a system was developed, based on the WebSocket-protokol.
+Remote-Visualization is a technique to seperate rendering and the display of images
+into two distinct components.
+In this thesis, this technique has been implemented as a system based on the WebSocket protocol.
+
 In order to hide the latency, as a result of the communication between both components, from the user,
-it is possible to use additional geometric information to extrapolate the image on the client side.
-The depth image, produced in the rendering step, are used as the necessary
-geometric inforamtion.
-Triangle-meshes can be used to approximate the depth image to transfer the information.
-Two methods were compared, both use the Delaunay-triangulation.
-One produces the point set needed for meshing with Floyd?Steinberg dithering
-and the second one with a quadtree.
+it is possible to use additional geometric information to extrapolate the image on the client's side.
+The depth image, produced during the rendering step, is used as the required
+geometric data.
+Triangle meshes can be used to approximate the depth image to transfer the mentioned data.
+Two methods were compared - both use the Delaunay Triangulation.
+One produces the point set needed for meshing using \textit{FloydSteinberg}-dithering
+and the second method uses a quadtree.
 Critera for the evaluation are the optical quality, which depends on the camera angle differences,
 mesh complexity and construction time.
-Optical quality is messured by SSIM and PSNR and the mesh complexity is equal to number of triangles.
-Result of the comparison is, that the best method with respect to all critera is the quadtree.
+Optical quality is messured by SSIM and PSNR, and the mesh complexity is equal to the number of triangles.
+As a result, the Quadtree seems to be the more favorable method regarding the mentioned criteria.
 }
 
 \abstractde{
@@ -96,14 +97,15 @@ kann clientseitig mit Hilfe zusätzlicher geometrischer Informationen eine Bildex
 Dazu kann das bei Bildsynthese entstehende Tiefenbild genutzt werden.
 Dessen Tiefeninformationen werden, im Rahmen dieser Arbeit, für die Übertragung durch ein Dreiecksnetz approximiert.
 Es werden zwei Verfahren verglichen, die auf der Delaunay-Triangulierung basieren.
-Die zur Vernetzung benötigte Punktmenge wird zum einem mit dem \textit{FloydSteinberg}-Fehlerdiffusionsverfahren und zum anderen durch ein \textit{Quadtree}-Ansatz generiert.
+Die zur Vernetzung benötigte Punktmenge wird zum einem mit dem \textit{FloydSteinberg}-Fehlerdiffusionsverfahren und zum anderen durch einen \textit{Quadtree}-Ansatz generiert.
 Kriterien für den Vergleich sind neben der optischen Qualität der extrapolierten Bilder, in Abhängigkeit des Kamerawinkels,
-die Netzkomplexität sowie der Rechenzeit. 
+die Netzkomplexität sowie die Rechenzeit. 
 Die optische Qualität wird mit dem SSIM und dem PSNR gemessen und die Netzkomplexität entspricht dabei der Anzahl der Dreiecke im Netz. 
 Es hat sich gezeigt, dass der \textit{Quadtree}, im Bezug auf alle Kriterien, der deutlich bessere Ansatz ist.
 }
 
 \usepackage[dvipsnames]{xcolor}
+\usepackage{url}
 \usepackage{listings}
 \usepackage{pgfplots}
 \usepackage{filecontents}
@@ -464,7 +466,7 @@ Banno \textit{et al.} erzeugen aus Tiefenbildern, die durch Tiefensensoren erhob
 Dreicksnetze mit Hilfe der Delaunay-Triangulierung \cite{Banno:2012:RCD:2407516.2407579}.
 Ausgangspunkt für die Vernetzung ist eine Menge von Punkten, die Kanten und Krümmungen
 im Tiefenbild repräsentieren.
-Zur Erzeugung dieser Punkte kommt ein Quadtree zum Einsatz.
+Zur Erzeugung dieser Punkte kommt ein \textit{Quadtree} zum Einsatz.
 Zusätzlich haben sie ein Verfahren entwickelt, um das erzeugte Netz in einem weiteren Schritt
 hinsichtlich der optischen Qualität zu verbessern.
 Einen alternativen Ansatz für die Erzeugung der zur Vernetzung benötigten Punktmenge
@@ -1171,8 +1173,8 @@ Zur Erzeugung der Punktmenge $P$ wurden zwei Verfahren untersucht, die im Folgen
 \subsection{Quadtree}
 
 Die erste in dieser Arbeit vorgestellte Methode zur Erzeugung der Punktmenge $P$
-basiert auf einer Quadtree-Datenstruktur.
-Ein Quadtree ist eine Baumdatenstruktur, in der jeder Knoten maximal vier Kindknoten hat.
+basiert auf einer \textit{Quadtree}-Datenstruktur.
+Ein \textit{Quadtree} ist eine Baumdatenstruktur, in der jeder Knoten maximal vier Kindknoten hat.
 Im Rahmen dieser Arbeit repräsentiert jeder Knoten eine rechteckige Region $R$ des Tiefenbildes $D$.
 Eine Region $R$ wird durch seine Eckpunkte definiert.
 Um die Baumdatenstruktur zu erzeugen, wird ein Wurzelknoten definiert, dessen Region $R = (0, 0, w-1, h-1)$ den
@@ -1183,7 +1185,7 @@ Alle Kindknoten werden auf diese Weise sukzessive weiter unterteilt, bis die Tie
 eine maximale Baumtiefe $t_{max}$ erreicht.
 Die Kindknoten der Baumtiefe $t_{max}$ enthalten selbst keine weiteren Kindknoten und
 werden als Blattknoten bezeichnet, die Regionen, die sie repräsentieren, als Blattregionen.
-Die maximale Tiefe des Quadtrees ist dabei invers proportional zur Breite der Blattregionen.
+Die maximale Tiefe des \textit{Quadtrees} ist dabei invers proportional zur Breite der Blattregionen.
 Mit dem Parameter $t_{max}$ kann die Qualität und die Kompression des erzeugten Netzes
 sowie der Berechnungsaufwand skaliert werden.
 Die erzeugte Baumdatenstruktur hängt von der Auflösung der Tiefenbilder ab
@@ -1227,7 +1229,9 @@ Regionen zusammensetzt, in denen die Gradientdifferenzen den entsprechenden Schw
 \begin{figure}
 	\subfigure[]{\includegraphics[width=.49\textwidth]{img/seed_7_D9_5_4.png}}
 	\subfigure[]{\includegraphics[width=.49\textwidth]{img/seed_7_D9_5_4_pre.png}}
-	\caption{Szene \textit{TestSpheres}, Baumtiefe 9, l=5, i=4}
+	\caption{Szene \textit{TestSpheres}, $t_{max} = 9, l = 5, i = 4$. Punkte die aus 
+	inneren Knoten erzeugt werden sind grün und jene, die aus den Blattknoten generiert werden, sind blau markiert. Während in a alle Punkte angezeigt werden, sind in b nur die Punkte sichtbar
+	bei denen die Tiefenwerte nicht dem maximalen Tiefenwert entsprechen.}
 \end{figure}
 
 Diese Punktmenge $P$ kann weiter reduziert werden, indem getestet wird, ob ein Punkt $p \in P$ zum Hintergrund gehört.
@@ -1235,7 +1239,7 @@ Das ist der Fall, wenn der Tiefenwert des Tiefenbildes an Stelle $p$ dem maximal
 Zur Erinnerung: Die Tiefenwerte liegen linear zwischen den beiden Clippingebenen, wobei ein großer Wert bedeutet,
 dass dieser nahe der Bildschirmebene liegt.
 
-\subsection{Floyd-Steinberg}
+\subsection{FloydSteinberg}
 
 Der zweite in dieser Arbeit vorgestellte Ansatz zur Erzeugung der Punktmenge $P$ basiert auf einem Fehler-Diffusionsverfahren.
 Im ersten Schritt wird aus den beiden Gradientenbildern $\nabla_x, \nabla_y$ ein 
@@ -1251,8 +1255,8 @@ Dieser wird mit $A$, dem größtmöglichen Wert von $\parallel \nabla d \parallel$,
 Der Parameter $\gamma \in [0,1]$ wird genutzt, um die Ausprägung von schwachen 
 Kanten im Merkmalsbild $\sigma$ zu erhöhen.
 
-Um aus dem Merkmalsbild $\sigma$ die Punktmenge $P$ zu erzeugen, kommt der Floyd-Steinberg-Algorithmus zum Einsatz. 
-Bei dem Floyd-Steinberg-Algorithmus handelt es sich um einen einfachen und effizienten Dithering-Algorithmus,
+Um aus dem Merkmalsbild $\sigma$ die Punktmenge $P$ zu erzeugen, kommt der \textit{FloydSteinberg}-Algorithmus zum Einsatz. 
+Bei dem \textit{FloydSteinberg}-Algorithmus handelt es sich um einen einfachen und effizienten Dithering-Algorithmus,
 der auf einem, Fehler-Diffusionsverfahren fußt.
 Das Merkmalsbild wird mit Hilfe des Schwellwerts $\delta$ binarisiert.
 Zu diesem Zweck wird das Merkmalsbild $\sigma$ Pixel für Pixel zeilenweise durchlaufen.
@@ -1321,7 +1325,10 @@ Wenn $\delta$ kleine Werte annimmt, dann wird die Punktdichte erhöht und im Fall
 
 Die aus den beiden Methoden erzeugten Punkte $p \in P$ können jetzt mit Hilfe der Delaunay-Triangulierung
 zu einem Dreiecksnetz miteinander verbunden werden.
-In dieser Arbeit wird zu diesem Zweck die Delaunay-Triangulierung aus dem opencv-Framework verwendet.
+In dieser Arbeit wird zu diesem Zweck die Delaunay-Triangulierung aus dem opencv-Framework \cite{opencvframework} verwendet.
+
+Bei der Vernetzung Punkte entstehen Dreiecke an den Rändern, die Tiefensprünge überspannen.
+Diese können in einen weiteren Schritt verworfen werden.
 
 \subsection{Netzoptimierung}
 
@@ -1366,7 +1373,7 @@ wird es weiter unterteilt.
 Zwei Bildpunkte $p_1$ und $p_2$ werden als verbindbar bezeichnet,
 wenn alle Bildpunkte zwischen $p_1$ und $p_2$ valide Tiefenwerte
 besitzen und ihre Tiefe sich zum größten Teil linear ändert.
-Um Rechenzeit zu sparen, wird empfohlen, nur den Median $p_m$ zwischen
+Um Rechenzeit zu sparen, wird empfohlen, nur den Mittelpunkt $p_m$ zwischen
 $p_1$ und $p_2$ zu testen.
 Eine Strecke wird als verbindbar bezeichnet, wenn sie die folgende Gleichung
 erfüllt:
@@ -1580,7 +1587,7 @@ Algorithmen.
 
 Die Server-Anwendung wurde mit der Sprache c++ entwickelt.
 Dabei wird auf die Implementierung der WebSocket-Serverkomponente
-aus dem QT-Framework zurückgegriffen.
+aus dem QT-Framework \cite{qtframework} zurückgegriffen.
 Der Server-Prozess besteht aus einem Thread.
 Zur Verwaltung der Anfragen wird das Event-Managementsystem von QT verwendet. 
 Beim Start der Serveranwendung werden die Szenen geladen.
@@ -1592,8 +1599,7 @@ Die Kommunikation zwischen Server- und die Client-Komponente basiert auf dem
 JSON-RPC 2.0 Protokoll.
 Die Abkürzung JSON-RPC steht für \textit{JavaScript Object Notation Remote Procedure Call}.
 Es handelt sich dabei um ein Protokoll, das den Aufbau und die Nominatur von Nachrichten beschreibt. 
-Im Speziellen geht es dabei um Nachrichten, die dazu dienen, dass der Kommunikationsteilnehmer bestimmte 
-Methoden mit bestimmten Parameterkonfigurationen startet.
+Im Speziellen geht es dabei um Nachrichten, die dazu dienen, Methoden mit bestimmten Parameterkonfigurationen auf dem Gerät des anderen Kommunikationsteilnehmers aufzurufen.
 Es basiert auf dem textbasierten Datenformat JSON.
 Nachrichten werden in Anfragen und Antworten unterteilt.
 Mit Hilfe einer $id$ lassen sich Nachrichten bei asynchroner Kommunikation zuordnen.
@@ -1868,14 +1874,14 @@ Die besten Ergebnisse werden mit 16 Bit, $g = 1$, und dem 5-Pass Verfahren erzie
 Diese Konfiguration dient als Basis für den Vergleich mit den Delaunay-Verfahren.
 
 Im Fall der Delaunay-Triangulation wird zwischen den beiden Punktgenerierungsverfahren
-\textit{Quadtree} und \textit{Floyd-Steinberg} unterschieden.
+\textit{Quadtree} und \textit{FloydSteinberg} unterschieden.
 Für den \textit{Quadtree}-Ansatz werden generell alle Hintergrundpixel verworfen.
 Die Bäume werden mit den maximalen Baumtiefen $t_{max} \in \{10, 9, 8\}$ erzeugt.
 Für jede Baumtiefe $t_{max}$ wurden die Schwellwertkonfigurationen
 $l \in \{0.1,0.2, ..., 1.0\}$ und $i \in \{0.1, ..., l\}$ gemessen.
 Für alle $l > 0.6$ und $i = 0.6$ wurde zusätzlich die Netzverfeinerung durchgeführt. 
 Mit den Schwellwerten $\alpha \in \{0.1, 1, 10, 100, 1000\}$ und $\beta \in \{0.1, 0.2, ..., 1.0\}$.
-Die Erzeugung der Punktemenge, erhoben mit dem \textit{Floyd-Steinberg}-Fehlerdiffusionsverfahren,
+Die Erzeugung der Punktemenge, erhoben mit dem \textit{FloydSteinberg}-Fehlerdiffusionsverfahren,
 wird mit den Parametern $\delta, \gamma \in \{0.1,0.2, ..., 1.0 \}$ evaluiert.
 Die folgenden Diagramme zeigen ausgewählte Beispiele von den erhobenen Daten.
 Dabei wird mit den besten Ergebnissen begonnen:
@@ -2026,7 +2032,7 @@ Die Abbildung \ref{fig:Daten_best_cases_zoom} zeigt die gleichen Parameterkonfig
 wie die Abbildung \ref{fig:Daten_best_cases},
 dieses Mal jedoch beschränkt auf die Kamerawinkelunterschiede von 0 bis 10 Grad.
 Hier zeigt sich sowohl mit dem SSIM als auch beim PSNR ein signifikanter Unterschied
-zwischen dem FloydSteinberg-Ansatz und den anderen beiden Methoden. 
+zwischen dem \textit{FloydSteinberg}-Ansatz und den anderen beiden Methoden. 
 Der \textit{Quadtree}-Ansatz ist in den ersten Frames sogar besser als die
 Vollvernetzung.
 
@@ -2313,7 +2319,7 @@ Dadurch werden die Qualitätsunterschiede zwischen den Parameterkonfigurationen b
 			 bei einem konstanten Kamerawinkelunterschied von 20 Grad.
 			 Dabei liegt die maximale Baumtiefe in a,b bei 10,
 			 in c,d bei 9 und in e,f bei 8. Die Diagramme auf der linken Seite
-			 zeigen die Güte mit Hilfe des SSIM Wertes. 
+			 zeigen die Güte mit Hilfe des SSIM-Wertes. 
 			 Auf der rechten Seite wird die Konstruktionszeit des Netzes abgetragen, die der Server benötigt.}
 	\label{fig:qt_TestSpheres_gc}
 \end{figure}
@@ -2613,7 +2619,7 @@ vor allem, wenn $t_{max} = 10$ ist.
 
 \begin{figure}[H]
 	\centering
-	\subfigure[]{
+	\subfigure[\textit{TestSpheres}]{
 	\begin{tikzpicture} [scale=0.79]
 		\begin{axis}[view={0}{90}, grid=major,
 	 			 xlabel=$\gamma$,
@@ -2632,7 +2638,7 @@ vor allem, wenn $t_{max} = 10$ ist.
 			\addplot3[only marks, mark=square*, mark size=7, ycomb, scatter] file {div_s_7floydSteinberg.csv};      
 		\end{axis}
 	\end{tikzpicture}}
-	\subfigure[]{
+	\subfigure[\textit{CoolRandom}]{
 	\begin{tikzpicture} [scale=0.79]
 		\begin{axis}[view={0}{90}, grid=major,
 	 			 xlabel=$\gamma$,
@@ -2651,7 +2657,7 @@ vor allem, wenn $t_{max} = 10$ ist.
 			\addplot3[only marks, mark=square*, mark size=7, ycomb, scatter] file {div_s_6floydSteinberg.csv};      
 		\end{axis}
 	\end{tikzpicture}}
-	\subfigure[]{
+	\subfigure[\textit{TestSpheres}]{
 	\begin{tikzpicture} [scale=0.8]
 			\begin{axis}[view={0}{90}, grid=major,
 	 			 xlabel=$\gamma$,
@@ -2671,7 +2677,7 @@ vor allem, wenn $t_{max} = 10$ ist.
 	 \addplot3[only marks, mark=square*, mark size=7, ycomb, scatter] file {div_s_7floydSteinberg_cost.csv};      
 		\end{axis}
 	\end{tikzpicture}}
-	\subfigure[]{
+	\subfigure[\textit{CoolRandom}]{
 	\begin{tikzpicture} [scale=0.8]
 			\begin{axis}[view={0}{90}, grid=major,
 		 			 xlabel=$\gamma$,
@@ -2692,7 +2698,7 @@ vor allem, wenn $t_{max} = 10$ ist.
 		\end{axis}
 	\end{tikzpicture}}
 	
-	\subfigure[]{
+	\subfigure[\textit{TestSpheres}]{
 	\begin{tikzpicture}[scale=0.8]
 		\begin{axis}[view={0}{90}, grid=major,
  			 xlabel=$\gamma$,
@@ -2711,7 +2717,7 @@ vor allem, wenn $t_{max} = 10$ ist.
 			\addplot3[only marks, mark=square*, mark size=7, ycomb, scatter] file {div_s_7floydSteinberg_triangle.csv};      
 		\end{axis}
 	\end{tikzpicture}}
-	\subfigure[]{
+	\subfigure[\textit{CoolRandom}]{
 	\begin{tikzpicture}[scale=0.8]
 		\begin{axis}[view={0}{90}, grid=major,
 	 			 xlabel=$\gamma$,
@@ -2730,10 +2736,8 @@ vor allem, wenn $t_{max} = 10$ ist.
 			\addplot3[only marks, mark=square*, mark size=7, ycomb, scatter] file {div_s_6floydSteinberg_triangle.csv};      
 		\end{axis}
 	\end{tikzpicture}}
-	\caption{Die Diagramme a, b stellen die Ergebnisse von dem \textit{CoolRandom} Datensatz
-			 und c, d die des \textit{TestSpheres}-Datensatzes, erhoben mit \textit{FloydSteinberg}-Ansatz dar.
-			 Die Diagramme auf der linken Seite zeigen die Güte mit Hilfe des SSIM, und die
-			 Diagramme auf der rechte Seite bilden die Gesamtkompressionszeit des Netzes ab.}
+	\caption{Die Diagramme stellen die Ergebnisse von dem \textit{CoolRandom}-Datensatz
+			 und die des \textit{TestSpheres}-Datensatzes, erhoben mit \textit{FloydSteinberg}-Ansatz dar.}
 	\label{fig:data_floydSteinberg}
 \end{figure}
 
@@ -2752,7 +2756,7 @@ bis auf die Konfiguration $\gamma = 1$ und $\delta = 0.9$.
 Mit der Anzahl der Dreiecke verhält es sich ähnlich wie bei der Szene \textit{TestSpheres}.
 
 Der Netzoptimierungsschritt wird ausschließlich mit dem \textit{Quadtree}-Ansatz untersucht,
-da dessen Ergebnisse weitaus besser sind als die der FloydSteinberg-Methode.
+da dessen Ergebnisse weitaus besser sind als die der \textit{FloydSteinberg}-Methode.
 Um die Parameter $\alpha$ und $\beta$ auszuwerten, 
 werden $l$ und $i$ konstant auf einen Wert fixiert. 
 Zu diesem Zweck wurde $l = 0.7$ und $i = 0.6$ gewählt. 
@@ -3084,7 +3088,7 @@ Getestet werden die Parameter $\alpha \in \{0.1, 1, 10, 100, 1000\}$ und $\beta 
 			\addplot3[only marks, mark=square*, mark size=7, ycomb, scatter] file {div_s_7_D8_L0.7_I0.6_cost.csv};      
 		\end{axis}
 	\end{tikzpicture}}
-	\caption{}
+	\caption{Abbildung vom SSIM, bei einem konstanten Winkelunterschied von 20 Grad, und der Netzkonstruktionszeit in Abhängigkeit von $\alpha$ und $\beta$, für die Szene \textit{TestSpheres}.}
 	\label{fig:nnt}
 \end{figure}
 
@@ -3234,7 +3238,7 @@ erreicht werden.
 			\addplot3[only marks, mark=square*, mark size=7, ycomb, scatter] file {div_s_6_D8_L0.7_I0.6_cost.csv};      
 		\end{axis}
 	\end{tikzpicture}}
-	\caption{SSIM und Netzkonstruktionszeit bei einem konstanten Winkelunterschied von 20 Grad.}
+	\caption{Abbildung vom SSIM, bei einem konstanten Winkelunterschied von 20 Grad, und der Netzkonstruktionszeit in Abhängigkeit von $\alpha$ und $\beta$, für die Szene \textit{CoolRandom}.}
 	\label{fig:nnc}
 \end{figure}
 
@@ -3382,7 +3386,7 @@ Für $t_{max} = 8$ liegen alle unterhalb von 70 ms.
 		\addplot3[only marks, mark=square*, mark size=7, ycomb, scatter] file {div_s_6_D8_L0.7_I0.6_triangle.csv};      
 		\end{axis}
 	\end{tikzpicture}}
-	\caption{}
+	\caption{In den Diagrammen wird die Anzahl der Dreiecke in Abhängigkeit von $\alpha$ und $\beta$ abgebildet.}
 	\label{fig:nnd}
 \end{figure}
 
@@ -3507,8 +3511,8 @@ weitaus mehr Kugeln existieren als in der \textit{TestSpheres}-Szene, die im Tie
 des ersten Frames nicht abgebildet werden, aus dem die Netze erzeugt werden
 und deshalb in den extrapolierten Bildern nicht existieren.
 
-Insgesamt liefert der \textit{Quadtree} weitaus bessere Resultate als die FloydSteinberg-Methode.
-Das Problem der FloydSteinberg-Methode besteht darin, das extrem viele Punkte vorwiegend in der Nähe von Kanten platziert werden.
+Insgesamt liefert der \textit{Quadtree} weitaus bessere Resultate als die \textit{FloydSteinberg}-Methode.
+Das Problem der \textit{FloydSteinberg}-Methode besteht darin, das extrem viele Punkte vorwiegend in der Nähe von Kanten platziert werden.
 Dabei gibt es einen Unterschied zwischen äußeren und inneren Kanten.
 Während die äußeren Kanten die Kontur des Objektes abbilden und sehr dicht
 besetzt sind, werden innere Kanten nicht ausreichend repräsentiert.
@@ -3517,13 +3521,13 @@ Das führt dazu, dass auch bei einer sehr hohen Zahl von Dreiecken die
 Qualität der extrapolierten Bilder schon bei geringen Kamerawinkelunterschieden
 um einiges schlechter ausfällt als bei den anderen Methoden.
 Weil insgesamt zu viele Punkte erzeugt werden, wird auch die Vernetzung langsam.
-Die Abbildungen \ref{fig:nettings} und \ref{fig:floyd_steinberg_nett}
+Die Abbildungen \ref{fig:netting_fq} (a-c) und \ref{fig:floyd_steinberg_nett}
 verdeutlichen diesen Zusammenhang.
 
 Im Vergleich dazu schneidet der \textit{Quadtree}-Ansatz im Bezug auf Qualität,
 Rechenaufwand weitaus besser ab.
 Weiterhin lässt sich die Qualität des resultierenden
-Dreiecknetzes mit dem Parameter $t_{max}$, adaptiv anpassen.
+Dreiecknetzes mit dem Parameter $t_{max}$, adaptiv anpassen, wie in Abbildung \ref{fig:netting_fq} (d-i).
 Große Werte für $t_{max}$ bedeuten in erster Linie,
 dass die Bereiche stärker unterteilt werden, so dass an markanten Stellen, wie Kanten 
 viele Punkte für die Vernetzung zur Verfügung stehen.
@@ -3544,13 +3548,10 @@ Der Parameter $i$ sollte kleiner oder gleich $l$ sein.
 	\centering
 	\subfigure[$t_{max} = 6$]{\includegraphics[width=.49\textwidth]{../results/7/512x512_Delaunay/D6/L0.7/I0.5/_pre/frame_00000.png}}
 	\subfigure[$t_{max} = 8$]{\includegraphics[width=.49\textwidth]{../results/7/512x512_Delaunay/D8/L0.7/I0.5/_pre/frame_00000.png}}
-\end{figure}
 
-\begin{figure}[H]
-	\centering	
 	\subfigure[$t_{max} = 6$]{\includegraphics[width=.49\textwidth]{../results/7/512x512_Delaunay/D6/L0.7/I0.5/_pre/delaunay.png}}
 	\subfigure[$t_{max} = 8$]{\includegraphics[width=.49\textwidth]{../results/7/512x512_Delaunay/D8/L0.7/I0.5/_pre/delaunay.png}}
-	\caption{}
+	\caption{Darstellung des ersten Frames aus \textit{TestSpheres}, mit den dazugehörigen Dreiecksnetzen. Dabei wurde $l = 0.7$ und $i = 0.5$ gewählt.}
 	\label{fig:smalltmax}
 \end{figure}
 
@@ -3569,8 +3570,10 @@ unterteilt, was die Anzahl der Dreiecke insgesamt erhöht.
 Allerdings gibt es in diesen Bereich bereits ausreichend viele Dreiecke, um die Krümmung der Flächen
 zu repräsentieren, sodass deren Unterteilung keinen messbaren Güteunterschied bewirkt.
 Dieser Effekt wird in der Szene \textit{CoolRandom} besonders deutlich.
+Beispiele zeigt die Abbildung \ref{fig:nettings}.
 
-\begin{figure}
+\begin{figure}[H]
+	\centering
 	\subfigure[$\delta = 0.5, \gamma = 0.5$]{\includegraphics[width=.3\textwidth]{img/delaunay_T5G5.png}}
 	\subfigure[$\delta = 0.5, \gamma = 1.0$]{\includegraphics[width=.3\textwidth]{img/delaunay_T5G1.png}}
 	\subfigure[$\delta = 1.0, \gamma = 1.0$]{\includegraphics[width=.3\textwidth]{img/delaunay_T1G1.png}}
@@ -3582,10 +3585,12 @@ Dieser Effekt wird in der Szene \textit{CoolRandom} besonders deutlich.
 	\subfigure[$d_{max} = 10, l = 0.7, i = 0.6$]{\includegraphics[width=.3\textwidth]{img/delaunay_L07_I06.png}}
 	\subfigure[$d_{max} = 9, l = 0.7, i = 0.6$]{\includegraphics[width=.3\textwidth]{img/delaunay9_L07_I06.png}}
 	\subfigure[$d_{max} = 8, l = 0.7, i = 0.6$]{\includegraphics[width=.3\textwidth]{img/delaunay8_L07_I06.png}}
-	\caption{Die Dreiecksnetze a-c wurden mit dem FloydSteinberg-Ansatz erzeugt und die Dreicksnetze d-i mit dem \textit{Quadtree}-Ansatz.}
+	\caption{Die Dreiecksnetze a-c wurden mit dem \textit{FloydSteinberg}-Ansatz erzeugt und die Dreicksnetze d-i mit dem \textit{Quadtree}-Ansatz.}
+	\label{fig:netting_fq}
 \end{figure}
 
-\begin{figure}
+\begin{figure}[H]
+	\centering
 	\subfigure[$d_{max} = 10, l = 0.7, i = 0.6$]{\includegraphics[width=.3\textwidth]{img/delaunay_L07_I06_100_02.png}}
 	\subfigure[$d_{max} = 9, l = 0.7, i = 0.6$]{\includegraphics[width=.3\textwidth]{img/delaunay9_L07_I06_100_02.png}}
 	\subfigure[$d_{max} = 8, l = 0.7, i = 0.6$]{\includegraphics[width=.3\textwidth]{img/delaunay8_L07_I06_100_02.png}}
@@ -3593,7 +3598,7 @@ Dieser Effekt wird in der Szene \textit{CoolRandom} besonders deutlich.
 	\subfigure[$d_{max} = 10, l = 0.7, i = 0.6$]{\includegraphics[width=.3\textwidth]{img/delaunay_L07_I06_100_02_f.png}}
 	\subfigure[$d_{max} = 9, l = 0.7, i = 0.6$]{\includegraphics[width=.3\textwidth]{img/delaunay9_L07_I06_100_02_f.png}}
 	\subfigure[$d_{max} = 8, l = 0.7, i = 0.6$]{\includegraphics[width=.3\textwidth]{img/delaunay8_L07_I06_100_02_f.png}}
-	\caption{Vergleich von nachbearbeiteten Dreiecksnetzen, die mit dem \textit{Quadtree}-Ansatz erzeugt wurden. 
+	\caption{Vergleich von nachbearbeiteten Dreiecksnetzen, der Szene \textit{CoolRandom}, die mit dem \textit{Quadtree}-Ansatz erzeugt wurden. 
 			 Dabei wurde $\alpha = 10$ und $\beta = 0.2$ gewählt.}
 	\label{fig:nettings}
 \end{figure}
@@ -3628,7 +3633,8 @@ Ein grundsätzliches Problem der Extrapolation mit Hilfe der Rückprojektion ist d
 Insbesondere spekulare Lichtanteile sind ein Problem, weil diese von der Position der
 Kamera abhängen.
 Da das Farbbild als Textur dient und keine zusätzliche Beleuchtungsberechnung stattfindet,
-entsteht bei größeren Kamerawinkelunterschieden zwangsläufig ein Fehler, wie in Abbildung \ref{fig:beleuchtung_fehler}.
+entsteht bei größeren Kamerawinkelunterschieden zwangsläufig ein Fehler.
+Die Abbildung \ref{fig:beleuchtung_fehler} zeigt ein Beispiel dafür.
 Dieser steigt mit der Größe des Kamerawinkelunterschiedes und taucht in den getesteten Datensätzen nur bei sehr großen Winkeln auf
 und ist im Verhältnis zu den anderen entstehenden Artefakten jedoch zu vernachlässigen.
 Dieser könnte dadurch reduziert werden, dass Informationen zu Lichtquellen mit übertragen
@@ -3639,21 +3645,23 @@ des Dreiecksnetzes sein.
 Zu diesem Zweck müssen aber zusätzliche Texturinformationen vom Server zum Client
 übermittelt werden.
 
-\begin{figure}
-	\centering	
-	\subfigure[$t_{max} = 6$]{\includegraphics[width=.49\textwidth]{img/testspheres_00189.png}}
-	\subfigure[$t_{max} = 8$]{\includegraphics[width=.49\textwidth]{img/frameFULL_00490.png}}
-	\caption{title}
-	\label{fig:beleuchtung_fehler}
-\end{figure}
-
 Desweiteren sind transparente Oberflächen problematisch.
 Objekte, die hinter diesen Oberflächen liegen, werden im Tiefenbild nicht repräsentiert.
 Es entsteht auch hier ein Fehler bei der Extrapolation.
 
 \begin{figure}[H]
+	\centering	
+	\subfigure[\textit{Ground-Truth}]{\includegraphics[width=.49\textwidth]{img/testspheres_00189.png}}
+	\subfigure[\textit{Vollvernetzung}]{\includegraphics[width=.49\textwidth]{img/frameFULL_00490.png}}
+	\caption{Zu sehen ist der Frame 189, aus der dritten Sequenz der Szene \textit{TestSpheres}.
+	Der Kamerawinkelunterschied beträgt $80$ Grad. Es tritt neben den geometrischen Artefakten ein zusätzlich Beleuchtungsfehler auf.}
+	\label{fig:beleuchtung_fehler}
+\end{figure}
+
+\begin{figure}[H]
+	\centering
 	\includegraphics[width=\textwidth]{../results/6/512x512_Delaunay/T0.8/G0.8/delaunay.png}
-	\caption{FloydSteinberg-Ansatz mit den Parametern $\delta = 0.8, \gamma = 0.8$.}
+	\caption{\textit{FloydSteinberg}-Ansatz mit den Parametern $\delta = 0.8, \gamma = 0.8$.}
 	\label{fig:floyd_steinberg_nett}
 \end{figure}
 
@@ -3673,7 +3681,7 @@ Konstruiert werden die Dreiecksnetze mit Hilfe der Delaunay-Triangulierung.
 Die für die Vernetzung notwendige Menge von ausgewählten Punkten
 wird anhand von Gradientenbildern bestimmt.
 Zu diesem Zweck wurde ein Fehlerdiffusionsverfahren angewendet, 
-welches auf dem FloydSteinberg-Algorithmus basiert, und ein \textit{Quadtree}-Ansatz
+welches auf dem \textit{FloydSteinberg}-Algorithmus basiert, und ein \textit{Quadtree}-Ansatz
 implementiert.
 Beide wurden hinsichtlich der Konstruktionszeiten, der Anzahl von Dreiecken und 
 der erzielten Güte untersucht.
@@ -3702,10 +3710,8 @@ Durch Verdeckung bedingte Fehler könnten mit Hilfe des Kameramodells von Popescu
 Desweiteren sollte untersucht werden, inwieweit die extrapolierten Bilder
 genutzt werden können, um Informationen bei der Übertragung des Farbbildes
 mit dem Differenzbildansatz zu reduzieren.
-
 Progressive Übertragung der Dreiecksnetze könnte genutzt werden,
-könnte in Verbindung mit verschiedenen Detailstufen 
-
+um verschiedenen Detailstufen an den Client zu übertragen. 
 Außerdem kann der Client in Abhängigkeit seiner Ressourcen ein eigenes Modell
 der Szene, aus den übertragenen Dreiecksnetzen konstruieren.
 
