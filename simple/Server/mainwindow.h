@@ -1,3 +1,24 @@
+/***********************************************************
+ *
+ *
+ *						MAINWINDOW HEADER
+ *					 =======================
+ *
+ *		AUTHOR: Josef Schulz
+ *
+ *		Declaration of the MainWindow class.
+ *		Consists of:
+ *				
+ *				server-deamon 
+ *				renderer(filerenderer)
+ *				playlist 
+ *				config
+ *				compressor
+ *				evaluator
+ *
+ *
+ ***********************************************************/
+
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
@@ -24,15 +45,17 @@ class MainWindow : public QMainWindow {
 	Q_OBJECT
 
 public:
-	ServerDeamon*			m_serverDeamon;
-	FileRenderer*			m_filerenderer;
+	ServerDeamon*			m_serverDeamon;		// deamon is the actual WebSocket server
+												// creates the jsonrpc object
 
-	Playlist*				m_playlist;
-	Config*					m_config;
-	Compressor*				m_compressor;
-	Evaluator*				m_evaluator;
+	FileRenderer*			m_filerenderer;		// demo clas, like an abstract renderer
+
+	Playlist*				m_playlist;			// creats a playlist from the scenes
+	Config*					m_config;			// holds the config, shard with the client
+	Compressor*				m_compressor;		// handles the hole compression part
+	Evaluator*				m_evaluator;		// evaluate all values
 	
-	QProgressBar*			m_progress_load;
+	QProgressBar*			m_progress_load;	// progressbar, visible while loading the scenes
 
 	MainWindow();
 	~MainWindow();
@@ -41,8 +64,8 @@ public:
 
 private slots:
 
-	void start_server();
-	void stop_server();
+	void start_server();	// starts the server, at the first time creates the playlist
+	void stop_server();		// stop the server
 
 private:
 	int				m_server_port;
@@ -66,8 +89,6 @@ private:
 	void 		createWidgetStart();
 	void 		createWidgetLoad();
 	void 		createWidgetMain();
-	QGroupBox* 	createWidgetTransport();
-	QGroupBox* 	createWidgetScene();
 	void 		createMenu();
 };
 

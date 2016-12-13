@@ -1,20 +1,36 @@
+/***********************************************************
+ *
+ *
+ *						PLAYLIST SOURCE
+ *					 =====================
+ *
+ *		AUTHOR: Josef Schulz
+ *
+ *		Defines the playlist class. More informations
+ *		are in playlist.h
+ *
+ ***********************************************************/
+
 #include "muskat.h"
 
 using namespace boost::filesystem;
 
+// constructer load and stores the scenes. 
+// And will be used to show all scene informations to the client
 Playlist::Playlist(MainWindow* mw, string dir, string suffix) {
 	m_dir 		= dir;
 	m_suffix 	= suffix;
 	path p(m_dir);
 	
+	// find all scenes in the subdirs of p, dedected by the suffix
 	addScenes(p, m_suffix);
 
+	// sort list of scene info files by name
 	sort(m_file_names.begin(), m_file_names.end());
 
+	// load the scene informations, camera infos, rgb and depth images
 	mw->m_progress_load->setRange(0, m_file_names.size()-1);
-
 	for(uint i = 0; i < m_file_names.size(); ++i) {
-		//cout<<m_file_names[i]<<endl;
 		mw->m_progress_load->setValue(i);
 		mw->repaint();
 		
@@ -22,6 +38,7 @@ Playlist::Playlist(MainWindow* mw, string dir, string suffix) {
 		m_scenes.push_back(scene);
 	}
 
+	// create two extra scenes of the three default runs, used for evaluation
 	Scene CoolRandom("CoolRandom");
 	CoolRandom.addScene(m_scenes[0]);
 	CoolRandom.addScene(m_scenes[1]);
@@ -35,6 +52,7 @@ Playlist::Playlist(MainWindow* mw, string dir, string suffix) {
 	m_scenes.push_back(TestSpheres);
 }
 
+// find scene info files in the subdirs of p, dedected with the suffix s
 void Playlist::addScenes(path& p, string s) {
 	vector<path> ps = getFiles(p);
 	size_t t;
@@ -51,6 +69,7 @@ void Playlist::addScenes(path& p, string s) {
 	}
 }
 	
+// gathering all subdirs of path p
 vector<path> Playlist::getFiles(path& p) {
 	vector<path> result;
 
@@ -63,6 +82,7 @@ vector<path> Playlist::getFiles(path& p) {
 	return result;
 }
 
+// creates a jsonobject of the playlist
 QJsonObject Playlist::getPlaylist() {
 	QJsonObject jo_playlist;
 

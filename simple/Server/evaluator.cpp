@@ -1,3 +1,16 @@
+/***********************************************************
+ *
+ *
+ *						EVALUATOR SOURCE
+ *					 ======================
+ *
+ *		AUTHOR: Josef Schulz
+ *
+ *		Definition of the evaluator class.
+ *		More informations in evaluator.h
+ *
+ ***********************************************************/
+
 #include "muskat.h"
 
 using namespace cv;
@@ -18,16 +31,22 @@ Evaluator::~Evaluator() {
 
 }
 
+// set scene pointer
+// resize the vectors which stores the information
 void Evaluator::setScene(Scene* scene) {
 	m_scene = scene;
 	m_results.resize(m_scene->m_infos.size());
 	m_durations.resize(m_scene->m_infos.size());
 }
 
+// this method calculate the ssim and psnr values
+// stores gradient images, seed point images or feature map
+// and the resulting mesh informations
 void Evaluator::runEvaluation() {
 	uint r_size = m_results.size();
 	list<ResultEntry> meanEntries;
 
+	// calc SSIM and PSNR for every result
 	cout<<"start evaluation"<<endl;
 	vector<ResultEntry> vEntries(r_size);
 	#pragma omp parallel for schedule(static, 1)
@@ -42,6 +61,7 @@ void Evaluator::runEvaluation() {
 		imwrite(filename.toStdString(), m_results[i]);
 	}
 
+	// create a list to sort the values depending of the camera angle
 	list<ResultEntry> entries(vEntries.begin(), vEntries.end());
 	entries.sort([this](ResultEntry& l, ResultEntry& r) {
 		if(l.angle > r.angle) 
@@ -49,6 +69,7 @@ void Evaluator::runEvaluation() {
 		return false; 
 	});
 
+	// calculate mean value for every angle, discard the angle 0
 	ResultEntry entry;
 	entry = entries.front();
 	double cnt = 1;
@@ -78,6 +99,7 @@ void Evaluator::runEvaluation() {
 	m_mean_duration /= m_cnt;
 	cout<<"Folder: "<<m_filename<<endl;
 
+	// write all informations into the result file
 	ofstream file;
   	file.open(m_filename + "/results.tex");
 
@@ -138,7 +160,7 @@ void Evaluator::runEvaluation() {
 	file<< "\\end{filecontents}\n\n";
 	file.close();
 
-	// if delaunay save image
+	// if delaunay save images
 	if(m_config->useDelaunay()) {
 		cv::imwrite(m_filename + "/delaunay.png" , *m_compressor->getDelaunayImage());
 		cv::imwrite(m_filename + "/mesh.png" , *m_compressor->getMeshImage());
@@ -158,6 +180,9 @@ void Evaluator::runEvaluation() {
 	cout<<"end evaluation"<<endl;
 }
 
+// reset all values and create directory, in which all results of this run are stored
+// the name is used to create the directory and the short name is used
+// to distinguish the results later in latex
 void Evaluator::newMessure(int sceneId, int messureId, const string& name, const string& short_name, int num_vertices, int num_indices, int num_triangles) {
 	m_cnt 			= 0;
 	m_min_duration 	= -1.0;
@@ -181,6 +206,9 @@ void Evaluator::newMessure(int sceneId, int messureId, const string& name, const
 	create_directories(p);
 }
 
+// increase result counter, when a result is received and
+// check for min and max duration. Additional increase the mean duration
+// like a sum, it will be divided after all resuls are recived.
 void Evaluator::addResult(int id, cv::Mat* img, double duration) {
 	m_results[id] = *img;
 	m_durations[id] = duration;
@@ -196,16 +224,19 @@ void Evaluator::addResult(int id, cv::Mat* img, double duration) {
 	m_cnt++;
 }	
 
+// check if all results are recived
 bool Evaluator::hasResults() {
 	if(m_cnt == m_scene->m_infos.size())
 		return true;
 	return false;
 }
 
+// returns the messure id, used to handle multiple runs
 int Evaluator::getEvaluationId() {
 	return m_messure_id;
 }
 
+// calculate the psnr
 double Evaluator::getPSNR(const Mat& I1, const Mat& I2)
 {
     Mat s1;
@@ -227,6 +258,7 @@ double Evaluator::getPSNR(const Mat& I1, const Mat& I2)
     }
 }
 
+// calculate the ssim
 Scalar Evaluator::getMSSIM( const Mat& i1, const Mat& i2)
 {
     const double C1 = 6.5025, C2 = 58.5225;

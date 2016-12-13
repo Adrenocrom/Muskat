@@ -1,3 +1,16 @@
+/***********************************************************
+ *
+ *
+ *						MUSKAT SOURCE
+ *					 ===================
+ *
+ *		AUTHOR: Josef Schulz
+ *
+ *		Implements only the insertZeros function.
+ *
+ *
+ ***********************************************************/
+
 #include "muskat.h"
 
 string insertZeros(uint num_zeros, uint n) {

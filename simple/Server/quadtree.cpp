@@ -1,3 +1,16 @@
+/***********************************************************
+ *
+ *
+ *						QUADTREE HEADER
+ *					 =====================
+ *
+ *		AUTHOR: Josef Schulz
+ *
+ *		Defines the quadtree class. More informations
+ *		are in quadtree.h
+ *
+ ***********************************************************/
+
 #include "muskat.h"
 
 // creates Quadtree
@@ -29,8 +42,12 @@ QuadTree::QuadTree(uint w, uint h, uint max_depth) {
 	subdivide(0, 1);
 }
 
+// generate seeds with the quadtree
+// gx, gy are gradient images
+// background is used to discard background seeds
+// traverse the tree from bottom to the top
 list<cv::Point2f> QuadTree::generateSeeds(cv::Mat& depth, cv::Mat& gx, cv::Mat& gy, bool background) {
-	list<cv::Point2f> seeds;
+	list<cv::Point2f> seeds; // stores seeds
 	
 	uint r_size = m_max_depth-1;
 	uint size = hnodes[r_size].size();
@@ -38,11 +55,14 @@ list<cv::Point2f> QuadTree::generateSeeds(cv::Mat& depth, cv::Mat& gx, cv::Mat& 
 	ushort g_x, g_y;
 	// calc c_x, c_y in the leaf nodes
 	
-	if(background) {
+	// check if background seeds should be used
+	// the code is inserted twice to fast as possible
+	if(background) { 
 		for(uint n = 0; n < size; ++n) {
 			QtreeNode& leaf = nodes[hnodes[r_size][n]];
 			QtreeRect& rect = leaf.rect;
 
+			// begin with the leaf nodes
 			// init with the first values
 			leaf.H_x = gx.at<ushort>(rect.min_y, rect.min_x);
 			leaf.H_y = gy.at<ushort>(rect.min_y, rect.min_x);
@@ -50,7 +70,8 @@ list<cv::Point2f> QuadTree::generateSeeds(cv::Mat& depth, cv::Mat& gx, cv::Mat& 
 			leaf.L_y = leaf.H_y;
 			for(int y = rect.min_y; y <= rect.max_y; ++y) {
 				for(int x = rect.min_x; x <= rect.max_x; ++x) {
-					g_x = gx.at<ushort>(y, x);
+					// access pixel values (slowest part)
+					g_x = gx.at<ushort>(y, x);	
 					g_y = gy.at<ushort>(y, x);
 				
 					leaf.H_x = MU_MAX( leaf.H_x, g_x );
@@ -62,9 +83,13 @@ list<cv::Point2f> QuadTree::generateSeeds(cv::Mat& depth, cv::Mat& gx, cv::Mat& 
 
 			leaf.c_x = leaf.H_x - leaf.L_x;
 			leaf.c_y = leaf.H_y - leaf.L_y;
+
+			// if the differences are above the threshold the region of the node
+			// is not planar and the corner points will be added as seed
 			if(leaf.c_x >= m_T_leaf || leaf.c_y >= m_T_leaf) {
 				// region is non planar
 	
+				// discard the seed if the depth is equal to the maximum
 				if(depth.at<ushort>(rect.min_y, rect.min_x) != USHRT_MAX) {
 					cv::Point2f p1(rect.min_x, rect.min_y);
 					seeds.push_back(p1);
@@ -87,22 +112,26 @@ list<cv::Point2f> QuadTree::generateSeeds(cv::Mat& depth, cv::Mat& gx, cv::Mat& 
 			}
 		}
 
+		// same like the leaf nodes but uses Hxy and Lxy to compute Cxy
 		// calc c_x, c_y in the inner nodes
 		for(int d = (int)r_size - 1; d >= 0; --d) {
 			size = hnodes[d].size();
 			for(uint n = 0; n < size; ++n) {
 				QtreeNode& node = nodes[hnodes[d][n]];
 	
+				// accessing the children for Hxy and Lxy
 				QtreeNode& nw = nodes[node.nw];
 				QtreeNode& ne = nodes[node.ne];
 				QtreeNode& sw = nodes[node.sw];
 				QtreeNode& se = nodes[node.se];
 	
+				// find the new highest and lowest values
 				node.H_x = MU_MAX4(nw.H_x, ne.H_x, sw.H_x, se.H_x);
 				node.H_y = MU_MAX4(nw.H_y, ne.H_y, sw.H_y, se.H_y);
 				node.L_x = MU_MIN4(nw.L_x, ne.L_x, sw.L_x, se.L_x);
 				node.L_y = MU_MIN4(nw.L_y, ne.L_y, sw.L_y, se.L_y);
 				
+				// calc the difference
 				node.c_x = node.H_x - node.L_x;
 				node.c_y = node.H_y - node.L_y;
 				if(node.c_x >= m_T_internal || node.c_y >= m_T_internal) {
@@ -130,7 +159,7 @@ list<cv::Point2f> QuadTree::generateSeeds(cv::Mat& depth, cv::Mat& gx, cv::Mat& 
 				} 
 			}
 		}
-	} else {
+	} else { // same procedure like above but without checking for background seeds
 		for(uint n = 0; n < size; ++n) {
 			QtreeNode& leaf = nodes[hnodes[r_size][n]];
 			QtreeRect& rect = leaf.rect;
@@ -208,6 +237,7 @@ list<cv::Point2f> QuadTree::generateSeeds(cv::Mat& depth, cv::Mat& gx, cv::Mat& 
 		}
 	}
 
+	// all points are inserted, now sort them in O(N logN)
 	seeds.sort([](cv::Point2f& a, cv::Point2f& b) {
 		if(a.y < b.y) {
 			return true;
@@ -219,19 +249,23 @@ list<cv::Point2f> QuadTree::generateSeeds(cv::Mat& depth, cv::Mat& gx, cv::Mat& 
 		}
 		return false;
 	});
+
+	// and check in O(N) for duplicates
 	seeds.unique();
 	return seeds;
 }
 
-
+// set leaf threshold
 void QuadTree::setTleaf( ushort T_leaf ) {
 	m_T_leaf = T_leaf;
 }
 
+// set inner threshold
 void QuadTree::setTinternal( ushort T_internal ) {
 	m_T_internal = T_internal;
 }
 
+// subdive a node, if the currend depth is the maximum one create leaf nodes
 void QuadTree::subdivide(int id, uint current_depth) {
 	QtreeNode node = nodes[id];
 	hnodes[current_depth-1].push_back( (uint)id );
@@ -297,7 +331,7 @@ void QtreeNode::createLeaf() {
 	se = -1;
 }
 
-
+// same procedure like generateSeeds but additonal draws the point to the seed image
 void QuadTree::drawGenerateSeeds(cv::Mat& seedimg, cv::Mat& depth, cv::Mat& gx, cv::Mat& gy, bool background) {
 	uint r_size = m_max_depth-1;
 	uint size = hnodes[r_size].size();

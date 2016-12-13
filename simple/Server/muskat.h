@@ -1,3 +1,22 @@
+/***********************************************************
+ *
+ *
+ *						MUSKAT HEADER
+ *					 ===================
+ *
+ *		AUTHOR: Josef Schulz
+ *
+ *		This file includes all required libraries.
+ *		Off the STL, OpenCV, Boost, Qt and the
+ *		project itself.
+ *		
+ *		Some definitions and functions are provided by
+ *		this file.
+ *
+ *
+ *
+ ***********************************************************/
+
 #ifndef MUSKAT_H
 #define MUSKAT_H
 
@@ -63,17 +82,19 @@
 #endif
 
 #ifndef MU_MIN
-#define MU_MIN(a, b) ((a) < (b) ? (a) : (b))													// Minimum
+#define MU_MIN(a, b) ((a) < (b) ? (a) : (b))
 #endif
 
 #ifndef MU_MAX
 #define MU_MAX(a, b) ((a) > (b) ? (a) : (b))
 #endif
 
-#ifndef MU_MIN4
+// wrapper to find the minimum of 4 values
+#ifndef MU_MIN4	
 #define MU_MIN4(a, b, c, d) (MU_MIN(a, MU_MIN(b, MU_MIN(c, d))))
 #endif
 
+// wrapper to find the maximum of 4 values
 #ifndef MU_MAX4
 #define MU_MAX4(a, b, c, d) (MU_MAX(a, MU_MAX(b, MU_MAX(c, d))))
 #endif
@@ -84,18 +105,19 @@ typedef unsigned short ushort;
 
 using namespace std;
 
+// creates a string of a value and creates leading zeroes
 string insertZeros(uint num_zeros, uint n);
 
-// PRO
-#include "fileRenderer.h"
-#include "config.h"
-#include "scene.h"
-#include "playlist.h"
-#include "mainwindow.h"
-#include "quadtree.h"
-#include "compressor.h"
-#include "jsonrpc.h"
-#include "deamon.h"
-#include "evaluator.h"
+// Program
+#include "fileRenderer.h"	// this is a demo class, for an arbitrary renderer
+#include "config.h"			// stores the config information
+#include "scene.h"			// scene, consits of n triples (rgb, depth, camera infos)
+#include "playlist.h"		// playlist consits of scenes
+#include "mainwindow.h"		// widget class, for gui handling. Also defines main components
+#include "quadtree.h"		// quadtree implementation
+#include "compressor.h"		// class, which handles the hole compression part
+#include "jsonrpc.h"		// lightweight jsonrpc implementation
+#include "deamon.h"			// server deamon, handles the connection 
+#include "evaluator.h"		// this class implements the evaluation elements like SSIM, PSNR and more
 
 #endif

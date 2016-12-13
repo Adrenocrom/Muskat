@@ -1,5 +1,20 @@
+/***********************************************************
+ *
+ *
+ *						CONFIG SOURCE
+ *					 ===================
+ *
+ *		AUTHOR: Josef Schulz
+ *
+ *		Implements getter, setter and the jsonobject 
+ *		parse methods.
+ *
+ ***********************************************************/
+
+
 #include "muskat.h"
 
+// create default config
 Config::Config(MainWindow* mw) {
 	m_mw = mw;
 
@@ -39,6 +54,7 @@ Config::Config(MainWindow* mw) {
 	m_pra_background_subtraction = false;
 }
 
+// recived config will be used, parsed from jsonobject
 void Config::setConfig(QJsonObject& jo) {
 	uint maxDepth = (uint) jo["maxDepth"].toInt();
 	int mesh_width	= jo["meshWidth"].toInt();
@@ -64,8 +80,9 @@ void Config::setConfig(QJsonObject& jo) {
 	m_pre_background_subtraction = jo["preBackgroundSubtraction"].toBool();
 	m_pra_background_subtraction = jo["praBackgroundSubtraction"].toBool();
 
+	// if the maximum depth of the quadtree is changed
+	// or the depth image size has changed the quadtree have to resized
 	if(maxDepth != m_max_depth || mesh_width != m_mesh_width || mesh_height != m_mesh_height) {
-		cout<<"NOW"<<endl;
 		m_max_depth 	= maxDepth;
 		m_mesh_width	= mesh_width;
 		m_mesh_height	= mesh_height;
@@ -73,6 +90,7 @@ void Config::setConfig(QJsonObject& jo) {
 	}
 }
 
+// create json object from config
 QJsonObject Config::getConfig() {
 	QJsonObject jo;
 	jo["width"] 	= m_width;
@@ -100,6 +118,7 @@ QJsonObject Config::getConfig() {
 	return jo;
 }
 
+// check if the size of rgb and depth image are not equal
 bool Config::hasDifferentSize() {
 	if(m_width != m_mesh_width || m_height != m_mesh_height) {
 		cout<<m_mesh_width<<" "<<m_mesh_height<<endl;

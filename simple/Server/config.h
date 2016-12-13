@@ -1,3 +1,17 @@
+/***********************************************************
+ *
+ *
+ *						CONFIG HEADER
+ *					 ===================
+ *
+ *		AUTHOR: Josef Schulz
+ *
+ *		In this class the config settings are stored.
+ *		Methods to create and set from or to a 
+ *		json object are implemented.
+ *
+ ***********************************************************/
+
 #ifndef CONFIG_H
 #define CONFIG_H
 
@@ -17,30 +31,34 @@ public:
 	// parse settings from recived json object
 	void	setConfig(QJsonObject& jo);
 
-
 	// screen  getter
-	int		getWidth();
+	int		getWidth();	
 	int		getHeight();
 	float	getAspect();
 
+	// the depth image size from the rgb image
 	int		getMeshWidth();
 	int		getMeshHeight();
 
+	// the depth image can be smoothed
 	bool	getSmoothDepth();
 
+	// if rgb and depth image size are different this method return true
 	bool	hasDifferentSize();
 
+	// texture compression could be done with JPEG or PNG
 	QString	getTextureCompressionMethod();
-	int		getTextureCompressionQuality();
+	int		getTextureCompressionQuality(); // JPEG 0-100, PNG 0-9
 
-	QString	getMeshMode();
-	QString	getSeedMode();
-	QString getGridType();
-	QString getMeshPrecision();
+	QString	getMeshMode();		// full or delaunay
+	QString	getSeedMode();		// quadtree or floydSteinberg (delaunay)
+	QString getGridType();	    // default, coockie-cutter or isometrisch (full)
+	QString getMeshPrecision(); // 8 or 16 bit (full)
 
-	int		getMeshCompression();
-	bool	useDelaunay();
-	bool	useQuadtree();
+	int		getMeshCompression(); // (FULL) depth image compressed with png
+	
+	bool	useDelaunay(); 
+	bool	useQuadtree();		  
 
 	// quadtree getter
 	uint	getMaxDepth();
@@ -49,16 +67,23 @@ public:
 	ushort	getTleaf();
 	ushort	getTinternal();
 
+	// refinement params
 	double	getTangle();
 	double	getTjoin();
 
+	// floydSteinberg params
 	double  getTthreshold();
 	double  getGamma();
 
+	// do refine
 	bool	getRefine();
 
-	bool	preBackgroundSubtraction();
-	bool	praBackgroundSubtraction();
+	// discard seed points which are part of the background
+	bool	preBackgroundSubtraction(); 
+	
+	// after the mesh is created discard triangles, when all vertices
+	// are part of the background (does not work with floydSteinberg, or with pre backgroud filter)
+	bool	praBackgroundSubtraction(); 
 
 private:
 	// pointer to mainwindow
@@ -94,6 +119,7 @@ private:
 	// quadtree config
 	uint 	m_max_depth;	// max depth
 
+	// floyd steinberg
 	double	m_T_threshold;
 	double	m_gamma;
 

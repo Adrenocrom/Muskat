@@ -1,3 +1,19 @@
+/***********************************************************
+ *
+ *
+ *						COMPRESSOR HEADER
+ *					 =======================
+ *
+ *		AUTHOR: Josef Schulz
+ *
+ *		In this file, all parts for the compression
+ *		and for the mesh construction parts are declared.
+ *		Needed OpenCV image containers and use 
+ *		the delaunay triangulation method of opencv.
+ *		From Qt, QJsonObject and QJsonArray are used.
+ *
+ ***********************************************************/
+
 #ifndef COMPRESSOR_H
 #define COMPRESSOR_H
 
@@ -8,15 +24,20 @@
 
 class Config;
 
+// point class to map the cv::point2f, needed for the
+// reconstruction step
 struct Point {
+	// image coordinates
 	int x;
 	int y;
 
+	// 16 bit depth value
 	ushort z;
 
+	// texture coordinates
 	double u;
 	double v;
-	double dz;
+	double dz; // depth in [0,1]
 
 	Point(int _x = 0, int _y = 0, ushort _z = 0,
 		  double _u = 0.0, double _v = 0.0, double _dz = 0.0) : 	x(_x), y(_y), z(_z),
@@ -27,12 +48,13 @@ struct Point {
 		return cv::Point(x, y);
 	}
 
+	// set z value from image, and calc texture coordinates and calcs dz
 	void setP(const cv::Mat& img, int w, int h) {
 		z = img.at<ushort>(y, x);
 		
 		u = (double)x / (double) (w-1);
 		v = (double)y / (double) (h-1);
-		dz = (double)z / ( ((double) USHRT_MAX) + 1.0) ;
+		dz = (double)z / ( ((double) USHRT_MAX) + 1.0) ; // +1 is used to prevent clipping errors
 	}
 
 	bool operator == (const Point& p) {
@@ -61,28 +83,6 @@ inline bool operator < (const Point& a, const Point& b) {
 	return false;
 }
 
-class muPoint : public cv::Point_<float> {
-public:
-	//int ix;
-	//int iy;
-
-	muPoint(const float& x, const float& y) : cv::Point_<float>((float) x, (float) y) {
-	//	ix = (int) x;
-	//	iy = (int) y;
-	}
-
-	bool operator < (const muPoint& p) const {
-		if(y < p.y) {
-			return true;
-		}
-		else if(y == p.y) {
-			if(x < p.x) {
-				return true;
-			}
-		}
-		return false;
-	}
-};
 
 inline double norm(const Point& a, const Point& b) {
 	double x = a.u - b.u;
@@ -106,6 +106,7 @@ inline Point operator * (const Point& p, const double d) {return Point((int)((do
 inline Point operator + (const Point& a, const Point& b) {return Point(a.x + b.x, a.y + b.y);}
 inline Point operator - (const Point& a, const Point& b) {return Point(a.x - b.x, a.y - b.y);}
 
+// represents an edge with two points
 struct Edge {
 	Point a;
 	Point b;
@@ -117,6 +118,8 @@ struct Edge {
 		return Point((int)((double)(a.x + b.x) / 2.0), (int)((double)(a.y + b.y) / 2.0));
 	}
 
+	// calculates the middle point between a and b, additional texture coordinates
+	// and z value will be calculated like in the point data structure above
 	Point getPM(const cv::Mat& img, int w, int h) const {
 		Point p((int)((double)(a.x + b.x) / 2.0), (int)((double)(a.y + b.y) / 2.0));
 		p.z = img.at<ushort>(p.y, p.x);
@@ -128,10 +131,14 @@ struct Edge {
 	}
 };
 
+// calc the depth value linear between a and b of e,
+// for the comparison with real value
 inline double calcPMDepth(const Edge& e) {
 	return (e.a.dz + e.b.dz) / 2.0;
 }
 
+// same like calcPMDepth but return an int value created
+// from the ushort z values
 inline int calcIntPMDepth(const Edge& e) {
 	return ((int)(e.a.z + e.b.z)) / 2;
 }
@@ -157,7 +164,9 @@ public:
 	clock_t		getCTimeDelaunay();
 	clock_t		getCTimeTranform();
 
-	// resize quadtree
+	// resize quadtree, it is realy slow,
+	// but differnt quadtrees with respect to the maximum depth could
+	// be precreated
 	void resizeQuadtree();
 
 private:
@@ -174,6 +183,7 @@ private:
 	cv::Scalar 	m_color_black;
 	cv::Scalar 	m_color_triangle;
 
+	// some images, for drawing
 	cv::Mat		m_delaunay_image;
 	cv::Mat		m_mesh_image;
 	cv::Mat		m_seed_image;
@@ -196,7 +206,7 @@ private:
 	// uses sub methods via config
 	void compressMesh(QJsonObject& jo, FrameBuffer& fb);
 
-	// compression Methods
+	// compression Methods (full connected meshes)
 	void compressMesh8Bit(QJsonObject& jo, cv::Mat& img);
 	void compressMesh16Bit(QJsonObject& jo, cv::Mat& img);
 
@@ -207,25 +217,39 @@ private:
 	// the result is list of triangles in an 2D space
 	vector<cv::Vec6f> delaunay(cv::Mat& img, list<cv::Point2f>& seeds);
 
+	// returns a list of seedpoints, produces with floyd steinberg
 	list<cv::Point2f> floydSteinberg(cv::Mat& gx, cv::Mat& gy, double T = 0.5, double gamma = 0.5);
 
+	// check if a edge is valid
 	bool isValid(cv::Mat& img, const Edge& e);
 
+	// check if a edge is joinable
 	bool isJoinable(cv::Mat& img, const Edge& e);
 
+	// check if vertices of a triangle are collinear 
 	bool isCollinear(const Point& p1, const Point& p2, const Point& p3);
 
+	// splitts a tringle, performs the refinement step
+	// by checking for valid edges and split with the right case
 	vector<Point> splitTriangle(cv::Mat& img, const Point& a, const Point& b, const Point& c);
+
+	// does the same like splitTriangles but draws the refinement
+	// of the triangle
 	vector<Point> splitTriangleDraw(cv::Mat& img, const Point& a, const Point& b, const Point& c, cv::Mat* out = nullptr);
 
+	// this method calculates the nears and best points from p to a
 	Point getMaxJoinable(cv::Mat& img, const Point& p, const Point& a);
 	
+	// creates a list of all possible joinable possitions from p to a
 	vector<Point> getMaxJoinablePoints(cv::Mat& img, const Point& p, const Point& a);
 	
+	// finds the best joinable points (from a to c) and (from b to c) while both points
+	// has to be joinable two
 	pair<Point, Point> getMaxJoinables(cv::Mat& img, const Point& a, const Point& b, const Point& c);
 
-	int getIndex(vector<cv::Point>& vb, cv::Point p);
-	int getIndex(map<Point, int>& vertices, const Point& p);
+	// calc index from vertices
+	int getIndex(vector<cv::Point>& vb, cv::Point p);			// slow
+	int getIndex(map<Point, int>& vertices, const Point& p);	// faster
 };
 
 #endif

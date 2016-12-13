@@ -1,14 +1,32 @@
+/***********************************************************
+ *
+ *
+ *						SCENE SOURCE
+ *					 ==================
+ *
+ *		AUTHOR: Josef Schulz
+ *
+ *		Defines the scene class. More informations
+ *		are in scene.h
+ *
+ ***********************************************************/
+
+
 #include "muskat.h"
 
 using namespace boost::filesystem;
 
+// Loads the scene from disk.
+// first reads the scene info file, after that loads all rgb and deapth images
 Scene::Scene(string filename, string suffix) {
 	m_filename 	= filename;
 	m_suffix	= suffix;
 
+	// clear vectors
 	m_infos.clear();
 	m_fbs.clear();
 	
+	// read scene info files
 	ifstream file(filename.c_str());
 	if (!file.is_open()) {
 		std::cerr << "Error: Could not find file "<<filename<<"."<<std::endl;
@@ -25,6 +43,7 @@ Scene::Scene(string filename, string suffix) {
 	}
 	file.close();
 
+	// load all rgb and depth images
 	uint size = m_infos.size();
 	path p(filename);
 	string s = p.string();
@@ -41,6 +60,7 @@ Scene::Scene(string filename, string suffix) {
 	}
 }
 
+// create an empty scenes
 Scene::Scene(string name) {
 	m_filename 	 = name;
 	m_scene_name = name;
@@ -49,6 +69,8 @@ Scene::Scene(string name) {
 	m_fbs.clear();
 }
 
+// add sequence to the existing scenes,
+// the scene infos shard by all frames will be overrided
 void Scene::addScene(Scene scene) {
 	m_suffix   = scene.m_suffix;
 	m_timestep = scene.m_timestep;
@@ -63,6 +85,8 @@ void Scene::addScene(Scene scene) {
 	m_fbs.insert(m_fbs.end(), scene.m_fbs.begin(), scene.m_fbs.end());
 }
 
+// reads line of scene info file and create fileInfo and add
+// it to the vector if the line contains the offangle
 void Scene::procressLine(stringstream& line, FrameInfo& info) {
 	string 		tag;
 	string 	  	buf;
@@ -116,6 +140,7 @@ void Scene::procressLine(stringstream& line, FrameInfo& info) {
 	}
 }
 
+// remove unneeded chars from string
 QString Scene::removeChars(string& str) {
 	string res;
 
@@ -126,6 +151,7 @@ QString Scene::removeChars(string& str) {
 	return QString::fromStdString(res);
 }
 
+// create jsonobject of the hole scene
 QJsonObject Scene::getSceneInfo() {
 	QJsonObject jo;
 
@@ -156,6 +182,7 @@ QJsonObject Scene::getSceneInfo() {
 	return jo;
 }
 
+// creates jsonobject of single frame info
 QJsonObject Scene::getFrameInfo(uint frame_id) {
 	QJsonObject jo;
 	FrameInfo& fb = m_infos[frame_id];
