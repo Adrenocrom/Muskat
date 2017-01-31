@@ -41,6 +41,31 @@
 \end{frame}
 
 \begin{frame}
+	\frametitle{Motivation}
+	\begin{figure}
+	\centering
+	\begin{tikzpicture}
+	\node [
+		label=below:Super Computer
+	] (sc) at (0, 0) {\includegraphics[width=2cm]{icons/supercomputer}};
+	
+	
+	\node [
+	    label=center:Internet,
+	] (inet) at (3, 0) {\includegraphics[width=3cm]{icons/cloud}};
+	
+	\node [
+		label=below:Client	
+	] (cl) at (6, 0) {\includegraphics[width=2cm]{icons/pc}};
+	
+	\draw[->, bend right=45] (cl.north west) to (sc.north east);
+	\draw[->, bend right=45] (sc.south east) to (cl.south west);
+	\end{tikzpicture}
+	
+		\end{figure}
+\end{frame}
+
+\begin{frame}
 	\frametitle{Aufgabenstellung}
 	
 	Ziel der Arbeit:	
@@ -50,18 +75,12 @@
 	\begin{itemize}
 		\setlength{\itemsep}{8pt}
 		
-		\item Entwicklung eines CPU-Renderers für Partikeldaten
-		\item basierend auf dem Emissions- und Absorptionsmodell
-		\item Unterstützung von beliebig vielen Punkt und Richtungslichtquellen
-		\item Beschränkung auf Kugelglyphen
+		\item Entwicklung eines Remote-Visualisierungssystems
+		\item zu verwendende Technologien JavaScript, WebSockets, WebGl
+		\item approximation des Tiefenbildes durch ein Dreiecksnetz
+		\item auswertung mit Hilfe von Test Szenen
 	\end{itemize}
 	
-	\vspace*{0.2cm}
-	
-	\begin{itemize}
-		\item Genauigkeit wird Geschwindigkeit übergeordnet
-		\item liefert Ground-Truth-Bilder
-	\end{itemize}
 \end{frame}
 
 \begin{frame}
