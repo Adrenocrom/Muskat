@@ -1,0 +1,80 @@
+\documentclass[xcolor=dvipsnames]{beamer}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage{xcolor}
+\usepackage{color}
+\usepackage{enumitem}
+\usepackage{tikz}
+
+\setlist[itemize,1]{label=\textbullet}
+\setlist[itemize,2]{label=$-$}
+
+%\usebackgroundtemplate{\includegraphics[width=\paperwidth,height=\paperheight]{images/forma4.png}}
+\setbeamercolor{frametitle}{bg=Gray, fg=white}
+\setbeamercolor{normal text}{fg=black}
+
+\setbeamercolor{title}{fg=white}
+\setbeamercolor{titlelike}{fg=white}
+\setbeamercolor{structure}{bg=Gray, fg=black}
+\useoutertheme{shadow}
+%\useinnertheme{rounded}
+
+\beamertemplatenavigationsymbolsempty
+
+\setbeamertemplate{footline}[frame number] 
+\setbeamertemplate{headline}{}
+
+%\renewcommand*{\bibfont}{\footnotesize}
+\bibliographystyle{plain}
+
+\title{Optimierung und Übertragung von Tiefengeometrie für Remote-Rendering}
+\author{Josef Schulz}
+\institute{Technische Universität Dresden}
+
+\begin{document}
+
+\begin{frame}
+	\maketitle
+	\nocite*{}
+	\thispagestyle{empty}
+\end{frame}
+
+\begin{frame}
+	\frametitle{Aufgabenstellung}
+	
+	Ziel der Arbeit:	
+	
+	\vspace*{0.4cm}
+	
+	\begin{itemize}
+		\setlength{\itemsep}{8pt}
+		
+		\item Entwicklung eines CPU-Renderers für Partikeldaten
+		\item basierend auf dem Emissions- und Absorptionsmodell
+		\item Unterstützung von beliebig vielen Punkt und Richtungslichtquellen
+		\item Beschränkung auf Kugelglyphen
+	\end{itemize}
+	
+	\vspace*{0.2cm}
+	
+	\begin{itemize}
+		\item Genauigkeit wird Geschwindigkeit übergeordnet
+		\item liefert Ground-Truth-Bilder
+	\end{itemize}
+\end{frame}
+
+\begin{frame}
+	\frametitle{frame title text}
+	\tableofcontents
+\end{frame}
+
+\section{bla}
+\begin{frame}
+\frametitle{bla}
+hj
+\end{frame}
+
+{\tiny\bibliography{literatur}}
+
+\end{document}
