@@ -107,6 +107,11 @@ class MuskatConfig {
 	get name() {
 		var name = this.meshWidth+"x"+this.meshHeight+"_";
 
+		if(this._textureCompressionMethod == "jpeg") {
+			name += "JPEG_";
+			name += this.textureCompressionQuality + "_";
+		}
+
 		if(this.meshMode == "full") {
 			if(this.pointcloud) {
 				name +="Pointcloud2";
@@ -138,6 +143,12 @@ class MuskatConfig {
 
 	get shortName() {
 		var name = this.meshWidth+"x"+this.meshHeight;
+
+
+		if(this._textureCompressionMethod == "jpeg") {
+			name += "JPEG_";
+			name += this.textureCompressionQuality + "_";
+		}
 
 		if(this.meshMode == "full") {
 			if(this.pointcloud) {

@@ -3,8 +3,6 @@ QT += core gui widgets websockets opengl
 TARGET = server
 TEMPLATE = app
 
-CONFIG += static
-
 QMAKE_CXXFLAGS += -fopenmp
 
 SOURCES +=	main.cpp \
